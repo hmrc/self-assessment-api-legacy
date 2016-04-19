@@ -1,3 +1,6 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.selfassessmentapi.controllers.MicroserviceHelloWorld.hello
+GET        /hello-world             uk.gov.hmrc.selfassessmentapi.controllers.MicroserviceHelloWorld.helloWorld
+
+
+GET        /:utr/employments       uk.gov.hmrc.selfassessmentapi.controllers.MicroserviceHelloWorld.hello(utr: String)

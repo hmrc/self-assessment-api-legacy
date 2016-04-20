@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.selfassessmentapi.controllers.live.MicroserviceHelloWorld
 
-class MicroserviceHelloWorldSpec extends UnitSpec with WithFakeApplication {
+class MicroserviceHelloWorldControllerSpec extends UnitSpec with WithFakeApplication{
 
   val fakeRequest = FakeRequest("GET", "/")
 
@@ -32,5 +32,6 @@ class MicroserviceHelloWorldSpec extends UnitSpec with WithFakeApplication {
       status(result) shouldBe Status.OK
     }
   }
+
 
 }

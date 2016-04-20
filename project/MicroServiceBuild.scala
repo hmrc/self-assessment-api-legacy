@@ -19,23 +19,24 @@ object MicroServiceBuild extends Build with MicroService {
 }
 
 private object AppDependencies {
+
   import play.PlayImport._
   import play.core.PlayVersion
 
   private val microserviceBootstrapVersion = "4.2.1"
   private val playAuthVersion = "3.1.0"
   private val playHealthVersion = "1.1.0"
-  private val playJsonLoggerVersion = "2.1.1"  
+  private val playJsonLoggerVersion = "2.1.1"
   private val playUrlBindersVersion = "1.0.0"
   private val playConfigVersion = "2.0.1"
   private val domainVersion = "3.6.0"
   private val hmrcTestVersion = "1.6.0"
   private val playReactivemongoVersion = "4.8.0"
+  private val playHmrcApi = "0.4.0"
   private val referenceCheckerVersion = "2.0.0"
 
   val compile = Seq(
     "uk.gov.hmrc" %% "play-reactivemongo" % playReactivemongoVersion,
-
     ws,
     "uk.gov.hmrc" %% "microservice-bootstrap" % microserviceBootstrapVersion,
     "uk.gov.hmrc" %% "play-authorisation" % playAuthVersion,
@@ -44,12 +45,13 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-config" % playConfigVersion,
     "uk.gov.hmrc" %% "play-json-logger" % playJsonLoggerVersion,
     "uk.gov.hmrc" %% "domain" % domainVersion,
-    "uk.gov.hmrc" %% "reference-checker" % referenceCheckerVersion
+    "uk.gov.hmrc" %% "reference-checker" % referenceCheckerVersion,
+    "uk.gov.hmrc" %% "play-hmrc-api" % playHmrcApi
   )
 
   trait TestDependencies {
     lazy val scope: String = "test"
-    lazy val test : Seq[ModuleID] = ???
+    lazy val test: Seq[ModuleID] = ???
   }
 
   object Test {

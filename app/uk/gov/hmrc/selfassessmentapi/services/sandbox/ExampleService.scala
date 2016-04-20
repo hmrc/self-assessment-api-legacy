@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.services.sandbox
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import uk.gov.hmrc.selfassessmentapi.controllers.live.MicroserviceHelloWorld
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.selfassessmentapi.domain.Example
+import uk.gov.hmrc.selfassessmentapi.services.BaseExampleService
 
-class MicroserviceHelloWorldSpec extends UnitSpec with WithFakeApplication {
+import scala.concurrent.Future
 
-  val fakeRequest = FakeRequest("GET", "/")
-
-
-  "GET /" should {
-    "return 200" in {
-      val result = MicroserviceHelloWorld.hello()(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
+object ExampleService extends BaseExampleService {
+  override def fetchExample(saUtr: SaUtr)(implicit hc: HeaderCarrier): Future[Example] = {
+    Future.successful(Example("example", 1.0))
   }
-
 }

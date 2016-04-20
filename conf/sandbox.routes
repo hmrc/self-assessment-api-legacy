@@ -1,0 +1,1 @@
+GET        /sa/:utr/example        uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ExampleController.fetchExample(utr: uk.gov.hmrc.domain.SaUtr)

@@ -21,15 +21,11 @@ import uk.gov.hmrc.play.microservice.controller.BaseController
 import play.api.mvc._
 import scala.concurrent.Future
 
-object MicroserviceHelloWorld extends MicroserviceHelloWorld
+object EmploymentsController extends EmploymentsController
 
-trait MicroserviceHelloWorld extends BaseController {
+trait EmploymentsController extends BaseController {
 
-	def helloWorld() = Action.async { implicit request =>
-		Future.successful(Ok("Hello world"))
-	}
-
-	def hello(utr: String) = Action.async { implicit request =>
-		Future.successful(Ok(s"Hello employments utr: $utr"))
+	def getEmployments(utr: String) = Action.async { implicit request =>
+		Future.successful(Ok(s"Employments for utr: $utr"))
 	}
 }

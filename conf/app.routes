@@ -1,3 +1,4 @@
 # microservice specific routes
 
 GET        /hello-world             uk.gov.hmrc.selfassessmentapi.controllers.MicroserviceHelloWorld.hello
+GET        /hello-utr/:saUtr        uk.gov.hmrc.selfassessmentapi.controllers.MicroserviceHelloWorld.helloValidUtr(saUtr: uk.gov.hmrc.domain.SaUtr)

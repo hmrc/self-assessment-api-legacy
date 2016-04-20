@@ -16,22 +16,28 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import play.api.mvc._
+import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future
+class BindersSpec extends UnitSpec {
 
-object MicroserviceHelloWorld extends MicroserviceHelloWorld
+  "saUtrBinder.bind" should {
+    "return Right with a SaUtr instance for a valid utr string" in {
+      val utr = "2234567890"
+      implicit val pathBindable = PathBindable.bindableString
 
-trait MicroserviceHelloWorld extends BaseController {
+      val result = Binders.saUtrBinder.bind("saUtr", utr)
+      result shouldEqual Right(SaUtr(utr))
+    }
 
-	def hello() = Action.async { implicit request =>
-		Future.successful(Ok("Hello world"))
-	}
+    "return Left for an ivalid utr string" in {
+      val utr = "invalid"
+      implicit val pathBindable = PathBindable.bindableString
 
-	def helloValidUtr(saUtr: SaUtr) = Action.async { implicit request =>
-		Future.successful(Ok(s"Hello valid sa utr: $saUtr"))
-	}
+      val result = Binders.saUtrBinder.bind("saUtr", utr)
+      result shouldEqual Left("ERROR_SA_UTR_INVALID")
+    }
+  }
+
 }

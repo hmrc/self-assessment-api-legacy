@@ -20,7 +20,7 @@ class AuthFilterSpec extends BaseFunctionalSpec {
         .get("/1234/employments")
         .thenAssertThat()
         .statusIs(200)
-        .bodyIs("Hello employments utr: 1234")
+        .bodyIs("Employments for utr: 1234")
     }
   }
 

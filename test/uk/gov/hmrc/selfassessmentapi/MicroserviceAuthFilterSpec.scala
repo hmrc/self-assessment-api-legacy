@@ -5,9 +5,6 @@ import uk.gov.hmrc.play.auth.controllers.AuthConfig
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel.L50
 import uk.gov.hmrc.play.auth.microservice.connectors.{AuthRequestParameters, HttpVerb}
 
-/**
-  * Created by hicnar on 20/04/16.
-  */
 class MicroserviceAuthFilterSpec extends WordSpecLike with Matchers {
 
   val underTest = MicroserviceAuthFilter

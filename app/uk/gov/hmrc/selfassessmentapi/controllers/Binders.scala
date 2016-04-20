@@ -16,22 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import play.api.mvc._
+import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.referencechecker.SelfAssessmentReferenceChecker
 
-import scala.concurrent.Future
+object Binders {
 
-object MicroserviceHelloWorld extends MicroserviceHelloWorld
+  implicit def saUtrBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SaUtr] {
 
-trait MicroserviceHelloWorld extends BaseController {
+    def unbind(key: String, saUtr: SaUtr): String = stringBinder.unbind(key, saUtr.value)
 
-	def hello() = Action.async { implicit request =>
-		Future.successful(Ok("Hello world"))
-	}
-
-	def helloValidUtr(saUtr: SaUtr) = Action.async { implicit request =>
-		Future.successful(Ok(s"Hello valid sa utr: $saUtr"))
-	}
+    def bind(key: String, value: String): Either[String, SaUtr] = {
+      SelfAssessmentReferenceChecker.isValid(value) match {
+        case true => Right(SaUtr(value))
+        case false => Left("ERROR_SA_UTR_INVALID")
+      }
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import play.PlayImport.PlayKeys._
 import sbt._
 import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
@@ -12,6 +13,9 @@ object MicroServiceBuild extends Build with MicroService {
   )
 
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
+  override lazy val playSettings : Seq[Setting[_]] = Seq(
+    routesImport += "uk.gov.hmrc.selfassessmentapi.controllers.Binders._"
+  )
 }
 
 private object AppDependencies {
@@ -27,6 +31,7 @@ private object AppDependencies {
   private val domainVersion = "3.6.0"
   private val hmrcTestVersion = "1.6.0"
   private val playReactivemongoVersion = "4.8.0"
+  private val referenceCheckerVersion = "2.0.0"
 
   val compile = Seq(
     "uk.gov.hmrc" %% "play-reactivemongo" % playReactivemongoVersion,
@@ -38,7 +43,8 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-url-binders" % playUrlBindersVersion,
     "uk.gov.hmrc" %% "play-config" % playConfigVersion,
     "uk.gov.hmrc" %% "play-json-logger" % playJsonLoggerVersion,
-    "uk.gov.hmrc" %% "domain" % domainVersion
+    "uk.gov.hmrc" %% "domain" % domainVersion,
+    "uk.gov.hmrc" %% "reference-checker" % referenceCheckerVersion
   )
 
   trait TestDependencies {

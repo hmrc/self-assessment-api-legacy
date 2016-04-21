@@ -1,1 +1,4 @@
+GET        /hello-world            uk.gov.hmrc.selfassessmentapi.controllers.sandbox.HelloWorldController.hello
+GET        /hello-utr/:saUtr       uk.gov.hmrc.selfassessmentapi.controllers.sandbox.HelloWorldController.helloValidUtr(saUtr: uk.gov.hmrc.domain.SaUtr)
+
 GET        /sa/:utr/example        uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ExampleController.fetchExample(utr: uk.gov.hmrc.domain.SaUtr)

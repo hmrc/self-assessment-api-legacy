@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.live
+package uk.gov.hmrc.selfassessmentapi.controllers
 
-import uk.gov.hmrc.play.microservice.controller.BaseController
-import play.api.mvc._
+import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.play.microservice.controller.BaseController
 
 import scala.concurrent.Future
 
-object MicroserviceHelloWorld extends MicroserviceHelloWorld
+trait BaseHelloWordController extends BaseController {
 
-trait MicroserviceHelloWorld extends BaseController {
+  def hello() = Action.async { implicit request =>
+    Future.successful(Ok("Hello world"))
+  }
 
-	def hello() = Action.async { implicit request =>
-		Future.successful(Ok("Hello world"))
-	}
-
-	def helloValidUtr(saUtr: SaUtr) = Action.async { implicit request =>
-		Future.successful(Ok(s"Hello valid sa utr: $saUtr"))
-	}
+  def helloValidUtr(saUtr: SaUtr) = Action.async { implicit request =>
+    Future.successful(Ok(s"Hello valid sa utr: $saUtr"))
+  }
 }

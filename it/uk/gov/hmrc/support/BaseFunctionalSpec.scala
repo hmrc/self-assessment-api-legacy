@@ -69,10 +69,12 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
 
   class Givens {
     def when() = new HttpVerbs()
+
     def userIsNotAuthorisedForTheResource(utr: SaUtr) = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
       this
     }
+
     def userIsAuthorisedForTheResource(utr: SaUtr) = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(200)))
       this

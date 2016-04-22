@@ -19,7 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import play.api.http.Status
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.WithFakeApplication
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 class EmploymentsControllerSpec extends UnitSpec with WithFakeApplication {
 
@@ -29,7 +30,7 @@ class EmploymentsControllerSpec extends UnitSpec with WithFakeApplication {
 
   "GET /" should {
     "return 200" in {
-      val result = controller.getEmployments(SaUtr("123456"))(fakeRequest)
+      val result = controller.getEmployments(generateSaUtr())(fakeRequest)
       status(result) shouldBe Status.OK
     }
   }

@@ -22,7 +22,7 @@ import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.api.domain.Registration
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpPost, HttpResponse}
-import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 import scala.concurrent.Future
 

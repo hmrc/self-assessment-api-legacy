@@ -16,16 +16,19 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
+import play.api.mvc.Action
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.microservice.controller.BaseController
 
-import play.api.mvc._
 import scala.concurrent.Future
 
-trait EmploymentsController extends BaseController {
+trait BaseHelloWordController extends BaseController {
 
-	def getEmployments(utr: String) = Action.async { implicit request =>
-		Future.successful(Ok(s"Employments for utr: $utr"))
-	}
+  def hello() = Action.async { implicit request =>
+    Future.successful(Ok("Hello world"))
+  }
+
+  def helloValidUtr(saUtr: SaUtr) = Action.async { implicit request =>
+    Future.successful(Ok(s"Hello valid sa utr: $saUtr"))
+  }
 }
-
-object EmploymentsController extends EmploymentsController

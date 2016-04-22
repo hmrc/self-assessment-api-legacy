@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.services
 
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.selfassessmentapi.domain.Example
 
-import play.api.mvc._
 import scala.concurrent.Future
 
-trait EmploymentsController extends BaseController {
-
-	def getEmployments(utr: String) = Action.async { implicit request =>
-		Future.successful(Ok(s"Employments for utr: $utr"))
-	}
+trait BaseExampleService {
+  def fetchExample(saUtr: SaUtr)(implicit hc: HeaderCarrier): Future[Example]
 }
-
-object EmploymentsController extends EmploymentsController

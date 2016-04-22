@@ -16,16 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import play.api.http.Status
+import play.api.test.FakeRequest
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.selfassessmentapi.controllers.live.HelloWorldController
 
-import play.api.mvc._
-import scala.concurrent.Future
+class HelloWorldControllerSpec extends UnitSpec with WithFakeApplication {
 
-trait EmploymentsController extends BaseController {
+  val fakeRequest = FakeRequest("GET", "/")
 
-	def getEmployments(utr: String) = Action.async { implicit request =>
-		Future.successful(Ok(s"Employments for utr: $utr"))
-	}
+
+  "GET /" should {
+    "return 200" in {
+      val result = HelloWorldController.hello()(fakeRequest)
+      status(result) shouldBe Status.OK
+    }
+  }
+
 }
-
-object EmploymentsController extends EmploymentsController

@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.connectors
 
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, WSHttp}
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet}
+import uk.gov.hmrc.selfassessmentapi.domain.Example
 
-import play.api.mvc._
 import scala.concurrent.Future
 
-trait EmploymentsController extends BaseController {
+trait ExampleBackendConnector {
 
-	def getEmployments(utr: String) = Action.async { implicit request =>
-		Future.successful(Ok(s"Employments for utr: $utr"))
-	}
+  val http: HttpGet
+  val desUrl: String
+
+  def fetchExample(saUtr: SaUtr)(implicit hc: HeaderCarrier): Future[Example] =
+    http.GET[Example](s"${desUrl}/des-example-service/sa/${saUtr.utr}/example")
 }
 
-object EmploymentsController extends EmploymentsController
+object ExampleBackendConnector extends ExampleBackendConnector {
+  override val http: HttpGet = WSHttp
+  override val desUrl: String = AppContext.desUrl
+}

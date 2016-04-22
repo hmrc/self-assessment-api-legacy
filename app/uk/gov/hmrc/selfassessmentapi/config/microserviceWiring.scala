@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.config
+
 
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -28,7 +29,7 @@ object WSHttp extends WSGet with WSPut with WSPost with WSDelete with WSPatch wi
 }
 
 object MicroserviceAuditConnector extends AuditConnector with RunMode {
-  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
+  override lazy val auditingConfig = LoadAuditingConfig(s"$env.auditing")
 }
 
 object MicroserviceAuthConnector extends AuthConnector with ServicesConfig {

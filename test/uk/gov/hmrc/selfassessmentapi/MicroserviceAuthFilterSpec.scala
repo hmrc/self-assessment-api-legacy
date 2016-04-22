@@ -20,6 +20,7 @@ import org.scalatest.{Matchers, WordSpecLike}
 import uk.gov.hmrc.play.auth.controllers.AuthConfig
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel.L50
 import uk.gov.hmrc.play.auth.microservice.connectors.{AuthRequestParameters, HttpVerb}
+import uk.gov.hmrc.selfassessmentapi.config.MicroserviceAuthFilter
 
 class MicroserviceAuthFilterSpec extends WordSpecLike with Matchers {
 

@@ -1,9 +1,9 @@
 package uk.gov.hmrc.support
 
-import _root_.play.api.Play.current
-import _root_.play.api.libs.json.{Json, Writes}
-import _root_.play.api.libs.ws.{WSResponse, WSRequestHolder, WS}
-import _root_.play.api.mvc.Results
+import play.api.Play.current
+import play.api.libs.json.{Json, Writes}
+import play.api.libs.ws.{WSResponse, WSRequestHolder, WS}
+import play.api.mvc.Results
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HttpResponse
 import uk.gov.hmrc.play.http.ws.WSHttpResponse

@@ -1,3 +1,2 @@
 GET        /api/definition                                       uk.gov.hmrc.api.controllers.DocumentationController.definition()
 GET        /api/documentation/:version/:endpointName             uk.gov.hmrc.api.controllers.DocumentationController.documentation(version, endpointName)
-

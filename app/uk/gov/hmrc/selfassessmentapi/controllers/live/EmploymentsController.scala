@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.selfassessmentapi.controllers.BaseEmploymentsController
 
-import play.api.mvc._
-import scala.concurrent.Future
-
-trait EmploymentsController extends BaseController {
-
-	def getEmployments(utr: String) = Action.async { implicit request =>
-		Future.successful(Ok(s"Employments for utr: $utr"))
-	}
-}
-
-object EmploymentsController extends EmploymentsController
+object EmploymentsController extends BaseEmploymentsController

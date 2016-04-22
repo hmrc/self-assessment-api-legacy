@@ -13,7 +13,7 @@
   ],
   "api": {
     "name": "Self-Assessment API",
-    "description": "The Self Assessment API liability calculations for customers.",
+    "description": "<TODO>",
     "context": "self-assessment",
     "versions": [
       {
@@ -21,8 +21,8 @@
         "status": "PROTOTYPED",
         "endpoints": [
           {
-            "uriPattern":"/sa/{utr}/example",
-            "endpointName":"Self Assessment example API",
+            "uriPattern":"/{utr}/employments",
+            "endpointName":"Employments",
             "method":"GET",
             "authType":"USER",
             "throttlingTier":"UNLIMITED"

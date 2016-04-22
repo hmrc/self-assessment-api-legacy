@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 class EmploymentsControllerSpec extends UnitSpec with WithFakeApplication {
 
-  val fakeRequest = FakeRequest("GET", "/")
+  val fakeRequest = FakeRequest("GET", "/").withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
 
   val controller = new BaseEmploymentsController {
     override val context: String = "/self-assessment"

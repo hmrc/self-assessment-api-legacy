@@ -1,0 +1,1 @@
+curl --silent --data '{"individualEnrolments": {"sa": "989898"}}' --header "Content-Type:application/json" http://localhost:8500/auth/gg/12345678/sign-in | grep -o "Bearer.*" | tr '"' '~' | cut -d~ -f1

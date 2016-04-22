@@ -28,8 +28,10 @@ class MicroserviceAuthFilterSpec extends WordSpecLike with Matchers {
 
   "MicroserviceAuthFilter" should {
     "extract resource that builds valid auth url" in {
-      val resource = underTest.extractResource("/123456/employments", HttpVerb("GET"), AuthConfig(pattern = "/(\\w+)/.*".r, confidenceLevel = L50))
-      resource.get.buildUrl("http://authhost.com/auth", AuthRequestParameters(L50)) shouldBe "http://authhost.com/auth/authorise/read/sa/123456?confidenceLevel=50"
+      val resource = underTest.extractResource("/123456/employments", HttpVerb("GET"), AuthConfig(pattern = ("/(\\w+)/" +
+        ".*").r, confidenceLevel = L50))
+      resource.get.buildUrl("http://authhost.com/auth", AuthRequestParameters(L50)) shouldBe "http://authhost" +
+        ".com/auth/authorise/read/sa/123456?confidenceLevel=50"
     }
   }
 }

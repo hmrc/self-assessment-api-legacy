@@ -6,8 +6,9 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures, Eventually}
+import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.OneServerPerSuite
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -36,10 +37,20 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
       response.body shouldBe expectedBody
     }
 
+    def bodyIs(expectedBody: JsValue): Unit = {
+      response.json shouldEqual expectedBody
+    }
+
     def statusIs(statusCode: Int) = {
       response.status shouldBe statusCode
       this
     }
+
+    def contentTypeIs(contentType: String) = {
+      response.header("Content-Type") shouldEqual Some(contentType)
+      this
+    }
+
     def thenAssertThat() = this
   }
 

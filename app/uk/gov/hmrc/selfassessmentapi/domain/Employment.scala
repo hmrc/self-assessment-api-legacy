@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.microservice.controller.BaseController
-import play.api.mvc._
-import uk.gov.hmrc.selfassessmentapi.domain.Employment
 
-import scala.concurrent.Future
+case class Employment(message: String)
 
-trait BaseEmploymentsController extends BaseController {
-
-	def getEmployments(utr: String) = Action.async { implicit request =>
-		val message = s"Employments for utr: $utr"
-		val employment = Employment(message)
-		Future.successful(Ok(Json.toJson(employment)))
-	}
+object Employment {
+  implicit val format = Json.format[Employment]
 }

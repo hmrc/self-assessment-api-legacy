@@ -1,1 +1,1 @@
-GET        /:utr/employments       uk.gov.hmrc.selfassessmentapi.controllers.sandbox.EmploymentsController.getEmployments(utr: String)
+GET        /:utr/employments       uk.gov.hmrc.selfassessmentapi.controllers.sandbox.EmploymentsController.getEmployments(utr: uk.gov.hmrc.domain.SaUtr)

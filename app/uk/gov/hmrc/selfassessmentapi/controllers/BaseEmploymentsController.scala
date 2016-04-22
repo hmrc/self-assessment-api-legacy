@@ -17,17 +17,23 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.microservice.controller.BaseController
-import play.api.mvc._
+import play.api.mvc.Action
 import uk.gov.hmrc.selfassessmentapi.domain.Employment
 
 import scala.concurrent.Future
+import play.api.mvc.hal._
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-trait BaseEmploymentsController extends BaseController {
+trait BaseEmploymentsController extends BaseController with HeaderValidator {
 
-	def getEmployments(utr: String) = Action.async { implicit request =>
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+
+
+  def getEmployments(utr: SaUtr) = Action.async { implicit request =>
 		val message = s"Employments for utr: $utr"
 		val employment = Employment(message)
-		Future.successful(Ok(Json.toJson(employment)))
+    val links = Seq(Link("self", uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url))
+		Future.successful(Ok(halResource(Json.toJson(employment), links)))
 	}
 }

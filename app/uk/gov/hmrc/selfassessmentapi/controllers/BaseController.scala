@@ -16,22 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.hal.{Hal, HalLink, HalResource}
+import play.api.libs.json.JsValue
 
-class EmploymentsControllerSpec extends UnitSpec with WithFakeApplication {
+case class Link(name: String, href: String)
 
-  val fakeRequest = FakeRequest("GET", "/")
+trait BaseController extends uk.gov.hmrc.play.microservice.controller.BaseController {
 
-  val controller = new BaseEmploymentsController {}
-
-  "GET /" should {
-    "return 200" in {
-      val result = controller.getEmployments(SaUtr("123456"))(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
+  def halResource(jsValue: JsValue, links: Seq[Link]): HalResource = {
+    val halState = Hal.state(jsValue)
+    links.foldLeft(halState)((res, link) => res ++ HalLink(link.name, link.href))
   }
-
 }

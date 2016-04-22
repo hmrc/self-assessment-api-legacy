@@ -27,7 +27,6 @@ import uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverControllerWithU
 import scala.concurrent.Future
 
 case object CustomerResolverController extends CustomerResolverControllerWithUrls {
-  override def hc(request: Request[Any]): HeaderCarrier = HeaderCarrier()
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
   override val context: String = AppContext.apiGatewayContext
 

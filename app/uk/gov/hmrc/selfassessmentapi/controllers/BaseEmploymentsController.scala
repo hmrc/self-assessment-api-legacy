@@ -17,11 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.Json
-import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain.Employment
+
 import scala.concurrent.Future
 import play.api.mvc.hal._
+import uk.gov.hmrc.api.controllers.HeaderValidator
 
 trait BaseEmploymentsController extends BaseController with HeaderValidator {
 

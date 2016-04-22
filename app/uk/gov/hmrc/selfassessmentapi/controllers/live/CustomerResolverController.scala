@@ -24,7 +24,6 @@ import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
 import uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverControllerWithUrls
 
 case object CustomerResolverController extends CustomerResolverControllerWithUrls {
-  override def hc(request: Request[Any]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, None)
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
   override val authConnector: AuthConnector = AuthConnector
   override val context: String = AppContext.apiGatewayContext

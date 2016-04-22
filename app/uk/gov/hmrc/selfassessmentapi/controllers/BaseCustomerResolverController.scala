@@ -18,13 +18,11 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 
 import play.api.libs.json.JsObject
-import play.api.mvc.Request
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
-
 import play.api.mvc.hal._
+import uk.gov.hmrc.api.controllers.HeaderValidator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -32,7 +30,6 @@ trait BaseCustomerResolverController extends BaseController with HeaderValidator
 
   val authConnector: AuthConnector
   val confidenceLevel: ConfidenceLevel
-  def hc(request: Request[Any]): HeaderCarrier
 
   final def resolve = validateAccept(acceptHeaderValidationRules).async { request =>
     authConnector.saUtr(confidenceLevel)(hc(request)).map {

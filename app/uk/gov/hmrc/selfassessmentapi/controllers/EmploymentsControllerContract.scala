@@ -16,21 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import play.api.http.Status
-import play.api.test.FakeRequest
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import uk.gov.hmrc.selfassessmentapi.controllers.live.EmploymentsController
 
-class EmploymentsControllerSpec extends UnitSpec with WithFakeApplication {
-
-  val fakeRequest = FakeRequest("GET", "/")
-
-  "GET /" should {
-    "return 200" in {
-      val result = EmploymentsController.getEmployments(SaUtr("123456"))(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
-  }
-
+trait EmploymentsControllerContract {
+  def getEmployments(utr: SaUtr): Action[AnyContent]
 }

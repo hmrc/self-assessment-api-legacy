@@ -8,7 +8,9 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsObject, JsValue}
+import play.api.test.FakeHeaders
+import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -17,6 +19,9 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
 
   val WIREMOCK_PORT = 22222
   val stubHost = "localhost"
+  private val saUtrGenerator = new SaUtrGenerator()
+
+  def generateSaUtr(): SaUtr = saUtrGenerator.nextSaUtr
 
   protected val wiremockBaseUrl: String = s"http://$stubHost:$WIREMOCK_PORT"
 
@@ -38,7 +43,7 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
     }
 
     def bodyIs(expectedBody: JsValue): Unit = {
-      response.json shouldEqual expectedBody
+      response.json.as[JsObject] - "_links" shouldEqual expectedBody
     }
 
     def statusIs(statusCode: Int) = {
@@ -64,11 +69,11 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
 
   class Givens {
     def when() = new HttpVerbs()
-    def userIsNotAuthorisedForTheResource(utr: String) = {
+    def userIsNotAuthorisedForTheResource(utr: SaUtr) = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
       this
     }
-    def userIsAuthorisedForTheResource(utr: String) = {
+    def userIsAuthorisedForTheResource(utr: SaUtr) = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(200)))
       this
     }

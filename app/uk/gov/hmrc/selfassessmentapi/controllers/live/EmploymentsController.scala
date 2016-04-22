@@ -18,13 +18,16 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import play.api.libs.json.Json
 import play.api.mvc.Action
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.controllers.{EmploymentsControllerContract, BaseController, Link}
 import uk.gov.hmrc.selfassessmentapi.domain.Employment
+import play.api.mvc.hal._
 
 import scala.concurrent.Future
 
-object EmploymentsController extends BaseController {
-  def getEmployments(utr: String) = Action.async { implicit request =>
-    Future.successful(Ok(Json.toJson(Employment(s"Employments for utr: $utr"))))
+object EmploymentsController extends BaseController with EmploymentsControllerContract {
+  override def getEmployments(utr: SaUtr) = Action.async { implicit request =>
+    val links = Seq(Link("self", uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url))
+    Future.successful(Ok(halResource(Json.toJson(Employment(s"Employments for utr: $utr")), links)))
   }
 }

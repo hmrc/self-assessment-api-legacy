@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-import play.api.mvc.Request
 import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet}

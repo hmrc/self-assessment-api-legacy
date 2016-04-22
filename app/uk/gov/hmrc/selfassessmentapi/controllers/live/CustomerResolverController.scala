@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import play.api.mvc.Request
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter}
 import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
 import uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverControllerWithUrls

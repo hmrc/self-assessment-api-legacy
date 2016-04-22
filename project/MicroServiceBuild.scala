@@ -29,11 +29,10 @@ private object AppDependencies {
   private val playJsonLoggerVersion = "2.1.1"
   private val playUrlBindersVersion = "1.0.0"
   private val playConfigVersion = "2.0.1"
-  private val domainVersion = "3.6.0"
+  private val domainVersion = "3.7.0"
   private val hmrcTestVersion = "1.6.0"
   private val playReactivemongoVersion = "4.8.0"
   private val playHmrcApi = "0.4.0"
-  private val referenceCheckerVersion = "2.0.0"
 
   val compile = Seq(
     "uk.gov.hmrc" %% "play-reactivemongo" % playReactivemongoVersion,
@@ -45,7 +44,6 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-config" % playConfigVersion,
     "uk.gov.hmrc" %% "play-json-logger" % playJsonLoggerVersion,
     "uk.gov.hmrc" %% "domain" % domainVersion,
-    "uk.gov.hmrc" %% "reference-checker" % referenceCheckerVersion,
     "uk.gov.hmrc" %% "play-hmrc-api" % playHmrcApi
   )
 

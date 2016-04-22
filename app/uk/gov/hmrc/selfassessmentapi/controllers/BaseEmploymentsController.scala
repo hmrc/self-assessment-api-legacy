@@ -33,7 +33,12 @@ trait BaseEmploymentsController extends BaseController with HeaderValidator {
   def getEmployments(utr: SaUtr) = Action.async { implicit request =>
 		val message = s"Employments for utr: $utr"
 		val employment = Employment(message)
-    val links = Seq(Link("self", uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url))
+    val links = Seq(Link("self", selfLink(utr)))
 		Future.successful(Ok(halResource(Json.toJson(employment), links)))
 	}
+
+  private def selfLink(utr: SaUtr): String = {
+    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url
+    s"$context$endpointUrl"
+  }
 }

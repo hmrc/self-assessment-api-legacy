@@ -42,6 +42,7 @@ class CustomerResolverControllerSpec extends UnitSpec with MockitoSugar {
     override val authConnector: AuthConnector = mockAuthConnector
     override val confidenceLevel: ConfidenceLevel = authConfidenceLevel
     override def hc(request: Request[Any]): HeaderCarrier = headerCarrier
+    override val context: String = "/self-assessment"
   }
 
 

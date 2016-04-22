@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 import play.api.mvc.Request
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.selfassessmentapi.config.MicroserviceAuthFilter
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter}
 import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
 import uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverControllerWithUrls
 
@@ -27,4 +27,5 @@ case object CustomerResolverController extends CustomerResolverControllerWithUrl
   override def hc(request: Request[Any]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, None)
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
   override val authConnector: AuthConnector = AuthConnector
+  override val context: String = AppContext.apiGatewayContext
 }

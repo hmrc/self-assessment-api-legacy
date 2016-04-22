@@ -51,5 +51,5 @@ trait BaseCustomerResolverController extends BaseController with HeaderValidator
 }
 
 trait CustomerResolverControllerWithUrls extends BaseCustomerResolverController {
-  def selfAssessmentUrl(saUtr: SaUtr): String = s"/self-assessment/$saUtr"
+  def selfAssessmentUrl(saUtr: SaUtr): String = s"$context/$saUtr"
 }

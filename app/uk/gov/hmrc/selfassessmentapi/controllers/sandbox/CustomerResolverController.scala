@@ -20,7 +20,7 @@ import play.api.mvc.Request
 import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet}
-import uk.gov.hmrc.selfassessmentapi.config.{MicroserviceAuthFilter, WSHttp}
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter, WSHttp}
 import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
 import uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverControllerWithUrls
 
@@ -29,6 +29,7 @@ import scala.concurrent.Future
 case object CustomerResolverController extends CustomerResolverControllerWithUrls {
   override def hc(request: Request[Any]): HeaderCarrier = HeaderCarrier()
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
+  override val context: String = AppContext.apiGatewayContext
 
   override val authConnector: AuthConnector = new AuthConnector {
     override lazy val serviceUrl: String = "some url"

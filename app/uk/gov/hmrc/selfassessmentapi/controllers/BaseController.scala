@@ -23,6 +23,8 @@ case class Link(name: String, href: String)
 
 trait BaseController extends uk.gov.hmrc.play.microservice.controller.BaseController {
 
+  val context: String
+
   def halResource(jsValue: JsValue, links: Seq[Link]): HalResource = {
     val halState = Hal.state(jsValue)
     links.foldLeft(halState)((res, link) => res ++ HalLink(link.name, link.href))

@@ -17,14 +17,14 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import play.api.libs.json.Json
+import play.api.mvc.Action
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.selfassessmentapi.controllers.HeaderValidator
 import uk.gov.hmrc.selfassessmentapi.domain.Employment
 
 import scala.concurrent.Future
 
-object EmploymentsController extends BaseController with HeaderValidator{
-  def getEmployments(utr: String) = validateAccept(acceptHeaderValidationRules).async { implicit request =>
+object EmploymentsController extends BaseController {
+  def getEmployments(utr: String) = Action.async { implicit request =>
     Future.successful(Ok(Json.toJson(Employment(s"Employments for utr: $utr"))))
   }
 }

@@ -16,19 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import play.api.libs.json.JsObject
+import play.api.libs.json.Json
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.domain.Employment
+
+import scala.concurrent.Future
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
-import uk.gov.hmrc.domain.SaUtr
 
-trait BaseSelfAssessmentDiscoveryController extends BaseController with HeaderValidator with Links {
+trait EmploymentsController extends BaseController with HeaderValidator with Links {
 
-  final def discover(utr: SaUtr) = validateAccept(acceptHeaderValidationRules) { request =>
-        val links = Seq(
-          Link("self", discoveryHref(utr)),
-          Link("employments", employmentsHref(utr))
-        )
-        Ok(halResource(JsObject(Nil), links))
-  }
+  def getEmployments(utr: SaUtr) = validateAccept(acceptHeaderValidationRules).async { implicit request =>
+		val message = s"Employments for utr: $utr"
+		val employment = Employment(message)
+    val links = Seq(Link("self", employmentsHref(utr)))
+		Future.successful(Ok(halResource(Json.toJson(employment), links)))
+	}
 
 }

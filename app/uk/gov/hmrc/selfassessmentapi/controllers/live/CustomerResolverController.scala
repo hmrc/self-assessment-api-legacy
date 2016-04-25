@@ -21,11 +21,10 @@ import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter}
 import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
-import uk.gov.hmrc.selfassessmentapi.controllers.BaseCustomerResolverController
 
 import scala.concurrent.Future
 
-case object CustomerResolverController extends BaseCustomerResolverController {
+case object CustomerResolverController extends uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverController {
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
   override val context: String = AppContext.apiGatewayContext
 

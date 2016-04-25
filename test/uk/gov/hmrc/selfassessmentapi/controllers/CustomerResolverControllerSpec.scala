@@ -33,7 +33,7 @@ class CustomerResolverControllerSpec extends UnitSpec with MockitoSugar {
   val authConfidenceLevel: ConfidenceLevel = ConfidenceLevel.L500
   val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  def testController(utr: Option[SaUtr]) = new BaseCustomerResolverController {
+  def testController(utr: Option[SaUtr]) = new CustomerResolverController {
     override def discoveryHref(saUtr: SaUtr): String = "selfAssessmentUrl"
     override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] =  Future.successful(utr)
     override val confidenceLevel: ConfidenceLevel = authConfidenceLevel

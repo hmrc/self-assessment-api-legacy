@@ -25,7 +25,7 @@ class EmploymentsControllerSpec extends UnitSpec with WithFakeApplication {
 
   val fakeRequest = FakeRequest("GET", "/").withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
 
-  val controller = new BaseEmploymentsController {
+  val controller = new EmploymentsController {
     override val context: String = "/self-assessment"
   }
 

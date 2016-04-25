@@ -46,6 +46,12 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
       response.json.as[JsObject] - "_links" shouldEqual expectedBody
     }
 
+    def bodyHasLink(rel: String, href: String) = {
+      val links = response.json \ "_links"
+      val link = links \ rel
+      (link \ "href").asOpt[String] shouldEqual Some(href)
+    }
+
     def statusIs(statusCode: Int) = {
       response.status shouldBe statusCode
       this
@@ -69,12 +75,46 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
 
   class Givens {
     def when() = new HttpVerbs()
+
     def userIsNotAuthorisedForTheResource(utr: SaUtr) = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
       this
     }
+
     def userIsAuthorisedForTheResource(utr: SaUtr) = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(200)))
+      this
+    }
+
+    def userIsEnrolledInSa(utr: SaUtr) = {
+      val json =
+        s"""
+           |{
+           |    "accounts": {
+           |        "sa": {
+           |            "link": "/sa/individual/$utr",
+           |            "utr": "$utr"
+           |        }
+           |    },
+           |    "confidenceLevel": 500
+           |}
+      """.stripMargin
+
+      stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type", "application/json")))
+      this
+    }
+
+    def userIsNotEnrolledInSa = {
+      val json =
+        s"""
+           |{
+           |    "accounts": {
+           |    },
+           |    "confidenceLevel": 500
+           |}
+      """.stripMargin
+
+      stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type", "application/json")))
       this
     }
   }

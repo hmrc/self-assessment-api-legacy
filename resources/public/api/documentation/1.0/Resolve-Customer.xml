@@ -1,0 +1,33 @@
+<endpoint>
+    <name>Resolve Customer</name>
+    <description>This endpoint resolves a customer identifier from the provided Authorisation Bearer token</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource>GET /self-assessment</resource>
+    </section>
+    <section id="authorisation">
+        <title>Authorisation</title>
+        <authorisation>
+            <type>USER</type>
+            <scope>read:self-assessment-api</scope>
+        </authorisation>
+    </section>
+    <section id="content-types">
+        <title>Accepted Media Types</title>
+        <list>
+            <item>
+                <code>application/vnd.hmrc.1.0+json</code>
+            </item>
+        </list>
+    </section>
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json><![CDATA[{
+        "_links" : {
+          "self-assessment": { "href": "/self-assessment/utr" }
+        }
+       }]]>
+        </json>
+    </section>
+</endpoint>

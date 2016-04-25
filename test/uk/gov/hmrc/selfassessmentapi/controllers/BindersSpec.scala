@@ -17,22 +17,18 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.mvc.PathBindable
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.domain.SaUtrGenerator
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 class BindersSpec extends UnitSpec {
 
   "saUtrBinder.bind" should {
 
-    val saUtrGenerator = new SaUtrGenerator()
-
     "return Right with a SaUtr instance for a valid utr string" in {
-      val utr = saUtrGenerator.nextSaUtr.utr
+      val utr = generateSaUtr()
       implicit val pathBindable = PathBindable.bindableString
 
-      val result = Binders.saUtrBinder.bind("saUtr", utr)
-      result shouldEqual Right(SaUtr(utr))
+      val result = Binders.saUtrBinder.bind("saUtr", utr.utr)
+      result shouldEqual Right(utr)
     }
 
     "return Left for an ivalid utr string" in {

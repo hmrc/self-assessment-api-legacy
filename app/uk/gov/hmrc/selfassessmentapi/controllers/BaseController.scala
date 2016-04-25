@@ -18,10 +18,15 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.{Hal, HalLink, HalResource}
 import play.api.libs.json.JsValue
+import play.api.mvc.Request
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 case class Link(name: String, href: String)
 
 trait BaseController extends uk.gov.hmrc.play.microservice.controller.BaseController {
+
+  val context: String
+  def hc(request: Request[Any]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, None)
 
   def halResource(jsValue: JsValue, links: Seq[Link]): HalResource = {
     val halState = Hal.state(jsValue)

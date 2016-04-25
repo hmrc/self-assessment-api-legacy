@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain
+package uk.gov.hmrc.selfassessmentapi
 
-case class Example(text: String, number: Double)
+import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
+
+trait UnitSpec extends uk.gov.hmrc.play.test.UnitSpec {
+
+  private val saUtrGenerator = new SaUtrGenerator()
+
+  def generateSaUtr(): SaUtr = saUtrGenerator.nextSaUtr
+
+}

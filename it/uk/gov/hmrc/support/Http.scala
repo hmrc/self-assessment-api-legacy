@@ -15,7 +15,7 @@ import scala.concurrent.{Await, Future}
 object Http {
 
   def get(url: String)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
-    request.get()
+    request.withHeaders("Accept" -> "application/vnd.hmrc.1.0+json").get()
   }
 
   def post[A](url: String, body: A, headers: Seq[(String, String)] = Seq.empty)(implicit writes: Writes[A], hc: HeaderCarrier): HttpResponse = perform(url) { request =>

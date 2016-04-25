@@ -49,7 +49,7 @@ trait AuthConnector {
 }
 
 object AuthConnector extends AuthConnector {
-  override lazy val serviceUrl: String = AppContext.serviceLocatorUrl
+  override lazy val serviceUrl: String = AppContext.authUrl
   override val http: HttpGet = WSHttp
   override val handlerError: Throwable => Unit = e => Logger.error("Error in request to auth", e)
 }

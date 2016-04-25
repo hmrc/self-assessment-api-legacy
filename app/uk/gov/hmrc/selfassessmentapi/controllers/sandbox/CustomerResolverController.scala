@@ -18,25 +18,18 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet}
-import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter, WSHttp}
-import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
-import uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverControllerWithUrls
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter}
+import uk.gov.hmrc.selfassessmentapi.controllers.BaseCustomerResolverController
 
 import scala.concurrent.Future
 
-case object CustomerResolverController extends CustomerResolverControllerWithUrls {
+case object CustomerResolverController extends BaseCustomerResolverController {
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
   override val context: String = AppContext.apiGatewayContext
 
-  override val authConnector: AuthConnector = new AuthConnector {
-    override lazy val serviceUrl: String = "some url"
-    override val http: HttpGet = WSHttp
-    override val handlerError: Throwable => Unit = _ => ()
-
-    override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] = {
-      val utrGenerator = new SaUtrGenerator()
-      Future.successful(Some(utrGenerator.nextSaUtr))
-    }
+  override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] = {
+    val utrGenerator = new SaUtrGenerator()
+    Future.successful(Some(utrGenerator.nextSaUtr))
   }
 }

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -25,21 +24,18 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
 
 import scala.concurrent.Future
 
 class CustomerResolverControllerSpec extends UnitSpec with MockitoSugar {
 
   val saUtr: SaUtr = generateSaUtr()
-
-  val mockAuthConnector = mock[AuthConnector]
   val authConfidenceLevel: ConfidenceLevel = ConfidenceLevel.L500
   val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  val testController = new BaseCustomerResolverController {
+  def testController(utr: Option[SaUtr]) = new BaseCustomerResolverController {
     override def selfAssessmentUrl(saUtr: SaUtr): String = "selfAssessmentUrl"
-    override val authConnector: AuthConnector = mockAuthConnector
+    override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] =  Future.successful(utr)
     override val confidenceLevel: ConfidenceLevel = authConfidenceLevel
     override def hc(request: Request[Any]): HeaderCarrier = headerCarrier
     override val context: String = "/self-assessment"
@@ -51,8 +47,7 @@ class CustomerResolverControllerSpec extends UnitSpec with MockitoSugar {
       .withHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
 
     "return a successful response with a link to the self-assessment customer details endpoint" in {
-      when(mockAuthConnector.saUtr(authConfidenceLevel)(headerCarrier)).thenReturn(Future.successful(Some(saUtr)))
-      val result = testController.resolve()(request)
+      val result = testController(Some(saUtr)).resolve()(request)
 
       status(result) shouldEqual OK
       val response = contentAsJson(result)
@@ -63,8 +58,7 @@ class CustomerResolverControllerSpec extends UnitSpec with MockitoSugar {
     }
 
     "return unauthorised when no sa utr is found" in {
-      when(mockAuthConnector.saUtr(authConfidenceLevel)(headerCarrier)).thenReturn(Future.successful(None))
-      val result = testController.resolve()(request)
+      val result = testController(None).resolve()(request)
 
       status(result) shouldEqual UNAUTHORIZED
     }

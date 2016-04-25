@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
 
-trait Links {
-
-  val context: String
-
-  def employmentsHref(utr: SaUtr): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url
-    s"$context$endpointUrl"
-  }
-
-  def discoveryHref(utr: SaUtr): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfAssessmentDiscoveryController.discover(utr).url
-    s"$context$endpointUrl"
-  }
-
+object EmploymentsController extends uk.gov.hmrc.selfassessmentapi.controllers.EmploymentsController {
+  override val context: String = AppContext.apiGatewayContext
 }

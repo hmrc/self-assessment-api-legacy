@@ -17,8 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.EmploymentsController
 
-object SandboxEmploymentsController extends EmploymentsController {
+object EmploymentsController extends uk.gov.hmrc.selfassessmentapi.controllers.EmploymentsController {
   override val context: String = AppContext.apiGatewayContext
 }

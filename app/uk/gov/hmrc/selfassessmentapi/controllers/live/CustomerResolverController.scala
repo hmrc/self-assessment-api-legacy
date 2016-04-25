@@ -16,9 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.EmploymentsController
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter}
+import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
 
-object LiveEmploymentsController extends EmploymentsController {
+import scala.concurrent.Future
+
+case object CustomerResolverController extends uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverController {
+  override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
   override val context: String = AppContext.apiGatewayContext
+
+  override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] =
+    AuthConnector.saUtr(confidenceLevel)
 }

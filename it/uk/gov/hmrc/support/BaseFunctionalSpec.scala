@@ -38,18 +38,21 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
   }
 
   class Assertions(response: HttpResponse) {
-    def bodyIs(expectedBody: String): Unit = {
+    def bodyIs(expectedBody: String) = {
       response.body shouldBe expectedBody
+      this
     }
 
-    def bodyIs(expectedBody: JsValue): Unit = {
+    def bodyIs(expectedBody: JsValue) = {
       response.json.as[JsObject] - "_links" shouldEqual expectedBody
+      this
     }
 
     def bodyHasLink(rel: String, href: String) = {
       val links = response.json \ "_links"
       val link = links \ rel
       (link \ "href").asOpt[String] shouldEqual Some(href)
+      this
     }
 
     def statusIs(statusCode: Int) = {

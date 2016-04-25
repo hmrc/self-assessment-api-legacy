@@ -16,33 +16,19 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-
 import play.api.libs.json.JsObject
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.domain.SaUtr
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+trait BaseSelfAssessmentDiscoveryController extends BaseController with HeaderValidator with Links {
 
-trait BaseCustomerResolverController extends BaseController with HeaderValidator with Links {
-
-  val confidenceLevel: ConfidenceLevel
-
-  def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]]
-
-  final def resolve = validateAccept(acceptHeaderValidationRules).async { request =>
-    saUtr(confidenceLevel)(hc(request)).map {
-      case Some(saUtr) =>
+  final def discover(utr: SaUtr) = validateAccept(acceptHeaderValidationRules) { request =>
         val links = Seq(
-          Link("self-assessment", discoveryHref(saUtr))
+          Link("self", discoveryHref(utr)),
+          Link("employments", employmentsHref(utr))
         )
         Ok(halResource(JsObject(Nil), links))
-      case None =>
-        Unauthorized
-    }
   }
 
 }

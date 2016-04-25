@@ -1,2 +1,3 @@
 GET        /                       uk.gov.hmrc.selfassessmentapi.controllers.live.CustomerResolverController.resolve()
+GET        /:utr                   uk.gov.hmrc.selfassessmentapi.controllers.live.SelfAssessmentDiscoveryController.discover(utr: uk.gov.hmrc.domain.SaUtr)
 GET        /:utr/employments       uk.gov.hmrc.selfassessmentapi.controllers.live.EmploymentsController.getEmployments(utr: uk.gov.hmrc.domain.SaUtr)

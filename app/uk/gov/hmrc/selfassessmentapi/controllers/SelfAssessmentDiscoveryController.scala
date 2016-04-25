@@ -21,7 +21,7 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
 
-trait BaseSelfAssessmentDiscoveryController extends BaseController with HeaderValidator with Links {
+trait SelfAssessmentDiscoveryController extends BaseController with HeaderValidator with Links {
 
   final def discover(utr: SaUtr) = validateAccept(acceptHeaderValidationRules) { request =>
         val links = Seq(

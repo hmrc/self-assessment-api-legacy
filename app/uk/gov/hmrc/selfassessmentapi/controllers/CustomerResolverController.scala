@@ -19,16 +19,15 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.JsObject
 import play.api.mvc.Action
+import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
-import play.api.mvc.hal._
-import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait BaseCustomerResolverController extends BaseController with Links {
+trait CustomerResolverController extends BaseController with Links {
 
   val confidenceLevel: ConfidenceLevel
 

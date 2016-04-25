@@ -18,6 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 
 import play.api.libs.json.JsObject
+import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import play.api.mvc.hal._
@@ -27,13 +28,13 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait BaseCustomerResolverController extends BaseController with HeaderValidator with Links {
+trait BaseCustomerResolverController extends BaseController with Links {
 
   val confidenceLevel: ConfidenceLevel
 
   def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]]
 
-  final def resolve = validateAccept(acceptHeaderValidationRules).async { request =>
+  final def resolve = Action.async { request =>
     saUtr(confidenceLevel)(hc(request)).map {
       case Some(saUtr) =>
         val links = Seq(

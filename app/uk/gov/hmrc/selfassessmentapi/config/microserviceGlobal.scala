@@ -17,7 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.config
 
 import com.typesafe.config.Config
+import play.api.libs.json.Json
+import play.api.mvc._
 import play.api.{Application, Configuration, Play}
+import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, HeaderValidator}
 import uk.gov.hmrc.play.audit.filters.AuditFilter
 import uk.gov.hmrc.play.auth.controllers.{AuthConfig, AuthParamsControllerConfig}
 import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
@@ -26,6 +29,8 @@ import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.auth.microservice.filters.AuthorisationFilter
 import net.ceedubs.ficus.Ficus._
 import uk.gov.hmrc.play.auth.microservice.connectors.{AccountId, HttpVerb, Regime, ResourceToAuthorise}
+
+import scala.concurrent.Future
 
 
 object ControllerConfiguration extends ControllerConfig {
@@ -38,6 +43,7 @@ object AuthParamsControllerConfiguration extends AuthParamsControllerConfig {
 
 object MicroserviceAuditFilter extends AuditFilter with AppName {
   override val auditConnector = MicroserviceAuditConnector
+
   override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
 }
 
@@ -67,6 +73,14 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
   override def controllerNeedsAuth(controllerName: String): Boolean = ControllerConfiguration.paramsForController(controllerName).needsAuth
 }
 
+object HeaderValidatorFilter extends Filter with HeaderValidator {
+  def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
+    if (acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
+    else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
+  }
+}
+
+
 object MicroserviceGlobal extends DefaultMicroserviceGlobal with RunMode {
   override val auditConnector = MicroserviceAuditConnector
 
@@ -77,4 +91,7 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with RunMode {
   override val microserviceAuditFilter = MicroserviceAuditFilter
 
   override val authFilter = Some(MicroserviceAuthFilter)
+
+  override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter) ++ defaultMicroserviceFilters
+
 }

@@ -15,7 +15,7 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 
 trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
-with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with MockitoSugar {
+  with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with MockitoSugar {
 
   val WIREMOCK_PORT = 22222
   val stubHost = "localhost"
@@ -65,14 +65,52 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
       this
     }
 
-    def thenAssertThat() = this
+    def body(myQuery: JsValue => JsValue) = {
+      new BodyAssertions(myQuery(response.json), this)
+    }
+
+    class BodyAssertions(content: JsValue, assertions: Assertions) {
+      def is(value: String) = {
+        content.as[String] shouldBe value
+        assertions
+      }
+    }
+
   }
 
   class HttpVerbs {
-    implicit val hc = HeaderCarrier()
+    var addAcceptHeader = true
+    var method = ""
+    var url = ""
+    var hc = HeaderCarrier()
+
     def get(path: String) = {
       assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      new Assertions(Http.get(s"http://localhost:$port$path"))
+      this.url = s"http://localhost:$port$path"
+      this.method = "GET"
+      this
+    }
+
+    private def withHeader(name : String, value: String) = {
+      hc.withExtraHeaders((name, value))
+      this
+    }
+
+    def withoutAcceptHeader() = {
+      this.addAcceptHeader = false
+      this
+    }
+
+    def thenAssertThat() = {
+      if (addAcceptHeader) hc = hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
+      method match {
+        case "GET" => new Assertions(Http.get(url)(hc))
+      }
+    }
+
+    def withAcceptHeader() = {
+      addAcceptHeader = true
+      this
     }
   }
 
@@ -125,3 +163,5 @@ with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with Moc
   def given() = new Givens()
 
 }
+
+

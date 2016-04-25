@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.live
+package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.BaseSelfAssessmentDiscoveryController
+import uk.gov.hmrc.selfassessmentapi.controllers.EmploymentsController
 
-case object SelfAssessmentDiscoveryController extends BaseSelfAssessmentDiscoveryController {
+object SandboxEmploymentsController extends EmploymentsController {
   override val context: String = AppContext.apiGatewayContext
 }

@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
+package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter}
-import uk.gov.hmrc.selfassessmentapi.controllers.BaseCustomerResolverController
+import uk.gov.hmrc.selfassessmentapi.connectors.AuthConnector
+import uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverController
 
 import scala.concurrent.Future
 
-case object CustomerResolverController extends BaseCustomerResolverController {
+case object LiveCustomerResolverController extends CustomerResolverController {
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
   override val context: String = AppContext.apiGatewayContext
 
-  override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] = {
-    val utrGenerator = new SaUtrGenerator()
-    Future.successful(Some(utrGenerator.nextSaUtr))
-  }
+  override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] =
+    AuthConnector.saUtr(confidenceLevel)
 }

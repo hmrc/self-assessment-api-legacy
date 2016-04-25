@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import play.api.libs.json.JsObject
-import play.api.mvc.hal._
-import uk.gov.hmrc.api.controllers.HeaderValidator
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.controllers.EmploymentsController
 
-trait BaseSelfAssessmentDiscoveryController extends BaseController with HeaderValidator with Links {
-
-  final def discover(utr: SaUtr) = validateAccept(acceptHeaderValidationRules) { request =>
-        val links = Seq(
-          Link("self", discoveryHref(utr)),
-          Link("employments", employmentsHref(utr))
-        )
-        Ok(halResource(JsObject(Nil), links))
-  }
-
+object LiveEmploymentsController extends EmploymentsController {
+  override val context: String = AppContext.apiGatewayContext
 }

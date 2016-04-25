@@ -24,7 +24,7 @@ import scala.concurrent.Future
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
 
-trait BaseEmploymentsController extends BaseController with HeaderValidator with Links {
+trait EmploymentsController extends BaseController with HeaderValidator with Links {
 
   def getEmployments(utr: SaUtr) = validateAccept(acceptHeaderValidationRules).async { implicit request =>
 		val message = s"Employments for utr: $utr"

@@ -23,12 +23,12 @@ trait Links {
   val context: String
 
   def employmentsHref(utr: SaUtr): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url
+    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiveEmploymentsController.getEmployments(utr).url
     s"$context$endpointUrl"
   }
 
   def discoveryHref(utr: SaUtr): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfAssessmentDiscoveryController.discover(utr).url
+    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiveSelfAssessmentDiscoveryController.discover(utr).url
     s"$context$endpointUrl"
   }
 

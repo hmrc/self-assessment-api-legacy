@@ -17,8 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseCustomerResolverController, BaseSelfAssessmentDiscoveryController}
+import uk.gov.hmrc.selfassessmentapi.controllers.{CustomerResolverController, SelfAssessmentDiscoveryController}
 
-case object SelfAssessmentDiscoveryController extends BaseSelfAssessmentDiscoveryController {
+case object SandboxSelfAssessmentDiscoveryController extends SelfAssessmentDiscoveryController {
   override val context: String = AppContext.apiGatewayContext
 }

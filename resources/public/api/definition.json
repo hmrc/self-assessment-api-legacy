@@ -28,6 +28,13 @@
             "throttlingTier":"UNLIMITED"
           },
           {
+            "uriPattern":"/{utr}",
+            "endpointName":"Discover",
+            "method":"GET",
+            "authType":"USER",
+            "throttlingTier":"UNLIMITED"
+          },
+          {
             "uriPattern":"/{utr}/employments",
             "endpointName":"Employments",
             "method":"GET",

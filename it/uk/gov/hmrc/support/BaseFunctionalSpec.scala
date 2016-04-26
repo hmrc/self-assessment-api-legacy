@@ -122,8 +122,11 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
 
     def thenAssertThat() = {
       if (addAcceptHeader) hc = hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
-      method match {
-        case "GET" => new Assertions(Http.get(url)(hc))
+
+      withClue(s"Request $method $url") {
+        method match {
+          case "GET" => new Assertions(Http.get(url)(hc))
+        }
       }
     }
 

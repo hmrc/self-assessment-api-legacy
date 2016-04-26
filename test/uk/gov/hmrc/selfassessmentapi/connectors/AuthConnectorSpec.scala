@@ -59,18 +59,18 @@ class AuthConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures {
     }
 
     "return the SA UTR if confidence level is greater than the provided confidence level" in new Setup {
-      val confidenceLevel = ConfidenceLevel.L500
+      val confidenceLevel = ConfidenceLevel.L100
       val utr = generateSaUtr()
       val response = HttpResponse(200, Some(authorityJson(confidenceLevel, utr.utr)))
 
       when(connector.http.GET(s"${connector.serviceUrl}/auth/authority")).thenReturn(Future.successful(response))
 
-      connector.saUtr(ConfidenceLevel.L100).futureValue shouldBe Some(utr)
+      connector.saUtr(ConfidenceLevel.L50).futureValue shouldBe Some(utr)
       verify(connector.handlerError, never).apply(authException)
     }
 
     "return the SA UTR if confidence level equals the provided confidence level" in new Setup {
-      val confidenceLevel = ConfidenceLevel.L500
+      val confidenceLevel = ConfidenceLevel.L50
       val utr = generateSaUtr()
       val response = HttpResponse(200, Some(authorityJson(confidenceLevel, utr.utr)))
 
@@ -81,20 +81,20 @@ class AuthConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures {
     }
 
     "return None if confidence level is less than the provided confidence level" in new Setup {
-      val confidenceLevel = ConfidenceLevel.L100
+      val confidenceLevel = ConfidenceLevel.L50
       val utr = generateSaUtr()
       val response = HttpResponse(200, Some(authorityJson(confidenceLevel, utr.utr)))
 
       when(connector.http.GET(s"${connector.serviceUrl}/auth/authority")).thenReturn(Future.successful(response))
 
-      connector.saUtr(ConfidenceLevel.L500).futureValue shouldBe None
+      connector.saUtr(ConfidenceLevel.L200).futureValue shouldBe None
       verify(connector.handlerError, never).apply(authException)
     }
 
 
     "return None if there is no SA UTR in the accounts" in new Setup {
 
-      val confidenceLevel = ConfidenceLevel.L500
+      val confidenceLevel = ConfidenceLevel.L50
       val json =
         s"""
            |{
@@ -117,7 +117,7 @@ class AuthConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures {
 
       when(connector.http.GET(s"${connector.serviceUrl}/auth/authority")).thenReturn(Future.failed(authException))
 
-      connector.saUtr(ConfidenceLevel.L100).futureValue shouldBe None
+      connector.saUtr(ConfidenceLevel.L50).futureValue shouldBe None
       verify(connector.http).GET("https://SERVICE_LOCATOR/auth/authority")
       verify(connector.handlerError).apply(authException)
     }

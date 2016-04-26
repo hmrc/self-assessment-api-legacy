@@ -1,4 +1,4 @@
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.live
 
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -6,7 +6,7 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
 
   val saUtr = generateSaUtr()
 
-  "Self assessment discovery" should {
+  "Live Self assessment discovery" should {
     "return a 200 response with a links when the customer is authorised" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()

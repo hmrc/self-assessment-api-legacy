@@ -1,4 +1,4 @@
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.live
 
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -6,7 +6,7 @@ class CustomerResolverControllerSpec extends BaseFunctionalSpec {
 
   val saUtr = generateSaUtr()
 
-  "Customer Resolver" should {
+  "Live Customer Resolver" should {
     "return a 200 response with a link to /self-assessment/utr when the customer is enrolled in SA" in {
       given().userIsEnrolledInSa(saUtr)
         .when()

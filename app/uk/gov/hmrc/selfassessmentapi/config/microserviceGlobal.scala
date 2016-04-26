@@ -17,21 +17,23 @@
 package uk.gov.hmrc.selfassessmentapi.config
 
 import com.typesafe.config.Config
+import net.ceedubs.ficus.Ficus._
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.{Application, Configuration, Play}
+import uk.gov.hmrc.api.config.{ServiceLocatorConfig, ServiceLocatorRegistration}
+import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, HeaderValidator}
 import uk.gov.hmrc.play.audit.filters.AuditFilter
 import uk.gov.hmrc.play.auth.controllers.{AuthConfig, AuthParamsControllerConfig}
+import uk.gov.hmrc.play.auth.microservice.connectors.{AccountId, HttpVerb, Regime, ResourceToAuthorise}
+import uk.gov.hmrc.play.auth.microservice.filters.AuthorisationFilter
 import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
-import uk.gov.hmrc.play.auth.microservice.filters.AuthorisationFilter
-import net.ceedubs.ficus.Ficus._
-import uk.gov.hmrc.play.auth.microservice.connectors.{AccountId, HttpVerb, Regime, ResourceToAuthorise}
 
 import scala.concurrent.Future
-
 
 object ControllerConfiguration extends ControllerConfig {
   lazy val controllerConfigs = Play.current.configuration.underlying.as[Config]("controllers")
@@ -80,8 +82,13 @@ object HeaderValidatorFilter extends Filter with HeaderValidator {
   }
 }
 
+trait MicroServiceRegistration extends ServiceLocatorRegistration with ServiceLocatorConfig {
+  override val slConnector: ServiceLocatorConnector = ServiceLocatorConnector(WSHttp)
+  override implicit val hc: HeaderCarrier = HeaderCarrier()
+}
 
-object MicroserviceGlobal extends DefaultMicroserviceGlobal with RunMode {
+
+object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroServiceRegistration with RunMode {
   override val auditConnector = MicroserviceAuditConnector
 
   override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig(s"microservice.metrics")

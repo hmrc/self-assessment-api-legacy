@@ -1,5 +1,7 @@
 package uk.gov.hmrc.support
 
+import java.util.regex.Pattern
+
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
@@ -13,6 +15,8 @@ import play.api.test.FakeHeaders
 import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
+
+import scala.util.matching.Regex
 
 trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
   with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with MockitoSugar {
@@ -49,9 +53,24 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     }
 
     def bodyHasLink(rel: String, href: String) = {
+      getLinkFromBody(rel) shouldEqual Some(href)
+      this
+    }
+
+    private def getLinkFromBody(rel: String): Option[String] = {
       val links = response.json \ "_links"
       val link = links \ rel
-      (link \ "href").asOpt[String] shouldEqual Some(href)
+      (link \ "href").asOpt[String]
+    }
+
+    def bodyHasLink(rel: String, hrefPattern: Regex) = {
+      getLinkFromBody(rel) match {
+        case Some(href) => hrefPattern findFirstIn href match {
+          case Some(v) =>
+          case None => fail(s"$href did not match pattern")
+        }
+        case unknown => fail(s"No href found for $rel")
+      }
       this
     }
 

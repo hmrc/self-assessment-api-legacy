@@ -1,4 +1,4 @@
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.domain.Employment
@@ -8,8 +8,8 @@ class EmploymentsControllerSpec extends BaseFunctionalSpec {
 
   val saUtr = generateSaUtr()
 
-  "if the user is authorised for the resource they" should {
-    "receive a proper 200 response with body" in {
+  "Live Employments" should {
+    "receive a 200 response with body if the user is authorised" in {
       val expectedJson = Json.toJson(Employment(s"Employments for utr: $saUtr"))
 
       given().userIsAuthorisedForTheResource(saUtr)

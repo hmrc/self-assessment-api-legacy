@@ -77,7 +77,10 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
 
 object HeaderValidatorFilter extends Filter with HeaderValidator {
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    if (acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
+    val isRequestForDocumentation: String => Boolean = { path =>
+      path.endsWith("/api/definition") || path.contains("/api/documentation/")
+    }
+    if (isRequestForDocumentation(rh.path) || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
     else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
   }
 }

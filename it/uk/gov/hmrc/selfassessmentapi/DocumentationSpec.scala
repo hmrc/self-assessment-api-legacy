@@ -1,10 +1,9 @@
 package uk.gov.hmrc.selfassessmentapi
 
+import scala.io.Source
+
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.support.BaseFunctionalSpec
-
-import scala.io.Source
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class DocumentationSpec extends BaseFunctionalSpec {
 
@@ -12,7 +11,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
     "return 200 with json response" in {
       given()
         .when()
-        .get("/api/definition")
+        .get("/api/definition").withoutAcceptHeader()
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIs("application/json; charset=utf-8")
@@ -30,7 +29,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
           val nameInUrl = name.replaceAll(" ", "-")
           given()
             .when()
-            .get(s"/api/documentation/$v/$nameInUrl")
+            .get(s"/api/documentation/$v/$nameInUrl").withoutAcceptHeader()
             .thenAssertThat()
             .statusIs(200)
             .contentTypeIs("application/xml")

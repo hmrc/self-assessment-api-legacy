@@ -18,9 +18,10 @@ package uk.gov.hmrc.selfassessmentapi.config
 
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
+import net.ceedubs.ficus.readers.{StringReader, ValueReader}
 import play.api.libs.json.Json
 import play.api.mvc._
-import play.api.{Application, Configuration, Play}
+import play.api.{Application, Configuration, Play, Routes}
 import uk.gov.hmrc.api.config.{ServiceLocatorConfig, ServiceLocatorRegistration}
 import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, HeaderValidator}
@@ -34,10 +35,29 @@ import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 
 import scala.concurrent.Future
+import scala.util.matching.Regex
 
-object ControllerConfiguration extends ControllerConfig {
+case class ControllerConfigParams(needsHeaderValidation: Boolean = true, needsLogging: Boolean = true,
+                                  needsAuditing: Boolean = true, needsAuth: Boolean = true)
+
+object ControllerConfiguration {
   lazy val controllerConfigs = Play.current.configuration.underlying.as[Config]("controllers")
+  implicit val regexValueReader: ValueReader[Regex] = StringReader.stringValueReader.map(_.r)
+
+  implicit val controllerParamsReader = ValueReader.relative[ControllerConfigParams] { config =>
+    ControllerConfigParams(
+      needsHeaderValidation = config.getAs[Boolean]("needsHeaderValidation").getOrElse(true),
+      needsLogging = config.getAs[Boolean]("needsLogging").getOrElse(true),
+      needsAuditing = config.getAs[Boolean]("needsAuditing").getOrElse(true),
+      needsAuth = config.getAs[Boolean]("needsAuth").getOrElse(true)
+    )
+  }
+
+  def controllerParamsConfig(controllerName: String): ControllerConfigParams = {
+    controllerConfigs.as[Option[ControllerConfigParams]](controllerName).getOrElse(ControllerConfigParams())
+  }
 }
+
 
 object AuthParamsControllerConfiguration extends AuthParamsControllerConfig {
   lazy val controllerConfigs = ControllerConfiguration.controllerConfigs
@@ -46,11 +66,11 @@ object AuthParamsControllerConfiguration extends AuthParamsControllerConfig {
 object MicroserviceAuditFilter extends AuditFilter with AppName {
   override val auditConnector = MicroserviceAuditConnector
 
-  override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
+  override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.controllerParamsConfig(controllerName).needsAuditing
 }
 
 object MicroserviceLoggingFilter extends LoggingFilter {
-  override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsLogging
+  override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.controllerParamsConfig(controllerName).needsLogging
 }
 
 object MicroserviceAuthFilter extends AuthorisationFilter {
@@ -72,12 +92,19 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
     }
   }
 
-  override def controllerNeedsAuth(controllerName: String): Boolean = ControllerConfiguration.paramsForController(controllerName).needsAuth
+  override def controllerNeedsAuth(controllerName: String): Boolean = ControllerConfiguration.controllerParamsConfig(controllerName).needsAuth
 }
 
 object HeaderValidatorFilter extends Filter with HeaderValidator {
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    if (acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
+    val controller: Option[String] = rh.tags.get(Routes.ROUTE_CONTROLLER)
+    val needsHeaderValidation: Option[String] => Boolean = { controller =>
+      controller match {
+        case Some(name) => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation
+        case None => true
+      }
+    }
+    if (needsHeaderValidation(controller) == false || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
     else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
   }
 }

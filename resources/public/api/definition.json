@@ -25,21 +25,24 @@
             "endpointName":"Resolve Customer",
             "method":"GET",
             "authType":"USER",
-            "throttlingTier":"UNLIMITED"
+            "throttlingTier":"UNLIMITED",
+            "scope": "read:self-assessment-api"
           },
           {
             "uriPattern":"/{utr}",
             "endpointName":"Discover",
             "method":"GET",
             "authType":"USER",
-            "throttlingTier":"UNLIMITED"
+            "throttlingTier":"UNLIMITED",
+            "scope": "read:self-assessment-api"
           },
           {
             "uriPattern":"/{utr}/employments",
             "endpointName":"Employments",
             "method":"GET",
             "authType":"USER",
-            "throttlingTier":"UNLIMITED"
+            "throttlingTier":"UNLIMITED",
+            "scope": "read:self-assessment-api"
           }
         ]
       }

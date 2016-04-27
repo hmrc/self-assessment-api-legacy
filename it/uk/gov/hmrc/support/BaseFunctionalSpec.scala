@@ -110,6 +110,13 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       this
     }
 
+    def post(path: String) = {
+      assert(path.startsWith("/"), "please provide only a path starting with '/'")
+      this.url = s"http://localhost:$port$path"
+      this.method = "POST"
+      this
+    }
+
     private def withHeader(name : String, value: String) = {
       hc.withExtraHeaders((name, value))
       this
@@ -126,6 +133,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       withClue(s"Request $method $url") {
         method match {
           case "GET" => new Assertions(Http.get(url)(hc))
+          case "POST" => new Assertions(Http.postEmpty(url)(hc))
         }
       }
     }
@@ -141,11 +149,13 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
 
     def userIsNotAuthorisedForTheResource(utr: SaUtr) = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
+      stubFor(get(urlPathEqualTo(s"/authorise/write/sa/$utr")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
       this
     }
 
     def userIsAuthorisedForTheResource(utr: SaUtr) = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(200)))
+      stubFor(get(urlPathEqualTo(s"/authorise/write/sa/$utr")).willReturn(aResponse().withStatus(200)))
       this
     }
 

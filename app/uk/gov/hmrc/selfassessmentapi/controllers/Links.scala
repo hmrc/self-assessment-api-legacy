@@ -32,4 +32,11 @@ trait Links {
     s"$context$endpointUrl"
   }
 
+  def liabilityHref(utr: SaUtr, liabilityId: String): String = {
+    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, liabilityId).url
+    s"$context$endpointUrl"
+  }
+
+
+
 }

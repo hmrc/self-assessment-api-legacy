@@ -1,5 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
+import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
@@ -13,6 +14,8 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .post(s"/$saUtr/liabilities")
         .thenAssertThat()
         .statusIs(501)
+        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
+        .body(_ \ "message").is(ErrorNotImplemented.message)
     }
   }
 
@@ -23,6 +26,8 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .get(s"/$saUtr/liabilities/1234")
         .thenAssertThat()
         .statusIs(501)
+        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
+        .body(_ \ "message").is(ErrorNotImplemented.message)
     }
   }
 

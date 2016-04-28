@@ -19,3 +19,4 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import uk.gov.hmrc.api.controllers.ErrorResponse
 
 case object ErrorSaUtrInvalid extends ErrorResponse(400, "SA_UTR_INVALID", "The provided SA UTR is invalid")
+case object ErrorNotImplemented extends ErrorResponse(501, "NOT_IMPLEMENTED", "The resource is not implemented")

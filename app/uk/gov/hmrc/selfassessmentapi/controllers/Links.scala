@@ -22,21 +22,15 @@ trait Links {
 
   val context: String
 
-  def employmentsHref(utr: SaUtr): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url
-    s"$context$endpointUrl"
-  }
+  private def createLink(endpointUrl: String) = s"/$context$endpointUrl"
 
-  def discoveryHref(utr: SaUtr): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfAssessmentDiscoveryController.discover(utr).url
-    s"$context$endpointUrl"
-  }
+  def employmentsHref(utr: SaUtr): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url)
 
-  def liabilityHref(utr: SaUtr, liabilityId: String): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, liabilityId).url
-    s"$context$endpointUrl"
-  }
+  def discoveryHref(utr: SaUtr): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfAssessmentDiscoveryController.discover(utr).url)
 
-
+  def liabilityHref(utr: SaUtr, liabilityId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, liabilityId).url)
 
 }

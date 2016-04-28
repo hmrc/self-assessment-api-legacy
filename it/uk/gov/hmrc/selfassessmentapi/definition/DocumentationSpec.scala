@@ -1,8 +1,6 @@
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.definition
 
-import scala.io.Source
-
-import play.api.libs.json.{JsArray, Json}
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.{APIStatus, SelfAssessmentApiDefinition}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class DocumentationSpec extends BaseFunctionalSpec {
@@ -19,17 +17,15 @@ class DocumentationSpec extends BaseFunctionalSpec {
   }
 
   "Request to /api/documentation/<version>/<endpoint>" should {
-    "return 200 with xml response for all endpoints in definition.json" in {
-      val contents = Source.fromInputStream(this.getClass.getResourceAsStream("/public/api/definition.json")).mkString
-      val json = Json.parse(contents)
-      (json \ "api" \ "versions").as[JsArray].value foreach { version =>
-        val v = (version \ "version").as[String]
-        (version \ "endpoints").as[JsArray].value foreach { endpoint =>
-          val name = (endpoint \ "endpointName").as[String]
+    "return 200 with xml response for all endpoints in SelfAssessmentDefinition" in {
+      val definition = new SelfAssessmentApiDefinition("self-assessment", APIStatus.PROTOTYPED).definition
+      definition.api.versions foreach { version =>
+        version.endpoints foreach { endpoint =>
+          val name = endpoint.endpointName
           val nameInUrl = name.replaceAll(" ", "-")
           given()
             .when()
-            .get(s"/api/documentation/$v/$nameInUrl").withoutAcceptHeader()
+            .get(s"/api/documentation/${version.version}/$nameInUrl").withoutAcceptHeader()
             .thenAssertThat()
             .statusIs(200)
             .contentTypeIs("application/xml")

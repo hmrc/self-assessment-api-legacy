@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.config
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.{StringReader, ValueReader}
+import play.api.Play._
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.{Application, Configuration, Play, Routes}
@@ -110,6 +111,7 @@ object HeaderValidatorFilter extends Filter with HeaderValidator {
 }
 
 trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLocatorConfig {
+  override lazy val registrationEnabled: Boolean = AppContext.registrationEnabled
   override val slConnector: ServiceLocatorConnector = ServiceLocatorConnector(WSHttp)
   override implicit val hc: HeaderCarrier = HeaderCarrier()
 }

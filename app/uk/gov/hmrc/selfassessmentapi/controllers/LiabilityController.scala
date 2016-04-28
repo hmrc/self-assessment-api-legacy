@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.{Action, AnyContent}
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
@@ -27,28 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait LiabilityController extends BaseController with HeaderValidator with Links {
 
-  def requestLiability(utr: SaUtr, taxPeriod: Option[String]) = validateAccept(acceptHeaderValidationRules).async { request =>
-    createLiability(utr, taxPeriod).map { liabilityId =>
-      val links = Seq(
-        Link("self", liabilityHref(utr, liabilityId))
-      )
-      Accepted(halResource(JsObject(Nil), links))
-    }
-  }
-
-  def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules).async { request =>
-    readLiability(utr, liabilityId) map {
-      case Some(liability) =>
-        val links = Seq(
-          Link("self", liabilityHref(utr, liabilityId))
-        )
-        Ok(halResource(Json.toJson(liability), links))
-      case None => NotFound
-    }
-  }
-
-  def createLiability(utr: SaUtr, taxPeriod: Option[String]): Future[String]
-
-  def readLiability(utr: SaUtr, liabilityId: String): Future[Option[Liability]]
+  def requestLiability(utr: SaUtr, taxPeriod: Option[String]): Action[AnyContent]
+  def retrieveLiability(utr: SaUtr, liabilityId: String): Action[AnyContent]
 
 }

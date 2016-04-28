@@ -18,21 +18,36 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import java.util.UUID
 
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.hal._
+
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.controllers.Link
 import uk.gov.hmrc.selfassessmentapi.domain._
-
-import scala.concurrent.Future
 
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
   override val context: String = AppContext.apiGatewayContext
 
-  override def createLiability(utr: SaUtr, taxPeriod: Option[String]): Future[String] =
-    Future.successful(UUID.randomUUID().toString)
+  override def requestLiability(utr: SaUtr, taxPeriod: Option[String]) = validateAccept(acceptHeaderValidationRules) { request =>
+    val liabilityId = UUID.randomUUID().toString
+      val links = Seq(
+        Link("self", liabilityHref(utr, liabilityId))
+      )
+      Accepted(halResource(JsObject(Nil), links))
+  }
 
-  override def readLiability(utr: SaUtr, liabilityId: String): Future[Option[Liability]] = {
-    val liability = Liability(
+  override def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
+    val liability = createLiability(utr, liabilityId)
+    val links = Seq(
+      Link("self", liabilityHref(utr, liabilityId))
+    )
+    Ok(halResource(Json.toJson(liability), links))
+  }
+
+  def createLiability(utr: SaUtr, liabilityId: String): Liability =
+    Liability(
       taxPeriod = "2015-16-Q1",
       income = Income(
         incomes = Seq(
@@ -69,7 +84,5 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
       ),
       totalTaxDue = BigDecimal(25796.95)
     )
-    Future.successful(Some(liability))
-  }
 
 }

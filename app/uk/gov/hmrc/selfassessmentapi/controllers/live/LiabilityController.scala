@@ -18,9 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain._
-
-import scala.concurrent.Future
 
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
@@ -33,11 +30,5 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   override def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) {
     NotImplemented
   }
-
-  override def createLiability(utr: SaUtr, taxPeriod: Option[String]): Future[String] =
-    Future.failed(new IllegalStateException("Not implemented"))
-
-  override def readLiability(utr: SaUtr, liabilityId: String): Future[Option[Liability]] =
-    Future.failed(new IllegalStateException("Not implemented"))
 
 }

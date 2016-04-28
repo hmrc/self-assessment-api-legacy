@@ -45,8 +45,8 @@
         <httpStatus>200 (OK)</httpStatus>
         <json><![CDATA[{
         "_links" : {
-          "self": { "href": "/self-assessment/utr" },
-          "employments": { "href": "/self-assessment/utr/employments" }
+          "self": { "href": "/self-assessment/2234567890" },
+          "employments": { "href": "/self-assessment/2234567890/employments" }
         }
        }]]>
         </json>

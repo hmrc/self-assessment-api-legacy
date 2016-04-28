@@ -59,4 +59,14 @@
             </item>
         </list>
     </section>
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>202 (Accepted)</httpStatus>
+        <json><![CDATA[{
+        "_links" : {
+          "self": { "href": "/self-assessment/2234567890/liaibilities/1234"}
+        }
+       }]]>
+        </json>
+    </section>
 </endpoint>

@@ -40,6 +40,7 @@ trait MicroService {
       unmanagedSourceDirectories in IntegrationTest <<= (baseDirectory in IntegrationTest)(base => Seq(base / "it")),
       unmanagedClasspath in IntegrationTest += baseDirectory.value / "resources",
       unmanagedClasspath in Runtime += baseDirectory.value / "resources",
+      unmanagedResourceDirectories in Compile += baseDirectory.value / "resources",
       addTestReportOption(IntegrationTest, "int-test-reports"),
       testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
       parallelExecution in IntegrationTest := false)

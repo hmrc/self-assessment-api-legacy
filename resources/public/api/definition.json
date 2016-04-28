@@ -43,6 +43,22 @@
             "authType":"USER",
             "throttlingTier":"UNLIMITED",
             "scope": "read:self-assessment-api"
+          },
+          {
+            "uriPattern":"/{utr}/liabilities",
+            "endpointName":"Request Liability",
+            "method":"POST",
+            "authType":"USER",
+            "throttlingTier":"UNLIMITED",
+            "scope": "write:self-assessment-api"
+          },
+          {
+            "uriPattern":"/{utr}/liabilities/{liabilityId}",
+            "endpointName":"Retrieve Liability",
+            "method":"GET",
+            "authType":"USER",
+            "throttlingTier":"UNLIMITED",
+            "scope": "read:self-assessment-api"
           }
         ]
       }

@@ -16,27 +16,19 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.hal._
+import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.domain.Liability
 
-trait Links {
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  val context: String
+trait LiabilityController extends BaseController with HeaderValidator with Links {
 
-  def employmentsHref(utr: SaUtr): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url
-    s"$context$endpointUrl"
-  }
-
-  def discoveryHref(utr: SaUtr): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfAssessmentDiscoveryController.discover(utr).url
-    s"$context$endpointUrl"
-  }
-
-  def liabilityHref(utr: SaUtr, liabilityId: String): String = {
-    val endpointUrl = uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, liabilityId).url
-    s"$context$endpointUrl"
-  }
-
-
+  def requestLiability(utr: SaUtr, taxPeriod: Option[String]): Action[AnyContent]
+  def retrieveLiability(utr: SaUtr, liabilityId: String): Action[AnyContent]
 
 }

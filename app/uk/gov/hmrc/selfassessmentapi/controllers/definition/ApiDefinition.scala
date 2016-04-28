@@ -1,9 +1,28 @@
-package uk.gov.hmrc.selfassessmentapi.definition
+/*
+ * Copyright 2016 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import uk.gov.hmrc.selfassessmentapi.definition.APIStatus.APIStatus
-import uk.gov.hmrc.selfassessmentapi.definition.AuthType.AuthType
-import uk.gov.hmrc.selfassessmentapi.definition.HttpMethod.HttpMethod
-import uk.gov.hmrc.selfassessmentapi.definition.ResourceThrottlingTier.ResourceThrottlingTier
+package uk.gov.hmrc.selfassessmentapi.controllers.definition
+
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.APIStatus.APIStatus
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.AuthType.AuthType
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.HttpMethod.HttpMethod
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.ResourceThrottlingTier.ResourceThrottlingTier
+
+case class Definition(scopes: Seq[Scope],
+                      api: APIDefinition)
 
 case class APIDefinition(
                           name: String,
@@ -37,6 +56,10 @@ case class APIDefinition(
   }
 
 }
+
+case class Scope(key: String,
+                 name: String,
+                 description: String)
 
 case class APIVersion(
                        version: String,
@@ -74,9 +97,4 @@ object HttpMethod extends Enumeration {
 object ResourceThrottlingTier extends Enumeration {
   type ResourceThrottlingTier = Value
   val UNLIMITED = Value
-}
-
-object SubscriptionThrottlingTier extends Enumeration {
-  type ThrottlingTier = Value
-  val BRONZE_SUBSCRIPTION = Value
 }

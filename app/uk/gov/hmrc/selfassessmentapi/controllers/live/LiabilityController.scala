@@ -16,19 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
   override val context: String = AppContext.apiGatewayContext
 
   override def requestLiability(utr: SaUtr, taxPeriod: Option[String]) = validateAccept(acceptHeaderValidationRules) {
-    NotImplemented
+    NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 
   override def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) {
-    NotImplemented
+    NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 
 }

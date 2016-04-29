@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.connectors
 
-import play.api.Logger
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet}
+import uk.gov.hmrc.selfassessmentapi.LoggingService
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, WSHttp}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -27,8 +27,8 @@ import scala.concurrent.Future
 
 trait AuthConnector {
   val serviceUrl: String
-  val handlerError: Throwable => Unit
   val http: HttpGet
+  val loggingService: LoggingService
 
   def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] = {
     http.GET(s"$serviceUrl/auth/authority") map {
@@ -42,7 +42,7 @@ trait AuthConnector {
           None
     } recover {
       case e: Throwable =>
-        handlerError(e)
+        loggingService.error("Error in request to auth", e)
         None
     }
   }
@@ -51,5 +51,5 @@ trait AuthConnector {
 object AuthConnector extends AuthConnector {
   override lazy val serviceUrl: String = AppContext.authUrl
   override val http: HttpGet = WSHttp
-  override val handlerError: Throwable => Unit = e => Logger.error("Error in request to auth", e)
+  override val loggingService: LoggingService = LoggingService
 }

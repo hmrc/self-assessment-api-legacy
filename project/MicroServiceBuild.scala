@@ -31,7 +31,7 @@ private object AppDependencies {
   private val playConfigVersion = "2.0.1"
   private val domainVersion = "3.7.0"
   private val hmrcTestVersion = "1.6.0"
-  private val playReactivemongoVersion = "4.8.0"
+  private val playReactivemongoVersion = "4.4.0"
   private val playHmrcApiVersion = "0.4.0"
   private val playHalVersion = "0.3.0"
 
@@ -61,7 +61,9 @@ private object AppDependencies {
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
         "org.pegdown" % "pegdown" % "1.5.0" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "com.github.tomakehurst" % "wiremock" % "1.54" % scope
+        "com.github.tomakehurst" % "wiremock" % "1.54" % scope,
+        "uk.gov.hmrc" %% "reactivemongo-test"   % "1.2.0" % scope,
+        "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.50.3" % scope
       )
     }.test
   }

@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.services.live
 
-import play.api.hal.HalLink
-import play.api.libs.json.Json
-import play.api.mvc.Action
-import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.Employment
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmployment, SelfEmploymentId}
+import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentRepository
 
 import scala.concurrent.Future
 
-trait EmploymentsController extends BaseController with Links {
+object SelfEmploymentService extends uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentService {
 
-  def getEmployments(utr: SaUtr) = Action.async { implicit request =>
-		val message = s"Employments for utr: $utr"
-		val employment = Employment(message)
-    val links = Seq(HalLink("self", employmentsHref(utr)))
-		Future.successful(Ok(halResource(Json.toJson(employment), links)))
-	}
+  val selfEmploymentRepo = SelfEmploymentRepository()
 
+  override def create(selfEmployment: SelfEmployment): Future[SelfEmploymentId] = {
+    selfEmploymentRepo.create(selfEmployment)
+  }
+
+  override def findBySelfEmploymentId(utr: SaUtr, selfEmploymentId: SelfEmploymentId): Future[Option[SelfEmployment]] = {
+    selfEmploymentRepo.findById(selfEmploymentId)
+  }
 }

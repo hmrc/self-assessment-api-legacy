@@ -1,6 +1,10 @@
-GET        /                                    uk.gov.hmrc.selfassessmentapi.controllers.live.CustomerResolverController.resolve()
-GET        /:utr                                uk.gov.hmrc.selfassessmentapi.controllers.live.SelfAssessmentDiscoveryController.discover(utr: uk.gov.hmrc.domain.SaUtr)
-GET        /:utr/employments                    uk.gov.hmrc.selfassessmentapi.controllers.live.EmploymentsController.getEmployments(utr: uk.gov.hmrc.domain.SaUtr)
+GET        /                       uk.gov.hmrc.selfassessmentapi.controllers.live.CustomerResolverController.resolve()
+GET        /:utr                   uk.gov.hmrc.selfassessmentapi.controllers.live.SelfAssessmentDiscoveryController.discover(utr: uk.gov.hmrc.domain.SaUtr)
+GET        /:utr/employments       uk.gov.hmrc.selfassessmentapi.controllers.live.EmploymentsController.getEmployments(utr: uk.gov.hmrc.domain.SaUtr)
+
+GET         /:utr/self-employments/:selfEmploymentId        uk.gov.hmrc.selfassessmentapi.controllers.live.SelfEmploymentsController.findById(utr: uk.gov.hmrc.domain.SaUtr, selfEmploymentId: uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId)
+POST        /:utr/self-employments                          uk.gov.hmrc.selfassessmentapi.controllers.live.SelfEmploymentsController.create(utr: uk.gov.hmrc.domain.SaUtr)
 
 POST       /:utr/liabilities                    uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.requestLiability(utr: uk.gov.hmrc.domain.SaUtr, taxPeriod: Option[String])
 GET        /:utr/liabilities/:liabilityId       uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.retrieveLiability(utr: uk.gov.hmrc.domain.SaUtr, liabilityId: String)
+

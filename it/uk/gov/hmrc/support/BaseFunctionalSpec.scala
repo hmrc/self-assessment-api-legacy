@@ -1,17 +1,14 @@
 package uk.gov.hmrc.support
 
-import java.util.regex.Pattern
-
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
+import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
-import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.{JsObject, JsValue}
-import play.api.test.FakeHeaders
 import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
@@ -35,6 +32,8 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     wireMockServer.stop()
     wireMockServer.start()
     WireMock.configureFor(stubHost, WIREMOCK_PORT)
+    // the below stub is here so that the application finds the registration endpoint which is called on startup
+    stubFor(post(urlPathEqualTo("/registration")).willReturn(aResponse().withStatus(200)))
   }
 
   override def beforeEach() = {
@@ -101,6 +100,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     var addAcceptHeader = true
     var method = ""
     var url = ""
+    var body :Option[JsValue] = None
     var hc = HeaderCarrier()
 
     def get(path: String) = {
@@ -110,10 +110,11 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       this
     }
 
-    def post(path: String) = {
+    def post(path: String, body: Option[JsValue] = None) = {
       assert(path.startsWith("/"), "please provide only a path starting with '/'")
       this.url = s"http://localhost:$port$path"
       this.method = "POST"
+      this.body = body
       this
     }
 
@@ -133,7 +134,12 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       withClue(s"Request $method $url") {
         method match {
           case "GET" => new Assertions(Http.get(url)(hc))
-          case "POST" => new Assertions(Http.postEmpty(url)(hc))
+          case "POST" => {
+            body match {
+              case Some(jsonBody) => new Assertions(Http.postJson(url, jsonBody)(hc))
+              case None => new Assertions(Http.postEmpty(url)(hc))
+            }
+          }
         }
       }
     }

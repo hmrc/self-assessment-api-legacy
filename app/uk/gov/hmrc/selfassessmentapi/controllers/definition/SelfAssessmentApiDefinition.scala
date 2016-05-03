@@ -72,6 +72,22 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
+                uriPattern = "/{utr}/self-employments/{selfEmploymentsId}",
+                endpointName = "Self Employments",
+                method = HttpMethod.GET,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(readScope)
+              ),
+              Endpoint(
+                uriPattern = "/{utr}/self-employments",
+                endpointName = "Create Self Employments",
+                method = HttpMethod.POST,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(writeScope)
+              ),
+              Endpoint(
                 uriPattern = "/{utr}/liabilities",
                 endpointName = "Request Liability",
                 method = HttpMethod.POST,
@@ -96,4 +112,5 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
 }
 
 object PublishedSelfAssessmentApiDefinition extends SelfAssessmentApiDefinition(AppContext.apiGatewayContext, APIStatus.PUBLISHED)
+
 object PrototypedSelfAssessmentApiDefinition extends SelfAssessmentApiDefinition(AppContext.apiGatewayContext, APIStatus.PROTOTYPED)

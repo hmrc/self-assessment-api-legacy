@@ -33,4 +33,7 @@ trait Links {
   def liabilityHref(utr: SaUtr, liabilityId: String): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, liabilityId).url)
 
+  def selfEmploymentsHref(utr: SaUtr, seId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.findById(utr, seId).url)
+
 }

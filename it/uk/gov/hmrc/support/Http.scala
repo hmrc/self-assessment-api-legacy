@@ -1,8 +1,8 @@
 package uk.gov.hmrc.support
 
 import play.api.Play.current
-import play.api.libs.json.{Json, Writes}
-import play.api.libs.ws.{WSResponse, WSRequestHolder, WS}
+import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.ws.{WS, WSRequestHolder, WSResponse}
 import play.api.mvc.Results
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HttpResponse
@@ -20,6 +20,10 @@ object Http {
 
   def post[A](url: String, body: A, headers: Seq[(String, String)] = Seq.empty)(implicit writes: Writes[A], hc: HeaderCarrier): HttpResponse = perform(url) { request =>
     request.post(Json.toJson(body))
+  }
+
+  def postJson(url: String, body: JsValue, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
+    request.post(body)
   }
 
   def postEmpty(url: String)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>

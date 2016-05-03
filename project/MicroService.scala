@@ -27,6 +27,9 @@ trait MicroService {
     .settings(
       targetJvm := "jvm-1.8",
       scalaVersion := "2.11.8",
+      // use lint option to avoid missing string interpolation warnings https://github.com/playframework/playframework/issues/5134
+      // remove when we upgrade to play 2.5.x https://github.com/playframework/playframework/pull/5135
+      scalacOptions ++= Seq("-Xlint:-missing-interpolator"),
       libraryDependencies ++= appDependencies,
       parallelExecution in Test := false,
       fork in Test := false,

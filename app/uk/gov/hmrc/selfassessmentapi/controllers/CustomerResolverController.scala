@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 
+import play.api.hal.HalLink
 import play.api.libs.json.JsObject
 import play.api.mvc.Action
 import play.api.mvc.hal._
@@ -37,7 +38,7 @@ trait CustomerResolverController extends BaseController with Links {
     saUtr(confidenceLevel)(hc(request)).map {
       case Some(saUtr) =>
         val links = Seq(
-          Link("self-assessment", discoveryHref(saUtr))
+          HalLink("self-assessment", discoveryHref(saUtr))
         )
         Ok(halResource(JsObject(Nil), links))
       case None =>

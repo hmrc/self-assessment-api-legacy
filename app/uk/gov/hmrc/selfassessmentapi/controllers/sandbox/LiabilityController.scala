@@ -18,12 +18,11 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import java.util.UUID
 
+import play.api.hal.HalLink
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.hal._
-
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.Link
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
@@ -33,7 +32,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   override def requestLiability(utr: SaUtr, taxPeriod: Option[String]) = validateAccept(acceptHeaderValidationRules) { request =>
     val liabilityId = UUID.randomUUID().toString
       val links = Seq(
-        Link("self", liabilityHref(utr, liabilityId))
+        HalLink("self", liabilityHref(utr, liabilityId))
       )
       Accepted(halResource(JsObject(Nil), links))
   }
@@ -41,7 +40,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   override def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
     val liability = createLiability(utr, liabilityId)
     val links = Seq(
-      Link("self", liabilityHref(utr, liabilityId))
+      HalLink("self", liabilityHref(utr, liabilityId))
     )
     Ok(halResource(Json.toJson(liability), links))
   }

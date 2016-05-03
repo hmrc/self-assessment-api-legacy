@@ -1,5 +1,5 @@
 <endpoint>
-    <name>Create Self Employments</name>
+    <name>Create Self Employment</name>
     <description>This endpoint creates a self-employment</description>
     <section id="resource">
         <title>Resource</title>
@@ -16,15 +16,20 @@
             </headings>
             <rows>
                 <row>
-                    <cell><code>utr</code></cell>
-                    <cell><code>String</code></cell>
-                    <cell><code>2234567890</code></cell>
+                    <cell>
+                        <code>utr</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2234567890</code>
+                    </cell>
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
             </rows>
         </table>
     </section>
-
     <section id="authorisation">
         <title>Authorisation</title>
         <authorisation>
@@ -39,5 +44,24 @@
                 <code>application/vnd.hmrc.1.0+json</code>
             </item>
         </list>
+    </section>
+    <section id="sample-request">
+        <json><![CDATA[{
+            "name": "Awesome Plumbers",
+            "commencementDate": "2016-04-06"
+            }]]>
+        </json>
+    </section>
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>201 (CREATED)</httpStatus>
+        <json><![CDATA[{
+             "_links": {
+               "self": {
+                 "href": "/self-assessment/1097172564/self-employments/5728b53c4800005100d2d32d"
+               }
+             }
+            }]]>
+        </json>
     </section>
 </endpoint>

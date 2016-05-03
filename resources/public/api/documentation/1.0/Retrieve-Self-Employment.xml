@@ -1,5 +1,5 @@
 <endpoint>
-    <name>Self Employments</name>
+    <name>Retrieve Self Employment</name>
     <description>This endpoint returns a specific self-employment</description>
     <section id="resource">
         <title>Resource</title>
@@ -16,15 +16,27 @@
             </headings>
             <rows>
                 <row>
-                    <cell><code>utr</code></cell>
-                    <cell><code>String</code></cell>
-                    <cell><code>2234567890</code></cell>
+                    <cell>
+                        <code>utr</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2234567890</code>
+                    </cell>
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
                 <row>
-                    <cell><code>selfEmploymentsId</code></cell>
-                    <cell><code>String</code></cell>
-                    <cell><code>1234567</code></cell>
+                    <cell>
+                        <code>selfEmploymentsId</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>1234567</code>
+                    </cell>
                     <cell>The Self Employments id</cell>
                 </row>
             </rows>
@@ -45,5 +57,20 @@
                 <code>application/vnd.hmrc.1.0+json</code>
             </item>
         </list>
+    </section>
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json><![CDATA[{
+          "_links": {
+            "self": {
+              "href": "/self-assessment/1097172564/self-employments/1234"
+            }
+          },
+          "id": "1234",
+          "name": "Awesome Bakers",
+          "commencementDate": "2016-05-03"
+        }]]>
+        </json>
     </section>
 </endpoint>

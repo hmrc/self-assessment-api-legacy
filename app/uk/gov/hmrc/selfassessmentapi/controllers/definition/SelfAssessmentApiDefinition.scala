@@ -73,7 +73,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
               ),
               Endpoint(
                 uriPattern = "/{utr}/self-employments/{selfEmploymentsId}",
-                endpointName = "Self Employments",
+                endpointName = "Retrieve Self Employment",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
@@ -81,7 +81,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
               ),
               Endpoint(
                 uriPattern = "/{utr}/self-employments",
-                endpointName = "Create Self Employments",
+                endpointName = "Create Self Employment",
                 method = HttpMethod.POST,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,

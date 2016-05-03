@@ -16,111 +16,95 @@
 
 package uk.gov.hmrc.selfassessmentapi.connectors
 
-import org.mockito.Mockito._
+import com.github.tomakehurst.wiremock.client.WireMock._
+import org.mockito.Mockito
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
-import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.play.http.{Upstream5xxResponse, HeaderCarrier, HttpGet}
+import uk.gov.hmrc.selfassessmentapi.{LoggingService, WiremockSpec}
+import uk.gov.hmrc.selfassessmentapi.config.WSHttp
 
-import scala.concurrent.Future
-
-class AuthConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures {
-
-  trait Setup {
-    implicit val hc = HeaderCarrier()
-    val authException = new RuntimeException
-
-    val connector = new AuthConnector {
-      override val http = mock[HttpGet]
-      override val serviceUrl: String = "https://SERVICE_LOCATOR"
-      override val handlerError: Throwable => Unit = mock[Function1[Throwable, Unit]]
-    }
-  }
+class AuthConnectorSpec extends WiremockSpec with ScalaFutures {
 
   "saUtr" should {
+    val utr = generateSaUtr()
 
-    def authorityJson(confidenceLevel: ConfidenceLevel, utr: String): JsValue = {
-      val json =
-        s"""
-           |{
-           |    "accounts": {
-           |        "sa": {
-           |            "link": "/sa/individual/$utr",
-           |            "utr": "$utr"
-           |        }
-           |    },
-           |    "confidenceLevel": ${confidenceLevel.level}
-           |}
-      """.stripMargin
+    "return the SA UTR if confidence level is greater than the provided confidence level" in new TestAuthConnector(wiremockBaseUrl) {
+      given().get(urlPathEqualTo("/auth/authority")).returns(authorityJson(ConfidenceLevel.L100, utr))
 
-      Json.parse(json)
+      await(saUtr(ConfidenceLevel.L50)) shouldBe Some(utr)
+      
     }
 
-    "return the SA UTR if confidence level is greater than the provided confidence level" in new Setup {
-      val confidenceLevel = ConfidenceLevel.L100
-      val utr = generateSaUtr()
-      val response = HttpResponse(200, Some(authorityJson(confidenceLevel, utr.utr)))
+    "return the SA UTR if confidence level equals the provided confidence level" in new TestAuthConnector(wiremockBaseUrl) {
+      given().get(urlPathEqualTo("/auth/authority")).returns(authorityJson(ConfidenceLevel.L50, utr))
 
-      when(connector.http.GET(s"${connector.serviceUrl}/auth/authority")).thenReturn(Future.successful(response))
+      await(saUtr(ConfidenceLevel.L50)) shouldBe Some(utr)
 
-      connector.saUtr(ConfidenceLevel.L50).futureValue shouldBe Some(utr)
-      verify(connector.handlerError, never).apply(authException)
     }
 
-    "return the SA UTR if confidence level equals the provided confidence level" in new Setup {
-      val confidenceLevel = ConfidenceLevel.L50
-      val utr = generateSaUtr()
-      val response = HttpResponse(200, Some(authorityJson(confidenceLevel, utr.utr)))
+    "return None if confidence level is less than the provided confidence level" in new TestAuthConnector(wiremockBaseUrl) {
+      given().get(urlPathEqualTo("/auth/authority")).returns(authorityJson(ConfidenceLevel.L50, utr))
 
-      when(connector.http.GET(s"${connector.serviceUrl}/auth/authority")).thenReturn(Future.successful(response))
-
-      connector.saUtr(confidenceLevel).futureValue shouldBe Some(utr)
-      verify(connector.handlerError, never).apply(authException)
-    }
-
-    "return None if confidence level is less than the provided confidence level" in new Setup {
-      val confidenceLevel = ConfidenceLevel.L50
-      val utr = generateSaUtr()
-      val response = HttpResponse(200, Some(authorityJson(confidenceLevel, utr.utr)))
-
-      when(connector.http.GET(s"${connector.serviceUrl}/auth/authority")).thenReturn(Future.successful(response))
-
-      connector.saUtr(ConfidenceLevel.L200).futureValue shouldBe None
-      verify(connector.handlerError, never).apply(authException)
+      await(saUtr(ConfidenceLevel.L200)) shouldBe None
     }
 
 
-    "return None if there is no SA UTR in the accounts" in new Setup {
+    "return None if there is no SA UTR in the accounts" in new TestAuthConnector(wiremockBaseUrl) {
+      given().get(urlPathEqualTo("/auth/authority")).returns(authorityJson(ConfidenceLevel.L50))
 
-      val confidenceLevel = ConfidenceLevel.L50
-      val json =
-        s"""
-           |{
-           |    "accounts": {
-           |    },
-           |    "confidenceLevel": ${confidenceLevel.level}
-           |}
-      """.stripMargin
-
-      val response = HttpResponse(200, Some(Json.parse(json)))
-
-      when(connector.http.GET(s"${connector.serviceUrl}/auth/authority")).thenReturn(Future.successful(response))
-
-      connector.saUtr(confidenceLevel).futureValue shouldBe None
-      verify(connector.handlerError, never).apply(authException)
+      await(saUtr(ConfidenceLevel.L50)) shouldBe None
     }
 
+    "return None if an error occurs in the authority request" in new TestAuthConnector(wiremockBaseUrl) {
+      given().get(urlPathEqualTo("/auth/authority")).returns(500)
 
-    "return None if an error occurs in the authority request" in new Setup {
+      await(saUtr(ConfidenceLevel.L50)) shouldBe None
 
-      when(connector.http.GET(s"${connector.serviceUrl}/auth/authority")).thenReturn(Future.failed(authException))
-
-      connector.saUtr(ConfidenceLevel.L50).futureValue shouldBe None
-      verify(connector.http).GET("https://SERVICE_LOCATOR/auth/authority")
-      verify(connector.handlerError).apply(authException)
+      Mockito.verify(loggingService).error("Error in request to auth",
+        new Upstream5xxResponse("GET of 'http://localhost:21212/auth/authority' returned 500. Response body: ''", 500, 502))
     }
 
   }
+}
+
+class TestAuthConnector(wiremockBaseUrl: String) extends AuthConnector with MockitoSugar {
+  implicit val hc = HeaderCarrier()
+  
+  override val serviceUrl: String = wiremockBaseUrl
+  override val http: HttpGet = WSHttp
+
+  def authorityJson(confidenceLevel: ConfidenceLevel, utr: SaUtr) = {
+    val json =
+      s"""
+         |{
+         |    "accounts": {
+         |        "sa": {
+         |            "link": "/sa/individual/${utr.value}",
+         |            "utr": "${utr.value}"
+         |        }
+         |    },
+         |    "confidenceLevel": ${confidenceLevel.level}
+         |}
+      """.stripMargin
+
+    json
+  }
+
+  def authorityJson(confidenceLevel: ConfidenceLevel) = {
+    val json =
+      s"""
+         |{
+         |    "accounts": {
+         |    },
+         |    "confidenceLevel": ${confidenceLevel.level}
+         |}
+      """.stripMargin
+
+    json
+  }
+
+  override val loggingService: LoggingService = mock[LoggingService]
 }

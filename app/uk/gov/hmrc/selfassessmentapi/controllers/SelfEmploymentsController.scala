@@ -55,7 +55,6 @@ trait SelfEmploymentsController extends BaseController with Links {
 
   def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmployment] { selfEmployment =>
-      selfEmploymentService.update(selfEmployment)
       Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentsHref(saUtr, seId))))))
     }
   }

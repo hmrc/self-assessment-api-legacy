@@ -18,17 +18,15 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import play.api.libs.json.Json._
 import play.api.mvc.Action
-import uk.gov.hmrc.domain.SaUtr
 import play.api.mvc.hal._
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId
 import uk.gov.hmrc.selfassessmentapi.services.live.SelfEmploymentService
-
-import scala.concurrent.Future
 
 object SelfEmploymentsController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsController {
   override val selfEmploymentService = SelfEmploymentService
 
-  override def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
-    Future.successful(NotImplemented(halResource(obj(), Seq())))
+  override def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action(parse.json) {request =>
+    NotImplemented(halResource(obj(), Seq()))
   }
 }

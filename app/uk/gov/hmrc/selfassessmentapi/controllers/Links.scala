@@ -24,9 +24,6 @@ trait Links {
 
   private def createLink(endpointUrl: String) = s"/$context$endpointUrl"
 
-  def employmentsHref(utr: SaUtr): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.EmploymentsController.getEmployments(utr).url)
-
   def discoveryHref(utr: SaUtr): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfAssessmentDiscoveryController.discover(utr).url)
 

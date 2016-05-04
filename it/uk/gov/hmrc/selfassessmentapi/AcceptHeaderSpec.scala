@@ -1,16 +1,18 @@
 package uk.gov.hmrc.selfassessmentapi
 
+import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AcceptHeaderSpec extends BaseFunctionalSpec {
   val saUtr = generateSaUtr()
+  val selfEmploymentId = BSONObjectID.generate.stringify
 
   "if the valid content type header is sent in the request, they" should {
     "receive 200" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/employments").withAcceptHeader()
+        .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId").withAcceptHeader()
         .thenAssertThat().statusIs(200)
     }
   }
@@ -20,7 +22,7 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/employments").withoutAcceptHeader()
+        .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId").withoutAcceptHeader()
         .thenAssertThat()
         .statusIs(406)
         .body(_ \ "code").is("ACCEPT_HEADER_INVALID")

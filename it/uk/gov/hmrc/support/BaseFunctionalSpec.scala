@@ -12,6 +12,7 @@ import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId
 
 import scala.util.matching.Regex
 
@@ -196,6 +197,8 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type", "application/json")))
       this
     }
+
+
   }
 
   def given() = new Givens()

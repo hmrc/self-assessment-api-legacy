@@ -28,6 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmployment, SelfEmploymentId}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentService
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait SelfEmploymentsController extends BaseController with Links {
 
@@ -45,11 +46,17 @@ trait SelfEmploymentsController extends BaseController with Links {
   }
 
   def create(saUtr: SaUtr) = Action.async(parse.json) { implicit request =>
-    withJsonBody[SelfEmployment] { selfEmployment => {
+    withJsonBody[SelfEmployment] { selfEmployment =>
       for (seId <- selfEmploymentService.create(selfEmployment)) yield {
         Created(halResource(obj(), Seq(HalLink("self", selfEmploymentsHref(saUtr, seId)))))
       }
     }
+  }
+
+  def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
+    withJsonBody[SelfEmployment] { selfEmployment =>
+      selfEmploymentService.update(selfEmployment)
+      Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentsHref(saUtr, seId))))))
     }
   }
 }

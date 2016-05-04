@@ -33,5 +33,15 @@ class SelfEmploymentControllerSpec extends BaseFunctionalSpec {
         .contentTypeIs("application/hal+json")
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId")
     }
+
+    "return 200 and a valid response when an existing self employment is modified" in {
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/self-employments/$selfEmploymentId", Some(toJson(Some(SelfEmployment(None, "name", LocalDate.now.minusDays(1))))))
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIs("application/hal+json")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId")
+    }
   }
 }

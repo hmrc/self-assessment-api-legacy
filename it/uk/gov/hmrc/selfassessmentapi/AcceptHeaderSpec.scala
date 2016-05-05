@@ -10,7 +10,6 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
   "if the valid content type header is sent in the request, they" should {
     "receive 200" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId").withAcceptHeader()
         .thenAssertThat().statusIs(200)
@@ -20,7 +19,6 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
   "if the valid content type header is missing in the request, they" should {
     "receive 406" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId").withoutAcceptHeader()
         .thenAssertThat()

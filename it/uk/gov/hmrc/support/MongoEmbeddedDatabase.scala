@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.support
 
 import de.flapdoodle.embed.mongo.config.{MongodConfigBuilder, Net}
 import de.flapdoodle.embed.mongo.distribution.Version
@@ -24,17 +24,21 @@ import reactivemongo.api.FailoverStrategy
 import reactivemongo.api.collections.bson.BSONCollection
 import uk.gov.hmrc.mongo.MongoConnector
 
+/**
+  * FIXME: Duplicated from [[uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase]]
+  * Fix sbt 'it' test config to inherit from 'test' so code can be reused across tests
+  */
 trait MongoEmbeddedDatabase {
 
   private val starter = MongodStarter.getDefaultInstance
   private var mongodExe: MongodExecutable = null
   private var mongod: MongodProcess = null
 
-  protected val port = 12345
+  protected val mongoPort = 12345
 
   protected val databaseName = "test-" + this.getClass.getSimpleName
 
-  protected val mongoUri: String = s"mongodb://127.0.0.1:$port/$databaseName"
+  protected val mongoUri: String = s"mongodb://127.0.0.1:$mongoPort/$databaseName"
 
   implicit val mongoConnectorForTest = new MongoConnector(mongoUri)
 
@@ -47,8 +51,8 @@ trait MongoEmbeddedDatabase {
   def mongoStart() = {
     mongodExe = starter.prepare(new MongodConfigBuilder()
       .version(Version.Main.PRODUCTION)
-      .net(new Net(port, Network.localhostIsIPv6()))
-      .build())
+      .net(new Net(mongoPort, Network.localhostIsIPv6()))
+      .build());
     mongod = mongodExe.start()
   }
 

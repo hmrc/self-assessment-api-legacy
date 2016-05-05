@@ -7,7 +7,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 import scala.util.Random
 
-class SelfEmploymentControllerSpec extends BaseFunctionalSpec {
+class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
 
   val saUtr = generateSaUtr()
   val selfEmploymentId = Random.nextLong().toString

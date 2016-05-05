@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.repositories
 
 import org.joda.time.LocalDate
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
@@ -25,15 +25,15 @@ import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SelfEmploymentRepositorySpec extends UnitSpec with MongoEmbeddedDatabase with  BeforeAndAfterEach with BeforeAndAfter {
+class SelfEmploymentRepositorySpec extends UnitSpec with MongoEmbeddedDatabase with BeforeAndAfterEach with BeforeAndAfterAll {
 
   private val repository = new SelfEmploymentMongoRepository
 
-  before {
-   mongoStart()
+  override def beforeAll: Unit = {
+    mongoStart()
   }
 
-  after {
+  override def afterAll: Unit = {
     mongoStop()
   }
 

@@ -48,7 +48,7 @@ trait MongoEmbeddedDatabase {
     mongodExe = starter.prepare(new MongodConfigBuilder()
       .version(Version.Main.PRODUCTION)
       .net(new Net(port, Network.localhostIsIPv6()))
-      .build());
+      .build())
     mongod = mongodExe.start()
   }
 

@@ -12,12 +12,11 @@ import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId
 
 import scala.util.matching.Regex
 
 trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
-  with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with MockitoSugar {
+  with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with MockitoSugar with MongoEmbeddedDatabase {
 
   val WIREMOCK_PORT = 22222
   val stubHost = "localhost"
@@ -30,11 +29,16 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
   private val wireMockServer = new WireMockServer(wireMockConfig().port(WIREMOCK_PORT))
 
   override def beforeAll() = {
+    mongoStart()
     wireMockServer.stop()
     wireMockServer.start()
     WireMock.configureFor(stubHost, WIREMOCK_PORT)
     // the below stub is here so that the application finds the registration endpoint which is called on startup
     stubFor(post(urlPathEqualTo("/registration")).willReturn(aResponse().withStatus(200)))
+  }
+
+  override def afterAll() = {
+    mongoStop()
   }
 
   override def beforeEach() = {

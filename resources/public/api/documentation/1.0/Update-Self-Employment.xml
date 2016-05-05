@@ -1,9 +1,9 @@
 <endpoint>
     <name>Update Self Employment</name>
-    <description>This endpoint creates a self-employment</description>
+    <description>This endpoint updates a self-employment</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>PUTT /self-assessment/{utr}/self-employments/{selfEmploymentsId}</resource>
+        <resource>PUT /self-assessment/{utr}/self-employments/{selfEmploymentsId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>

@@ -26,6 +26,10 @@ object Http {
     request.post(body)
   }
 
+  def putJson(url: String, body: JsValue, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
+    request.put(body)
+  }
+
   def postEmpty(url: String)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
     request.post(Results.EmptyContent())
   }

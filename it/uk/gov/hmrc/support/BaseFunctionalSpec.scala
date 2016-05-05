@@ -118,6 +118,14 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       this
     }
 
+    def put(path: String, body: Option[JsValue]) = {
+      assert(path.startsWith("/"), "please provide only a path starting with '/'")
+      this.url = s"http://localhost:$port$path"
+      this.method = "PUT"
+      this.body = body
+      this
+    }
+
     private def withHeader(name : String, value: String) = {
       hc.withExtraHeaders((name, value))
       this
@@ -139,6 +147,10 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
               case Some(jsonBody) => new Assertions(Http.postJson(url, jsonBody)(hc))
               case None => new Assertions(Http.postEmpty(url)(hc))
             }
+          }
+          case "PUT" => {
+            val jsonBody = body.getOrElse(throw new RuntimeException("Body for PUT must be provided"))
+            new Assertions((Http.putJson(url, jsonBody)(hc)))
           }
         }
       }

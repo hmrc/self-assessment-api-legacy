@@ -57,9 +57,9 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       FakeRequest("POST", s"/${saUtr.utr}/self-employments")
         .withJsonBody(Json.toJson(selfEmployment))
         .withHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
+      val seId = "1234"
 
     "invoke the self employment service and return an HTTP 201 and a successful response" in {
-      val seId = "1234"
       val selfEmployment =
         SelfEmployment(Some(seId), "Awesome Plumbers", LocalDate.now().minusDays(1))
       when(mockSelfEmploymentService.create(selfEmployment))
@@ -71,6 +71,40 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       val jsonResult = contentAsJson(result)
 
       (jsonResult \ "_links" \ "self" \ "href").as[String] shouldEqual "/self-assessment/12345/self-employments/1234"
+    }
+
+    "return error if the json body is invalid" in {
+      val selfEmployment =
+        SelfEmployment(Some(seId), "Awesome Plumbers", LocalDate.now().plusDays(1))
+      when(mockSelfEmploymentService.create(selfEmployment))
+        .thenReturn(Future.successful(seId))
+      val request = fakeRequest(selfEmployment)
+      val result = await(call(controller.create(saUtr), request))
+      status(result) shouldEqual BAD_REQUEST
+
+      // todo assert the error response (to be implemented after the validation story is played)
+    }
+  }
+
+
+  "update" should {
+
+    val seId = BSONObjectID.generate.stringify
+    def fakeRequest(selfEmployment: SelfEmployment) =
+      FakeRequest("PUT", s"/${saUtr.utr}/self-employments/$seId")
+        .withJsonBody(Json.toJson(selfEmployment))
+        .withHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
+
+    "return error if the json body is invalid" in {
+      val selfEmployment =
+        SelfEmployment(Some(seId), "Awesome Plumbers" * 30, LocalDate.now().minusDays(1))
+      when(mockSelfEmploymentService.create(selfEmployment))
+        .thenReturn(Future.successful(seId))
+      val request = fakeRequest(selfEmployment)
+      val result = await(call(controller.create(saUtr), request))
+      status(result) shouldEqual BAD_REQUEST
+
+      // todo assert the error response (to be implemented after the validation story is played)
     }
   }
 

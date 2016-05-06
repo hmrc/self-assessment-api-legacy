@@ -25,17 +25,9 @@ import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SelfEmploymentRepositorySpec extends UnitSpec with MongoEmbeddedDatabase with BeforeAndAfterEach with BeforeAndAfterAll {
+class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
 
   private val repository = new SelfEmploymentMongoRepository
-
-  override def beforeAll: Unit = {
-    mongoStart()
-  }
-
-  override def afterAll: Unit = {
-    mongoStop()
-  }
 
   override def beforeEach() {
     await(repository.drop)

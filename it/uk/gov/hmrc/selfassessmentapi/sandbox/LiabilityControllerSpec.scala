@@ -73,4 +73,14 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     }
   }
 
+  "delete liability" should {
+    "return a 204 response" in {
+      given()
+        .when()
+        .delete(s"/sandbox/$saUtr/liabilities/1234")
+        .thenAssertThat()
+        .statusIs(204)
+    }
+  }
+
 }

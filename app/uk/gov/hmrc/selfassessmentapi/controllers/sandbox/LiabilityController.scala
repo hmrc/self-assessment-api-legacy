@@ -84,4 +84,10 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
       totalTaxDue = BigDecimal(25796.95)
     )
 
+
+  override def deleteLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
+    NoContent
+  }
+
+
 }

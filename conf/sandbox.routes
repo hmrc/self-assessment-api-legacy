@@ -9,3 +9,4 @@ PUT         /:utr/self-employments/:selfEmploymentId        uk.gov.hmrc.selfasse
 
 POST       /:utr/liabilities                    uk.gov.hmrc.selfassessmentapi.controllers.sandbox.LiabilityController.requestLiability(utr: uk.gov.hmrc.domain.SaUtr, taxPeriod: Option[String])
 GET        /:utr/liabilities/:liabilityId       uk.gov.hmrc.selfassessmentapi.controllers.sandbox.LiabilityController.retrieveLiability(utr: uk.gov.hmrc.domain.SaUtr, liabilityId: String)
+DELETE     /:utr/liabilities/:liabilityId       uk.gov.hmrc.selfassessmentapi.controllers.sandbox.LiabilityController.deleteLiability(utr: uk.gov.hmrc.domain.SaUtr, liabilityId: String)

@@ -21,28 +21,31 @@ import play.api.libs.json.Json
 import play.api.libs.json.Json.obj
 import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.api.controllers.ErrorNotFound
+import uk.gov.hmrc.api.controllers.{ErrorNotFound, HeaderValidator}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmployment, SelfEmploymentId}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentService
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
-trait SelfEmploymentsController extends BaseController with Links {
+trait SelfEmploymentsController extends BaseController with HeaderValidator with Links {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
   val selfEmploymentService: SelfEmploymentService
 
-  def findById(utr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
+  def findById(utr: SaUtr, seId: SelfEmploymentId) = validateAccept(acceptHeaderValidationRules).async { request =>
     for (selfEmployment <- selfEmploymentService.findBySelfEmploymentId(utr, seId)) yield {
       selfEmployment match {
         case Some(se) => Ok(halResource(Json.toJson(selfEmployment), Seq(HalLink("self", selfEmploymentHref(utr, seId)))))
         case None => NotFound(Json.toJson(ErrorNotFound))
       }
     }
+  }
+
+  def find(saUtr: SaUtr, page: Int, pageSize: Int) : Action[AnyContent] = Action { request =>
+    NotImplemented
   }
 
   def create(saUtr: SaUtr) = Action.async(parse.json) { implicit request =>
@@ -54,12 +57,19 @@ trait SelfEmploymentsController extends BaseController with Links {
   }
 
   def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
-    Future.successful(NotImplemented)
+    withJsonBody[SelfEmployment] { selfEmployment =>
+      for (_ <- selfEmploymentService.update(selfEmployment, saUtr, seId)) yield {
+        Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, seId)))))
+      }
+    }
   }
 
-  def find(saUtr: SaUtr, page: Int, pageSize: Int) : Action[AnyContent] = Action { request =>
-    NotImplemented
-  }
+  def delete(saUtr: SaUtr, seId: SelfEmploymentId) =
+    validateAccept(acceptHeaderValidationRules).async { request =>
+      selfEmploymentService.delete(saUtr, seId).map { isDeleted =>
+        if (isDeleted) NoContent else NotFound(Json.toJson(ErrorNotFound))
+      }
+    }
 }
 
 object SelfEmploymentsController {

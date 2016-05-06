@@ -34,7 +34,7 @@ object SelfEmploymentsController extends uk.gov.hmrc.selfassessmentapi.controlle
   override def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmployment] { selfEmployment =>
       Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, seId))))))
-    }
+    }+
   }
 
   override def find(saUtr: SaUtr, page: Int, pageSize: Int) = Action { request =>

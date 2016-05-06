@@ -61,6 +61,18 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       this
     }
 
+    def bodyHasPath(path: Seq[String], href: String) = {
+      def op(js: JsValue, pathElem: String) = {
+        val pattern = """(.+)\((\d+)\)""".r
+        pathElem match {
+          case pattern(elementName, number) => (js \ elementName)(number.toInt)
+          case _ => js \ pathElem
+        }
+      }
+      path.foldLeft(response.json)(op).asOpt[String] shouldEqual Some(href)
+      this
+    }
+
     private def getLinkFromBody(rel: String): Option[String] = {
       val links = response.json \ "_links"
       val link = links \ rel

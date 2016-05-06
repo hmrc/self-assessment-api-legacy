@@ -34,6 +34,20 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId")
     }
 
+    "return a valid response when retrieving list of self employments" in {
+      given()
+        .when()
+        .get(s"/sandbox/$saUtr/self-employments")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIs("application/hal+json")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments")
+        .bodyHasPath(Seq("_embedded", "selfEmployments(0)", "_links", "self", "href"), s"/self-assessment/$saUtr/self-employments/1234")
+        .bodyHasPath(Seq("_embedded", "selfEmployments(1)", "_links", "self", "href"), s"/self-assessment/$saUtr/self-employments/5678")
+        .bodyHasPath(Seq("_embedded", "selfEmployments(2)", "_links", "self", "href"), s"/self-assessment/$saUtr/self-employments/9101")
+    }
+
     "return 200 and a valid response when an existing self employment is modified" in {
       given()
         .when()

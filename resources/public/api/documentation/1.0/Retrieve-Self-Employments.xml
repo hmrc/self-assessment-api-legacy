@@ -1,0 +1,126 @@
+<endpoint>
+    <name>Retrieve Self Employments</name>
+    <description>This endpoint returns paginated list of self employments</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource>GET /self-assessment/{utr}/self-emploments?page={page}&amp;pageSize={pageSize}</resource>
+    </section>
+    <section id="path-parameters">
+        <title>Path Parameters</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>utr</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>1097172564</code>
+                    </cell>
+                    <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+            </rows>
+        </table>
+    </section>
+    <section id="query-parameters">
+        <title>Query Parameters</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>page</code>
+                    </cell>
+                    <cell>
+                        <code>number</code>
+                    </cell>
+                    <cell>
+                        <code>page=3</code>
+                    </cell>
+                    <cell>
+                        The first page with results to be displayed. Default = 0
+                    </cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>pageSize</code>
+                    </cell>
+                    <cell>
+                        <code>number</code>
+                    </cell>
+                    <cell>
+                        <code>pageSize=30</code>
+                    </cell>
+                    <cell>
+                        The nubmer of elements to be displayed per page. Default = 30
+                    </cell>
+                </row>
+            </rows>
+        </table>
+    </section>
+    <section id="authorisation">
+        <title>Authorisation</title>
+        <authorisation>
+            <type>USER</type>
+            <scope>read:self-assessment-api</scope>
+        </authorisation>
+    </section>
+    <section id="content-types">
+        <title>Accepted Media Types</title>
+        <list>
+            <item>
+                <code>application/vnd.hmrc.1.0+json</code>
+            </item>
+        </list>
+    </section>
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json><![CDATA[{
+          "_links": {
+            "self": {
+              "href": "/self-assessment/1097172564/self-employments"
+            }
+          },
+          "_embedded": {
+            "selfEmployments": [
+              {
+                "_links": {
+                  "self": {
+                    "href": "/self-assessment/1097172564/self-employments/1234"
+                  }
+                }
+              },
+              {
+                "_links": {
+                  "self": {
+                    "href": "/self-assessment/1097172564/self-employments/5678"
+                  }
+                }
+              },
+              {
+                "_links": {
+                  "self": {
+                    "href": "/self-assessment/1097172564/self-employments/9101"
+                  }
+                }
+              }
+            ]
+          }
+        }]]>
+        </json>
+    </section>
+</endpoint>

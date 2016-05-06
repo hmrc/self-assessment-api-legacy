@@ -3,7 +3,7 @@
     <description>This endpoint returns paginated list of self employments</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/self-emploments?page={page}&amp;pageSize={pageSize}</resource>
+        <resource>GET /self-assessment/{utr}/self-employments?page={page}&amp;pageSize={pageSize}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -65,7 +65,7 @@
                         <code>30</code>
                     </cell>
                     <cell>
-                        The nubmer of elements to be displayed per page. Default = 30
+                        The number of elements to be displayed per page. Default = 30
                     </cell>
                 </row>
             </rows>

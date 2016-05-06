@@ -31,4 +31,16 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     }
   }
 
+  "delete liability" should {
+    "return a 501 response" in {
+      given().userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .delete(s"/$saUtr/liabilities/1234")
+        .thenAssertThat()
+        .statusIs(501)
+        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
+        .body(_ \ "message").is(ErrorNotImplemented.message)
+    }
+  }
+
 }

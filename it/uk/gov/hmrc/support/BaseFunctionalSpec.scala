@@ -115,6 +115,13 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       this
     }
 
+    def delete(path: String) = {
+      assert(path.startsWith("/"), "please provide only a path starting with '/'")
+      this.url = s"http://localhost:$port$path"
+      this.method = "DELETE"
+      this
+    }
+
     def post(path: String, body: Option[JsValue] = None) = {
       assert(path.startsWith("/"), "please provide only a path starting with '/'")
       this.url = s"http://localhost:$port$path"
@@ -147,6 +154,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       withClue(s"Request $method $url") {
         method match {
           case "GET" => new Assertions(Http.get(url)(hc))
+          case "DELETE" => new Assertions(Http.delete(url)(hc))
           case "POST" => {
             body match {
               case Some(jsonBody) => new Assertions(Http.postJson(url, jsonBody)(hc))

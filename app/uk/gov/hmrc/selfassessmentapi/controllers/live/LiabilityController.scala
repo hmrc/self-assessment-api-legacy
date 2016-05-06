@@ -33,4 +33,8 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 
+  override def deleteLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) {
+    NotImplemented(Json.toJson(ErrorNotImplemented))
+  }
+
 }

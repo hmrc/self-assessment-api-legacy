@@ -61,3 +61,8 @@ trait SelfEmploymentsController extends BaseController with Links {
     NotImplemented
   }
 }
+
+object SelfEmploymentsController {
+  val page = 0
+  val pageSize = 30
+}

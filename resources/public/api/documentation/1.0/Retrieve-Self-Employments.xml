@@ -48,7 +48,7 @@
                         <code>number</code>
                     </cell>
                     <cell>
-                        <code>page=3</code>
+                        <code>3</code>
                     </cell>
                     <cell>
                         The first page with results to be displayed. Default = 0
@@ -62,7 +62,7 @@
                         <code>number</code>
                     </cell>
                     <cell>
-                        <code>pageSize=30</code>
+                        <code>30</code>
                     </cell>
                     <cell>
                         The nubmer of elements to be displayed per page. Default = 30

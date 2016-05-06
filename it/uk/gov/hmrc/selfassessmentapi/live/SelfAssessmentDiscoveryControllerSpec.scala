@@ -15,6 +15,7 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIs("application/hal+json")
         .bodyHasLink("self", s"/self-assessment/$saUtr")
+        .bodyHasLink("self-employments", s"/self-assessment/$saUtr/self-employments")
     }
 
     "return a 401 response the customer is not authorised" in {

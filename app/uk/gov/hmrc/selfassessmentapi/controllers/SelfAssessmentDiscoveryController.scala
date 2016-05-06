@@ -21,13 +21,15 @@ import play.api.libs.json.JsObject
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsController._
 
 trait SelfAssessmentDiscoveryController
     extends BaseController with HeaderValidator with Links {
 
   final def discover(utr: SaUtr) =
     validateAccept(acceptHeaderValidationRules) { request =>
-      val links = Seq(HalLink("self", discoveryHref(utr)))
+      val links = Seq(HalLink("self", discoveryHref(utr)),
+                      HalLink("self-employments", selfEmploymentsHref(utr, page , pageSize)))
       Ok(halResource(JsObject(Nil), links))
     }
 }

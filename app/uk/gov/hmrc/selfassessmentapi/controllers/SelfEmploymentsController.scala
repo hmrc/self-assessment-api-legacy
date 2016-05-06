@@ -19,8 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import play.api.hal.HalLink
 import play.api.libs.json.Json
 import play.api.libs.json.Json.obj
-import play.api.mvc.Action
 import play.api.mvc.hal._
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -39,7 +39,7 @@ trait SelfEmploymentsController extends BaseController with Links {
   def findById(utr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
     for (selfEmployment <- selfEmploymentService.findBySelfEmploymentId(utr, seId)) yield {
       selfEmployment match {
-        case Some(se) => Ok(halResource(Json.toJson(selfEmployment), Seq(HalLink("self", selfEmploymentsHref(utr, seId)))))
+        case Some(se) => Ok(halResource(Json.toJson(selfEmployment), Seq(HalLink("self", selfEmploymentHref(utr, seId)))))
         case None => NotFound(Json.toJson(ErrorNotFound))
       }
     }
@@ -48,14 +48,21 @@ trait SelfEmploymentsController extends BaseController with Links {
   def create(saUtr: SaUtr) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmployment] { selfEmployment =>
       for (seId <- selfEmploymentService.create(selfEmployment)) yield {
-        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentsHref(saUtr, seId)))))
+        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, seId)))))
       }
     }
   }
 
   def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
-    withJsonBody[SelfEmployment] { selfEmployment =>
-      Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentsHref(saUtr, seId))))))
-    }
+    Future.successful(NotImplemented)
   }
+
+  def find(saUtr: SaUtr, page: Int, pageSize: Int) : Action[AnyContent] = Action { request =>
+    NotImplemented
+  }
+}
+
+object SelfEmploymentsController {
+  val page = 0
+  val pageSize = 30
 }

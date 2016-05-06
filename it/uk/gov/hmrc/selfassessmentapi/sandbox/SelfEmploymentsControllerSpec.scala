@@ -42,7 +42,6 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIs("application/hal+json")
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments")
-        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments")
         .bodyHasPath(Seq("_embedded", "selfEmployments(0)", "_links", "self", "href"), s"/self-assessment/$saUtr/self-employments/1234")
         .bodyHasPath(Seq("_embedded", "selfEmployments(1)", "_links", "self", "href"), s"/self-assessment/$saUtr/self-employments/5678")
         .bodyHasPath(Seq("_embedded", "selfEmployments(2)", "_links", "self", "href"), s"/self-assessment/$saUtr/self-employments/9101")

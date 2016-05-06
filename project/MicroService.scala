@@ -18,6 +18,8 @@ trait MicroService {
   lazy val plugins : Seq[Plugins] = Seq(play.PlayScala)
   lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
+  lazy val FuncTest = config("func") extend Test
+  
   lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.PlayScala) ++ plugins : _*)
     .settings(playSettings : _*)
@@ -36,17 +38,17 @@ trait MicroService {
       retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
     )
-    .configs(IntegrationTest)
-    .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+    .configs(FuncTest)
+    .settings(inConfig(FuncTest)(Defaults.testSettings): _*)
     .settings(
-      Keys.fork in IntegrationTest := false,
-      unmanagedSourceDirectories in IntegrationTest <<= (baseDirectory in IntegrationTest)(base => Seq(base / "it")),
-      unmanagedClasspath in IntegrationTest += baseDirectory.value / "resources",
+      Keys.fork in FuncTest := false,
+      unmanagedSourceDirectories in FuncTest <<= (baseDirectory in FuncTest)(base => Seq(base / "it")),
+      unmanagedClasspath in FuncTest += baseDirectory.value / "resources",
       unmanagedClasspath in Runtime += baseDirectory.value / "resources",
       unmanagedResourceDirectories in Compile += baseDirectory.value / "resources",
-      addTestReportOption(IntegrationTest, "int-test-reports"),
-      testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
-      parallelExecution in IntegrationTest := false)
+      addTestReportOption(FuncTest, "int-test-reports"),
+      testGrouping in FuncTest := oneForkedJvmPerTest((definedTests in FuncTest).value),
+      parallelExecution in FuncTest := false)
     .settings(resolvers += Resolver.bintrayRepo("hmrc", "releases"))
 }
 

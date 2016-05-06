@@ -72,7 +72,7 @@ private object AppDependencies {
   object IntegrationTest {
     def apply() = new TestDependencies {
 
-      override lazy val scope: String = "it"
+      override lazy val scope: String = "func"
 
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,

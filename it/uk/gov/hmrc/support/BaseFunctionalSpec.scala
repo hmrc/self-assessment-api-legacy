@@ -6,39 +6,32 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
+import org.scalatest.{BeforeAndAfterEach, Matchers}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.{JsObject, JsValue}
-import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 
 import scala.util.matching.Regex
 
-trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
-  with BeforeAndAfterEach with IntegrationPatience with BeforeAndAfterAll with MockitoSugar with MongoEmbeddedDatabase {
+trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneServerPerSuite with Eventually with ScalaFutures
+  with BeforeAndAfterEach with IntegrationPatience with MockitoSugar {
 
   val WIREMOCK_PORT = 22222
   val stubHost = "localhost"
-  private val saUtrGenerator = new SaUtrGenerator()
-
-  def generateSaUtr(): SaUtr = saUtrGenerator.nextSaUtr
 
   protected val wiremockBaseUrl: String = s"http://$stubHost:$WIREMOCK_PORT"
 
   private val wireMockServer = new WireMockServer(wireMockConfig().port(WIREMOCK_PORT))
 
-  override def beforeAll() = {
+  override def beforeAll = {
     mongoStart()
     wireMockServer.stop()
     wireMockServer.start()
     WireMock.configureFor(stubHost, WIREMOCK_PORT)
     // the below stub is here so that the application finds the registration endpoint which is called on startup
     stubFor(post(urlPathEqualTo("/registration")).willReturn(aResponse().withStatus(200)))
-  }
-
-  override def afterAll() = {
-    mongoStop()
   }
 
   override def beforeEach() = {

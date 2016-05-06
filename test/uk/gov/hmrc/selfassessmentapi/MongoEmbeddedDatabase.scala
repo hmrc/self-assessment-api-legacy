@@ -20,32 +20,27 @@ import de.flapdoodle.embed.mongo.config.{MongodConfigBuilder, Net}
 import de.flapdoodle.embed.mongo.distribution.Version
 import de.flapdoodle.embed.mongo.{MongodExecutable, MongodProcess, MongodStarter}
 import de.flapdoodle.embed.process.runtime.Network
-import reactivemongo.api.FailoverStrategy
-import reactivemongo.api.collections.bson.BSONCollection
+import org.scalatest.BeforeAndAfterAll
 import uk.gov.hmrc.mongo.MongoConnector
 
-trait MongoEmbeddedDatabase {
+trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
 
-  private val starter = MongodStarter.getDefaultInstance
   private var mongodExe: MongodExecutable = null
   private var mongod: MongodProcess = null
 
   private val embeddedPort = 12345
-  private val databaseName = "test-" + this.getClass.getSimpleName
   private val mongoUri: String = sys.env.getOrElse("MONGO_TEST_URI", "mongodb://localhost:12345/self-assessment-api")
-  private val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
+  private lazy val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
 
-  implicit val mongoConnectorForTest = new MongoConnector(mongoUri)
+  implicit val mongo = new MongoConnector(mongoUri).db
 
-  implicit val mongo = mongoConnectorForTest.db
-
-  def bsonCollection(name: String)(failoverStrategy: FailoverStrategy = mongoConnectorForTest.helper.db.failoverStrategy): BSONCollection = {
+  /*def bsonCollection(name: String)(failoverStrategy: FailoverStrategy = mongoConnectorForTest.helper.db.failoverStrategy): BSONCollection = {
     mongoConnectorForTest.helper.db(name, failoverStrategy)
   }
-
-  def mongoStart() = {
+*/
+  protected def mongoStart() = {
     if (useEmbeddedMongo) {
-      mongodExe = starter.prepare(new MongodConfigBuilder()
+      mongodExe = MongodStarter.getDefaultInstance.prepare(new MongodConfigBuilder()
         .version(Version.Main.PRODUCTION)
         .net(new Net(embeddedPort, Network.localhostIsIPv6()))
         .build())
@@ -53,11 +48,19 @@ trait MongoEmbeddedDatabase {
     }
   }
 
-  def mongoStop() = {
+  protected def mongoStop() = {
     if (useEmbeddedMongo) {
       mongod.stop()
       mongodExe.stop()
     }
+  }
+
+  override def beforeAll = {
+    mongoStart()
+  }
+
+  override def afterAll = {
+    mongoStop()
   }
 
 }

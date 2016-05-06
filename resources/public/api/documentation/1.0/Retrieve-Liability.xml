@@ -3,7 +3,7 @@
     <description>This endpoint retrieves a liability calculation</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>POST /self-assessment/{utr}/liabilities/{liabilityId}</resource>
+        <resource>GET /self-assessment/{utr}/liabilities/{liabilityId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>

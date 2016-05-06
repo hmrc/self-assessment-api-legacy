@@ -27,7 +27,8 @@ trait SelfAssessmentDiscoveryController
 
   final def discover(utr: SaUtr) =
     validateAccept(acceptHeaderValidationRules) { request =>
-      val links = Seq(HalLink("self", discoveryHref(utr)))
+      val links = Seq(HalLink("self", discoveryHref(utr)),
+                      HalLink("self-employments", selfEmploymentsHref(utr, 0, 50)))
       Ok(halResource(JsObject(Nil), links))
     }
 }

@@ -19,4 +19,5 @@ package uk.gov.hmrc.selfassessmentapi
 package object domain {
 
   type SelfEmploymentId = String
+  type LiabilityId = String
 }

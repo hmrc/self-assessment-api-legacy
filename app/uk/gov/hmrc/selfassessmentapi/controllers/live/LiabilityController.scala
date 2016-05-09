@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
@@ -37,4 +38,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 
+  override def find(utr: SaUtr): Action[AnyContent] = Action { request =>
+    NotImplemented(Json.toJson(ErrorNotImplemented))
+  }
 }

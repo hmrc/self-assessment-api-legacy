@@ -19,8 +19,10 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 import java.util.UUID
 
 import play.api.hal.HalLink
+import play.api.libs.json.Json._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.hal._
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain._
@@ -45,8 +47,9 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     Ok(halResource(Json.toJson(liability), links))
   }
 
-  def createLiability(utr: SaUtr, liabilityId: String): Liability =
+  def createLiability(utr: SaUtr, id: String): Liability =
     Liability(
+      id = Some(id),
       taxPeriod = "2015-16-Q1",
       income = Income(
         incomes = Seq(
@@ -89,5 +92,11 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     NoContent
   }
 
-
+  override def find(saUtr: SaUtr): Action[AnyContent] = Action { request =>
+    val result= Seq(createLiability(saUtr, "1234"), createLiability(saUtr, "4321"), createLiability(saUtr, "7777"))
+    val liabilities = toJson(
+      result.map(liability => halResource(obj(), Seq(HalLink("self", liabilityHref(saUtr, liability.id.get)))))
+    )
+    Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr)))
+  }
 }

@@ -17,8 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.HalLink
-import play.api.libs.json.Json.obj
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json.{obj, toJson}
 import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.ErrorNotFound
@@ -38,24 +37,17 @@ trait SelfEmploymentsController extends BaseController with Links {
   def findById(utr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
     for (selfEmployment <- selfEmploymentService.findBySelfEmploymentId(utr, seId)) yield {
       selfEmployment match {
-        case Some(se) => Ok(halResource(Json.toJson(selfEmployment), Seq(HalLink("self", selfEmploymentHref(utr, seId)))))
-        case None => NotFound(Json.toJson(ErrorNotFound))
+        case Some(se) => Ok(halResource(toJson(selfEmployment), Seq(HalLink("self", selfEmploymentHref(utr, seId)))))
+        case None => NotFound(toJson(ErrorNotFound))
       }
     }
   }
 
-  def find(saUtr: SaUtr, page: Int, pageSize: Int) = Action.async { request =>
-    for (selfEmployments <- selfEmploymentService.find(saUtr, page, pageSize)) yield {
-      val selfEmploymentsJson = Json.toJson(selfEmployments.map(res => halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, res.id.get))))))
-      Ok(halResource(
-        JsObject(
-          Seq(
-            "_embedded" -> JsObject(
-              Seq("selfEmployments" -> selfEmploymentsJson))
-          )
-        ),
-        Seq(HalLink("self", selfEmploymentsHref(saUtr, page, pageSize))))
-      )
+  def find(saUtr: SaUtr) = Action.async { request =>
+    for (selfEmployments <- selfEmploymentService.find(saUtr)) yield {
+      val selfEmploymentsJson = toJson(selfEmployments.map(res => halResource(obj(),
+                                            Seq(HalLink("self", selfEmploymentHref(saUtr, res.id.get))))))
+      Ok(halResourceList("selfEmployments", selfEmploymentsJson, selfEmploymentsHref(saUtr)))
     }
   }
 
@@ -77,12 +69,7 @@ trait SelfEmploymentsController extends BaseController with Links {
 
   def delete(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
       selfEmploymentService.delete(saUtr, seId).map { isDeleted =>
-        if (isDeleted) NoContent else NotFound(Json.toJson(ErrorNotFound))
+        if (isDeleted) NoContent else NotFound(toJson(ErrorNotFound))
       }
     }
-}
-
-object SelfEmploymentsController {
-  val page = 0
-  val pageSize = 30
 }

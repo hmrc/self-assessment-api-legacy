@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employments</name>
-    <description>This endpoint returns paginated list of self employments</description>
+    <name>Retrieve Liabilities</name>
+    <description>This endpoint retrieves liabilities for a given utr</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/self-employments?page={page}&amp;pageSize={pageSize}</resource>
+        <resource>GET /self-assessment/{utr}/liabilities</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -16,15 +16,9 @@
             </headings>
             <rows>
                 <row>
-                    <cell>
-                        <code>utr</code>
-                    </cell>
-                    <cell>
-                        <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>1097172564</code>
-                    </cell>
+                    <cell><code>utr</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>2234567890</code></cell>
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
             </rows>
@@ -49,6 +43,7 @@
             </rows>
         </table>
     </section>
+
     <section id="authorisation">
         <title>Authorisation</title>
         <authorisation>
@@ -60,37 +55,37 @@
         <title>Response</title>
         <httpStatus>200 (OK)</httpStatus>
         <json><![CDATA[{
-          "_links": {
-            "self": {
-              "href": "/self-assessment/1097172564/self-employments"
-            }
-          },
-          "_embedded": {
-            "selfEmployments": [
-              {
-                "_links": {
-                  "self": {
-                    "href": "/self-assessment/1097172564/self-employments/1234"
+                  "_links": {
+                    "self": {
+                      "href": "/self-assessment/1097172564/liabilities"
+                    }
+                  },
+                  "_embedded": {
+                    "liabilities": [
+                      {
+                        "_links": {
+                          "self": {
+                            "href": "/self-assessment/1097172564/liabilities/1234"
+                          }
+                        }
+                      },
+                      {
+                        "_links": {
+                          "self": {
+                            "href": "/self-assessment/1097172564/liabilities/4321"
+                          }
+                        }
+                      },
+                      {
+                        "_links": {
+                          "self": {
+                            "href": "/self-assessment/1097172564/liabilities/7777"
+                          }
+                        }
+                      }
+                    ]
                   }
-                }
-              },
-              {
-                "_links": {
-                  "self": {
-                    "href": "/self-assessment/1097172564/self-employments/5678"
-                  }
-                }
-              },
-              {
-                "_links": {
-                  "self": {
-                    "href": "/self-assessment/1097172564/self-employments/9101"
-                  }
-                }
-              }
-            ]
-          }
-        }]]>
+                }]]>
         </json>
     </section>
 </endpoint>

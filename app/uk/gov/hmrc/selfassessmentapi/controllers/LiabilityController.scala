@@ -31,5 +31,6 @@ trait LiabilityController extends BaseController with HeaderValidator with Links
   def requestLiability(utr: SaUtr, taxPeriod: Option[String]): Action[AnyContent]
   def retrieveLiability(utr: SaUtr, liabilityId: String): Action[AnyContent]
   def deleteLiability(utr: SaUtr, liabilityId: String): Action[AnyContent]
+  def find(utr: SaUtr) : Action[AnyContent]
 
 }

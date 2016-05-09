@@ -29,4 +29,15 @@ object SelfEmploymentService extends uk.gov.hmrc.selfassessmentapi.services.Self
 
   override def findBySelfEmploymentId(utr: SaUtr, selfEmploymentId: SelfEmploymentId): Future[Option[SelfEmployment]] =
     Future.successful(Some(SelfEmployment(Some(selfEmploymentId), "Awesome Bakers", LocalDate.now)))
+
+  override def find(saUtr: SaUtr, page: Int, pageSize: Int): Future[Seq[SelfEmployment]] =
+    Future.successful(Seq(SelfEmployment(Some("1234"), "Awesome Plumbers", new LocalDate(2015, 1, 1)),
+      SelfEmployment(Some("5678"), "Awesome Bakers", new LocalDate(2015, 10, 1)),
+      SelfEmployment(Some("9101"), "Average Accountants", new LocalDate(2015, 10, 11))))
+
+  override def update(selfEmployment: SelfEmployment, utr: SaUtr, selfEmploymentId: SelfEmploymentId): Future[Unit] =
+    Future.successful(())
+
+  override def delete(utr: SaUtr, selfEmploymentId: SelfEmploymentId): Future[Boolean] =
+    Future.successful(true)
 }

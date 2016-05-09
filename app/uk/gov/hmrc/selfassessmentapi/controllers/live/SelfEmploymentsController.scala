@@ -16,8 +16,35 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
+import play.api.libs.json.Json
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId
 import uk.gov.hmrc.selfassessmentapi.services.live.SelfEmploymentService
+import play.api.mvc.Action
+
+import scala.concurrent.Future
 
 object SelfEmploymentsController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsController {
   override val selfEmploymentService = SelfEmploymentService
+
+  override def create(saUtr: SaUtr) = Action.async(parse.json) { _ =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+  }
+
+  override def findById(utr: SaUtr, seId: SelfEmploymentId) = Action.async { _ =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+  }
+
+  override def find(saUtr: SaUtr, page: Int, pageSize: Int) = Action.async { _ =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+  }
+
+  override def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json)  { _ =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+  }
+
+  override def delete(utr: SaUtr, seId: SelfEmploymentId) = Action.async { _ =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+  }
 }

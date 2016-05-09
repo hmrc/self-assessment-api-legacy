@@ -17,10 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.HalLink
-import play.api.libs.json.Json
 import play.api.libs.json.Json.obj
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.Action
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -28,7 +28,6 @@ import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmployment, SelfEmploymentId}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentService
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 trait SelfEmploymentsController extends BaseController with Links {
 
@@ -45,6 +44,21 @@ trait SelfEmploymentsController extends BaseController with Links {
     }
   }
 
+  def find(saUtr: SaUtr, page: Int, pageSize: Int) = Action.async { request =>
+    for (selfEmployments <- selfEmploymentService.find(saUtr, page, pageSize)) yield {
+      val selfEmploymentsJson = Json.toJson(selfEmployments.map(res => halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, res.id.get))))))
+      Ok(halResource(
+        JsObject(
+          Seq(
+            "_embedded" -> JsObject(
+              Seq("selfEmployments" -> selfEmploymentsJson))
+          )
+        ),
+        Seq(HalLink("self", selfEmploymentsHref(saUtr, page, pageSize))))
+      )
+    }
+  }
+
   def create(saUtr: SaUtr) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmployment] { selfEmployment =>
       for (seId <- selfEmploymentService.create(selfEmployment)) yield {
@@ -54,12 +68,18 @@ trait SelfEmploymentsController extends BaseController with Links {
   }
 
   def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
-    Future.successful(NotImplemented)
+    withJsonBody[SelfEmployment] { selfEmployment =>
+      for (_ <- selfEmploymentService.update(selfEmployment, saUtr, seId)) yield {
+        Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, seId)))))
+      }
+    }
   }
 
-  def find(saUtr: SaUtr, page: Int, pageSize: Int) : Action[AnyContent] = Action { request =>
-    NotImplemented
-  }
+  def delete(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
+      selfEmploymentService.delete(saUtr, seId).map { isDeleted =>
+        if (isDeleted) NoContent else NotFound(Json.toJson(ErrorNotFound))
+      }
+    }
 }
 
 object SelfEmploymentsController {

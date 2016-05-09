@@ -17,10 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.HalLink
-import play.api.libs.json.Json
 import play.api.libs.json.Json.obj
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.Action
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.api.controllers.{ErrorNotFound, HeaderValidator}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -44,8 +44,19 @@ trait SelfEmploymentsController extends BaseController with HeaderValidator with
     }
   }
 
-  def find(saUtr: SaUtr, page: Int, pageSize: Int) : Action[AnyContent] = Action { request =>
-    NotImplemented
+  def find(saUtr: SaUtr, page: Int, pageSize: Int) = validateAccept(acceptHeaderValidationRules).async { request =>
+    for (selfEmployments <- selfEmploymentService.find(saUtr, page, pageSize)) yield {
+      val selfEmploymentsJson = Json.toJson(selfEmployments.map(res => halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, res.id.get))))))
+      Ok(halResource(
+        JsObject(
+          Seq(
+            "_embedded" -> JsObject(
+              Seq("selfEmployments" -> selfEmploymentsJson))
+          )
+        ),
+        Seq(HalLink("self", selfEmploymentsHref(saUtr, page, pageSize))))
+      )
+    }
   }
 
   def create(saUtr: SaUtr) = Action.async(parse.json) { implicit request =>

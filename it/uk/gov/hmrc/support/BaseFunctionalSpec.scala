@@ -54,15 +54,19 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
       this
     }
 
-    def bodyHasPath(path: Seq[String], href: String) = {
-      def op(js: JsValue, pathElem: String) = {
+    def bodyHasPath(path: String, value: String) : Assertions = {
+      bodyHasPath(path.filter(!_.isWhitespace).split('\\').toSeq.filter(!_.isEmpty), value)
+    }
+
+    private def bodyHasPath(path: Seq[String], value: String): Assertions = {
+      def op(js: JsValue, pathElement: String) = {
         val pattern = """(.+)\((\d+)\)""".r
-        pathElem match {
-          case pattern(elementName, number) => (js \ elementName)(number.toInt)
-          case _ => js \ pathElem
+        pathElement match {
+          case pattern(arrayName, index) => (js \ arrayName)(index.toInt)
+          case _ => js \ pathElement
         }
       }
-      path.foldLeft(response.json)(op).asOpt[String] shouldEqual Some(href)
+      path.foldLeft(response.json)(op).asOpt[String] shouldEqual Some(value)
       this
     }
 

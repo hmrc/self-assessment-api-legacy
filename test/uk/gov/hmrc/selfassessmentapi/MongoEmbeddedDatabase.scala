@@ -21,7 +21,10 @@ import de.flapdoodle.embed.mongo.distribution.Version
 import de.flapdoodle.embed.mongo.{MongodExecutable, MongodProcess, MongodStarter}
 import de.flapdoodle.embed.process.runtime.Network
 import org.scalatest.BeforeAndAfterAll
+import play.api.Logger
 import uk.gov.hmrc.mongo.MongoConnector
+
+import scala.util.Try
 
 trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
 
@@ -34,10 +37,6 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
 
   implicit val mongo = new MongoConnector(mongoUri).db
 
-  /*def bsonCollection(name: String)(failoverStrategy: FailoverStrategy = mongoConnectorForTest.helper.db.failoverStrategy): BSONCollection = {
-    mongoConnectorForTest.helper.db(name, failoverStrategy)
-  }
-*/
   protected def mongoStart() = {
     if (useEmbeddedMongo) {
       mongodExe = MongodStarter.getDefaultInstance.prepare(new MongodConfigBuilder()
@@ -60,7 +59,9 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
   }
 
   override def afterAll = {
-    mongoStop()
+    Try(mongoStop()) recover {
+      case ex: Throwable => Logger.info(s"MONGO_STOP_FAILED: Couldn't kill mongod process! : $ex")
+    }
   }
 
 }

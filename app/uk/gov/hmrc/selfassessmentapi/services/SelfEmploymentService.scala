@@ -27,7 +27,7 @@ trait SelfEmploymentService {
 
   def findBySelfEmploymentId(utr: SaUtr, selfEmploymentId: SelfEmploymentId) : Future[Option[SelfEmployment]]
 
-  def find(saUtr: SaUtr, page: Int, pageSize: Int) : Future[Seq[SelfEmployment]]
+  def find(saUtr: SaUtr) : Future[Seq[SelfEmployment]]
 
   def update(selfEmployment: SelfEmployment, utr: SaUtr, selfEmploymentId: SelfEmploymentId): Future[Unit]
 

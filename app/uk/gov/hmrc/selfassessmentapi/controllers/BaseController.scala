@@ -38,6 +38,17 @@ trait BaseController
     links.foldLeft(halState)((res, link) => res ++ link)
   }
 
+  def halResourceList(name: String, value : JsValue, self: String) = {
+    halResource(
+      JsObject(
+        Seq(
+          "_embedded" -> JsObject(
+            Seq(name -> value))
+        )
+      ),
+      Seq(HalLink("self", self)))
+  }
+
   override protected def withJsonBody[T](f: (T) => Future[Result])(
       implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) =
     Try(request.body.validate[T]) match {

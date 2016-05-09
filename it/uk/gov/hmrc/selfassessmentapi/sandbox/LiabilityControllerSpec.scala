@@ -71,6 +71,20 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .bodyHasLink("self", s"""^/self-assessment/$saUtr/liabilities/1234""".r)
         .bodyIs(expectedJson)
     }
+
+    "return a valid response when retrieving list of liabilities" in {
+      given()
+        .when()
+        .get(s"/sandbox/$saUtr/liabilities")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"/self-assessment/$saUtr/liabilities")
+        .bodyHasPath("""_embedded \ liabilities(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/liabilities/1234")
+        .bodyHasPath("""_embedded \ liabilities(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/liabilities/4321")
+        .bodyHasPath("""_embedded \ liabilities(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/liabilities/7777")
+    }
+
   }
 
   "delete liability" should {

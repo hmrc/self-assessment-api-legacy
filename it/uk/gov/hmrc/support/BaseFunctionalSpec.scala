@@ -51,7 +51,7 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
     }
 
     def bodyIs(expectedBody: JsValue) = {
-      response.json.as[JsObject] - "_links" shouldEqual expectedBody
+      response.json.as[JsObject] - "_links" - "id" shouldEqual expectedBody
       this
     }
 

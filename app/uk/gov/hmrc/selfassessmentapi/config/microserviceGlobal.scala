@@ -99,13 +99,11 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
 object HeaderValidatorFilter extends Filter with HeaderValidator {
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
     val controller: Option[String] = rh.tags.get(Routes.ROUTE_CONTROLLER)
-    val needsHeaderValidation: Option[String] => Boolean = { controller =>
-      controller match {
-        case Some(name) => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation
-        case None => true
-      }
+    val needsHeaderValidation: Option[String] => Boolean = {
+      case Some(name) => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation
+      case None => true
     }
-    if (needsHeaderValidation(controller) == false || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
+    if (!needsHeaderValidation(controller) || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
     else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
   }
 }

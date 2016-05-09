@@ -36,7 +36,7 @@ object SelfEmploymentsController extends uk.gov.hmrc.selfassessmentapi.controlle
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def find(saUtr: SaUtr, page: Int, pageSize: Int) = Action.async { _ =>
+  override def find(saUtr: SaUtr) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 

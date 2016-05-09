@@ -120,6 +120,14 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
+                uriPattern = "/{utr}/liabilities",
+                endpointName = "Retrieve Liabilities",
+                method = HttpMethod.GET,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(readScope)
+              ),
+              Endpoint(
                 uriPattern = "/{utr}/liabilities/{liabilityId}",
                 endpointName = "Delete Liability",
                 method = HttpMethod.DELETE,

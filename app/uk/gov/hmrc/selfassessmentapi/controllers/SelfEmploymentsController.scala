@@ -21,7 +21,7 @@ import play.api.libs.json.Json.obj
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Action
 import play.api.mvc.hal._
-import uk.gov.hmrc.api.controllers.{ErrorNotFound, HeaderValidator}
+import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmployment, SelfEmploymentId}
@@ -29,13 +29,13 @@ import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait SelfEmploymentsController extends BaseController with HeaderValidator with Links {
+trait SelfEmploymentsController extends BaseController with Links {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
   val selfEmploymentService: SelfEmploymentService
 
-  def findById(utr: SaUtr, seId: SelfEmploymentId) = validateAccept(acceptHeaderValidationRules).async { request =>
+  def findById(utr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
     for (selfEmployment <- selfEmploymentService.findBySelfEmploymentId(utr, seId)) yield {
       selfEmployment match {
         case Some(se) => Ok(halResource(Json.toJson(selfEmployment), Seq(HalLink("self", selfEmploymentHref(utr, seId)))))
@@ -44,7 +44,7 @@ trait SelfEmploymentsController extends BaseController with HeaderValidator with
     }
   }
 
-  def find(saUtr: SaUtr, page: Int, pageSize: Int) = validateAccept(acceptHeaderValidationRules).async { request =>
+  def find(saUtr: SaUtr, page: Int, pageSize: Int) = Action.async { request =>
     for (selfEmployments <- selfEmploymentService.find(saUtr, page, pageSize)) yield {
       val selfEmploymentsJson = Json.toJson(selfEmployments.map(res => halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, res.id.get))))))
       Ok(halResource(
@@ -75,8 +75,7 @@ trait SelfEmploymentsController extends BaseController with HeaderValidator with
     }
   }
 
-  def delete(saUtr: SaUtr, seId: SelfEmploymentId) =
-    validateAccept(acceptHeaderValidationRules).async { request =>
+  def delete(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
       selfEmploymentService.delete(saUtr, seId).map { isDeleted =>
         if (isDeleted) NoContent else NotFound(Json.toJson(ErrorNotFound))
       }

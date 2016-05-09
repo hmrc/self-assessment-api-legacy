@@ -30,17 +30,17 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
         Scope(
           key = readScope,
           name = "Self-Assessment API - Read",
-          description = "<TODO>"
+          description = "Allow read access to self assessment data"
         ),
         Scope(
           key = writeScope,
           name = "Self-Assessment API - Write",
-          description = "<TODO>"
+          description = "Allow write access to self assessment data"
         )
       ),
       api = APIDefinition(
-        name = "Self-Assessment API",
-        description = "<TODO>",
+        name = "Self Assessment API",
+        description = "An API for providing self assessment data and obtaining liability estimations",
         context = apiContext,
         versions = Seq(
           APIVersion(

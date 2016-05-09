@@ -5,20 +5,31 @@
         <title>Resource</title>
         <resource>GET /self-assessment</resource>
     </section>
+    <section id="request-headers">
+        <title>Request Headers</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Value</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>Accept</code>
+                    </cell>
+                    <cell>
+                        <code>application/vnd.hmrc.1.0+json</code>
+                    </cell>
+                </row>
+            </rows>
+        </table>
+    </section>
     <section id="authorisation">
         <title>Authorisation</title>
         <authorisation>
             <type>USER</type>
             <scope>read:self-assessment-api</scope>
         </authorisation>
-    </section>
-    <section id="content-types">
-        <title>Accepted Media Types</title>
-        <list>
-            <item>
-                <code>application/vnd.hmrc.1.0+json</code>
-            </item>
-        </list>
     </section>
     <section id="sample-response">
         <title>Response</title>

@@ -16,30 +16,17 @@
             </headings>
             <rows>
                 <row>
-                    <cell>
-                        <code>utr</code>
-                    </cell>
-                    <cell>
-                        <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>2234567890</code>
-                    </cell>
+                    <cell><code>utr</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>2234567890</code></cell>
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
                 <row>
-                    <cell>
-                        <code>selfEmploymentsId</code>
-                    </cell>
-                    <cell>
-                        <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>1234567</code>
-                    </cell>
+                    <cell><code>selfEmploymentsId</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>1234567</code></cell>
                     <cell>The Self Employments id</cell>
                 </row>
-
             </rows>
         </table>
     </section>
@@ -61,22 +48,5 @@
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>204 (NO_CONTENT)</httpStatus>
-    </section>
-    <section id="error-responses">
-        <title>Error Scenarios</title>
-        <table>
-            <headings>
-                <cell>Error Scenario</cell>
-                <cell>HTTP Status</cell>
-                <cell>Code</cell>
-            </headings>
-            <rows>
-                <row>
-                    <cell>Resource was not found</cell>
-                    <cell><code>404 (Not Found)</code></cell>
-                    <cell><code>NOT_FOUND</code></cell>
-                </row>
-            </rows>
-        </table>
     </section>
 </endpoint>

@@ -1,15 +1,16 @@
 package uk.gov.hmrc.selfassessmentapi.sandbox
 
+import java.util.UUID
+
 import org.joda.time.LocalDate
 import play.api.libs.json.Json._
-import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
 
   val saUtr = generateSaUtr()
-  val selfEmploymentId = BSONObjectID.generate.stringify
+  val selfEmploymentId = UUID.randomUUID().toString
 
   "Sandbox Self employment" should {
 

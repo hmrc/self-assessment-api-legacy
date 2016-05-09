@@ -39,6 +39,12 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
   }
 
   class Assertions(response: HttpResponse) {
+    def contentTypeIsXml() = contentTypeIs("application/xml")
+
+    def contentTypeIsJson() = contentTypeIs("application/json; charset=utf-8")
+
+    def contentTypeIsHalJson() = contentTypeIs("application/hal+json")
+
     def bodyIs(expectedBody: String) = {
       response.body shouldBe expectedBody
       this
@@ -92,7 +98,7 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
       this
     }
 
-    def contentTypeIs(contentType: String) = {
+    private def contentTypeIs(contentType: String) = {
       response.header("Content-Type") shouldEqual Some(contentType)
       this
     }

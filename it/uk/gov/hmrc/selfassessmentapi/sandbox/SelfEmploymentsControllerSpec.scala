@@ -21,7 +21,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .post(s"/sandbox/$saUtr/self-employments", Some(toJson(Some(SelfEmployment(None, "name", LocalDate.now.minusDays(1))))))
         .thenAssertThat()
         .statusIs(201)
-        .contentTypeIs("application/hal+json")
+        .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/.+".r)
     }
 
@@ -32,7 +32,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId")
         .thenAssertThat()
         .statusIs(200)
-        .contentTypeIs("application/hal+json")
+        .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId")
     }
 
@@ -42,7 +42,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .get(s"/sandbox/$saUtr/self-employments")
         .thenAssertThat()
         .statusIs(200)
-        .contentTypeIs("application/hal+json")
+        .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments")
         .bodyHasPath("""_embedded \ selfEmployments(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/1234")
         .bodyHasPath("""_embedded \ selfEmployments(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/5678")
@@ -55,7 +55,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .put(s"/sandbox/$saUtr/self-employments/$selfEmploymentId", Some(toJson(Some(SelfEmployment(None, "name", LocalDate.now.minusDays(1))))))
         .thenAssertThat()
         .statusIs(200)
-        .contentTypeIs("application/hal+json")
+        .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId")
     }
 

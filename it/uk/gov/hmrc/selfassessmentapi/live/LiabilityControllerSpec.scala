@@ -14,6 +14,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .post(s"/$saUtr/liabilities")
         .thenAssertThat()
         .statusIs(501)
+        .contentTypeIsJson()
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)
         .body(_ \ "message").is(ErrorNotImplemented.message)
     }
@@ -26,6 +27,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .get(s"/$saUtr/liabilities/1234")
         .thenAssertThat()
         .statusIs(501)
+        .contentTypeIsJson()
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)
         .body(_ \ "message").is(ErrorNotImplemented.message)
     }
@@ -38,6 +40,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .delete(s"/$saUtr/liabilities/1234")
         .thenAssertThat()
         .statusIs(501)
+        .contentTypeIsJson()
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)
         .body(_ \ "message").is(ErrorNotImplemented.message)
     }

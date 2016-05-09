@@ -12,7 +12,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
         .get("/api/definition").withoutAcceptHeader()
         .thenAssertThat()
         .statusIs(200)
-        .contentTypeIs("application/json; charset=utf-8")
+        .contentTypeIsJson()
     }
   }
 
@@ -28,7 +28,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
             .get(s"/api/documentation/${version.version}/$nameInUrl").withoutAcceptHeader()
             .thenAssertThat()
             .statusIs(200)
-            .contentTypeIs("application/xml")
+            .contentTypeIsXml()
         }
 
       }

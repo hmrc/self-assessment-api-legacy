@@ -11,7 +11,7 @@ class CustomerResolverControllerSpec extends BaseFunctionalSpec {
         .get("/sandbox")
         .thenAssertThat()
         .statusIs(200)
-        .contentTypeIs("application/hal+json")
+        .contentTypeIsHalJson()
         .bodyHasLink("self-assessment", """^/self-assessment/[0-9]{10}$""".r)
     }
   }

@@ -34,6 +34,10 @@ object SelfEmploymentsController extends uk.gov.hmrc.selfassessmentapi.controlle
     NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 
+  override def find(saUtr: SaUtr, page: Int, pageSize: Int) = validateAccept(acceptHeaderValidationRules) {
+    NotImplemented(Json.toJson(ErrorNotImplemented))
+  }
+
   override def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action(parse.json) { request =>
     NotImplemented(Json.toJson(ErrorNotImplemented))
   }

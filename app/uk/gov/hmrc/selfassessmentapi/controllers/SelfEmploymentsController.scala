@@ -35,25 +35,24 @@ trait SelfEmploymentsController extends BaseController with Links {
   val selfEmploymentService: SelfEmploymentService
 
   def findById(utr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
-    for (selfEmployment <- selfEmploymentService.findBySelfEmploymentId(utr, seId)) yield {
-      selfEmployment match {
-        case Some(se) => Ok(halResource(toJson(selfEmployment), Seq(HalLink("self", selfEmploymentHref(utr, seId)))))
-        case None => NotFound(toJson(ErrorNotFound))
-      }
+    selfEmploymentService.findBySelfEmploymentId(utr, seId) map {
+      case Some(selfEmployment) => Ok(halResource(toJson(selfEmployment), Seq(HalLink("self", selfEmploymentHref(utr,seId)))))
+      case None => NotFound(toJson(ErrorNotFound))
     }
   }
 
   def find(saUtr: SaUtr) = Action.async { request =>
-    for (selfEmployments <- selfEmploymentService.find(saUtr)) yield {
+    selfEmploymentService.find(saUtr) map { selfEmployments =>
       val selfEmploymentsJson = toJson(selfEmployments.map(res => halResource(obj(),
-                                            Seq(HalLink("self", selfEmploymentHref(saUtr, res.id.get))))))
+        Seq(HalLink("self", selfEmploymentHref(saUtr, res.id.get))))))
+
       Ok(halResourceList("selfEmployments", selfEmploymentsJson, selfEmploymentsHref(saUtr)))
     }
   }
 
   def create(saUtr: SaUtr) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmployment] { selfEmployment =>
-      for (seId <- selfEmploymentService.create(selfEmployment)) yield {
+      selfEmploymentService.create(selfEmployment) map { seId =>
         Created(halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, seId)))))
       }
     }
@@ -61,15 +60,15 @@ trait SelfEmploymentsController extends BaseController with Links {
 
   def update(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmployment] { selfEmployment =>
-      for (_ <- selfEmploymentService.update(selfEmployment, saUtr, seId)) yield {
+      selfEmploymentService.update(selfEmployment, saUtr, seId) map { _ =>
         Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentHref(saUtr, seId)))))
       }
     }
   }
 
   def delete(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async { request =>
-      selfEmploymentService.delete(saUtr, seId).map { isDeleted =>
-        if (isDeleted) NoContent else NotFound(toJson(ErrorNotFound))
-      }
+    selfEmploymentService.delete(saUtr, seId).map { isDeleted =>
+      if (isDeleted) NoContent else NotFound(toJson(ErrorNotFound))
     }
+  }
 }

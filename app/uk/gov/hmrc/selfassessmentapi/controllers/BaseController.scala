@@ -54,13 +54,9 @@ trait BaseController
     Try(request.body.validate[T]) match {
       case Success(JsSuccess(payload, _)) => f(payload)
       case Success(JsError(errs)) =>
-        val msg = errs
-          .flatMap(_._2)
-          .map(_.message)
-          .mkString("\n")
+        val msg = errs.flatMap(_._2).map(_.message).mkString("\n")
         Future.successful(BadRequest(Json.toJson(ErrorGenericBadRequest(msg))))
       case Failure(e) =>
-        Future.successful(
-            BadRequest(s"could not parse body due to ${e.getMessage}"))
+        Future.successful(BadRequest(s"could not parse body due to ${e.getMessage}"))
     }
 }

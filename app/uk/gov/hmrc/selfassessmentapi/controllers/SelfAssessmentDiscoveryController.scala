@@ -18,18 +18,20 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.HalLink
 import play.api.libs.json.JsObject
+import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
 
+import scala.concurrent.Future
+
 trait SelfAssessmentDiscoveryController
     extends BaseController with HeaderValidator with Links {
 
-  final def discover(utr: SaUtr) =
-    validateAccept(acceptHeaderValidationRules) { request =>
+  final def discover(utr: SaUtr) = Action.async { request =>
       val links = Seq(HalLink("self", discoveryHref(utr)),
                       HalLink("self-employments", selfEmploymentsHref(utr)),
                       HalLink("liabilities", liabilitiesHref(utr)))
-      Ok(halResource(JsObject(Nil), links))
+     Future.successful(Ok(halResource(JsObject(Nil), links)))
     }
 }

@@ -7,7 +7,6 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
 
-  val saUtr = generateSaUtr()
   val selfEmploymentId = BSONObjectID.generate.stringify
   val selfEmploymentIncomeId = BSONObjectID.generate.stringify
 

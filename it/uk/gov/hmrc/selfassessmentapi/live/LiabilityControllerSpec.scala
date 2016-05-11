@@ -1,11 +1,8 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
-
-  val saUtr = generateSaUtr()
 
   "request liability" should {
     "return a 501 response" in {

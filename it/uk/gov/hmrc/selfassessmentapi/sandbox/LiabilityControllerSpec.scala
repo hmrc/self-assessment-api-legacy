@@ -5,8 +5,6 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
 
-  val saUtr = generateSaUtr()
-
   "request liability" should {
     "return a 202 response with a link to retrieve the liability" in {
       given()

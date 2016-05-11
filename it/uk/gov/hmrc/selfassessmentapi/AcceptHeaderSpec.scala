@@ -4,7 +4,6 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AcceptHeaderSpec extends BaseFunctionalSpec {
-  val saUtr = generateSaUtr()
   val selfEmploymentId = BSONObjectID.generate.stringify
 
   "if the valid content type header is sent in the request, they" should {
@@ -12,7 +11,8 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
       given()
         .when()
         .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId").withAcceptHeader()
-        .thenAssertThat().statusIs(200)
+        .thenAssertThat()
+        .statusIs(200)
     }
   }
 

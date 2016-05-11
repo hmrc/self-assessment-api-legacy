@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-package object domain {
-
-  type SelfEmploymentId = String
-  type LiabilityId = String
-  type IncomeId = String
-}
+object SelfEmploymentIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentIncomeController

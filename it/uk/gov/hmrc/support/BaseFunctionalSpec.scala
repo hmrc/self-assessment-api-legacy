@@ -12,6 +12,7 @@ import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 
 import scala.util.matching.Regex
 
@@ -39,6 +40,13 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
   }
 
   class Assertions(response: HttpResponse) {
+    def resourceIsNotImplemented() =  {
+      statusIs(501)
+        .contentTypeIsJson()
+        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
+        .body(_ \ "message").is(ErrorNotImplemented.message)
+    }
+
     def contentTypeIsXml() = contentTypeIs("application/xml")
 
     def contentTypeIsJson() = contentTypeIs("application/json; charset=utf-8")

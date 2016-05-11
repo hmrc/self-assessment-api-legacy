@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.domain
 
-package object domain {
+import play.api.libs.json._
 
-  type SelfEmploymentId = String
-  type LiabilityId = String
-  type IncomeId = String
+
+case class SelfEmploymentIncome(id: Option[IncomeId] = None,
+                                taxYear: String,
+                                incomeType: String,
+                                amount: BigDecimal)
+
+
+object SelfEmploymentIncome {
+
+  implicit val selfEmploymentWrites = Json.writes[SelfEmploymentIncome]
+  implicit val selfEmploymentReads = Json.reads[SelfEmploymentIncome]
+
 }

@@ -26,7 +26,7 @@ class AuthorisationSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/self-employments/$selfEmploymentId")
         .thenAssertThat()
-        .statusIs(501)
+        .resourceIsNotImplemented()
     }
   }
 }

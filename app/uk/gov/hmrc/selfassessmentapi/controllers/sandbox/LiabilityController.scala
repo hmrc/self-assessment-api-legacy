@@ -31,7 +31,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
 
   override val context: String = AppContext.apiGatewayContext
 
-  override def requestLiability(utr: SaUtr, taxPeriod: Option[String]) = validateAccept(acceptHeaderValidationRules) { request =>
+  override def requestLiability(utr: SaUtr, taxPeriod: Option[String]) = Action { request =>
     val liabilityId = UUID.randomUUID().toString
       val links = Seq(
         HalLink("self", liabilityHref(utr, liabilityId))
@@ -39,7 +39,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
       Accepted(halResource(JsObject(Nil), links))
   }
 
-  override def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
+  override def retrieveLiability(utr: SaUtr, liabilityId: String) = Action { request =>
     val liability = createLiability(utr, liabilityId)
     val links = Seq(
       HalLink("self", liabilityHref(utr, liabilityId))
@@ -88,7 +88,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     )
 
 
-  override def deleteLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
+  override def deleteLiability(utr: SaUtr, liabilityId: String) = Action { request =>
     NoContent
   }
 

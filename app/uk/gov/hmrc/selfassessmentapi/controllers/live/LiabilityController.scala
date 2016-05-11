@@ -26,15 +26,15 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
 
   override val context: String = AppContext.apiGatewayContext
 
-  override def requestLiability(utr: SaUtr, taxPeriod: Option[String]) = validateAccept(acceptHeaderValidationRules) {
+  override def requestLiability(utr: SaUtr, taxPeriod: Option[String]) = Action { request =>
     NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 
-  override def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) {
+  override def retrieveLiability(utr: SaUtr, liabilityId: String) = Action { request =>
     NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 
-  override def deleteLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) {
+  override def deleteLiability(utr: SaUtr, liabilityId: String) = Action { request =>
     NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 

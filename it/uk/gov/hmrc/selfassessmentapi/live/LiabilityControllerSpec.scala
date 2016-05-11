@@ -13,10 +13,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .when()
         .post(s"/$saUtr/liabilities")
         .thenAssertThat()
-        .statusIs(501)
-        .contentTypeIsJson()
-        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
-        .body(_ \ "message").is(ErrorNotImplemented.message)
+        .resourceIsNotImplemented()
     }
   }
 
@@ -26,10 +23,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/liabilities/1234")
         .thenAssertThat()
-        .statusIs(501)
-        .contentTypeIsJson()
-        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
-        .body(_ \ "message").is(ErrorNotImplemented.message)
+        .resourceIsNotImplemented()
     }
   }
 
@@ -39,10 +33,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .when()
         .delete(s"/$saUtr/liabilities/1234")
         .thenAssertThat()
-        .statusIs(501)
-        .contentTypeIsJson()
-        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
-        .body(_ \ "message").is(ErrorNotImplemented.message)
+        .resourceIsNotImplemented()
     }
   }
 

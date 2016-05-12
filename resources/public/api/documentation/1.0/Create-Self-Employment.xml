@@ -61,7 +61,7 @@
         <title>Authorisation</title>
         <authorisation>
             <type>USER</type>
-            <scope>write:self-assessment-api</scope>
+            <scope>write:self-assessment</scope>
         </authorisation>
     </section>
     <section id="sample-request">

@@ -28,7 +28,7 @@
         <title>Authorisation</title>
         <authorisation>
             <type>USER</type>
-            <scope>read:self-assessment-api</scope>
+            <scope>read:self-assessment</scope>
         </authorisation>
     </section>
     <section id="sample-response">

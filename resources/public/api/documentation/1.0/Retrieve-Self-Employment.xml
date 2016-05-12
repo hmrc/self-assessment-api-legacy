@@ -3,7 +3,7 @@
     <description>This endpoint returns a specific self-employment</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/self-emploments/{selfEmploymentsId}</resource>
+        <resource>GET /self-assessment/{utr}/self-employments/{selfEmploymentsId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>

@@ -5,7 +5,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 class LiabilityControllerSpec extends BaseFunctionalSpec {
 
   "request liability" should {
-    "return a 501 response" in {
+    "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .post(s"/$saUtr/liabilities")
@@ -15,7 +15,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
   }
 
   "retrieve liability" should {
-    "return a 501 response" in {
+    "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/liabilities/1234")
@@ -25,7 +25,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
   }
 
   "delete liability" should {
-    "return a 501 response" in {
+    "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .delete(s"/$saUtr/liabilities/1234")

@@ -16,4 +16,4 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-object SelfEmploymentIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentIncomeController
+object SelfEmploymentsIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsIncomeController

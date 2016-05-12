@@ -20,5 +20,5 @@ package object domain {
 
   type SelfEmploymentId = String
   type LiabilityId = String
-  type IncomeId = String
+  type SelfEmploymentIncomeId = String
 }

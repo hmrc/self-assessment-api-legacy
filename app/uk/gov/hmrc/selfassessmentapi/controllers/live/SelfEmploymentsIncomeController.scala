@@ -25,13 +25,13 @@ import uk.gov.hmrc.selfassessmentapi.services.live.SelfEmploymentService
 
 import scala.concurrent.Future
 
-object SelfEmploymentIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentIncomeController {
+object SelfEmploymentsIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsIncomeController {
 
   override def create(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def findById(saUtr: SaUtr, seId: SelfEmploymentId, incomeId: IncomeId) = Action.async { _ =>
+  override def findById(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
@@ -39,11 +39,11 @@ object SelfEmploymentIncomeController extends uk.gov.hmrc.selfassessmentapi.cont
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def update(saUtr: SaUtr, seId: SelfEmploymentId, incomeId: IncomeId) = Action.async(parse.json)  { _ =>
+  override def update(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async(parse.json)  { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def delete(saUtr: SaUtr, seId: SelfEmploymentId, incomeId: IncomeId) = Action.async { _ =>
+  override def delete(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 }

@@ -16,18 +16,45 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
+import play.api.data.validation.ValidationError
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType.SelfEmploymentIncomeType
 
 
-case class SelfEmploymentIncome(id: Option[IncomeId] = None,
+object SelfEmploymentIncomeType extends Enumeration {
+  type SelfEmploymentIncomeType = Value
+  val TURNOVER, OTHER = Value
+}
+
+
+case class SelfEmploymentIncome(id: Option[SelfEmploymentIncomeId] = None,
                                 taxYear: String,
-                                incomeType: String,
+                                incomeType: SelfEmploymentIncomeType,
                                 amount: BigDecimal)
 
 
 object SelfEmploymentIncome {
 
-  implicit val selfEmploymentWrites = Json.writes[SelfEmploymentIncome]
-  implicit val selfEmploymentReads = Json.reads[SelfEmploymentIncome]
+  private def taxYearValidator = Reads.of[String].filter(ValidationError("tax year format is YYYY-YY (2016-17)", ErrorCode("TAX_YEAR_INVALID"))) { taxYear =>
+    if (taxYear.matches("[0-9]{4}-[0-9]{2}")) {
+      val years = taxYear.split("-")
+      val startYear = years(0).toInt
+      val finishYear = years(1).toInt
+      ((startYear + 1).toString.substring(2).toInt == finishYear)
+    } else false
+  }
 
+  private def amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount cannot have more than 2 decimal values", ErrorCode("AMOUNT_DECIMAL_LENGTH_EXCEEDED")))(_.scale < 3)
+
+  implicit val seIncomeTypes = EnumJson.enumFormat(SelfEmploymentIncomeType)
+  implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]
+  implicit val seIncomeReads: Reads[SelfEmploymentIncome] = (
+    (__ \ "id").readNullable[SelfEmploymentId] and
+      (__ \ "taxYear").read[String](taxYearValidator) and
+      (__ \ "incomeType").read[SelfEmploymentIncomeType] and
+      (__ \ "amount").read[BigDecimal](amountValidator)
+    ) (SelfEmploymentIncome.apply _)
 }

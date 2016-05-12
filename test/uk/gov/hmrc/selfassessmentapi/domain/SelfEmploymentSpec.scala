@@ -17,26 +17,16 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
 
 class SelfEmploymentSpec extends JsonSpec {
 
   "format" should {
-    def roundTripJson(selfEmployment: SelfEmployment) = {
-      val json = Json.toJson(selfEmployment)
-      val read = json.validate[SelfEmployment]
-
-      read.asOpt shouldEqual Some(selfEmployment)
-    }
-
     "round trip SelfEmployment json when id present" in {
-      roundTripJson(SelfEmployment(
-              Some("id"), "self employment 1", new LocalDate(2016, 4, 22)))
+      roundTripJson(SelfEmployment(Some("id"), "self employment 1", new LocalDate(2016, 4, 22)))
     }
 
     "round trip SelfEmployment json with no id" in {
-      roundTripJson(SelfEmployment(
-              None, "self employment 1", new LocalDate(2016, 4, 22)))
+      roundTripJson(SelfEmployment( None, "self employment 1", new LocalDate(2016, 4, 22)))
     }
   }
 
@@ -47,8 +37,8 @@ class SelfEmploymentSpec extends JsonSpec {
 
       assertValidationError[SelfEmployment](
           se,
-          List("commencement date should be in the past",
-               "max field length exceeded the max 100 chars"),
+          Map(ErrorCode("COMMENCEMENT_DATE_NOT_IN_THE_PAST") -> "commencement date should be in the past",
+            ErrorCode("MAX_FIELD_LENGTH_EXCEEDED") -> "max field length exceeded the max 100 chars"),
           "Expected valid self-employment")
     }
   }

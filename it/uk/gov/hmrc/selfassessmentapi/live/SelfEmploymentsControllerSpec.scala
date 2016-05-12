@@ -11,7 +11,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
   val selfEmploymentId = BSONObjectID.generate.stringify
 
   "Create self-employment" should {
-    "return a 501 response" in {
+    "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .post(s"/$saUtr/self-employments", Some(toJson(SelfEmployment(None, "name", LocalDate.now.minusDays(1)))))
@@ -21,7 +21,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
   }
 
   "Find self-employment by id" should {
-    "return a 501 response" in {
+    "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/self-employments/$selfEmploymentId")
@@ -31,7 +31,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
   }
 
   "Find all self-employments" should {
-    "return a 501 response" in {
+    "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/self-employments")
@@ -41,7 +41,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
   }
 
   "Update self-employment" should {
-    "return a 501 response" in {
+    "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .put(s"/$saUtr/self-employments/$selfEmploymentId", Some(toJson(SelfEmployment(None, "name", LocalDate.now.minusDays(1)))))
@@ -51,7 +51,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
   }
 
   "Delete self-employment" should {
-    "return a 501 response" in {
+    "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .delete(s"/$saUtr/self-employments/$selfEmploymentId")

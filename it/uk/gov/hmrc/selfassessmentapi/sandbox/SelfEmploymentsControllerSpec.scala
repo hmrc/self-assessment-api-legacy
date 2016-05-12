@@ -25,6 +25,18 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/.+".r)
     }
 
+    "Create self-employment with invalid data" should {
+      "return a 400 response" in {
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
+          .when()
+          .post(s"/sandbox/$saUtr/self-employments", Some(toJson(SelfEmployment(name = "a" * 101, commencementDate = LocalDate.now().plusDays(1)))))
+          .thenAssertThat()
+          .statusIs(400)
+          .body(_ \ "code").is("VALIDATION_FAILED")
+      }
+    }
+
     "return a valid response containing an existing self employment" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)

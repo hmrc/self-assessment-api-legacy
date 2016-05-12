@@ -17,8 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import org.joda.time.LocalDate
-import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsError, Json}
+import play.api.libs.json.Json
 
 class SelfEmploymentSpec extends JsonSpec {
 
@@ -32,12 +31,12 @@ class SelfEmploymentSpec extends JsonSpec {
 
     "round trip SelfEmployment json when id present" in {
       roundTripJson(SelfEmployment(
-        Some("id"), "self employment 1", new LocalDate(2016, 4, 22)))
+              Some("id"), "self employment 1", new LocalDate(2016, 4, 22)))
     }
 
     "round trip SelfEmployment json with no id" in {
       roundTripJson(SelfEmployment(
-        None, "self employment 1", new LocalDate(2016, 4, 22)))
+              None, "self employment 1", new LocalDate(2016, 4, 22)))
     }
   }
 
@@ -45,12 +44,12 @@ class SelfEmploymentSpec extends JsonSpec {
     "reject name longer than 100 characters and commencement date after the present date" in {
 
       val se = SelfEmployment(name = "a" * 101, commencementDate = LocalDate.now().plusDays(1))
-      val json = Json.toJson(se)
 
-      val validationErrors = json.validate[SelfEmployment].asInstanceOf[JsError].errors.flatMap(x => x._2)
-
-      validationErrors should contain theSameElementsAs Seq(ValidationError("commencement date should be in the past"), ValidationError("error.maxLength", 100))
-
+      assertValidationError[SelfEmployment](
+          se,
+          List("commencement date should be in the past",
+               "max field length exceeded the max 100 chars"),
+          "Expected valid self-employment")
     }
   }
 }

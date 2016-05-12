@@ -30,11 +30,13 @@ object SelfEmployment {
 
   implicit val selfEmploymentWrites = Json.writes[SelfEmployment]
 
-  private def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past"))(_.isBefore(LocalDate.now()))
+  def lengthValidator = Reads.of[String].filter(ValidationError("max field length exceeded the max 100 chars", ErrorCode("MAX_FIELD_LENGTH_EXCEEDED")))(_.length <= 100)
+
+  def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past", ErrorCode("COMMENCEMENT_DATE_NOT_IN_THE_PAST")))(_.isBefore(LocalDate.now()))
 
   implicit val selfEmploymentReads: Reads[SelfEmployment] = (
-    (JsPath \ "id").readNullable[SelfEmploymentId] and
-      (JsPath \ "name").read[String](maxLength[String](100)) and
-      (JsPath \ "commencementDate").read[LocalDate](commencementDateValidator)
+    (__ \ "id").readNullable[SelfEmploymentId] and
+      (__ \ "name").read[String](lengthValidator) and
+      (__ \ "commencementDate").read[LocalDate](commencementDateValidator)
     ) (SelfEmployment.apply _)
 }

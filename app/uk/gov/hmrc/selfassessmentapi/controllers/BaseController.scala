@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
+import play.api.data.validation.ValidationError
 import play.api.hal.{Hal, HalLink, HalResource}
-import play.api.libs.json._
+import play.api.libs.json.{JsString, _}
 import play.api.mvc.{Request, Result}
-import uk.gov.hmrc.api.controllers.ErrorGenericBadRequest
 import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 trait BaseController
-    extends uk.gov.hmrc.play.microservice.controller.BaseController {
+  extends uk.gov.hmrc.play.microservice.controller.BaseController {
 
   val context: String
 
@@ -38,7 +39,7 @@ trait BaseController
     links.foldLeft(halState)((res, link) => res ++ link)
   }
 
-  def halResourceList(name: String, value : JsValue, self: String) = {
+  def halResourceList(name: String, value: JsValue, self: String) = {
     halResource(
       JsObject(
         Seq(
@@ -50,13 +51,34 @@ trait BaseController
   }
 
   override protected def withJsonBody[T](f: (T) => Future[Result])(
-      implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) =
+    implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) =
     Try(request.body.validate[T]) match {
       case Success(JsSuccess(payload, _)) => f(payload)
-      case Success(JsError(errs)) =>
-        val msg = errs.flatMap(_._2).map(_.message).mkString("\n")
-        Future.successful(BadRequest(Json.toJson(ErrorGenericBadRequest(msg))))
+      case Success(JsError(errors)) =>
+        Future.successful(BadRequest(failedValidationJson(errors)))
       case Failure(e) =>
         Future.successful(BadRequest(s"could not parse body due to ${e.getMessage}"))
     }
+
+
+  private def failedValidationJson(errors: Seq[(JsPath, Seq[ValidationError])]): JsObject = {
+    JsObject(
+      Seq(
+        "code" -> JsString("VALIDATION_FAILED"),
+        "message" -> JsString("Validation failed"),
+        "errors" -> JsArray(
+          for {
+            (path, errSeq) <- errors
+            error <- errSeq
+          } yield JsObject(
+            Seq(
+              "path" -> JsString(path.toString),
+              "code" -> JsString(
+                Try(error.args.filter(_.isInstanceOf[ErrorCode]).head.asInstanceOf[ErrorCode]) match {
+                  case Success(code) => code.value
+                  case _ => "N/A"
+                }
+              ),
+              "message" -> JsString(error.message))))))
+  }
 }

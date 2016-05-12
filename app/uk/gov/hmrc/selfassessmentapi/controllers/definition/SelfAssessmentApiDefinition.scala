@@ -21,25 +21,25 @@ import uk.gov.hmrc.selfassessmentapi.controllers.definition.APIStatus.APIStatus
 
 class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
 
-  private val readScope = "read:self-assessment-api"
-  private val writeScope = "write:self-assessment-api"
+  private val readScope = "read:self-assessment"
+  private val writeScope = "write:self-assessment"
 
   val definition: Definition =
     Definition(
       scopes = Seq(
         Scope(
           key = readScope,
-          name = "Self-Assessment API - Read",
+          name = "Self-Assessment - Read",
           description = "Allow read access to self assessment data"
         ),
         Scope(
           key = writeScope,
-          name = "Self-Assessment API - Write",
+          name = "Self-Assessment - Write",
           description = "Allow write access to self assessment data"
         )
       ),
       api = APIDefinition(
-        name = "Self Assessment API",
+        name = "Self Assessment",
         description = "An API for providing self assessment data and obtaining liability estimations",
         context = apiContext,
         versions = Seq(

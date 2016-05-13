@@ -38,16 +38,9 @@ case class SelfEmploymentIncome(id: Option[SelfEmploymentIncomeId] = None,
 
 object SelfEmploymentIncome {
 
-  private def taxYearValidator = Reads.of[String].filter(ValidationError("tax year format is YYYY-YY (2016-17)", ErrorCode("TAX_YEAR_INVALID"))) { taxYear =>
-    if (taxYear.matches("[0-9]{4}-[0-9]{2}")) {
-      val years = taxYear.split("-")
-      val startYear = years(0).toInt
-      val finishYear = years(1).toInt
-      ((startYear + 1).toString.substring(2).toInt == finishYear)
-    } else false
-  }
+  private def taxYearValidator = Reads.of[String].filter(ValidationError("tax year must be 2016-17", ErrorCode("TAX_YEAR_INVALID")))(_ == "2016-17")
 
-  private def amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount cannot have more than 2 decimal values", ErrorCode("AMOUNT_DECIMAL_LENGTH_EXCEEDED")))(_.scale < 3)
+  private def amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount cannot have more than 2 decimal values", ErrorCode("INVALID_MONETARY_AMOUNT")))(_.scale < 3)
 
   implicit val seIncomeTypes = EnumJson.enumFormat(SelfEmploymentIncomeType)
   implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]

@@ -115,9 +115,20 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
       new BodyAssertions(myQuery(response.json), this)
     }
 
+    def body1(myQuery: JsValue => Seq[JsValue]) = {
+      new BodyListAssertions(myQuery(response.json), this)
+    }
+
     class BodyAssertions(content: JsValue, assertions: Assertions) {
       def is(value: String) = {
         content.as[String] shouldBe value
+        assertions
+      }
+    }
+
+    class BodyListAssertions(content: Seq[JsValue], assertions: Assertions) {
+      def is(value: String*) = {
+        content.map(con => con.as[String]) should contain theSameElementsAs value
         assertions
       }
     }

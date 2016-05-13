@@ -61,24 +61,22 @@ trait BaseController
     }
 
 
-  private def failedValidationJson(errors: Seq[(JsPath, Seq[ValidationError])]): JsObject = {
-    JsObject(
-      Seq(
-        "code" -> JsString("VALIDATION_FAILED"),
-        "message" -> JsString("Validation failed"),
-        "errors" -> JsArray(
-          for {
-            (path, errSeq) <- errors
-            error <- errSeq
-          } yield JsObject(
-            Seq(
-              "path" -> JsString(path.toString),
-              "code" -> JsString(
-                Try(error.args.filter(_.isInstanceOf[ErrorCode]).head.asInstanceOf[ErrorCode]) match {
-                  case Success(code) => code.value
-                  case _ => "N/A"
-                }
-              ),
-              "message" -> JsString(error.message))))))
+  private def failedValidationJson(errors: Seq[(JsPath, Seq[ValidationError])]) = {
+    JsArray(
+      for {
+        (path, errSeq) <- errors
+        error <- errSeq
+      } yield JsObject(
+        Seq(
+          "path" -> JsString(path.toString),
+          "code" -> JsString(
+            Try(error.args.filter(_.isInstanceOf[ErrorCode]).head.asInstanceOf[ErrorCode]) match {
+              case Success(code) => code.value
+              case _ => "N/A"
+            }
+          ),
+          "message" -> JsString(error.message))
+      )
+    )
   }
 }

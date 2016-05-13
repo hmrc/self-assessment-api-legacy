@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentIncomeId}
 
 trait Links {
 
@@ -39,7 +40,7 @@ trait Links {
   def selfEmploymentsHref(utr: SaUtr): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.find(utr).url)
 
-  def   selfEmploymentIncomeHref(utr: SaUtr, seId: String, seIncomeId: String): String =
+  def selfEmploymentIncomeHref(utr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsIncomeController.findById(utr, seId, seIncomeId).url)
 
 

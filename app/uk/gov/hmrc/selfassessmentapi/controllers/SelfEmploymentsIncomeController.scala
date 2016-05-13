@@ -19,18 +19,20 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import play.api.hal.HalLink
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
-import play.api.mvc.{Action, AnyContent}
-import reactivemongo.bson.BSONObjectID
 import play.api.mvc.hal._
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentIncomeId, SelfEmploymentId, SelfEmploymentIncome}
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentIncome, SelfEmploymentIncomeId}
+import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentIncomeService
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SelfEmploymentsIncomeController extends BaseController with Links {
 
   override lazy val context: String = AppContext.apiGatewayContext
+
+  val selfEmploymentIncomeService: SelfEmploymentIncomeService
 
   def findById(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = ???
 
@@ -38,8 +40,9 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
 
   def create(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmploymentIncome] { selfEmploymentIncome =>
-      val seIncomeId = BSONObjectID.generate.stringify
-      Future.successful(Created(halResource(obj(), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, seIncomeId))))))
+      selfEmploymentIncomeService.create(selfEmploymentIncome) map { seIncomeId =>
+        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, seIncomeId)))))
+      }
     }
   }
 

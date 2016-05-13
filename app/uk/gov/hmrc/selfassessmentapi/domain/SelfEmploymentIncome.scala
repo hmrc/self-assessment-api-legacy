@@ -40,7 +40,8 @@ object SelfEmploymentIncome {
 
   private def taxYearValidator = Reads.of[String].filter(ValidationError("tax year must be 2016-17", ErrorCode("TAX_YEAR_INVALID")))(_ == "2016-17")
 
-  private def amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount cannot have more than 2 decimal values", ErrorCode("INVALID_MONETARY_AMOUNT")))(_.scale < 3)
+  private def amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
+    ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
 
   implicit val seIncomeTypes = EnumJson.enumFormat(SelfEmploymentIncomeType)
   implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]

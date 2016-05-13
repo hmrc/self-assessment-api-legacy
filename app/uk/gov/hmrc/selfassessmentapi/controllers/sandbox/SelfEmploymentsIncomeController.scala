@@ -16,4 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-object SelfEmploymentsIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsIncomeController
+import uk.gov.hmrc.selfassessmentapi.services.sandbox.SelfEmploymentIncomeService
+
+object SelfEmploymentsIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsIncomeController {
+  override val selfEmploymentIncomeService = SelfEmploymentIncomeService
+}

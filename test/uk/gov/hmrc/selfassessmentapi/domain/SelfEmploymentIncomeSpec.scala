@@ -36,9 +36,17 @@ class SelfEmploymentIncomeSpec extends JsonSpec {
         val seIncome = SelfEmploymentIncome(taxYear = "2016-17", incomeType = TURNOVER, amount = testAmount)
         assertValidationError[SelfEmploymentIncome](
           seIncome,
-          Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount cannot have more than 2 decimal values"),
-          "Expected invalid self-employment-income")
+          Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+          "Expected self-employment-income with up to 2 decimal places")
       }
+    }
+
+    "reject negative amount" in {
+      val seIncome = SelfEmploymentIncome(taxYear = "2016-17", incomeType = TURNOVER, amount = BigDecimal(-1000.12))
+      assertValidationError[SelfEmploymentIncome](
+        seIncome,
+        Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+        "Expected positive self-employment-income")
     }
 
     "reject taxYear with invalid formats" in {

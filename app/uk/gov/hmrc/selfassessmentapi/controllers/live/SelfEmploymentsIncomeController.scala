@@ -21,11 +21,14 @@ import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.services.live.SelfEmploymentService
+import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentIncomeService
+import uk.gov.hmrc.selfassessmentapi.services.live.SelfEmploymentIncomeService
 
 import scala.concurrent.Future
 
 object SelfEmploymentsIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsIncomeController {
+
+  override val selfEmploymentIncomeService: SelfEmploymentIncomeService = SelfEmploymentIncomeService
 
   override def create(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
@@ -46,4 +49,5 @@ object SelfEmploymentsIncomeController extends uk.gov.hmrc.selfassessmentapi.con
   override def delete(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
+
 }

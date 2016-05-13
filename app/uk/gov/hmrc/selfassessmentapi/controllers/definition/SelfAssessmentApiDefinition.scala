@@ -104,6 +104,14 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(writeScope)
               ),
               Endpoint(
+                uriPattern = "/{utr}/self-employments/{selfEmploymentId}/incomes",
+                name = "Create Self Employment Incomes",
+                method = HttpMethod.POST,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(writeScope)
+              ),
+              Endpoint(
                 uriPattern = "/{utr}/liabilities",
                 name = "Request Liability",
                 method = HttpMethod.POST,

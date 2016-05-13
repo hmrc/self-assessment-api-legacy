@@ -65,22 +65,22 @@
         </authorisation>
     </section>
     <section id="sample-request">
-        <json><![CDATA[{
-            "name": "Awesome Plumbers",
-            "commencementDate": "2016-04-06"
-            }]]>
+        <json>
+<![CDATA[{
+    "name": "Awesome Plumbers",
+    "commencementDate": "2016-04-06"
+}]]>
         </json>
     </section>
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>201 (CREATED)</httpStatus>
-        <json><![CDATA[{
-             "_links": {
-               "self": {
-                 "href": "/self-assessment/1097172564/self-employments/5728b53c4800005100d2d32d"
-               }
-             }
-            }]]>
+        <json>
+<![CDATA[{
+    "_links": {
+       "self": { "href": "/self-assessment/1097172564/self-employments/5728b53c4800005100d2d32d"}
+    }
+}]]>
         </json>
     </section>
 </endpoint>

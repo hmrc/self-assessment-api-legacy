@@ -33,7 +33,8 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
           .post(s"/sandbox/$saUtr/self-employments", Some(toJson(SelfEmployment(name = "a" * 101, commencementDate = LocalDate.now().plusDays(1)))))
           .thenAssertThat()
           .statusIs(400)
-          .body(_ \ "code").is("VALIDATION_FAILED")
+          .body1(_ \\ "code").is("COMMENCEMENT_DATE_NOT_IN_THE_PAST", "MAX_FIELD_LENGTH_EXCEEDED")
+          .body1(_ \\ "path").is("/commencementDate", "/name")
       }
     }
 

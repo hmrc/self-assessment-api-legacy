@@ -46,7 +46,7 @@ object SelfEmploymentIncome {
   implicit val seIncomeTypes = EnumJson.enumFormat(SelfEmploymentIncomeType)
   implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]
   implicit val seIncomeReads: Reads[SelfEmploymentIncome] = (
-    (__ \ "id").readNullable[SelfEmploymentId] and
+    Reads.pure(None) and
       (__ \ "taxYear").read[String](taxYearValidator) and
       (__ \ "incomeType").read[SelfEmploymentIncomeType] and
       (__ \ "amount").read[BigDecimal](amountValidator)

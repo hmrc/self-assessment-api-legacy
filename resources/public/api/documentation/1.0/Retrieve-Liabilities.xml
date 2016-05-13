@@ -54,38 +54,31 @@
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>200 (OK)</httpStatus>
-        <json><![CDATA[{
-                  "_links": {
-                    "self": {
-                      "href": "/self-assessment/1097172564/liabilities"
-                    }
-                  },
-                  "_embedded": {
-                    "liabilities": [
-                      {
-                        "_links": {
-                          "self": {
-                            "href": "/self-assessment/1097172564/liabilities/1234"
-                          }
-                        }
-                      },
-                      {
-                        "_links": {
-                          "self": {
-                            "href": "/self-assessment/1097172564/liabilities/4321"
-                          }
-                        }
-                      },
-                      {
-                        "_links": {
-                          "self": {
-                            "href": "/self-assessment/1097172564/liabilities/7777"
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }]]>
+        <json>
+<![CDATA[{
+  "_links": {
+    "self": { "href": "/self-assessment/1097172564/liabilities" }
+  },
+  "_embedded": {
+    "liabilities": [
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/liabilities/1234" }
+        }
+      },
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/liabilities/4321" }
+        }
+      },
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/liabilities/7777" }
+        }
+      }
+    ]
+  }
+}]]>
         </json>
     </section>
 </endpoint>

@@ -53,11 +53,12 @@
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>200 (OK)</httpStatus>
-        <json><![CDATA[{
-        "_links" : {
-          "self": { "href": "/self-assessment/2234567890" }
-        }
-       }]]>
+        <json>
+<![CDATA[{
+    "_links" : {
+        "self": { "href": "/self-assessment/2234567890" }
+    }
+}]]>
         </json>
     </section>
 </endpoint>

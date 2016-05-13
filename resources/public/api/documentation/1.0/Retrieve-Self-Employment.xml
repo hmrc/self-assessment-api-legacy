@@ -71,16 +71,15 @@
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>200 (OK)</httpStatus>
-        <json><![CDATA[{
-          "_links": {
-            "self": {
-              "href": "/self-assessment/1097172564/self-employments/1234"
-            }
-          },
-          "id": "1234",
-          "name": "Awesome Bakers",
-          "commencementDate": "2016-05-03"
-        }]]>
+        <json>
+<![CDATA[{
+    "_links": {
+        "self": { "href": "/self-assessment/1097172564/self-employments/1234" }
+    },
+    "id": "1234",
+    "name": "Awesome Bakers",
+    "commencementDate": "2016-05-03"
+}]]>
         </json>
     </section>
 </endpoint>

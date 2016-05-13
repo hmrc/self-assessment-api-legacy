@@ -22,9 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import scala.concurrent.Future
 
 trait SelfEmploymentIncomeService {
-
+  def find(saUtr: SaUtr): Future[Seq[SelfEmploymentIncome]]
   def create(selfEmploymentIncome: SelfEmploymentIncome): Future[SelfEmploymentIncomeId]
-
   def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId) : Future[Option[SelfEmploymentIncome]]
-
 }

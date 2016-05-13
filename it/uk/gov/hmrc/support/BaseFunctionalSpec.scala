@@ -172,11 +172,6 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
       this
     }
 
-    private def withHeader(name : String, value: String) = {
-      hc.withExtraHeaders((name, value))
-      this
-    }
-
     def withoutAcceptHeader() = {
       this.addAcceptHeader = false
       this
@@ -197,7 +192,7 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
           }
           case "PUT" => {
             val jsonBody = body.getOrElse(throw new RuntimeException("Body for PUT must be provided"))
-            new Assertions((Http.putJson(url, jsonBody)(hc)))
+            new Assertions(Http.putJson(url, jsonBody)(hc))
           }
         }
       }

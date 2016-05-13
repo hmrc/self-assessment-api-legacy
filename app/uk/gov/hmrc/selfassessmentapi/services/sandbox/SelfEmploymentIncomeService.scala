@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.services.sandbox
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentIncome, SelfEmploymentIncomeId, SelfEmploymentIncomeType}
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.Future
 
@@ -26,4 +26,10 @@ object SelfEmploymentIncomeService extends uk.gov.hmrc.selfassessmentapi.service
 
   override def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId): Future[Option[SelfEmploymentIncome]] =
     Future.successful(Some(SelfEmploymentIncome(Some(selfEmploymentIncomeId), "2016-17", SelfEmploymentIncomeType.OTHER, BigDecimal("50000.00"))))
+
+
+  override def find(saUtr: SaUtr): Future[Seq[SelfEmploymentIncome]] =
+    Future.successful(Seq(SelfEmploymentIncome(Some("1234"), "2016-17", SelfEmploymentIncomeType.TURNOVER, BigDecimal("50000.00")),
+      SelfEmploymentIncome(Some("5678"), "2016-17", SelfEmploymentIncomeType.OTHER, BigDecimal("5000.00"))))
+
 }

@@ -13,7 +13,7 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
 
   "Create self-employment-income with Amount with less than or equal to 2 decimal values " should {
     "return a 201 when the resource is created" in {
-      given().userIsAuthorisedForTheResource(saUtr)
+      given()
         .when()
         .post(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, "2016-17", TURNOVER, BigDecimal(1000.99)))))
         .thenAssertThat()
@@ -22,9 +22,9 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     }
   }
 
-  "Create self-employment-income with Amount with more than 2 decimal values " should {
+  "Create self-employment-income with Amount with more than 2 decimal values" should {
     "return a 400 validation error" in {
-      given().userIsAuthorisedForTheResource(saUtr)
+      given()
         .when()
         .post(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, "2016-17", TURNOVER, BigDecimal(-1000.12)))))
         .thenAssertThat()
@@ -35,7 +35,6 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
   "Retrieve an existent self-employment income id" should {
     "return a HAL resource" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
         .thenAssertThat()
@@ -44,4 +43,19 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
         .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
     }
   }
+
+  "Retrieve all self-employment incomes" should {
+    "return all incomes as HAL resources" in {
+      given()
+        .when()
+        .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes")
+        .bodyHasPath("""_embedded \ incomes(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes/1234")
+        .bodyHasPath("""_embedded \ incomes(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes/5678")
+    }
+  }
+
 }

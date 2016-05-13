@@ -20,7 +20,7 @@ import play.api.hal.HalLink
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -28,6 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentInc
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentIncomeService
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait SelfEmploymentsIncomeController extends BaseController with Links {
 
@@ -42,7 +43,14 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
     }
   }
 
-  def find(saUtr: SaUtr, seId: SelfEmploymentId): Action[AnyContent] = ???
+  def find(saUtr: SaUtr, seId: SelfEmploymentId): Action[AnyContent] = Action.async { request =>
+    selfEmploymentIncomeService.find(saUtr) map { selfEmploymentIncomes =>
+      val selfEmploymentIncomesJson = toJson(selfEmploymentIncomes.map(income => halResource(obj(),
+        Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, income.id.get))))))
+
+      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentIncomeHref(saUtr, seId)))
+    }
+  }
 
   def create(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmploymentIncome] { selfEmploymentIncome =>

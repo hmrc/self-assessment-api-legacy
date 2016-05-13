@@ -24,4 +24,6 @@ object SelfEmploymentIncomeService extends uk.gov.hmrc.selfassessmentapi.service
   override def create(selfEmploymentIncome: SelfEmploymentIncome): Future[SelfEmploymentIncomeId] = ???
 
   override def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId): Future[Option[SelfEmploymentIncome]] = ???
+
+  override def find(saUtr: SaUtr): Future[Seq[SelfEmploymentIncome]] = ???
 }

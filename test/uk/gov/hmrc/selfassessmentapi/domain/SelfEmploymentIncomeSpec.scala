@@ -25,7 +25,7 @@ class SelfEmploymentIncomeSpec extends JsonSpec {
       roundTripJson(SelfEmploymentIncome(id = Some("id"), taxYear = "2016-17", incomeType = TURNOVER, amount = BigDecimal(1000.99)))
     }
 
-    "round trip SelfEmployment json with no id" in {
+    "round trip SelfEmploymentIncome json with no id" in {
       roundTripJson(SelfEmploymentIncome(id = None, taxYear = "2016-17", incomeType = TURNOVER, amount = BigDecimal(1000.99)))
     }
   }

@@ -31,4 +31,17 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
         .statusIs(400)
     }
   }
+
+  "Retrieve an existent self-employment income id" should {
+    "return a HAL resource" in {
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
+    }
+  }
 }

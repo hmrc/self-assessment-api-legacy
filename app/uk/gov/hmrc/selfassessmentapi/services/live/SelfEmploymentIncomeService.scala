@@ -15,10 +15,13 @@
  */
 
 package uk.gov.hmrc.selfassessmentapi.services.live
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentIncome, SelfEmploymentIncomeId}
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentIncome, SelfEmploymentIncomeId}
 
 import scala.concurrent.Future
 
 object SelfEmploymentIncomeService extends uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentIncomeService {
   override def create(selfEmploymentIncome: SelfEmploymentIncome): Future[SelfEmploymentIncomeId] = ???
+
+  override def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId): Future[Option[SelfEmploymentIncome]] = ???
 }

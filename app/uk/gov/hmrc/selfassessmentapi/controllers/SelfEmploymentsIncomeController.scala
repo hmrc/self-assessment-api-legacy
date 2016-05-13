@@ -21,6 +21,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
 import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentIncome, SelfEmploymentIncomeId}
@@ -34,7 +35,12 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
 
   val selfEmploymentIncomeService: SelfEmploymentIncomeService
 
-  def findById(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = ???
+  def findById(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = Action.async { request =>
+    selfEmploymentIncomeService.findBySelfEmploymentIncomeId(saUtr, seId, seIncomeId) map {
+      case Some(selfEmploymentIncome) => Ok(halResource(toJson(selfEmploymentIncome), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, seIncomeId)))))
+      case None => NotFound(toJson(ErrorNotFound))
+    }
+  }
 
   def find(saUtr: SaUtr, seId: SelfEmploymentId): Action[AnyContent] = ???
 

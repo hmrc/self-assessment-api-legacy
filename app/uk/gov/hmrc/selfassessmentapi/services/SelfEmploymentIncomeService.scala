@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentIncome, SelfEmploymentIncomeId}
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.Future
 
 trait SelfEmploymentIncomeService {
 
   def create(selfEmploymentIncome: SelfEmploymentIncome): Future[SelfEmploymentIncomeId]
+
+  def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId) : Future[Option[SelfEmploymentIncome]]
 
 }

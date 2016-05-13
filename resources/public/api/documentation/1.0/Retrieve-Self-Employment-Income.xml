@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Create Self Employment Incomes</name>
-    <description>This endpoint creates self-employment incomes</description>
+    <name>Retrieve Self Employment Income</name>
+    <description>This endpoint returns a specific self-employment income</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>POST /self-assessment/{utr}/self-employments/{selfEmploymentId}/incomes</resource>
+        <resource>GET /self-assessment/{utr}/self-employments/{selfEmploymentsId}/incomes/{selfEmploymentIncomeId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -29,7 +29,7 @@
                 </row>
                 <row>
                     <cell>
-                        <code>selfEmploymentId</code>
+                        <code>selfEmploymentsId</code>
                     </cell>
                     <cell>
                         <code>String</code>
@@ -37,7 +37,19 @@
                     <cell>
                         <code>1234567</code>
                     </cell>
-                    <cell>The Self Employments id</cell>
+                    <cell>The Self Employment Income id</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>selfEmploymentIncomeId</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2349587</code>
+                    </cell>
+                    <cell>The Self Employment Income id</cell>
                 </row>
             </rows>
         </table>
@@ -58,14 +70,6 @@
                         <code>application/vnd.hmrc.1.0+json</code>
                     </cell>
                 </row>
-                <row>
-                    <cell>
-                        <code>Content-Type</code>
-                    </cell>
-                    <cell>
-                        <code>application/json</code>
-                    </cell>
-                </row>
             </rows>
         </table>
     </section>
@@ -73,26 +77,21 @@
         <title>Authorisation</title>
         <authorisation>
             <type>USER</type>
-            <scope>write:self-assessment</scope>
+            <scope>read:self-assessment</scope>
         </authorisation>
-    </section>
-    <section id="sample-request">
-        <json>
-<![CDATA[{
-    "taxYear": "2016-17",
-    "incomeType": "TURNOVER",
-    "amount": "60000.00"
-}]]>
-        </json>
     </section>
     <section id="sample-response">
         <title>Response</title>
-        <httpStatus>201 (CREATED)</httpStatus>
+        <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
     "_links": {
-        "self": { "href": "/self-assessment/1097172564/self-employments/5728b53c4800005100d2d76e/incomes/5728b53c4800005100d2d98a" }
-    }
+        "self": { "href": "/self-assessment/1097172564/self-employments/1234/incomes/5728b53c4800005100d2d98a" }
+    },
+    "id": "5728b53c4800005100d2d98a",
+    "taxYear": "2016-17",
+    "incomeType": "TURNOVER",
+    "amount": "60000.00"
 }]]>
         </json>
     </section>

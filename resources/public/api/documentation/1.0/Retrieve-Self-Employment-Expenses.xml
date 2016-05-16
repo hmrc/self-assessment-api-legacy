@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employment Income</name>
-    <description>This endpoint returns a specific self-employment income</description>
+    <name>Retrieve Self Employment Expenses</name>
+    <description>This endpoint returns a list of self employment expenses</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/self-employments/{selfEmploymentsId}/incomes/{selfEmploymentIncomeId}</resource>
+        <resource>GET /self-assessment/{utr}/self-employments/{selfEmploymentsId}/expenses</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -23,7 +23,7 @@
                         <code>String</code>
                     </cell>
                     <cell>
-                        <code>2234567890</code>
+                        <code>1097172564</code>
                     </cell>
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
@@ -38,18 +38,6 @@
                         <code>1234567</code>
                     </cell>
                     <cell>The Self Employment id</cell>
-                </row>
-                <row>
-                    <cell>
-                        <code>selfEmploymentIncomeId</code>
-                    </cell>
-                    <cell>
-                        <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>2349587</code>
-                    </cell>
-                    <cell>The Self Employment Income id</cell>
                 </row>
             </rows>
         </table>
@@ -86,12 +74,27 @@
         <json>
 <![CDATA[{
     "_links": {
-        "self": { "href": "/self-assessment/1097172564/self-employments/1234/incomes/5728b53c4800005100d2d98a" }
+        "self": { "href": "/self-assessment/1097172564/self-employments/987654/expenses" }
     },
-    "id": "5728b53c4800005100d2d98a",
-    "taxYear": "2016-17",
-    "incomeType": "TURNOVER",
-    "amount": "60000.00"
+    "_embedded": {
+    "expenses": [
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/self-employments/987654/expenses/1234" }
+        }
+      },
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/self-employments/987654/expenses/5678" }
+        }
+      },
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/self-employments/987654/expenses/9101" }
+        }
+      }
+    ]
+    }
 }]]>
         </json>
     </section>

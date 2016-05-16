@@ -48,7 +48,7 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
     val seExpensesJson = toJson(seq.map(res => halResource(obj(),
       Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, seId,  res.id.get))))))
 
-    Ok(halResourceList("selfEmployments", seExpensesJson, selfEmploymentExpensesHref(saUtr, seId)))
+    Ok(halResourceList("selfEmploymentExpenses", seExpensesJson, selfEmploymentExpensesHref(saUtr, seId)))
   }
 
   def create(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
@@ -61,7 +61,7 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
   def update(saUtr: SaUtr, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action.async(parse.json)  {
     implicit request =>
     withJsonBody[SelfEmploymentExpense] { seExpense =>
-     Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, seId, seExpense.id.get))))))
+     Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, seId, seExpenseId))))))
     }
   }
 

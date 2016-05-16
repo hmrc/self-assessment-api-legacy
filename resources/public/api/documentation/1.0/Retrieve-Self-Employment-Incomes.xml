@@ -1,6 +1,6 @@
 <endpoint>
     <name>Retrieve Self Employment Incomes</name>
-    <description>This endpoint returns paginated list of self employment incomes</description>
+    <description>This endpoint returns a list of self employment incomes</description>
     <section id="resource">
         <title>Resource</title>
         <resource>GET /self-assessment/{utr}/self-employments/{selfEmploymentsId}/incomes</resource>

@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employment Income</name>
-    <description>This endpoint returns a specific self-employment income</description>
+    <name>Delete Self Employment Expense</name>
+    <description>This endpoint deletes specific self-employment expense</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/self-employments/{selfEmploymentsId}/incomes/{selfEmploymentIncomeId}</resource>
+        <resource>DELETE /self-assessment/{utr}/self-employments/{selfEmploymentsId}/expenses/{selfEmploymentExpenseId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -41,7 +41,7 @@
                 </row>
                 <row>
                     <cell>
-                        <code>selfEmploymentIncomeId</code>
+                        <code>selfEmploymentExpenseId</code>
                     </cell>
                     <cell>
                         <code>String</code>
@@ -49,7 +49,7 @@
                     <cell>
                         <code>2349587</code>
                     </cell>
-                    <cell>The Self Employment Income id</cell>
+                    <cell>The Self Employment Expense id</cell>
                 </row>
             </rows>
         </table>
@@ -82,17 +82,6 @@
     </section>
     <section id="sample-response">
         <title>Response</title>
-        <httpStatus>200 (OK)</httpStatus>
-        <json>
-<![CDATA[{
-    "_links": {
-        "self": { "href": "/self-assessment/1097172564/self-employments/1234/incomes/5728b53c4800005100d2d98a" }
-    },
-    "id": "5728b53c4800005100d2d98a",
-    "taxYear": "2016-17",
-    "incomeType": "TURNOVER",
-    "amount": "60000.00"
-}]]>
-        </json>
+        <httpStatus>204 (NO_CONTENT)</httpStatus>
     </section>
 </endpoint>

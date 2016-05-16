@@ -58,4 +58,27 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     }
   }
 
+  "Self-employment income" should {
+    "be replaced with the income provided" in {
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId",
+          Some(toJson(SelfEmploymentIncome(None, TURNOVER, BigDecimal(1000.99)))))
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
+    }
+  }
+
+  "Delete self-employment income" should {
+    "return a 204 response when an existing self-employment income is deleted" in {
+      given()
+        .when()
+        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
+        .thenAssertThat()
+        .statusIs(204)
+    }
+  }
+
 }

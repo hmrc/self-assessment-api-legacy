@@ -23,6 +23,12 @@ import scala.concurrent.Future
 
 trait SelfEmploymentIncomeService {
   def find(saUtr: SaUtr): Future[Seq[SelfEmploymentIncome]]
+
   def create(selfEmploymentIncome: SelfEmploymentIncome): Future[SelfEmploymentIncomeId]
-  def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId) : Future[Option[SelfEmploymentIncome]]
+
+  def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId): Future[Option[SelfEmploymentIncome]]
+
+  def update(selfEmploymentIncome: SelfEmploymentIncome, utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId): Future[Unit]
+
+  def delete(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId): Future[Boolean]
 }

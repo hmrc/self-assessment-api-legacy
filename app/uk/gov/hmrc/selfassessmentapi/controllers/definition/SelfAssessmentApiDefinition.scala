@@ -121,6 +121,22 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
               ),
               Endpoint(
                 uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/incomes/{selfEmploymentIncomeId}",
+                endpointName = "Update Self Employment Income",
+                method = HttpMethod.PUT,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(writeScope)
+              ),
+              Endpoint(
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/incomes/{selfEmploymentIncomeId}",
+                endpointName = "Delete Self Employment Income",
+                method = HttpMethod.DELETE,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(writeScope)
+              ),
+              Endpoint(
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/incomes/{selfEmploymentIncomeId}",
                 endpointName = "Retrieve Self Employment Income",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,

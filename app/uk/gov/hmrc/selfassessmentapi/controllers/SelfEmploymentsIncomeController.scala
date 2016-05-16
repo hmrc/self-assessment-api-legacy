@@ -20,15 +20,14 @@ import play.api.hal.HalLink
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, SelfEmploymentId, SelfEmploymentIncome, SelfEmploymentIncomeId}
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentIncome, SelfEmploymentIncomeId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentIncomeService
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 trait SelfEmploymentsIncomeController extends BaseController with Links {
 
@@ -60,7 +59,17 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
     }
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[JsValue] = ???
+  def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    withJsonBody[SelfEmploymentIncome] { selfEmploymentIncome =>
+      selfEmploymentIncomeService.update(selfEmploymentIncome, saUtr, seId, seIncomeId) map { _ =>
+        Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, taxYear, seId, seIncomeId)))))
+      }
+    }
+  }
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = ???
+  def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = Action.async { request =>
+    selfEmploymentIncomeService.delete(saUtr, seId, seIncomeId) map { isDeleted =>
+      if (isDeleted) NoContent else NotFound(toJson(ErrorNotFound))
+    }
+  }
 }

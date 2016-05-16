@@ -45,4 +45,11 @@ trait Links {
 
   def selfEmploymentIncomeHref(saUtr: SaUtr, seId: SelfEmploymentId): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsIncomeController.find(saUtr, seId).url)
+
+  def   selfEmploymentExpensesHref(utr: SaUtr, seId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsExpenseController.find(utr, seId).url)
+
+  def   selfEmploymentExpenseHref(utr: SaUtr, seId: String, seExpenseId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsExpenseController.findById(utr, seId, seExpenseId).url)
+
 }

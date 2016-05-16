@@ -42,17 +42,16 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   }
 
   override def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
-    val liability = createLiability(utr, taxYear, liabilityId)
+    val liability = createLiability(utr, liabilityId)
     val links = Seq(
       HalLink("self", liabilityHref(utr, taxYear, liabilityId))
     )
     Future.successful(Ok(halResource(Json.toJson(liability), links)))
   }
 
-  def createLiability(utr: SaUtr, taxYear: TaxYear, id: String): Liability =
+  def createLiability(utr: SaUtr, id: String): Liability =
     Liability(
       id = Some(id),
-      taxYear = taxYear,
       income = Income(
         incomes = Seq(
           Amount("self-employment-profit", BigDecimal(92480)),
@@ -95,7 +94,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   }
 
   override def find(saUtr: SaUtr, taxYear: TaxYear): Action[AnyContent] = Action.async { request =>
-    val result= Seq(createLiability(saUtr, taxYear, "1234"), createLiability(saUtr, taxYear, "4321"), createLiability(saUtr, taxYear, "7777"))
+    val result= Seq(createLiability(saUtr, "1234"), createLiability(saUtr, "4321"), createLiability(saUtr, "7777"))
     val liabilities = toJson(
       result.map(liability => halResource(obj(), Seq(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
     )

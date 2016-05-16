@@ -22,7 +22,6 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
       val expectedJson = Json.parse(
         s"""
           |{
-          |  "taxYear": "$taxYear",
           |  "income": {
           |    "incomes": [
           |        {"type": "self-employment-profit", "amount": 92480},

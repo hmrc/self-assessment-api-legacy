@@ -68,7 +68,6 @@
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
-    "taxYear":"2016-17",
     "income":{
       "incomes":[
          {

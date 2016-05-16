@@ -31,14 +31,11 @@ object SelfEmploymentIncomeType extends Enumeration {
 
 
 case class SelfEmploymentIncome(id: Option[SelfEmploymentIncomeId] = None,
-                                taxYear: String,
                                 incomeType: SelfEmploymentIncomeType,
                                 amount: BigDecimal)
 
 
 object SelfEmploymentIncome {
-
-  private def taxYearValidator = Reads.of[String].filter(ValidationError("tax year must be 2016-17", ErrorCode("TAX_YEAR_INVALID")))(_ == "2016-17")
 
   private def amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
     ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
@@ -47,7 +44,6 @@ object SelfEmploymentIncome {
   implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]
   implicit val seIncomeReads: Reads[SelfEmploymentIncome] = (
     Reads.pure(None) and
-      (__ \ "taxYear").read[String](taxYearValidator) and
       (__ \ "incomeType").read[SelfEmploymentIncomeType] and
       (__ \ "amount").read[BigDecimal](amountValidator)
     ) (SelfEmploymentIncome.apply _)

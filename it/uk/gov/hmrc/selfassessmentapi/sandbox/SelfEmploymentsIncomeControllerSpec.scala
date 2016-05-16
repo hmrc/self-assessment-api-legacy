@@ -15,7 +15,7 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     "return a 201 when the resource is created" in {
       given()
         .when()
-        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, taxYear, TURNOVER, BigDecimal(1000.99)))))
+        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, TURNOVER, BigDecimal(1000.99)))))
         .thenAssertThat()
         .statusIs(201)
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/.+".r)
@@ -26,7 +26,7 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     "return a 400 validation error" in {
       given()
         .when()
-        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, taxYear, TURNOVER, BigDecimal(-1000.12)))))
+        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, TURNOVER, BigDecimal(-1000.12)))))
         .thenAssertThat()
         .statusIs(400)
     }

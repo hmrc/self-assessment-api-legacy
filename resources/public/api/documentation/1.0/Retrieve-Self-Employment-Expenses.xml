@@ -85,28 +85,36 @@
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
-    "_links": {
-        "self": { "href": "/self-assessment/1097172564/2016-16/self-employments/987654/expenses" }
-    },
-    "_embedded": {
-    "expenses": [
+  "_links": {
+    "self": {
+      "href": "/self-assessment/1097172564/2016-17/self-employments/1234567/expenses"
+    }
+  },
+  "_embedded": {
+    "selfEmployments": [
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/expenses/1234" }
+          "self": {
+            "href": "/self-assessment/1097172564/2016-17/self-employments/1234567/expenses/1234"
+          }
         }
       },
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/expenses/5678" }
+          "self": {
+            "href": "/self-assessment/1097172564/2016-17/self-employments/1234567/expenses/5678"
+          }
         }
       },
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/expenses/9101" }
+          "self": {
+            "href": "/self-assessment/1097172564/2016-17/self-employments/1234567/expenses/4321"
+          }
         }
       }
     ]
-    }
+  }
 }]]>
         </json>
     </section>

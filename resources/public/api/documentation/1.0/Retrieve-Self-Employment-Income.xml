@@ -97,12 +97,14 @@
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
-    "_links": {
-        "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/1234/incomes/5728b53c4800005100d2d98a" }
-    },
-    "id": "5728b53c4800005100d2d98a",
-    "incomeType": "TURNOVER",
-    "amount": "60000.00"
+   "_links":{
+      "self":{
+         "href":"/self-assessment/1097172564/2016-17/self-employments/1234/incomes/5728b53c4800005100d2d98a"
+      }
+   },
+   "id":"5728b53c4800005100d2d98a",
+   "type":"TURNOVER",
+   "amount": 60000.00
 }]]>
         </json>
     </section>

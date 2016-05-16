@@ -55,10 +55,14 @@
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
-    "_links" : {
-        "self": { "href": "/self-assessment/2234567890" },
-        "2016-17": { "href": "/self-assessment/2234567890/2016-17" }
+  "_links": {
+    "2016-17": {
+      "href": "/self-assessment/5000000972/2016-17"
+    },
+    "self": {
+      "href": "/self-assessment/5000000972"
     }
+  }
 }]]>
         </json>
     </section>

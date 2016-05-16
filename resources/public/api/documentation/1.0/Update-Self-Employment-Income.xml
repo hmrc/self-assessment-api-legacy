@@ -104,8 +104,8 @@
         <title>Sample Request</title>
         <json>
 <![CDATA[{
-    "incomeType": "TURNOVER",
-    "amount": "40000.00"
+    "type": "TURNOVER",
+    "amount": 40000.00
 }]]>
         </json>
     </section>
@@ -115,7 +115,9 @@
         <json>
 <![CDATA[{
     "_links": {
-        "self": { "href": "/self-assessment/1097172564/self-employments/5728b53c4800005100d2d76e/incomes/5728b53c4800005100d2d98a" }
+        "self": {
+           "href": "/self-assessment/2234567890/self-employments/1234567/incomes/2349587"
+           }
     }
 }]]>
         </json>

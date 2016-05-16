@@ -40,7 +40,7 @@ case class APIDefinition(
     require(version.version.nonEmpty, s"version is required")
     require(version.endpoints.nonEmpty, s"at least one endpoint is required")
     version.endpoints.foreach(endpoint => {
-      require(endpoint.name.nonEmpty, s"endpointName is required")
+      require(endpoint.endpointName.nonEmpty, s"endpointName is required")
       endpoint.queryParameters.getOrElse(Nil).foreach(parameter => {
         require(parameter.name.nonEmpty, "parameter name is required")
       })
@@ -68,7 +68,7 @@ case class APIVersion(
 
 case class Endpoint(
                      uriPattern: String,
-                     name: String,
+                     endpointName: String,
                      method: HttpMethod,
                      authType: AuthType,
                      throttlingTier: ResourceThrottlingTier,

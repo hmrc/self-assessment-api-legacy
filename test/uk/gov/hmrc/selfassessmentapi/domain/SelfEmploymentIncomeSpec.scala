@@ -21,12 +21,9 @@ import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType._
 class SelfEmploymentIncomeSpec extends JsonSpec {
 
   "format" should {
-    "round trip SelfEmploymentIncome json when id present" in {
-      roundTripJson(SelfEmploymentIncome(id = Some("id"), taxYear = "2016-17", incomeType = TURNOVER, amount = BigDecimal(1000.99)))
-    }
 
-    "round trip SelfEmploymentIncome json with no id" in {
-      roundTripJson(SelfEmploymentIncome(id = None, taxYear = "2016-17", incomeType = TURNOVER, amount = BigDecimal(1000.99)))
+    "round trip valid SelfEmploymentIncome json" in {
+      roundTripJson(SelfEmploymentIncome(taxYear = "2016-17", incomeType = TURNOVER, amount = BigDecimal(1000.99)))
     }
   }
 

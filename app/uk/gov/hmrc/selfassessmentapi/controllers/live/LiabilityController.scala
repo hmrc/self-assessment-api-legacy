@@ -22,23 +22,25 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 
+import scala.concurrent.Future
+
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
   override val context: String = AppContext.apiGatewayContext
 
-  override def requestLiability(utr: SaUtr, taxYear: Option[String]) = validateAccept(acceptHeaderValidationRules) {
-    NotImplemented(Json.toJson(ErrorNotImplemented))
+  override def requestLiability(utr: SaUtr, taxYear: Option[String]) = Action.async { request =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) {
-    NotImplemented(Json.toJson(ErrorNotImplemented))
+  override def retrieveLiability(utr: SaUtr, liabilityId: String) = Action.async { request =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def deleteLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) {
-    NotImplemented(Json.toJson(ErrorNotImplemented))
+  override def deleteLiability(utr: SaUtr, liabilityId: String) = Action.async { request =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def find(utr: SaUtr): Action[AnyContent] = Action { request =>
-    NotImplemented(Json.toJson(ErrorNotImplemented))
+  override def find(utr: SaUtr): Action[AnyContent] = Action.async { request =>
+    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 }

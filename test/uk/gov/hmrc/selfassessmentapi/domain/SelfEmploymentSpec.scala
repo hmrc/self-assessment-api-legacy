@@ -21,12 +21,8 @@ import org.joda.time.LocalDate
 class SelfEmploymentSpec extends JsonSpec {
 
   "format" should {
-    "round trip SelfEmployment json when id present" in {
-      roundTripJson(SelfEmployment(Some("id"), "self employment 1", new LocalDate(2016, 4, 22)))
-    }
-
-    "round trip SelfEmployment json with no id" in {
-      roundTripJson(SelfEmployment( None, "self employment 1", new LocalDate(2016, 4, 22)))
+    "round trip valid SelfEmployment json" in {
+      roundTripJson(SelfEmployment(name = "self employment 1", commencementDate = new LocalDate(2016, 4, 22)))
     }
   }
 

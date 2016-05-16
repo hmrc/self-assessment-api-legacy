@@ -21,7 +21,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
       val definition = new SelfAssessmentApiDefinition("self-assessment", APIStatus.PROTOTYPED).definition
       definition.api.versions foreach { version =>
         version.endpoints foreach { endpoint =>
-          val nameInUrl = endpoint.name.replaceAll(" ", "-")
+          val nameInUrl = endpoint.endpointName.replaceAll(" ", "-")
           given()
             .when()
             .get(s"/api/documentation/${version.version}/$nameInUrl").withoutAcceptHeader()

@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employment Incomes</name>
-    <description>This endpoint returns a list of self employment incomes</description>
+    <name>Update Self Employment Expense</name>
+    <description>This endpoint modifies specific self-employment expense</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/incomes</resource>
+        <resource>PUT /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/expenses/{selfEmploymentExpenseId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -23,7 +23,7 @@
                         <code>String</code>
                     </cell>
                     <cell>
-                        <code>1097172564</code>
+                        <code>2234567890</code>
                     </cell>
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
@@ -49,7 +49,19 @@
                     <cell>
                         <code>1234567</code>
                     </cell>
-                    <cell>The Self Employment Income id</cell>
+                    <cell>The Self Employment id</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>selfEmploymentExpenseId</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2349587</code>
+                    </cell>
+                    <cell>The Self Employment Expense id</cell>
                 </row>
             </rows>
         </table>
@@ -80,32 +92,21 @@
             <scope>read:self-assessment</scope>
         </authorisation>
     </section>
+    <section id="sample-request">
+        <json>
+       <![CDATA[{
+        "category": "TravelCosts",
+        "amount": "7777.00"
+       }]]>
+        </json>
+    </section>
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
     "_links": {
-        "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/incomes" }
-    },
-    "_embedded": {
-    "incomes": [
-      {
-        "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/incomes/1234" }
-        }
-      },
-      {
-        "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/incomes/5678" }
-        }
-      },
-      {
-        "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/incomes/9101" }
-        }
-      }
-    ]
+        "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/1234/expenses/5728b53c4800005100d2d98a" }
     }
 }]]>
         </json>

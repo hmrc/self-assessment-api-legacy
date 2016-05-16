@@ -128,6 +128,46 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses",
+                endpointName = "Create Self Employment Expense",
+                method = HttpMethod.POST,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(writeScope)
+              ),
+              Endpoint(
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses/{selfEmploymentExpenseId}",
+                endpointName = "Retrieve Self Employment Expense",
+                method = HttpMethod.GET,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(readScope)
+              ),
+              Endpoint(
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses",
+                endpointName = "Retrieve Self Employment Expenses",
+                method = HttpMethod.GET,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(readScope)
+              ),
+              Endpoint(
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses/{selfEmploymentExpenseId}",
+                endpointName = "Update Self Employment Expense",
+                method = HttpMethod.PUT,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(writeScope)
+              ),
+              Endpoint(
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses/{selfEmploymentExpenseId}",
+                endpointName = "Delete Self Employment Expense",
+                method = HttpMethod.DELETE,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(writeScope)
+              ),
+              Endpoint(
                 uriPattern = "/{utr}/{taxYear}/liabilities",
                 endpointName = "Request Liability",
                 method = HttpMethod.POST,

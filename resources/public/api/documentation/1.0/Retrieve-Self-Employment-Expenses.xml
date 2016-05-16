@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employment Incomes</name>
-    <description>This endpoint returns a list of self employment incomes</description>
+    <name>Retrieve Self Employment Expenses</name>
+    <description>This endpoint returns a list of self employment expenses</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/incomes</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/expenses</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -49,7 +49,7 @@
                     <cell>
                         <code>1234567</code>
                     </cell>
-                    <cell>The Self Employment Income id</cell>
+                    <cell>The Self Employment id</cell>
                 </row>
             </rows>
         </table>
@@ -86,23 +86,23 @@
         <json>
 <![CDATA[{
     "_links": {
-        "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/incomes" }
+        "self": { "href": "/self-assessment/1097172564/2016-16/self-employments/987654/expenses" }
     },
     "_embedded": {
-    "incomes": [
+    "expenses": [
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/incomes/1234" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/expenses/1234" }
         }
       },
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/incomes/5678" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/expenses/5678" }
         }
       },
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/incomes/9101" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/987654/expenses/9101" }
         }
       }
     ]

@@ -61,7 +61,7 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
   def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action.async(parse.json)  {
     implicit request =>
     withJsonBody[SelfEmploymentExpense] { seExpense =>
-     Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpense.id.get))))))
+     Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpenseId))))))
     }
   }
 

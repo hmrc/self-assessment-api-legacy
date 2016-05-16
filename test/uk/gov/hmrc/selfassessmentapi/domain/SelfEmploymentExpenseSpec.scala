@@ -21,15 +21,9 @@ import SelfEmploymentExpenseType._
 class SelfEmploymentExpenseSpec extends JsonSpec {
 
   "format" should {
-    "round trip SelfEmploymentExpense json when id present" in {
+    "round trip SelfEmploymentExpense json" in {
       SelfEmploymentExpenseType.values.foreach {
-        cat => roundTripJson(SelfEmploymentExpense(id = Some("idm"), `type` = cat, amount = BigDecimal(1000.99)))
-      }
-    }
-
-    "round trip SelfEmployment json with no id" in {
-      SelfEmploymentExpenseType.values.foreach {
-        cat => roundTripJson(SelfEmploymentExpense(id = None, `type` = cat, amount = BigDecimal(1000.99)))
+        cat => roundTripJson(SelfEmploymentExpense(`type` = cat, amount = BigDecimal(1000.99)))
       }
     }
   }

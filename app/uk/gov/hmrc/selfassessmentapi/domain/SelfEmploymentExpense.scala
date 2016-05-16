@@ -36,7 +36,7 @@ object SelfEmploymentExpense {
   implicit val seExpenseTypes = EnumJson.enumFormat(SelfEmploymentExpenseType)
   implicit val seExpenseWrites = Json.writes[SelfEmploymentExpense]
   implicit val seExpenseReads: Reads[SelfEmploymentExpense] = (
-    (__ \ "id").readNullable[SelfEmploymentExpenseId] and
+    Reads.pure(None) and
       (__ \ "type").read[SelfEmploymentExpenseType] and
       (__ \ "amount").read[BigDecimal](amountValidator)
     ) (SelfEmploymentExpense.apply _)

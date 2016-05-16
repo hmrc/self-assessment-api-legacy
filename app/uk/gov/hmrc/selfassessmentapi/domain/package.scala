@@ -26,6 +26,7 @@ package object domain {
   type LiabilityId = String
   type SelfEmploymentIncomeId = String
   type SelfEmploymentExpenseId = String
-  val amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount cannot have more than 2 decimal values",
-    ErrorCode("INVALID_MONETARY_AMOUNT")))(_.scale < 3)
+  val amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
+    ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
+
 }

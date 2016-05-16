@@ -37,9 +37,6 @@ case class SelfEmploymentIncome(id: Option[SelfEmploymentIncomeId] = None,
 
 object SelfEmploymentIncome {
 
-  private def amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
-    ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
-
   implicit val seIncomeTypes = EnumJson.enumFormat(SelfEmploymentIncomeType)
   implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]
   implicit val seIncomeReads: Reads[SelfEmploymentIncome] = (

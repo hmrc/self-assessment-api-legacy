@@ -21,7 +21,7 @@ import SelfEmploymentExpenseType._
 class SelfEmploymentExpenseSpec extends JsonSpec {
 
   "format" should {
-    "round trip SelfEmploymentIncome json when id present" in {
+    "round trip SelfEmploymentExpense json when id present" in {
       SelfEmploymentExpenseType.values.foreach {
         cat => roundTripJson(SelfEmploymentExpense(id = Some("idm"), `type` = cat, amount = BigDecimal(1000.99)))
       }
@@ -37,12 +37,20 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val seIncome = SelfEmploymentExpense(`type` = CISPayments, amount = testAmount)
+        val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = testAmount)
         assertValidationError[SelfEmploymentExpense](
-          seIncome,
-          Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount cannot have more than 2 decimal values"),
-          "Expected invalid self-employment-income")
+          seExpense,
+          Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+          "Expected invalid self-employment-expense")
       }
+    }
+
+    "reject negative amount" in {
+      val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = BigDecimal(-1000.12))
+      assertValidationError[SelfEmploymentExpense](
+        seExpense,
+        Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+        "Expected positive self-employment-expense")
     }
   }
 

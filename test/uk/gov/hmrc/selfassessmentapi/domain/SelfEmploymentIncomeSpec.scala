@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType._
+import play.api.libs.json.Json
 
 class SelfEmploymentIncomeSpec extends JsonSpec {
 
@@ -34,8 +35,22 @@ class SelfEmploymentIncomeSpec extends JsonSpec {
         assertValidationError[SelfEmploymentIncome](
           seIncome,
           Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
-          "Expected self-employment-income with up to 2 decimal places")
+          "Expected invalid self-employment-income with more than 2 decimal places")
       }
+    }
+
+    "reject invalid Income type" in {
+      val json = Json.parse(
+        """
+          |{ "type": "FOO",
+          |"amount" : 10000.45
+          |}
+        """.stripMargin)
+
+      assertValidationError[SelfEmploymentIncome](
+        json,
+        Map(ErrorCode("NO_VALUE_FOUND") -> "Self Employment Income type is invalid"),
+        "Expected income type not in { TURNOVER, OTHER }")
     }
 
     "reject negative amount" in {
@@ -43,8 +58,7 @@ class SelfEmploymentIncomeSpec extends JsonSpec {
       assertValidationError[SelfEmploymentIncome](
         seIncome,
         Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected positive self-employment-income")
+        "Expected negative self-employment income")
     }
   }
-
 }

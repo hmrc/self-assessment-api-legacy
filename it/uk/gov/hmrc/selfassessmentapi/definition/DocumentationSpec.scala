@@ -23,6 +23,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
         version.endpoints foreach { endpoint =>
           val name = endpoint.endpointName
           val nameInUrl = name.replaceAll(" ", "-")
+          println(s"nameInUrl: $nameInUrl")
           given()
             .when()
             .get(s"/api/documentation/${version.version}/$nameInUrl").withoutAcceptHeader()

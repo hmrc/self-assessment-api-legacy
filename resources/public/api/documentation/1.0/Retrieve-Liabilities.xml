@@ -3,7 +3,7 @@
     <description>This endpoint retrieves liabilities for a given utr</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/liabilities</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}/liabilities</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -20,6 +20,12 @@
                     <cell><code>String</code></cell>
                     <cell><code>2234567890</code></cell>
                     <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+                <row>
+                    <cell><code>taxYear</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>2016-17</code></cell>
+                    <cell>The tax year the data applies to</cell>
                 </row>
             </rows>
         </table>
@@ -57,23 +63,23 @@
         <json>
 <![CDATA[{
   "_links": {
-    "self": { "href": "/self-assessment/1097172564/liabilities" }
+    "self": { "href": "/self-assessment/1097172564/2016-17/liabilities" }
   },
   "_embedded": {
     "liabilities": [
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/liabilities/1234" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/liabilities/1234" }
         }
       },
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/liabilities/4321" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/liabilities/4321" }
         }
       },
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/liabilities/7777" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/liabilities/7777" }
         }
       }
     ]

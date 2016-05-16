@@ -13,7 +13,7 @@ class AuthorisationSpec extends BaseFunctionalSpec {
       given()
         .userIsNotAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/self-employments/$selfEmploymentId")
+        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
         .statusIs(401)
     }
@@ -24,7 +24,7 @@ class AuthorisationSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/self-employments/$selfEmploymentId")
+        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
         .statusIs(501)
     }

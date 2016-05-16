@@ -3,7 +3,7 @@
     <description>This endpoint retrieves a liability calculation</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/liabilities/{liabilityId}</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}liabilities/{liabilityId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -20,6 +20,12 @@
                     <cell><code>String</code></cell>
                     <cell><code>2234567890</code></cell>
                     <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+                <row>
+                    <cell><code>taxYear</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>2016-17</code></cell>
+                    <cell>The tax year the data applies to</cell>
                 </row>
                 <row>
                     <cell><code>liabilityId</code></cell>
@@ -62,7 +68,7 @@
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
-    "taxPeriod":"2015-16-Q1",
+    "taxYear":"2016-17",
     "income":{
       "incomes":[
          {
@@ -158,7 +164,7 @@
     },
     "totalTaxDue":25796.95,
     "_links":{
-      "self":{ "href":"/self-assessment/2234567890/liabilities/1234" }
+      "self":{ "href":"/self-assessment/2234567890/2016-17/liabilities/1234" }
     }
 }]]>
         </json>

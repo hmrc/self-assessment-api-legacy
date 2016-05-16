@@ -38,6 +38,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
   with ScalaFutures with IntegrationPatience with BeforeAndAfterEach {
 
   val saUtr: SaUtr = SaUtr("12345")
+  val taxYear = "2016-17"
 
   val mockSelfEmploymentService: SelfEmploymentService =
     mock[SelfEmploymentService]
@@ -54,7 +55,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "create" should {
     def fakeRequest(selfEmployment: SelfEmployment) =
-      FakeRequest("POST", s"/${saUtr.utr}/self-employments")
+      FakeRequest("POST", s"/${saUtr.utr}/$taxYear/self-employments")
         .withJsonBody(Json.toJson(selfEmployment))
         .withHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
       val seId = "1234"
@@ -65,12 +66,12 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
-      val result = await(call(controller.create(saUtr), request))
+      val result = await(call(controller.create(saUtr, taxYear), request))
       status(result) shouldEqual CREATED
 
       val jsonResult = contentAsJson(result)
 
-      (jsonResult \ "_links" \ "self" \ "href").as[String] shouldEqual "/self-assessment/12345/self-employments/1234"
+      (jsonResult \ "_links" \ "self" \ "href").as[String] shouldEqual s"/self-assessment/12345/$taxYear/self-employments/1234"
     }
 
     "return error if the json body is invalid" in {
@@ -79,7 +80,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
-      val result = await(call(controller.create(saUtr), request))
+      val result = await(call(controller.create(saUtr, taxYear), request))
       status(result) shouldEqual BAD_REQUEST
 
       // todo assert the error response (to be implemented after the validation story is played)
@@ -91,7 +92,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
 
     val seId = BSONObjectID.generate.stringify
     def fakeRequest(selfEmployment: SelfEmployment) =
-      FakeRequest("PUT", s"/${saUtr.utr}/self-employments/$seId")
+      FakeRequest("PUT", s"/${saUtr.utr}/$taxYear/self-employments/$seId")
         .withJsonBody(Json.toJson(selfEmployment))
         .withHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
 
@@ -101,7 +102,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
-      val result = await(call(controller.create(saUtr), request))
+      val result = await(call(controller.create(saUtr, taxYear), request))
       status(result) shouldEqual BAD_REQUEST
 
       // todo assert the error response (to be implemented after the validation story is played)
@@ -110,7 +111,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "findById" should {
     def fakeRequest(seId: SelfEmploymentId) =
-      FakeRequest("GET", s"/${saUtr.utr}/self-employments/$seId")
+      FakeRequest("GET", s"/${saUtr.utr}/$taxYear/self-employments/$seId")
         .withHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
 
     "invoke the self-employments service with an existing self-employment id, retrieve the self employment and return an HTTP 200" in {
@@ -120,14 +121,14 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.findBySelfEmploymentId(saUtr, seId)).thenReturn(Future.successful(Some(selfEmployment)))
 
       val request = fakeRequest(seId)
-      val result = await(call(controller.findById(saUtr, seId), request))
+      val result = await(call(controller.findById(saUtr, taxYear, seId), request))
       status(result) shouldEqual OK
 
       val jsonResult = contentAsJson(result)
 
       jsonResult.as[SelfEmployment] shouldEqual selfEmployment
 
-      (jsonResult \ "_links" \ "self" \ "href").as[String] shouldEqual s"/self-assessment/${saUtr.utr}/self-employments/$seId"
+      (jsonResult \ "_links" \ "self" \ "href").as[String] shouldEqual s"/self-assessment/${saUtr.utr}/$taxYear/self-employments/$seId"
     }
 
     "return an HTTP 404 when the self-employment id does not exist" in {
@@ -136,7 +137,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.findBySelfEmploymentId(saUtr, seId)).thenReturn(Future.successful(None))
 
       val request = fakeRequest(seId)
-      val result = await(call(controller.findById(saUtr, seId), request))
+      val result = await(call(controller.findById(saUtr, taxYear, seId), request))
       status(result) shouldEqual NOT_FOUND
 
       val jsonResult = contentAsJson(result)

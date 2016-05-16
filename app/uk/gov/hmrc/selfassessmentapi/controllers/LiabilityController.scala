@@ -28,9 +28,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait LiabilityController extends BaseController with HeaderValidator with Links {
 
-  def requestLiability(utr: SaUtr, taxYear: Option[String]): Action[AnyContent]
-  def retrieveLiability(utr: SaUtr, liabilityId: String): Action[AnyContent]
-  def deleteLiability(utr: SaUtr, liabilityId: String): Action[AnyContent]
-  def find(utr: SaUtr) : Action[AnyContent]
+  def requestLiability(utr: SaUtr, taxYear: String): Action[AnyContent]
+  def retrieveLiability(utr: SaUtr, taxYear: String, liabilityId: String): Action[AnyContent]
+  def deleteLiability(utr: SaUtr, taxYear: String, liabilityId: String): Action[AnyContent]
+  def find(utr: SaUtr, taxYear: String) : Action[AnyContent]
 
 }

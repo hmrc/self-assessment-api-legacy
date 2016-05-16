@@ -31,26 +31,26 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
 
   override val context: String = AppContext.apiGatewayContext
 
-  override def requestLiability(utr: SaUtr, taxYear: Option[String]) = validateAccept(acceptHeaderValidationRules) { request =>
+  override def requestLiability(utr: SaUtr, taxYear: String) = validateAccept(acceptHeaderValidationRules) { request =>
     val liabilityId = UUID.randomUUID().toString
       val links = Seq(
-        HalLink("self", liabilityHref(utr, liabilityId))
+        HalLink("self", liabilityHref(utr, taxYear, liabilityId))
       )
       Accepted(halResource(JsObject(Nil), links))
   }
 
-  override def retrieveLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
-    val liability = createLiability(utr, liabilityId)
+  override def retrieveLiability(utr: SaUtr, taxYear: String, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
+    val liability = createLiability(utr, taxYear, liabilityId)
     val links = Seq(
-      HalLink("self", liabilityHref(utr, liabilityId))
+      HalLink("self", liabilityHref(utr, taxYear, liabilityId))
     )
     Ok(halResource(Json.toJson(liability), links))
   }
 
-  def createLiability(utr: SaUtr, id: String): Liability =
+  def createLiability(utr: SaUtr, taxYear: String, id: String): Liability =
     Liability(
       id = Some(id),
-      taxYear = "2015-16",
+      taxYear = taxYear,
       income = Income(
         incomes = Seq(
           Amount("self-employment-profit", BigDecimal(92480)),
@@ -88,15 +88,15 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     )
 
 
-  override def deleteLiability(utr: SaUtr, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
+  override def deleteLiability(utr: SaUtr, taxYear: String, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
     NoContent
   }
 
-  override def find(saUtr: SaUtr): Action[AnyContent] = Action { request =>
-    val result= Seq(createLiability(saUtr, "1234"), createLiability(saUtr, "4321"), createLiability(saUtr, "7777"))
+  override def find(saUtr: SaUtr, taxYear: String): Action[AnyContent] = Action { request =>
+    val result= Seq(createLiability(saUtr, taxYear, "1234"), createLiability(saUtr, taxYear, "4321"), createLiability(saUtr, taxYear, "7777"))
     val liabilities = toJson(
-      result.map(liability => halResource(obj(), Seq(HalLink("self", liabilityHref(saUtr, liability.id.get)))))
+      result.map(liability => halResource(obj(), Seq(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
     )
-    Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr)))
+    Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr, taxYear)))
   }
 }

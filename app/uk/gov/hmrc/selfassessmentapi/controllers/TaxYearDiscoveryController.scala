@@ -16,34 +16,22 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-
 import play.api.hal.HalLink
 import play.api.libs.json.JsObject
 import play.api.mvc.Action
 import play.api.mvc.hal._
+import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CustomerResolverController extends BaseController with Links {
+trait TaxYearDiscoveryController
+    extends BaseController with HeaderValidator with Links {
 
-  val confidenceLevel: ConfidenceLevel
-
-  def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]]
-
-  final def resolve = Action.async { request =>
-    saUtr(confidenceLevel)(hc(request)).map {
-      case Some(saUtr) =>
-        val links = Seq(
-          HalLink("self-assessment", discoverTaxYearsHref(saUtr))
-        )
-        Ok(halResource(JsObject(Nil), links))
-      case None =>
-        Unauthorized
+  final def discoverTaxYear(utr: SaUtr, taxYear: String) = Action.async { request =>
+      val links = Seq(HalLink("self", discoverTaxYearHref(utr, taxYear)),
+                      HalLink("self-employments", selfEmploymentsHref(utr, taxYear)),
+                      HalLink("liabilities", liabilitiesHref(utr, taxYear)))
+     Future.successful(Ok(halResource(JsObject(Nil), links)))
     }
-  }
-
 }

@@ -6,8 +6,8 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
 
   val saUtr = generateSaUtr()
 
-  "Live Self assessment discovery" should {
-    "return a 200 response with a links when the customer is authorised" in {
+  "Live tax years discovery" should {
+    "return a 200 response with links" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr")
@@ -15,16 +15,21 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr")
-        .bodyHasLink("self-employments", s"/self-assessment/$saUtr/self-employments")
-        .bodyHasLink("liabilities", s"/self-assessment/$saUtr/liabilities")
+        .bodyHasLink(taxYear, s"/self-assessment/$saUtr/$taxYear")
     }
+  }
 
-    "return a 401 response the customer is not authorised" in {
-      given().userIsNotAuthorisedForTheResource(saUtr)
+  "Live tax year discovery" should {
+    "return a 200 response with links" in {
+      given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr")
+        .get(s"/$saUtr/$taxYear")
         .thenAssertThat()
-        .statusIs(401)
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear")
+        .bodyHasLink("self-employments", s"/self-assessment/$saUtr/$taxYear/self-employments")
+        .bodyHasLink("liabilities", s"/self-assessment/$saUtr/$taxYear/liabilities")
     }
   }
 

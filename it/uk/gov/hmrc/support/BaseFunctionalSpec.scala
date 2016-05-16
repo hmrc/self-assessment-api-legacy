@@ -20,6 +20,7 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
 
   val WIREMOCK_PORT = 22222
   val stubHost = "localhost"
+  val taxYear = "2016-17"
 
   protected val wiremockBaseUrl: String = s"http://$stubHost:$WIREMOCK_PORT"
 

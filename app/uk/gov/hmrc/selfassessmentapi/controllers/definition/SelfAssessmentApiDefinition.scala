@@ -57,14 +57,22 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
               ),
               Endpoint(
                 uriPattern = "/{utr}",
-                endpointName = "Discover",
+                endpointName = "Discover Tax Years",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/self-employments/{selfEmploymentsId}",
+                uriPattern = "/{utr}/{taxYear}",
+                endpointName = "Discover Tax Year",
+                method = HttpMethod.GET,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(readScope)
+              ),
+              Endpoint(
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentsId}",
                 endpointName = "Retrieve Self Employment",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
@@ -72,7 +80,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/self-employments",
+                uriPattern = "/{utr}/{taxYear}/self-employments",
                 endpointName = "Retrieve Self Employments",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
@@ -80,7 +88,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/self-employments",
+                uriPattern = "/{utr}/{taxYear}/{taxYear}/self-employments",
                 endpointName = "Create Self Employment",
                 method = HttpMethod.POST,
                 authType = AuthType.USER,
@@ -88,7 +96,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/self-employments/{selfEmploymentsId}",
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentsId}",
                 endpointName = "Update Self Employment",
                 method = HttpMethod.PUT,
                 authType = AuthType.USER,
@@ -96,7 +104,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/self-employments/{selfEmploymentsId}",
+                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentsId}",
                 endpointName = "Delete Self Employment",
                 method = HttpMethod.DELETE,
                 authType = AuthType.USER,
@@ -104,7 +112,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/liabilities",
+                uriPattern = "/{utr}/{taxYear}/liabilities",
                 endpointName = "Request Liability",
                 method = HttpMethod.POST,
                 authType = AuthType.USER,
@@ -112,7 +120,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/liabilities/{liabilityId}",
+                uriPattern = "/{utr}/{taxYear}/liabilities/{liabilityId}",
                 endpointName = "Retrieve Liability",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
@@ -120,7 +128,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/liabilities",
+                uriPattern = "/{utr}/{taxYear}/liabilities",
                 endpointName = "Retrieve Liabilities",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
@@ -128,7 +136,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/liabilities/{liabilityId}",
+                uriPattern = "/{utr}/{taxYear}/liabilities/{liabilityId}",
                 endpointName = "Delete Liability",
                 method = HttpMethod.DELETE,
                 authType = AuthType.USER,

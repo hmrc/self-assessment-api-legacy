@@ -16,7 +16,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
     "return a 501 response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/$saUtr/self-employments", Some(toJson(SelfEmployment(None, "name", LocalDate.now.minusDays(1)))))
+        .post(s"/$saUtr/$taxYear/self-employments", Some(toJson(SelfEmployment(None, "name", LocalDate.now.minusDays(1)))))
         .thenAssertThat()
         .statusIs(501)
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)
@@ -28,7 +28,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
     "return a 501 response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/self-employments/$selfEmploymentId")
+        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
         .statusIs(501)
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)
@@ -40,7 +40,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
     "return a 501 response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .put(s"/$saUtr/self-employments/$selfEmploymentId", Some(toJson(SelfEmployment(None, "name", LocalDate.now.minusDays(1)))))
+        .put(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId", Some(toJson(SelfEmployment(None, "name", LocalDate.now.minusDays(1)))))
         .thenAssertThat()
         .statusIs(501)
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)
@@ -52,7 +52,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
     "return a 501 response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .delete(s"/$saUtr/self-employments/$selfEmploymentId")
+        .delete(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
         .statusIs(501)
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)

@@ -18,11 +18,11 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/sandbox/$saUtr/self-employments", Some(toJson(Some(SelfEmployment(None, "name", LocalDate.now.minusDays(1))))))
+        .post(s"/sandbox/$saUtr/$taxYear/self-employments", Some(toJson(Some(SelfEmployment(None, "name", LocalDate.now.minusDays(1))))))
         .thenAssertThat()
         .statusIs(201)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/.+".r)
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/.+".r)
     }
 
     "Create self-employment with invalid data" should {
@@ -30,7 +30,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
-          .post(s"/sandbox/$saUtr/self-employments", Some(toJson(SelfEmployment(name = "a" * 101, commencementDate = LocalDate.now().plusDays(1)))))
+          .post(s"/sandbox/$saUtr/$taxYear/self-employments", Some(toJson(SelfEmployment(name = "a" * 101, commencementDate = LocalDate.now().plusDays(1)))))
           .thenAssertThat()
           .statusIs(400)
           .body1(_ \\ "code").is("COMMENCEMENT_DATE_NOT_IN_THE_PAST", "MAX_FIELD_LENGTH_EXCEEDED")
@@ -42,40 +42,40 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId")
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId")
     }
 
     "return a valid response when retrieving list of self employments" in {
       given()
         .when()
-        .get(s"/sandbox/$saUtr/self-employments")
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments")
-        .bodyHasPath("""_embedded \ selfEmployments(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/1234")
-        .bodyHasPath("""_embedded \ selfEmployments(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/5678")
-        .bodyHasPath("""_embedded \ selfEmployments(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/9101")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments")
+        .bodyHasPath("""_embedded \ selfEmployments(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/1234")
+        .bodyHasPath("""_embedded \ selfEmployments(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/5678")
+        .bodyHasPath("""_embedded \ selfEmployments(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/9101")
     }
 
     "return 200 and a valid response when an existing self employment is modified" in {
       given()
         .when()
-        .put(s"/sandbox/$saUtr/self-employments/$selfEmploymentId", Some(toJson(Some(SelfEmployment(None, "name", LocalDate.now.minusDays(1))))))
+        .put(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId", Some(toJson(Some(SelfEmployment(None, "name", LocalDate.now.minusDays(1))))))
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId")
     }
 
     "return 204 response when an existing self employment is deleted" in {
       given()
         .when()
-        .delete(s"/sandbox/$saUtr/self-employments/$selfEmploymentId")
+        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
         .statusIs(204)
     }

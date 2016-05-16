@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import uk.gov.hmrc.api.controllers.ErrorResponse
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
 
-case object ErrorSaUtrInvalid extends ErrorResponse(400, "SA_UTR_INVALID", "The provided SA UTR is invalid")
-case object ErrorTaxYearInvalid extends ErrorResponse(400, "TAX_YEAR_INVALID", "The provided Tax Year is invalid")
-case object ErrorNotImplemented extends ErrorResponse(501, "NOT_IMPLEMENTED", "The resource is not implemented")
+object TaxYearDiscoveryController extends uk.gov.hmrc.selfassessmentapi.controllers.TaxYearDiscoveryController {
+  override val context: String = AppContext.apiGatewayContext
+}

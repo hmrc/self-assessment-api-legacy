@@ -24,19 +24,22 @@ trait Links {
 
   private def createLink(endpointUrl: String) = s"/$context$endpointUrl"
 
-  def discoveryHref(utr: SaUtr): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfAssessmentDiscoveryController.discover(utr).url)
+  def discoverTaxYearsHref(utr: SaUtr): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearsDiscoveryController.discoverTaxYears(utr).url)
 
-  def liabilityHref(utr: SaUtr, liabilityId: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, liabilityId).url)
+  def discoverTaxYearHref(utr: SaUtr, taxYear: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearDiscoveryController.discoverTaxYear(utr, taxYear).url)
 
-  def liabilitiesHref(utr: SaUtr): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.find(utr).url)
+  def liabilityHref(utr: SaUtr, taxYear: String, liabilityId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, taxYear, liabilityId).url)
 
-  def selfEmploymentHref(utr: SaUtr, seId: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.findById(utr, seId).url)
+  def liabilitiesHref(utr: SaUtr, taxYear: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.find(utr, taxYear).url)
 
-  def selfEmploymentsHref(utr: SaUtr): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.find(utr).url)
+  def selfEmploymentHref(utr: SaUtr, taxYear: String, seId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.findById(utr, taxYear, seId).url)
+
+  def selfEmploymentsHref(utr: SaUtr, taxYear: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.find(utr, taxYear).url)
 
 }

@@ -11,20 +11,20 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     "return a 202 response with a link to retrieve the liability" in {
       given()
         .when()
-        .post(s"/sandbox/$saUtr/liabilities")
+        .post(s"/sandbox/$saUtr/$taxYear/liabilities")
         .thenAssertThat()
         .statusIs(202)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""^/self-assessment/$saUtr/liabilities/.+""".r)
+        .bodyHasLink("self", s"""^/self-assessment/$saUtr/$taxYear/liabilities/.+""".r)
     }
   }
 
   "retrieve liability" should {
     "return a 200 response" in {
       val expectedJson = Json.parse(
-        """
+        s"""
           |{
-          |  "taxYear": "2015-16",
+          |  "taxYear": "$taxYear",
           |  "income": {
           |    "incomes": [
           |        {"type": "self-employment-profit", "amount": 92480},
@@ -64,25 +64,25 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
 
       given()
         .when()
-        .get(s"/sandbox/$saUtr/liabilities/1234")
+        .get(s"/sandbox/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""^/self-assessment/$saUtr/liabilities/1234""".r)
+        .bodyHasLink("self", s"""^/self-assessment/$saUtr/$taxYear/liabilities/1234""".r)
         .bodyIs(expectedJson)
     }
 
     "return a valid response when retrieving list of liabilities" in {
       given()
         .when()
-        .get(s"/sandbox/$saUtr/liabilities")
+        .get(s"/sandbox/$saUtr/$taxYear/liabilities")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/liabilities")
-        .bodyHasPath("""_embedded \ liabilities(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/liabilities/1234")
-        .bodyHasPath("""_embedded \ liabilities(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/liabilities/4321")
-        .bodyHasPath("""_embedded \ liabilities(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/liabilities/7777")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/liabilities")
+        .bodyHasPath("""_embedded \ liabilities(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/liabilities/1234")
+        .bodyHasPath("""_embedded \ liabilities(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/liabilities/4321")
+        .bodyHasPath("""_embedded \ liabilities(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/liabilities/7777")
     }
 
   }
@@ -91,7 +91,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     "return a 204 response" in {
       given()
         .when()
-        .delete(s"/sandbox/$saUtr/liabilities/1234")
+        .delete(s"/sandbox/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()
         .statusIs(204)
     }

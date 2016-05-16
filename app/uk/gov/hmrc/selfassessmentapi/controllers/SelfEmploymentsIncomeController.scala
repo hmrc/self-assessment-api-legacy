@@ -47,7 +47,7 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
       val selfEmploymentIncomesJson = toJson(selfEmploymentIncomes.map(income => halResource(obj(),
         Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, taxYear, seId, income.id.get))))))
 
-      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentIncomeHref(saUtr, taxYear, seId)))
+      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentIncomesHref(saUtr, taxYear, seId)))
     }
   }
 

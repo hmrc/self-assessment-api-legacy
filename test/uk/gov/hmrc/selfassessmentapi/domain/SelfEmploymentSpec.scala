@@ -46,10 +46,11 @@ class SelfEmploymentSpec extends JsonSpec {
       val se = SelfEmployment(name = "a" * 101, commencementDate = LocalDate.now().plusDays(1))
 
       assertValidationError[SelfEmployment](
-          se,
-          List("commencement date should be in the past",
-               "max field length exceeded the max 100 chars"),
-          "Expected valid self-employment")
+        se,
+        Map(ErrorCode("COMMENCEMENT_DATE_NOT_IN_THE_PAST") -> "commencement date should be in the past",
+          ErrorCode("MAX_FIELD_LENGTH_EXCEEDED") -> "max field length exceeded the max 100 chars"),
+        "Expected valid self-employment")
+
     }
   }
 }

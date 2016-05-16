@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-import play.api.data.validation.ValidationError
-import play.api.libs.json.Reads
-
-
-package object domain {
-
-  type SelfEmploymentId = String
-  type LiabilityId = String
-  type SelfEmploymentExpenseId = String
-  val taxYearValidator = Reads.of[String].filter(ValidationError("tax year must be 2016-17", ErrorCode("TAX_YEAR_INVALID")))( _ == "2016-17")
-  val amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount cannot have more than 2 decimal values",
-    ErrorCode("INVALID_MONETARY_AMOUNT")))(_.scale < 3)
-}
+object SelfEmploymentsExpenseController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsExpenseController

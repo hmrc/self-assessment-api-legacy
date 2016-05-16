@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
+import play.api.data.validation.ValidationError
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
 
 object JsonFormatters {
 
@@ -36,17 +38,20 @@ object JsonFormatters {
 
 object EnumJson {
 
-  def enumReads[E <: Enumeration](enum: E): Reads[E#Value] = new Reads[E#Value] {
+  def enumReads[E <: Enumeration](enum: E, valueMissingMessage: Option[String] = None): Reads[E#Value] = new Reads[E#Value] {
+
+    def defaultValueMissingMessage(s: String)= s"Enumeration expected of type: '${enum.getClass}', but it does not contain '$s'"
+
     def reads(json: JsValue): JsResult[E#Value] = json match {
       case JsString(s) => {
         try {
           JsSuccess(enum.withName(s))
         } catch {
           case _: NoSuchElementException =>
-            JsError(s"Enumeration expected of type: '${enum.getClass}', but it does not contain '$s'")
+            JsError(JsPath(), ValidationError(valueMissingMessage.getOrElse(defaultValueMissingMessage(s)), ErrorCode("NO_VALUE_FOUND")))
         }
       }
-      case _ => JsError("String value expected")
+      case _ => JsError(JsPath(), ValidationError("String value expected", ErrorCode("INVALID_TYPE")))
     }
   }
 
@@ -54,8 +59,8 @@ object EnumJson {
     def writes(v: E#Value): JsValue = JsString(v.toString)
   }
 
-  implicit def enumFormat[E <: Enumeration](enum: E): Format[E#Value] = {
-    Format(enumReads(enum), enumWrites)
+  implicit def enumFormat[E <: Enumeration](enum: E, valueMissingMessage: Option[String] = None): Format[E#Value] = {
+    Format(enumReads(enum, valueMissingMessage), enumWrites)
   }
 
 }

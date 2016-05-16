@@ -8,7 +8,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/$saUtr/liabilities")
+        .post(s"/$saUtr/$taxYear/liabilities")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -18,7 +18,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/liabilities/1234")
+        .get(s"/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -28,7 +28,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .delete(s"/$saUtr/liabilities/1234")
+        .delete(s"/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }

@@ -3,7 +3,7 @@
     <description>This endpoint creates a self-employment</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>POST /self-assessment/{utr}/self-employments</resource>
+        <resource>POST /self-assessment/{utr}/{taxYear}/self-employments</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -26,6 +26,18 @@
                         <code>2234567890</code>
                     </cell>
                     <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>taxYear</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2016-17</code>
+                    </cell>
+                    <cell>The tax year the data applies to</cell>
                 </row>
             </rows>
         </table>
@@ -79,7 +91,7 @@
         <json>
 <![CDATA[{
     "_links": {
-       "self": { "href": "/self-assessment/1097172564/self-employments/5728b53c4800005100d2d32d"}
+       "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d"}
     }
 }]]>
         </json>

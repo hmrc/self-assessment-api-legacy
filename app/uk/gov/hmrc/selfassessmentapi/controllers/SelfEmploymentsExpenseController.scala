@@ -32,40 +32,40 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
-  def findById(saUtr: SaUtr, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action { request =>
-    val seExpense = SelfEmploymentExpense(id = Some(seExpenseId), taxYear = "2016-17", category = CISPayments,
+  def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action { request =>
+    val seExpense = SelfEmploymentExpense(id = Some(seExpenseId), category = CISPayments,
                                           amount= BigDecimal("1000.45"))
-    Ok(halResource(toJson(seExpense), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, seId, seExpenseId)))))
+    Ok(halResource(toJson(seExpense), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpenseId)))))
   }
 
-  def find(saUtr: SaUtr, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
-    val seq = Seq(SelfEmploymentExpense(id = Some("1234"), taxYear = "2016-17", category = CISPayments,
+  def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
+    val seq = Seq(SelfEmploymentExpense(id = Some("1234"), category = CISPayments,
                                                   amount = BigDecimal("1000.45")),
-                            SelfEmploymentExpense(id = Some("5678"), taxYear = "2016-17", category = CoGBought,
+                            SelfEmploymentExpense(id = Some("5678"), category = CoGBought,
                                                   amount = BigDecimal("2000.50")),
-                            SelfEmploymentExpense(id = Some("4321"), taxYear = "2016-17", category = StaffCosts,
+                            SelfEmploymentExpense(id = Some("4321"), category = StaffCosts,
                                                   amount = BigDecimal("3000.50")))
     val seExpensesJson = toJson(seq.map(res => halResource(obj(),
-      Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, seId,  res.id.get))))))
+      Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId,  res.id.get))))))
 
-    Ok(halResourceList("selfEmploymentExpenses", seExpensesJson, selfEmploymentExpensesHref(saUtr, seId)))
+    Ok(halResourceList("selfEmployments", seExpensesJson, selfEmploymentExpensesHref(saUtr, taxYear, seId)))
   }
 
-  def create(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
+  def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmploymentExpense] { selfEmploymentExpense =>
       val seExpenseId = BSONObjectID.generate.stringify
-      Future.successful(Created(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, seId, seExpenseId))))))
+      Future.successful(Created(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpenseId))))))
     }
   }
 
-  def update(saUtr: SaUtr, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action.async(parse.json)  {
+  def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action.async(parse.json)  {
     implicit request =>
     withJsonBody[SelfEmploymentExpense] { seExpense =>
-     Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, seId, seExpenseId))))))
+     Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpense.id.get))))))
     }
   }
 
-  def delete(saUtr: SaUtr, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action {
+  def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action {
     if(seExpenseId == "1234") NotFound else  NoContent
   }
 }

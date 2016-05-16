@@ -38,7 +38,7 @@ trait CustomerResolverController extends BaseController with Links {
     saUtr(confidenceLevel)(hc(request)).map {
       case Some(saUtr) =>
         val links = Seq(
-          HalLink("self-assessment", discoveryHref(saUtr))
+          HalLink("self-assessment", discoverTaxYearsHref(saUtr))
         )
         Ok(halResource(JsObject(Nil), links))
       case None =>

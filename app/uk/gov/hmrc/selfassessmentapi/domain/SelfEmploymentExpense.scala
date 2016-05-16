@@ -29,7 +29,7 @@ object SelfEmploymentExpenseCategory extends Enumeration {
 }
 
 case class SelfEmploymentExpense(id: Option[SelfEmploymentExpenseId] = None,
-                                 taxYear: String, category: SelfEmploymentExpenseCategory, amount: BigDecimal)
+                                 category: SelfEmploymentExpenseCategory, amount: BigDecimal)
 
 object SelfEmploymentExpense {
 
@@ -37,7 +37,6 @@ object SelfEmploymentExpense {
   implicit val seIncomeWrites = Json.writes[SelfEmploymentExpense]
   implicit val seIncomeReads: Reads[SelfEmploymentExpense] = (
     (__ \ "id").readNullable[SelfEmploymentExpenseId] and
-      (__ \ "taxYear").read[String](taxYearValidator) and
       (__ \ "category").read[SelfEmploymentExpenseCategory] and
       (__ \ "amount").read[BigDecimal](amountValidator)
     ) (SelfEmploymentExpense.apply _)

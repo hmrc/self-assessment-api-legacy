@@ -30,23 +30,23 @@ object SelfEmploymentsIncomeController extends uk.gov.hmrc.selfassessmentapi.con
 
   override val selfEmploymentIncomeService: SelfEmploymentIncomeService = SelfEmploymentIncomeService
 
-  override def create(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { _ =>
+  override def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def findById(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async { _ =>
+  override def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def find(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async { _ =>
+  override def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def update(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async(parse.json)  { _ =>
+  override def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async(parse.json)  { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def delete(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async { _ =>
+  override def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 

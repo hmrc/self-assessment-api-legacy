@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentIncomeId}
+import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, SelfEmploymentId, SelfEmploymentIncomeId}
 
 trait Links {
 
@@ -25,31 +25,34 @@ trait Links {
 
   private def createLink(endpointUrl: String) = s"/$context$endpointUrl"
 
-  def discoveryHref(utr: SaUtr): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfAssessmentDiscoveryController.discover(utr).url)
+  def discoverTaxYearsHref(utr: SaUtr): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearsDiscoveryController.discoverTaxYears(utr).url)
 
-  def liabilityHref(utr: SaUtr, liabilityId: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, liabilityId).url)
+  def discoverTaxYearHref(utr: SaUtr, taxYear: TaxYear): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearDiscoveryController.discoverTaxYear(utr, taxYear).url)
 
-  def liabilitiesHref(utr: SaUtr): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.find(utr).url)
+  def liabilityHref(utr: SaUtr, taxYear: TaxYear, liabilityId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, taxYear, liabilityId).url)
 
-  def selfEmploymentHref(utr: SaUtr, seId: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.findById(utr, seId).url)
+  def liabilitiesHref(utr: SaUtr, taxYear: TaxYear): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.find(utr, taxYear).url)
 
-  def selfEmploymentsHref(utr: SaUtr): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.find(utr).url)
+  def selfEmploymentHref(utr: SaUtr, taxYear: TaxYear, seId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.findById(utr, taxYear, seId).url)
 
-  def selfEmploymentIncomeHref(utr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsIncomeController.findById(utr, seId, seIncomeId).url)
+  def selfEmploymentsHref(utr: SaUtr, taxYear: TaxYear): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.find(utr, taxYear).url)
 
-  def selfEmploymentIncomeHref(saUtr: SaUtr, seId: SelfEmploymentId): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsIncomeController.find(saUtr, seId).url)
+  def selfEmploymentIncomeHref(utr: SaUtr, taxYear: TaxYear,  seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsIncomeController.findById(utr, taxYear, seId, seIncomeId).url)
 
-  def   selfEmploymentExpensesHref(utr: SaUtr, seId: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsExpenseController.find(utr, seId).url)
+  def selfEmploymentIncomeHref(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsIncomeController.find(saUtr, taxYear, seId).url)
 
-  def   selfEmploymentExpenseHref(utr: SaUtr, seId: String, seExpenseId: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsExpenseController.findById(utr, seId, seExpenseId).url)
+  def selfEmploymentExpensesHref(utr: SaUtr, taxYear: TaxYear, seId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsExpenseController.find(utr, taxYear, seId).url)
+
+  def selfEmploymentExpenseHref(utr: SaUtr, taxYear: TaxYear, seId: String, seExpenseId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsExpenseController.findById(utr, taxYear, seId, seExpenseId).url)
 
 }

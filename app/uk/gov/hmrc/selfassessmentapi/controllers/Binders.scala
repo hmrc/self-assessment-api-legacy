@@ -19,6 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.referencechecker.SelfAssessmentReferenceChecker
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 
 object Binders {
 
@@ -30,6 +32,18 @@ object Binders {
       SelfAssessmentReferenceChecker.isValid(value) match {
         case true => Right(SaUtr(value))
         case false => Left("ERROR_SA_UTR_INVALID")
+      }
+    }
+  }
+
+  implicit def taxYearBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[TaxYear] {
+
+    def unbind(key: String, taxYear: TaxYear): String = stringBinder.unbind(key, taxYear.value)
+
+    def bind(key: String, value: String): Either[String, TaxYear] = {
+      AppContext.supportedTaxYears.contains(value) match {
+        case true => Right(TaxYear(value))
+        case false => Left("ERROR_TAX_YEAR_INVALID")
       }
     }
   }

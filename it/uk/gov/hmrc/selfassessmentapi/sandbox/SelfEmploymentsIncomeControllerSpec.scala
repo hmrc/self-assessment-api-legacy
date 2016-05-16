@@ -15,10 +15,10 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     "return a 201 when the resource is created" in {
       given()
         .when()
-        .post(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, "2016-17", TURNOVER, BigDecimal(1000.99)))))
+        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, TURNOVER, BigDecimal(1000.99)))))
         .thenAssertThat()
         .statusIs(201)
-        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes/.+".r)
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/.+".r)
     }
   }
 
@@ -26,7 +26,7 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     "return a 400 validation error" in {
       given()
         .when()
-        .post(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, "2016-17", TURNOVER, BigDecimal(-1000.12)))))
+        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, TURNOVER, BigDecimal(-1000.12)))))
         .thenAssertThat()
         .statusIs(400)
     }
@@ -36,11 +36,11 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     "return a HAL resource" in {
       given()
         .when()
-        .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
     }
   }
 
@@ -48,13 +48,13 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     "return all incomes as HAL resources" in {
       given()
         .when()
-        .get(s"/sandbox/$saUtr/self-employments/$selfEmploymentId/incomes")
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes")
-        .bodyHasPath("""_embedded \ incomes(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes/1234")
-        .bodyHasPath("""_embedded \ incomes(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/self-employments/$selfEmploymentId/incomes/5678")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes")
+        .bodyHasPath("""_embedded \ incomes(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/1234")
+        .bodyHasPath("""_embedded \ incomes(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/5678")
     }
   }
 

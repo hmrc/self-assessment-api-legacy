@@ -18,6 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 
 class BindersSpec extends UnitSpec {
 
@@ -37,6 +38,25 @@ class BindersSpec extends UnitSpec {
 
       val result = Binders.saUtrBinder.bind("saUtr", utr)
       result shouldEqual Left("ERROR_SA_UTR_INVALID")
+    }
+  }
+
+  "taxYearinder.bind" should {
+
+    "return Right with a TaxYear instance for a valid tax year string" in {
+      val taxYear = "2016-17"
+      implicit val pathBindable = PathBindable.bindableString
+
+      val result = Binders.taxYearBinder.bind("taxYear", taxYear)
+      result shouldEqual Right(TaxYear(taxYear))
+    }
+
+    "return Left for an ivalid taxYear string" in {
+      val taxYear = "invalid"
+      implicit val pathBindable = PathBindable.bindableString
+
+      val result = Binders.taxYearBinder.bind("taxYear", taxYear)
+      result shouldEqual Left("ERROR_TAX_YEAR_INVALID")
     }
   }
 

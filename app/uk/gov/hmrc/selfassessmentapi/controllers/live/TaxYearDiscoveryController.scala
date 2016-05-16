@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
 
-trait LiabilityController extends BaseController with Links {
-
-  def requestLiability(utr: SaUtr, taxYear: TaxYear): Action[AnyContent]
-  def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String): Action[AnyContent]
-  def deleteLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String): Action[AnyContent]
-  def find(utr: SaUtr, taxYear: TaxYear) : Action[AnyContent]
-
+object TaxYearDiscoveryController extends uk.gov.hmrc.selfassessmentapi.controllers.TaxYearDiscoveryController {
+  override val context: String = AppContext.apiGatewayContext
 }

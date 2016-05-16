@@ -16,15 +16,23 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import play.api.mvc.{Action, AnyContent}
+import play.api.hal.HalLink
+import play.api.libs.json.JsObject
+import play.api.mvc.Action
+import play.api.mvc.hal._
+import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 
-trait LiabilityController extends BaseController with Links {
+import scala.concurrent.Future
 
-  def requestLiability(utr: SaUtr, taxYear: TaxYear): Action[AnyContent]
-  def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String): Action[AnyContent]
-  def deleteLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String): Action[AnyContent]
-  def find(utr: SaUtr, taxYear: TaxYear) : Action[AnyContent]
+trait TaxYearDiscoveryController
+    extends BaseController with HeaderValidator with Links {
 
+  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
+      val links = Seq(HalLink("self", discoverTaxYearHref(utr, taxYear)),
+                      HalLink("self-employments", selfEmploymentsHref(utr, taxYear)),
+                      HalLink("liabilities", liabilitiesHref(utr, taxYear)))
+     Future.successful(Ok(halResource(JsObject(Nil), links)))
+    }
 }

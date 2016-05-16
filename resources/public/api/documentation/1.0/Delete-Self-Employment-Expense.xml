@@ -3,7 +3,7 @@
     <description>This endpoint deletes specific self-employment expense</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>DELETE /self-assessment/{utr}/self-employments/{selfEmploymentsId}/expenses/{selfEmploymentExpenseId}</resource>
+        <resource>DELETE /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/expenses/{selfEmploymentExpenseId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -26,6 +26,18 @@
                         <code>2234567890</code>
                     </cell>
                     <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>taxYear</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2016-17</code>
+                    </cell>
+                    <cell>The tax year the data applies to</cell>
                 </row>
                 <row>
                     <cell>

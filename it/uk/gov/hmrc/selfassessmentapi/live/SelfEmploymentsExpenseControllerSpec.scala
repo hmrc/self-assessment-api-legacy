@@ -15,7 +15,7 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/$saUtr/self-employments/$selfEmploymentId/expenses", Some(toJson(SelfEmploymentExpense(None, "2016-17", CISPayments, BigDecimal(1000)))))
+        .post(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses", Some(toJson(SelfEmploymentExpense(None, CISPayments, BigDecimal(1000)))))
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -25,7 +25,7 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/self-employments/$selfEmploymentId/expenses/$seExpenseId")
+        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/$seExpenseId")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -35,7 +35,7 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/self-employments/$selfEmploymentId/expenses")
+        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -45,7 +45,7 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .put(s"/$saUtr/self-employments/$selfEmploymentId/expenses/$seExpenseId", Some(toJson(SelfEmploymentExpense(None, "2016-17", CISPayments, BigDecimal(2000)))))
+        .put(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/$seExpenseId", Some(toJson(SelfEmploymentExpense(None, CISPayments, BigDecimal(2000)))))
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -55,7 +55,7 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .delete(s"/$saUtr/self-employments/$selfEmploymentId/expenses/$seExpenseId")
+        .delete(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/$seExpenseId")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }

@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Request Liability</name>
-    <description>This endpoint requests a liability calculation</description>
+    <name>Discover Tax Years</name>
+    <description>This endpoint provides links to the self assessment entry points for each tax year</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>POST /self-assessment/{utr}/{taxYear}/liabilities</resource>
+        <resource>GET /self-assessment/{utr}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -20,12 +20,6 @@
                     <cell><code>String</code></cell>
                     <cell><code>2234567890</code></cell>
                     <cell>The Self Assessment UTR of the customer</cell>
-                </row>
-                <row>
-                    <cell><code>taxYear</code></cell>
-                    <cell><code>String</code></cell>
-                    <cell><code>2016-17</code></cell>
-                    <cell>The tax year the data applies to</cell>
                 </row>
             </rows>
         </table>
@@ -49,21 +43,21 @@
             </rows>
         </table>
     </section>
-
     <section id="authorisation">
         <title>Authorisation</title>
         <authorisation>
             <type>USER</type>
-            <scope>write:self-assessment</scope>
+            <scope>read:self-assessment</scope>
         </authorisation>
     </section>
     <section id="sample-response">
         <title>Response</title>
-        <httpStatus>202 (Accepted)</httpStatus>
+        <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
     "_links" : {
-        "self": { "href": "/self-assessment/2234567890/2016-17/liabilities/1234"}
+        "self": { "href": "/self-assessment/2234567890" },
+        "2016-17": { "href": "/self-assessment/2234567890/2016-17" }
     }
 }]]>
         </json>

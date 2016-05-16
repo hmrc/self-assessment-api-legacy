@@ -19,7 +19,6 @@ package uk.gov.hmrc.selfassessmentapi.config
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.{StringReader, ValueReader}
-import play.api.Play._
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.{Application, Configuration, Play, Routes}
@@ -30,7 +29,7 @@ import uk.gov.hmrc.play.audit.filters.AuditFilter
 import uk.gov.hmrc.play.auth.controllers.{AuthConfig, AuthParamsControllerConfig}
 import uk.gov.hmrc.play.auth.microservice.connectors.{AccountId, HttpVerb, Regime, ResourceToAuthorise}
 import uk.gov.hmrc.play.auth.microservice.filters.AuthorisationFilter
-import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
+import uk.gov.hmrc.play.config.{AppName, RunMode}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
@@ -39,7 +38,7 @@ import scala.concurrent.Future
 import scala.util.matching.Regex
 
 case class ControllerConfigParams(needsHeaderValidation: Boolean = true, needsLogging: Boolean = true,
-                                  needsAuditing: Boolean = true, needsAuth: Boolean = true)
+                                  needsAuditing: Boolean = true, needsAuth: Boolean = true, needsTaxYear: Boolean = true)
 
 object ControllerConfiguration {
   lazy val controllerConfigs = Play.current.configuration.underlying.as[Config]("controllers")
@@ -50,7 +49,8 @@ object ControllerConfiguration {
       needsHeaderValidation = config.getAs[Boolean]("needsHeaderValidation").getOrElse(true),
       needsLogging = config.getAs[Boolean]("needsLogging").getOrElse(true),
       needsAuditing = config.getAs[Boolean]("needsAuditing").getOrElse(true),
-      needsAuth = config.getAs[Boolean]("needsAuth").getOrElse(true)
+      needsAuth = config.getAs[Boolean]("needsAuth").getOrElse(true),
+      needsTaxYear = config.getAs[Boolean]("needsTaxYear").getOrElse(true)
     )
   }
 
@@ -98,12 +98,10 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
 
 object HeaderValidatorFilter extends Filter with HeaderValidator {
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    val controller: Option[String] = rh.tags.get(Routes.ROUTE_CONTROLLER)
-    val needsHeaderValidation: Option[String] => Boolean = {
-      case Some(name) => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation
-      case None => true
-    }
-    if (!needsHeaderValidation(controller) || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
+    val controller = rh.tags.get(Routes.ROUTE_CONTROLLER)
+    val needsHeaderValidation = controller.map(name => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation).getOrElse(true)
+
+    if (!needsHeaderValidation || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
     else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
   }
 }

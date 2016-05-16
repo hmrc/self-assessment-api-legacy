@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
+package uk.gov.hmrc.selfassessmentapi.domain
 
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
 
-object SelfAssessmentDiscoveryController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfAssessmentDiscoveryController {
-  override val context: String = AppContext.apiGatewayContext
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
+import uk.gov.hmrc.domain.{SimpleName, SimpleObjectReads, SimpleObjectWrites}
+
+case class TaxYear(taxYear: String) extends SimpleName {
+
+  override def toString = taxYear
+  def value = taxYear
+  val name = "taxYear"
+}
+
+object TaxYear extends (String => TaxYear) {
+  implicit val taxYearWrite: Writes[TaxYear] = new SimpleObjectWrites[TaxYear](_.value)
+  implicit val taxYearRead: Reads[TaxYear] = new SimpleObjectReads[TaxYear]("taxYear", TaxYear.apply)
 }

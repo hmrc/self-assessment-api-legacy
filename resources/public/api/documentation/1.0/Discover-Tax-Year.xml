@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Discover</name>
-    <description>This endpoint provides links to the self assessment entry points for the customer</description>
+    <name>Discover Tax Year</name>
+    <description>This endpoint provides links to the self assessment entry points for the specified tax year</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -20,6 +20,12 @@
                     <cell><code>String</code></cell>
                     <cell><code>2234567890</code></cell>
                     <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+                <row>
+                    <cell><code>taxYear</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>2016-17</code></cell>
+                    <cell>The tax year the data applies to</cell>
                 </row>
             </rows>
         </table>
@@ -56,7 +62,9 @@
         <json>
 <![CDATA[{
     "_links" : {
-        "self": { "href": "/self-assessment/2234567890" }
+        "self": { "href": "/self-assessment/2234567890/2016-17" },
+        "self-employments": { "href": "/self-assessment/2234567890/2016-17/self-employments" },
+        "liabilities": { "href": "/self-assessment/2234567890/2016-17/liabilities" }
     }
 }]]>
         </json>

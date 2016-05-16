@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentId, SelfEmploymentIncome, SelfEmploymentIncomeId}
+import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, SelfEmploymentId, SelfEmploymentIncome, SelfEmploymentIncomeId}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentIncomeService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,31 +36,31 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
 
   val selfEmploymentIncomeService: SelfEmploymentIncomeService
 
-  def findById(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = Action.async { request =>
+  def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = Action.async { request =>
     selfEmploymentIncomeService.findBySelfEmploymentIncomeId(saUtr, seId, seIncomeId) map {
-      case Some(selfEmploymentIncome) => Ok(halResource(toJson(selfEmploymentIncome), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, seIncomeId)))))
+      case Some(selfEmploymentIncome) => Ok(halResource(toJson(selfEmploymentIncome), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, taxYear, seId, seIncomeId)))))
       case None => NotFound(toJson(ErrorNotFound))
     }
   }
 
-  def find(saUtr: SaUtr, seId: SelfEmploymentId): Action[AnyContent] = Action.async { request =>
+  def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action.async { request =>
     selfEmploymentIncomeService.find(saUtr) map { selfEmploymentIncomes =>
       val selfEmploymentIncomesJson = toJson(selfEmploymentIncomes.map(income => halResource(obj(),
-        Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, income.id.get))))))
+        Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, taxYear, seId, income.id.get))))))
 
-      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentIncomeHref(saUtr, seId)))
+      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentIncomeHref(saUtr, taxYear, seId)))
     }
   }
 
-  def create(saUtr: SaUtr, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
+  def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmploymentIncome] { selfEmploymentIncome =>
       selfEmploymentIncomeService.create(selfEmploymentIncome) map { seIncomeId =>
-        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, seIncomeId)))))
+        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, taxYear, seId, seIncomeId)))))
       }
     }
   }
 
-  def update(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[JsValue] = ???
+  def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[JsValue] = ???
 
-  def delete(saUtr: SaUtr, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = ???
+  def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = ???
 }

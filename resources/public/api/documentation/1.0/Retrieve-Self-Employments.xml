@@ -3,7 +3,7 @@
     <description>This endpoint returns paginated list of self employments</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/self-employments</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}/self-employments</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -26,6 +26,12 @@
                         <code>1097172564</code>
                     </cell>
                     <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+                <row>
+                    <cell><code>taxYear</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>2016-17</code></cell>
+                    <cell>The tax year the data applies to</cell>
                 </row>
             </rows>
         </table>
@@ -62,23 +68,23 @@
         <json>
 <![CDATA[{
     "_links": {
-        "self": { "href": "/self-assessment/1097172564/self-employments" }
+        "self": { "href": "/self-assessment/1097172564/2016-17/self-employments" }
     },
     "_embedded": {
     "selfEmployments": [
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/self-employments/1234" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/1234" }
         }
       },
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/self-employments/5678" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/5678" }
         }
       },
       {
         "_links": {
-          "self": { "href": "/self-assessment/1097172564/self-employments/9101" }
+          "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/9101" }
         }
       }
     ]

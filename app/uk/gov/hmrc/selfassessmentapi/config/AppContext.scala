@@ -28,4 +28,6 @@ object AppContext extends ServicesConfig {
   lazy val authUrl: String = baseUrl("auth")
   lazy val desUrl: String = baseUrl("des")
   lazy val registrationEnabled: Boolean = current.configuration.getBoolean(s"$env.microservice.services.service-locator.enabled").getOrElse(true)
+
+  val supportedTaxYears: Seq[String] = Seq("2016-17")
 }

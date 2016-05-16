@@ -35,10 +35,10 @@
             </headings>
             <rows>
                 <row>
-                    <cell><code>taxPeriod</code></cell>
+                    <cell><code>taxYear</code></cell>
                     <cell><code>String</code></cell>
-                    <cell><code>2015-16-Q1</code></cell>
-                    <cell>The tax period to request the liability for</cell>
+                    <cell><code>2015-16</code></cell>
+                    <cell>The tax year to request the liability for</cell>
                 </row>
             </rows>
         </table>

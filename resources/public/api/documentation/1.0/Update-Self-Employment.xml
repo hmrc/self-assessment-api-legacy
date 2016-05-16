@@ -78,6 +78,7 @@
         </authorisation>
     </section>
     <section id="sample-request">
+        <title>Sample Request</title>
         <json>
 <![CDATA[{
     "name": "Awesome Plumbers",

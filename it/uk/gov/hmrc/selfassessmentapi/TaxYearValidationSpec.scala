@@ -3,7 +3,6 @@ package uk.gov.hmrc.selfassessmentapi
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class TaxYearValidationSpec extends BaseFunctionalSpec {
-  val saUtr = generateSaUtr()
 
   "if the tax year in the path is valid for a sandbox request, they" should {
     "receive 200" in {

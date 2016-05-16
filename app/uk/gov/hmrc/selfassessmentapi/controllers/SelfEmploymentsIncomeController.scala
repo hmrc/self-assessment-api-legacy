@@ -38,7 +38,7 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
 
   def findById(saUtr: SaUtr, taxYear: String, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = Action.async { request =>
     selfEmploymentIncomeService.findBySelfEmploymentIncomeId(saUtr, seId, seIncomeId) map {
-      case Some(selfEmploymentIncome) => Ok(halResource(toJson(selfEmploymentIncome), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, seIncomeId)))))
+      case Some(selfEmploymentIncome) => Ok(halResource(toJson(selfEmploymentIncome), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, taxYear, seId, seIncomeId)))))
       case None => NotFound(toJson(ErrorNotFound))
     }
   }
@@ -46,16 +46,16 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
   def find(saUtr: SaUtr, taxYear: String, seId: SelfEmploymentId): Action[AnyContent] = Action.async { request =>
     selfEmploymentIncomeService.find(saUtr) map { selfEmploymentIncomes =>
       val selfEmploymentIncomesJson = toJson(selfEmploymentIncomes.map(income => halResource(obj(),
-        Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, income.id.get))))))
+        Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, taxYear, seId, income.id.get))))))
 
-      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentIncomeHref(saUtr, seId)))
+      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentIncomeHref(saUtr, taxYear, seId)))
     }
   }
 
   def create(saUtr: SaUtr, taxYear: String, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmploymentIncome] { selfEmploymentIncome =>
       selfEmploymentIncomeService.create(selfEmploymentIncome) map { seIncomeId =>
-        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, seId, seIncomeId)))))
+        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentIncomeHref(saUtr, taxYear, seId, seIncomeId)))))
       }
     }
   }

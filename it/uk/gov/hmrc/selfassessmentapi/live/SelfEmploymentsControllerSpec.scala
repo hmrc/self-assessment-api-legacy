@@ -34,7 +34,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/self-employments")
+        .get(s"/$saUtr/$taxYear/self-employments")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }

@@ -28,19 +28,19 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
 
   override val context: String = AppContext.apiGatewayContext
 
-  override def requestLiability(utr: SaUtr, taxYear: Option[String]) = Action.async { request =>
+  override def requestLiability(utr: SaUtr, taxYear: String) = Action.async { request =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def retrieveLiability(utr: SaUtr, liabilityId: String) = Action.async { request =>
+  override def retrieveLiability(utr: SaUtr, taxYear: String, liabilityId: String) = Action.async { request =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def deleteLiability(utr: SaUtr, liabilityId: String) = Action.async { request =>
+  override def deleteLiability(utr: SaUtr, taxYear: String, liabilityId: String) = Action.async { request =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  override def find(utr: SaUtr): Action[AnyContent] = Action.async { request =>
+  override def find(utr: SaUtr, taxYear: String): Action[AnyContent] = Action.async { request =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 }

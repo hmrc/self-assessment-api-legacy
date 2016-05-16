@@ -99,6 +99,6 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     val liabilities = toJson(
       result.map(liability => halResource(obj(), Seq(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
     )
-    Future.successful(Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr))))
+    Future.successful(Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr, taxYear))))
   }
 }

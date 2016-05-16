@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-package object domain {
+import uk.gov.hmrc.selfassessmentapi.services.sandbox.SelfEmploymentIncomeService
 
-  type SelfEmploymentId = String
-  type LiabilityId = String
-  type SelfEmploymentIncomeId = String
+object SelfEmploymentsIncomeController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsIncomeController {
+  override val selfEmploymentIncomeService = SelfEmploymentIncomeService
 }

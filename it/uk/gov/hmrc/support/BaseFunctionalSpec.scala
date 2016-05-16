@@ -12,6 +12,7 @@ import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 
 import scala.util.matching.Regex
 
@@ -23,7 +24,7 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
   val taxYear = "2016-17"
 
   protected val wiremockBaseUrl: String = s"http://$stubHost:$WIREMOCK_PORT"
-
+  protected val saUtr = generateSaUtr()
   private val wireMockServer = new WireMockServer(wireMockConfig().port(WIREMOCK_PORT))
 
   override def beforeAll = {
@@ -40,6 +41,13 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
   }
 
   class Assertions(response: HttpResponse) {
+    def resourceIsNotImplemented() =  {
+      statusIs(501)
+        .contentTypeIsJson()
+        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
+        .body(_ \ "message").is(ErrorNotImplemented.message)
+    }
+
     def contentTypeIsXml() = contentTypeIs("application/xml")
 
     def contentTypeIsJson() = contentTypeIs("application/json; charset=utf-8")
@@ -165,11 +173,6 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
       this
     }
 
-    private def withHeader(name : String, value: String) = {
-      hc.withExtraHeaders((name, value))
-      this
-    }
-
     def withoutAcceptHeader() = {
       this.addAcceptHeader = false
       this
@@ -190,7 +193,7 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
           }
           case "PUT" => {
             val jsonBody = body.getOrElse(throw new RuntimeException("Body for PUT must be provided"))
-            new Assertions((Http.putJson(url, jsonBody)(hc)))
+            new Assertions(Http.putJson(url, jsonBody)(hc))
           }
         }
       }

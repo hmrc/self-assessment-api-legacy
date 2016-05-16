@@ -21,14 +21,20 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class JsonSpec extends UnitSpec {
 
-  def assertValidationError[T](o: T, expectedErrorMessages: List[String], failureMessage: String)(implicit format: Format[T]): Unit = {
-    val json = Json.toJson(o)(format)
-    assertValidationError[T](json, expectedErrorMessages, failureMessage)
+  def roundTripJson[T](json: T)(implicit format: Format[T]) = {
+    val write = Json.toJson(json)
+    val read = write.validate[T]
+    read.asOpt shouldEqual Some(json)
   }
 
-  def assertValidationError[T](json: JsValue, expectedErrorMessages: List[String], failureMessage: String)(implicit format: Format[T]): Unit = {
+  def assertValidationError[T](o: T, expectedErrors: Map[ErrorCode, String], failureMessage: String)(implicit format: Format[T]): Unit = {
+    val json = Json.toJson(o)(format)
+    assertValidationError[T](json, expectedErrors, failureMessage)
+  }
+
+  def assertValidationError[T](json: JsValue, expectedErrors: Map[ErrorCode, String], failureMessage: String)(implicit format: Format[T]): Unit = {
     json.validate[T](format).fold(
-      invalid => invalid.flatMap(_._2).map(_.message) should contain theSameElementsAs expectedErrorMessages,
+      invalid => invalid.flatMap(_._2).map(error => (error.args.head, error.message)) should contain theSameElementsAs expectedErrors,
       valid => fail(failureMessage)
     )
   }

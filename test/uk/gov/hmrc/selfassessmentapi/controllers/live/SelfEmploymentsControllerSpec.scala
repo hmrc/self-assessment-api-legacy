@@ -62,7 +62,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
 
     "invoke the self employment service and return an HTTP 201 and a successful response" in {
       val selfEmployment =
-        SelfEmployment(Some(seId), "Awesome Plumbers", LocalDate.now().minusDays(1))
+        SelfEmployment(name = "Awesome Plumbers", commencementDate = LocalDate.now().minusDays(1))
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
@@ -76,7 +76,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
 
     "return error if the json body is invalid" in {
       val selfEmployment =
-        SelfEmployment(Some(seId), "Awesome Plumbers", LocalDate.now().plusDays(1))
+        SelfEmployment(name = "Awesome Plumbers", commencementDate = LocalDate.now().plusDays(1))
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
@@ -98,7 +98,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
 
     "return error if the json body is invalid" in {
       val selfEmployment =
-        SelfEmployment(Some(seId), "Awesome Plumbers" * 30, LocalDate.now().minusDays(1))
+        SelfEmployment(name = "Awesome Plumbers" * 30, commencementDate = LocalDate.now().minusDays(1))
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
@@ -116,7 +116,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
 
     "invoke the self-employments service with an existing self-employment id, retrieve the self employment and return an HTTP 200" in {
       val seId = BSONObjectID.generate.stringify
-      val selfEmployment = SelfEmployment(Some(seId), "Awesome Plumbers", LocalDate.now().minusDays(1))
+      val selfEmployment = SelfEmployment(name = "Awesome Plumbers", commencementDate = LocalDate.now().minusDays(1))
 
       when(mockSelfEmploymentService.findBySelfEmploymentId(saUtr, seId)).thenReturn(Future.successful(Some(selfEmployment)))
 

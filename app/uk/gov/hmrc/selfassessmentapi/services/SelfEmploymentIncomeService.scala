@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.services
 
-package object domain {
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-  type SelfEmploymentId = String
-  type LiabilityId = String
-  type SelfEmploymentIncomeId = String
+import scala.concurrent.Future
+
+trait SelfEmploymentIncomeService {
+  def find(saUtr: SaUtr): Future[Seq[SelfEmploymentIncome]]
+  def create(selfEmploymentIncome: SelfEmploymentIncome): Future[SelfEmploymentIncomeId]
+  def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId) : Future[Option[SelfEmploymentIncome]]
 }

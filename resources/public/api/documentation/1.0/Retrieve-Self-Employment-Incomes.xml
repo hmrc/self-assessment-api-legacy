@@ -1,0 +1,101 @@
+<endpoint>
+    <name>Retrieve Self Employment Incomes</name>
+    <description>This endpoint returns paginated list of self employment incomes</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource>GET /self-assessment/{utr}/self-employments/{selfEmploymentsId}/incomes</resource>
+    </section>
+    <section id="path-parameters">
+        <title>Path Parameters</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>utr</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>1097172564</code>
+                    </cell>
+                    <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>selfEmploymentsId</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>1234567</code>
+                    </cell>
+                    <cell>The Self Employment Income id</cell>
+                </row>
+            </rows>
+        </table>
+    </section>
+    <section id="request-headers">
+        <title>Request Headers</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Value</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>Accept</code>
+                    </cell>
+                    <cell>
+                        <code>application/vnd.hmrc.1.0+json</code>
+                    </cell>
+                </row>
+            </rows>
+        </table>
+    </section>
+    <section id="authorisation">
+        <title>Authorisation</title>
+        <authorisation>
+            <type>USER</type>
+            <scope>read:self-assessment</scope>
+        </authorisation>
+    </section>
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>
+<![CDATA[{
+    "_links": {
+        "self": { "href": "/self-assessment/1097172564/self-employments/987654/incomes" }
+    },
+    "_embedded": {
+    "incomes": [
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/self-employments/987654/incomes/1234" }
+        }
+      },
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/self-employments/987654/incomes/5678" }
+        }
+      },
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/1097172564/self-employments/987654/incomes/9101" }
+        }
+      }
+    ]
+    }
+}]]>
+        </json>
+    </section>
+</endpoint>

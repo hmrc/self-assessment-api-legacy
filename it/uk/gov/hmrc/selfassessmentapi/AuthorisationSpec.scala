@@ -5,7 +5,6 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AuthorisationSpec extends BaseFunctionalSpec {
 
-  val saUtr = generateSaUtr()
   val selfEmploymentId = BSONObjectID.generate.stringify
 
   "if the user is not authorised for the resource they" should {
@@ -26,7 +25,7 @@ class AuthorisationSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
-        .statusIs(501)
+        .resourceIsNotImplemented()
     }
   }
 }

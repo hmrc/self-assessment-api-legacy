@@ -27,24 +27,26 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain._
 
+import scala.concurrent.Future
+
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
   override val context: String = AppContext.apiGatewayContext
 
-  override def requestLiability(utr: SaUtr, taxYear: String) = validateAccept(acceptHeaderValidationRules) { request =>
+  override def requestLiability(utr: SaUtr, taxYear: String) = Action.async { request =>
     val liabilityId = UUID.randomUUID().toString
       val links = Seq(
         HalLink("self", liabilityHref(utr, taxYear, liabilityId))
       )
-      Accepted(halResource(JsObject(Nil), links))
+    Future.successful(Accepted(halResource(JsObject(Nil), links)))
   }
 
-  override def retrieveLiability(utr: SaUtr, taxYear: String, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
+  override def retrieveLiability(utr: SaUtr, taxYear: String, liabilityId: String) = Action.async { request =>
     val liability = createLiability(utr, taxYear, liabilityId)
     val links = Seq(
       HalLink("self", liabilityHref(utr, taxYear, liabilityId))
     )
-    Ok(halResource(Json.toJson(liability), links))
+    Future.successful(Ok(halResource(Json.toJson(liability), links)))
   }
 
   def createLiability(utr: SaUtr, taxYear: String, id: String): Liability =
@@ -88,15 +90,15 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     )
 
 
-  override def deleteLiability(utr: SaUtr, taxYear: String, liabilityId: String) = validateAccept(acceptHeaderValidationRules) { request =>
-    NoContent
+  override def deleteLiability(utr: SaUtr, taxYear: String, liabilityId: String) = Action.async { request =>
+    Future.successful(NoContent)
   }
 
-  override def find(saUtr: SaUtr, taxYear: String): Action[AnyContent] = Action { request =>
+  override def find(saUtr: SaUtr, taxYear: String): Action[AnyContent] = Action.async { request =>
     val result= Seq(createLiability(saUtr, taxYear, "1234"), createLiability(saUtr, taxYear, "4321"), createLiability(saUtr, taxYear, "7777"))
     val liabilities = toJson(
       result.map(liability => halResource(obj(), Seq(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
     )
-    Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr, taxYear)))
+    Future.successful(Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr))))
   }
 }

@@ -35,7 +35,7 @@ object SelfEmployment {
   def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past", ErrorCode("COMMENCEMENT_DATE_NOT_IN_THE_PAST")))(_.isBefore(LocalDate.now()))
 
   implicit val selfEmploymentReads: Reads[SelfEmployment] = (
-    (__ \ "id").readNullable[SelfEmploymentId] and
+    Reads.pure(None) and
       (__ \ "name").read[String](lengthValidator) and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator)
     ) (SelfEmployment.apply _)

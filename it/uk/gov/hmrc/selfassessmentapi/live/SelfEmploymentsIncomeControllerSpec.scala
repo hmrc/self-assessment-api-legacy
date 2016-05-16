@@ -1,50 +1,51 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
-import org.joda.time.LocalDate
 import play.api.libs.json.Json._
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncome
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
+class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
 
   val selfEmploymentId = BSONObjectID.generate.stringify
+  val selfEmploymentIncomeId = BSONObjectID.generate.stringify
 
-  "Create self-employment" should {
+  "Create self-employment-income" should {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/$saUtr/$taxYear/self-employments", Some(toJson(SelfEmployment(None, "name", LocalDate.now.minusDays(1)))))
+        .post(s"/$saUtr/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, "2016-17", TURNOVER, BigDecimal(1000)))))
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
   }
 
-  "Find self-employment by id" should {
+  "Find self-employment-income by id" should {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
+        .get(s"/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
   }
 
-  "Find all self-employments" should {
+  "Find all self-employment-incomes" should {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/self-employments")
+        .get(s"/$saUtr/self-employments/$selfEmploymentId/incomes")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
   }
 
-  "Update self-employment" should {
+  "Update self-employment-income" should {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .put(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId", Some(toJson(SelfEmployment(None, "name", LocalDate.now.minusDays(1)))))
+        .put(s"/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId", Some(toJson(SelfEmploymentIncome(None, "2016-17", OTHER, BigDecimal(2000)))))
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -54,7 +55,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .delete(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
+        .delete(s"/$saUtr/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }

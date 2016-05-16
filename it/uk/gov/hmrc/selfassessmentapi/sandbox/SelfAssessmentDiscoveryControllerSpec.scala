@@ -4,8 +4,6 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
 
-  val saUtr = generateSaUtr()
-
   "Sandbox Self assessment tax years discovery" should {
     "return a 200 response with links to tax years" in {
       given()

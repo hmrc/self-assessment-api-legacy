@@ -9,7 +9,6 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
 
-  val saUtr = generateSaUtr()
   val selfEmploymentId = UUID.randomUUID().toString
 
   "Sandbox Self employment" should {

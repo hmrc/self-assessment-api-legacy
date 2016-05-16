@@ -4,8 +4,6 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class CustomerResolverControllerSpec extends BaseFunctionalSpec {
 
-  val saUtr = generateSaUtr()
-
   "Live Customer Resolver" should {
     "return a 200 response with a link to /self-assessment/utr when the customer is enrolled in SA" in {
       given().userIsEnrolledInSa(saUtr)

@@ -256,6 +256,7 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
   }
 
   def given() = new Givens()
+  def when() = new HttpVerbs()
 
 }
 

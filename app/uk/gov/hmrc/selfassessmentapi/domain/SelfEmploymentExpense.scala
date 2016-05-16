@@ -19,25 +19,25 @@ package uk.gov.hmrc.selfassessmentapi.domain
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseCategory.SelfEmploymentExpenseCategory
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseType.SelfEmploymentExpenseType
 
 
-object SelfEmploymentExpenseCategory extends Enumeration {
-  type SelfEmploymentExpenseCategory = Value
-  val CoGBought, CISPayments, StaffCosts, TravelCosts, PremissesRunnigCosts, MaintenanceCosts, AdminCosts,
+object SelfEmploymentExpenseType extends Enumeration {
+  type SelfEmploymentExpenseType = Value
+  val CoGBought, CISPayments, StaffCosts, TravelCosts, PremissesRunningCosts, MaintenanceCosts, AdminCosts,
   AdvertisingCosts, Internet, FinancialCharges, BadDept, ProfessionalFees, Deprecation, Other = Value
 }
 
 case class SelfEmploymentExpense(id: Option[SelfEmploymentExpenseId] = None,
-                                 category: SelfEmploymentExpenseCategory, amount: BigDecimal)
+                                 `type`: SelfEmploymentExpenseType, amount: BigDecimal)
 
 object SelfEmploymentExpense {
 
-  implicit val seExpenseTypes = EnumJson.enumFormat(SelfEmploymentExpenseCategory)
+  implicit val seExpenseTypes = EnumJson.enumFormat(SelfEmploymentExpenseType)
   implicit val seExpenseWrites = Json.writes[SelfEmploymentExpense]
   implicit val seExpenseReads: Reads[SelfEmploymentExpense] = (
     (__ \ "id").readNullable[SelfEmploymentExpenseId] and
-      (__ \ "category").read[SelfEmploymentExpenseCategory] and
+      (__ \ "type").read[SelfEmploymentExpenseType] and
       (__ \ "amount").read[BigDecimal](amountValidator)
     ) (SelfEmploymentExpense.apply _)
 

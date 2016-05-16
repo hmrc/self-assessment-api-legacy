@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.Json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpense
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseCategory._
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseType._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
@@ -28,7 +28,7 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
 
       val request = Json.parse("""
         | {
-        | "category" : "Blablabla",
+        | "type" : "Blablabla",
         | "amount": 1234.989
         | }
       """.stripMargin)
@@ -38,7 +38,7 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(400)
         .body1(_ \\ "code").is("NO_VALUE_FOUND", "INVALID_MONETARY_AMOUNT")
-        .body1(_ \\ "path").is("/category","/amount")
+        .body1(_ \\ "path").is("/type","/amount")
     }
   }
 

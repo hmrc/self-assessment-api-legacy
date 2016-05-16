@@ -2,8 +2,8 @@ package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json._
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseCategory._
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentExpense, SelfEmploymentExpenseCategory}
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseType._
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentExpense, SelfEmploymentExpenseType}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {

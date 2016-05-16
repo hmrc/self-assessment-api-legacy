@@ -31,7 +31,7 @@ object SelfEmploymentIncomeType extends Enumeration {
 
 
 case class SelfEmploymentIncome(id: Option[SelfEmploymentIncomeId] = None,
-                                incomeType: SelfEmploymentIncomeType,
+                                `type`: SelfEmploymentIncomeType,
                                 amount: BigDecimal)
 
 
@@ -44,7 +44,7 @@ object SelfEmploymentIncome {
   implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]
   implicit val seIncomeReads: Reads[SelfEmploymentIncome] = (
     Reads.pure(None) and
-      (__ \ "incomeType").read[SelfEmploymentIncomeType] and
+      (__ \ "type").read[SelfEmploymentIncomeType] and
       (__ \ "amount").read[BigDecimal](amountValidator)
     ) (SelfEmploymentIncome.apply _)
 }

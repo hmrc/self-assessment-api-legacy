@@ -16,20 +16,20 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import SelfEmploymentExpenseCategory._
+import SelfEmploymentExpenseType._
 
 class SelfEmploymentExpenseSpec extends JsonSpec {
 
   "format" should {
     "round trip SelfEmploymentIncome json when id present" in {
-      SelfEmploymentExpenseCategory.values.foreach {
-        cat => roundTripJson(SelfEmploymentExpense(id = Some("idm"), category = cat, amount = BigDecimal(1000.99)))
+      SelfEmploymentExpenseType.values.foreach {
+        cat => roundTripJson(SelfEmploymentExpense(id = Some("idm"), `type` = cat, amount = BigDecimal(1000.99)))
       }
     }
 
     "round trip SelfEmployment json with no id" in {
-      SelfEmploymentExpenseCategory.values.foreach {
-        cat => roundTripJson(SelfEmploymentExpense(id = None, category = cat, amount = BigDecimal(1000.99)))
+      SelfEmploymentExpenseType.values.foreach {
+        cat => roundTripJson(SelfEmploymentExpense(id = None, `type` = cat, amount = BigDecimal(1000.99)))
       }
     }
   }
@@ -37,7 +37,7 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val seIncome = SelfEmploymentExpense(category = CISPayments, amount = testAmount)
+        val seIncome = SelfEmploymentExpense(`type` = CISPayments, amount = testAmount)
         assertValidationError[SelfEmploymentExpense](
           seIncome,
           Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount cannot have more than 2 decimal values"),

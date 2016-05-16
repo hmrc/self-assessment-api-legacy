@@ -22,13 +22,14 @@ import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 
 import scala.concurrent.Future
 
 trait TaxYearDiscoveryController
     extends BaseController with HeaderValidator with Links {
 
-  final def discoverTaxYear(utr: SaUtr, taxYear: String) = Action.async { request =>
+  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
       val links = Seq(HalLink("self", discoverTaxYearHref(utr, taxYear)),
                       HalLink("self-employments", selfEmploymentsHref(utr, taxYear)),
                       HalLink("liabilities", liabilitiesHref(utr, taxYear)))

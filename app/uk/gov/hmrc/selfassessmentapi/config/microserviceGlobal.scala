@@ -33,7 +33,6 @@ import uk.gov.hmrc.play.config.{AppName, RunMode}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorTaxYearInvalid
 
 import scala.concurrent.Future
 import scala.util.matching.Regex
@@ -107,25 +106,6 @@ object HeaderValidatorFilter extends Filter with HeaderValidator {
   }
 }
 
-object TaxYearValidatorFilter extends Filter with Results {
-  val taxYearRegex = """(/sandbox)?/\w+/(\d{4}-\d{2})/?.*""".r
-
-  def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    val controller = rh.tags.get(Routes.ROUTE_CONTROLLER)
-    val needsTaxYear = controller.map(name => ControllerConfiguration.controllerParamsConfig(name).needsTaxYear).getOrElse(true)
-
-    def isTaxYearValid(path: String): Boolean = {
-      path match {
-        case taxYearRegex(sandbox, taxYear) => AppContext.supportedTaxYears.contains(taxYear)
-        case _ => false
-      }
-    }
-
-    if (!needsTaxYear || isTaxYearValid(rh.path)) next(rh)
-    else Future.successful(Status(ErrorTaxYearInvalid.httpStatusCode)(Json.toJson(ErrorTaxYearInvalid)))
-  }
-}
-
 trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLocatorConfig {
   override lazy val registrationEnabled: Boolean = AppContext.registrationEnabled
   override val slConnector: ServiceLocatorConnector = ServiceLocatorConnector(WSHttp)
@@ -144,6 +124,6 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override val authFilter = Some(MicroserviceAuthFilter)
 
-  override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter, TaxYearValidatorFilter) ++ defaultMicroserviceFilters
+  override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter) ++ defaultMicroserviceFilters
 
 }

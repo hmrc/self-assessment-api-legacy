@@ -20,8 +20,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .get(s"/sandbox/$saUtr/not-a-tax-year").withAcceptHeader()
         .thenAssertThat()
         .statusIs(400)
-        .body(_ \ "code").is("TAX_YEAR_INVALID")
-        .body(_ \ "message").is("The provided Tax Year is invalid")
+        .body(_ \ "message").is("ERROR_TAX_YEAR_INVALID")
     }
   }
 
@@ -43,8 +42,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .get(s"/$saUtr/not-a-tax-year").withAcceptHeader()
         .thenAssertThat()
         .statusIs(400)
-        .body(_ \ "code").is("TAX_YEAR_INVALID")
-        .body(_ \ "message").is("The provided Tax Year is invalid")
+        .body(_ \ "message").is("ERROR_TAX_YEAR_INVALID")
     }
   }
 

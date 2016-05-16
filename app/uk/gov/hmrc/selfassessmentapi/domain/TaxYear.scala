@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.domain
 
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 
-trait LiabilityController extends BaseController with Links {
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
+import uk.gov.hmrc.domain.{SimpleName, SimpleObjectReads, SimpleObjectWrites}
 
-  def requestLiability(utr: SaUtr, taxYear: TaxYear): Action[AnyContent]
-  def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String): Action[AnyContent]
-  def deleteLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String): Action[AnyContent]
-  def find(utr: SaUtr, taxYear: TaxYear) : Action[AnyContent]
+case class TaxYear(taxYear: String) extends SimpleName {
 
+  override def toString = taxYear
+  def value = taxYear
+  val name = "taxYear"
+}
+
+object TaxYear extends (String => TaxYear) {
+  implicit val taxYearWrite: Writes[TaxYear] = new SimpleObjectWrites[TaxYear](_.value)
+  implicit val taxYearRead: Reads[TaxYear] = new SimpleObjectReads[TaxYear]("taxYear", TaxYear.apply)
 }

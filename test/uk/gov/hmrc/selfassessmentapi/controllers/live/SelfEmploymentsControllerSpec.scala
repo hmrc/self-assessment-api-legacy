@@ -29,7 +29,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmployment, SelfEmploymentId}
+import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, SelfEmployment, SelfEmploymentId}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentService
 
 import scala.concurrent.Future
@@ -66,7 +66,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
-      val result = await(call(controller.create(saUtr, taxYear), request))
+      val result = await(call(controller.create(saUtr, TaxYear(taxYear)), request))
       status(result) shouldEqual CREATED
 
       val jsonResult = contentAsJson(result)
@@ -80,7 +80,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
-      val result = await(call(controller.create(saUtr, taxYear), request))
+      val result = await(call(controller.create(saUtr, TaxYear(taxYear)), request))
       status(result) shouldEqual BAD_REQUEST
 
       // todo assert the error response (to be implemented after the validation story is played)
@@ -102,7 +102,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.create(selfEmployment))
         .thenReturn(Future.successful(seId))
       val request = fakeRequest(selfEmployment)
-      val result = await(call(controller.create(saUtr, taxYear), request))
+      val result = await(call(controller.create(saUtr, TaxYear(taxYear)), request))
       status(result) shouldEqual BAD_REQUEST
 
       // todo assert the error response (to be implemented after the validation story is played)
@@ -121,7 +121,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.findBySelfEmploymentId(saUtr, seId)).thenReturn(Future.successful(Some(selfEmployment)))
 
       val request = fakeRequest(seId)
-      val result = await(call(controller.findById(saUtr, taxYear, seId), request))
+      val result = await(call(controller.findById(saUtr, TaxYear(taxYear), seId), request))
       status(result) shouldEqual OK
 
       val jsonResult = contentAsJson(result)
@@ -137,7 +137,7 @@ class SelfEmploymentsControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockSelfEmploymentService.findBySelfEmploymentId(saUtr, seId)).thenReturn(Future.successful(None))
 
       val request = fakeRequest(seId)
-      val result = await(call(controller.findById(saUtr, taxYear, seId), request))
+      val result = await(call(controller.findById(saUtr, TaxYear(taxYear), seId), request))
       status(result) shouldEqual NOT_FOUND
 
       val jsonResult = contentAsJson(result)

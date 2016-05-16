@@ -88,7 +88,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{taxYear}/self-employments",
+                uriPattern = "/{utr}/{taxYear}/self-employments",
                 endpointName = "Create Self Employment",
                 method = HttpMethod.POST,
                 authType = AuthType.USER,

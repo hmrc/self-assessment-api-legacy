@@ -32,13 +32,13 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
-  def findById(saUtr: SaUtr, taxYear: String, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action { request =>
+  def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action { request =>
     val seExpense = SelfEmploymentExpense(id = Some(seExpenseId), category = CISPayments,
                                           amount= BigDecimal("1000.45"))
     Ok(halResource(toJson(seExpense), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpenseId)))))
   }
 
-  def find(saUtr: SaUtr, taxYear: String, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
+  def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
     val seq = Seq(SelfEmploymentExpense(id = Some("1234"), category = CISPayments,
                                                   amount = BigDecimal("1000.45")),
                             SelfEmploymentExpense(id = Some("5678"), category = CoGBought,
@@ -51,21 +51,21 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
     Ok(halResourceList("selfEmployments", seExpensesJson, selfEmploymentExpensesHref(saUtr, taxYear, seId)))
   }
 
-  def create(saUtr: SaUtr, taxYear: String, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
+  def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmploymentExpense] { selfEmploymentExpense =>
       val seExpenseId = BSONObjectID.generate.stringify
       Future.successful(Created(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpenseId))))))
     }
   }
 
-  def update(saUtr: SaUtr, taxYear: String, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action.async(parse.json)  {
+  def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action.async(parse.json)  {
     implicit request =>
     withJsonBody[SelfEmploymentExpense] { seExpense =>
      Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpense.id.get))))))
     }
   }
 
-  def delete(saUtr: SaUtr, taxYear: String, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action {
+  def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action {
     if(seExpenseId == "1234") NotFound else  NoContent
   }
 }

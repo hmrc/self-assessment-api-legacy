@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Delete Transaction</name>
-    <description>This endpoint deletes a transaction</description>
+    <name>Delete Summary</name>
+    <description>This endpoint deletes a summary</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>DELETE /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{transaction}/{transactionId}</resource>
+        <resource>DELETE /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -53,7 +53,7 @@
                 </row>
                 <row>
                     <cell>
-                        <code>transaction</code>
+                        <code>summary</code>
                     </cell>
                     <cell>
                         <code>Enum</code>
@@ -61,13 +61,13 @@
                     <cell>
                         <code>incomes, expenses</code>
                     </cell>
-                    <cell>The type of transaction</cell>
+                    <cell>The type of summary</cell>
                 </row>
                 <row>
-                    <cell><code>transactionId</code></cell>
+                    <cell><code>summaryId</code></cell>
                     <cell><code>String</code></cell>
                     <cell><code>5728b53c4800005100d2d98a</code></cell>
-                    <cell>The transaction id</cell>
+                    <cell>The summary id</cell>
                 </row>
             </rows>
         </table>

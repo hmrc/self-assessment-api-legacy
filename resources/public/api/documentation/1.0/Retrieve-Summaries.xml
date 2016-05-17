@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Transactions</name>
-    <description>This endpoint returns a list of transactions</description>
+    <name>Retrieve Summaries</name>
+    <description>This endpoint returns a list of summaries</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{transaction}</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -65,7 +65,7 @@
                 </row>
                 <row>
                     <cell>
-                        <code>transaction</code>
+                        <code>summary</code>
                     </cell>
                     <cell>
                         <code>Enum</code>
@@ -73,7 +73,7 @@
                     <cell>
                         <code>incomes, expenses</code>
                     </cell>
-                    <cell>The type of transaction</cell>
+                    <cell>The type of summary</cell>
                 </row>
             </rows>
         </table>
@@ -146,7 +146,7 @@
         <title>Incomes Response</title>
         <httpStatus>200 (OK)</httpStatus>
         <json>
-            <![CDATA[{
+<![CDATA[{
   "_links": {
     "self": {
       "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"

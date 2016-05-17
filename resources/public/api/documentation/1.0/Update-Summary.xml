@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Create Transaction</name>
-    <description>This endpoint creates a transaction for the specified source</description>
+    <name>Update Summary</name>
+    <description>This endpoint updates a specified summary</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>POST /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{transaction}</resource>
+        <resource>PUT /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -65,7 +65,7 @@
                 </row>
                 <row>
                     <cell>
-                        <code>transaction</code>
+                        <code>summary</code>
                     </cell>
                     <cell>
                         <code>Enum</code>
@@ -73,7 +73,13 @@
                     <cell>
                         <code>incomes, expenses</code>
                     </cell>
-                    <cell>The type of transaction</cell>
+                    <cell>The type of summary</cell>
+                </row>
+                <row>
+                    <cell><code>summaryId</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>5728b53c4800005100d2d98a</code></cell>
+                    <cell>The summary id</cell>
                 </row>
             </rows>
         </table>
@@ -94,14 +100,6 @@
                         <code>application/vnd.hmrc.1.0+json</code>
                     </cell>
                 </row>
-                <row>
-                    <cell>
-                        <code>Content-Type</code>
-                    </cell>
-                    <cell>
-                        <code>application/json</code>
-                    </cell>
-                </row>
             </rows>
         </table>
     </section>
@@ -114,8 +112,8 @@
     </section>
     <section id="sample-request-expenses">
         <title>Sample Expenses Request</title>
-        <resource>POST /self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses</resource>
-        <description>Create an expense for the specified source</description>
+        <resource>PUT /self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d98a</resource>
+        <description>Updates an expense for the specified source</description>
         <json>
 <![CDATA[{
     "type": "TravelCosts",
@@ -165,62 +163,69 @@
             </rows>
         </table>
     </section>
-        <section id="sample-request-incomes">
-            <title>Sample Incomes Request</title>
-            <resource>POST /self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes</resource>
-            <description>Create an income for the specified source</description>
-            <json>
+    <section id="sample-request-incomes">
+        <title>Sample Incomes Request</title>
+        <resource>PUT /self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5728b53c4800005100d2d98a</resource>
+        <description>Updates an income for the specified source</description>
+        <json>
 <![CDATA[{
     "type": "Turnover",
     "amount": 60000.00
 }]]>
-            </json>
-            <table>
-                <headings>
-                    <cell>Name</cell>
-                    <cell>Type</cell>
-                    <cell>Example</cell>
-                    <cell>Description</cell>
-                </headings>
-                <rows>
-                    <row>
-                        <cell>
-                            <code>type</code>
-                        </cell>
-                        <cell>
-                            <code>Enum</code>
-                        </cell>
-                        <cell>
-                            <code>Turnover, Other</code>
-                        </cell>
-                        <cell>The type of income</cell>
-                    </row>
-                    <row>
-                        <cell>
-                            <code>amount</code>
-                        </cell>
-                        <cell>
-                            <code>Number</code>
-                        </cell>
-                        <cell>
-                            <code>60000.00</code>
-                        </cell>
-                        <cell>The amount of the income as a positive number with up to 2 decimal places</cell>
-                    </row>
-                </rows>
-            </table>
-        </section>
-        <section id="sample-response">
-            <title>Sample Response</title>
-            <httpStatus>201 (CREATED)</httpStatus>
-            <json>
+        </json>
+        <table>
+            <headings>
+                <cell>Source</cell>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>self-employments</code>
+                    </cell>
+                    <cell>
+                        <code>type</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>Turnover, Other</code>
+                    </cell>
+                    <cell>The type of income</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>All</code>
+                    </cell>
+                    <cell>
+                        <code>amount</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>60000.00</code>
+                    </cell>
+                    <cell>The amount of the income as a positive number with up to 2 decimal places</cell>
+                </row>
+            </rows>
+        </table>
+    </section>
+    <section id="sample-response">
+        <title>Sample Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>
 <![CDATA[{
     "_links": {
         "self": {
-        "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5728b53c4800005100d2d98a"
+           "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d98a"
         }
     }
 }]]>
-            </json>
-        </section>
+        </json>
+    </section>
 </endpoint>

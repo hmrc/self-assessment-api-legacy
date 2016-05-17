@@ -112,40 +112,40 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{transaction}",
-                endpointName = "Create Transaction",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}",
+                endpointName = "Create Summary",
                 method = HttpMethod.POST,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{transaction}/{transactionId}",
-                endpointName = "Update Transaction",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
+                endpointName = "Update Summary",
                 method = HttpMethod.PUT,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{transaction}/{transactionId}",
-                endpointName = "Delete Transaction",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
+                endpointName = "Delete Summary",
                 method = HttpMethod.DELETE,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{transaction}/{transactionId}",
-                endpointName = "Retrieve Transaction",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
+                endpointName = "Retrieve Summary",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{transaction}",
-                endpointName = "Retrieve Transactions",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}",
+                endpointName = "Retrieve Summaries",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,

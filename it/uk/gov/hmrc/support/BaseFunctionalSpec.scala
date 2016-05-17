@@ -126,6 +126,11 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
         content.as[String] shouldBe value
         assertions
       }
+
+      def is(value: BigDecimal) = {
+        content.as[BigDecimal] shouldBe value
+        assertions
+      }
     }
 
     class BodyListAssertions(content: Seq[JsValue], assertions: Assertions) {
@@ -175,13 +180,21 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
     }
   }
 
-  class HttpBodyWrapper(method: String, body: Option[JsValue]) {
+  class HttpPostBodyWrapper(method: String, body: Option[JsValue]) {
     def to(url: String) = new HttpRequest(method, url, body)
+  }
+
+  class HttpPutBodyWrapper(method: String, body: Option[JsValue]) {
+    def at(url: String) = new HttpRequest(method, url, body)
   }
 
   class HttpVerbs {
     def post(body: Some[JsValue]) = {
-      new HttpBodyWrapper("POST", body)
+      new HttpPostBodyWrapper("POST", body)
+    }
+
+    def put(body: Some[JsValue]) = {
+      new HttpPutBodyWrapper("PUT", body)
     }
 
     def get(path: String) = {

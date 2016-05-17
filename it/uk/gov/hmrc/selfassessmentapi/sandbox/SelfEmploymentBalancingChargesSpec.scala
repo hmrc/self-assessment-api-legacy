@@ -12,6 +12,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
   val balancingChargeId = UUID.randomUUID()
 
   "self employment balancing charges" should {
+
     "be created for valid input" in {
       when()
         .post(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(100.00)))))
@@ -21,9 +22,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/.+".r)
     }
-  }
 
-  "self employment balancing charges" should {
     "not be created for invalid amount" in {
       when()
         .post(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(100.123)))))
@@ -33,6 +32,70 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
         .contentTypeIsJson()
         .body1(_ \\ "code").is("INVALID_MONETARY_AMOUNT")
     }
+
+    "be available for an existing balancing charge id" in {
+      when()
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .body(_ \ "id").is("1234")
+        .body(_ \ "category").is("OTHER")
+        .body(_ \ "amount").is(1000.45)
+    }
+
+    "not be available for a non-existent balancing charge id" in {
+      when()
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/9999")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+
+    "be deleted for valid balancing charge id" in {
+      when()
+        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .thenAssertThat()
+        .statusIs(204)
+    }
+
+    "be not deleted for valid balancing charge id" in {
+      when()
+        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/9999")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+
+    "be updated for valid input" in {
+      when()
+        .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(100.00)))))
+        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+    }
+
+    "not be updated for invalid input" in {
+      when()
+        .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(-100.00)))))
+        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .thenAssertThat()
+        .statusIs(400)
+        .contentTypeIsJson()
+        .body1(_ \\ "code").is("INVALID_MONETARY_AMOUNT")
+    }
+
+    "not be updated for non-existent balancing charge id" in {
+      when()
+        .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(100.00)))))
+        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/9999")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+
   }
+
+
 
 }

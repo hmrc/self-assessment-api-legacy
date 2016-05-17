@@ -39,16 +39,13 @@ trait SelfEmploymentsBalancingChargesController extends BaseController with Link
   }
 
   def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, balancingChargeId: SelfEmploymentBalancingChargeId) = Action.async { implicit request =>
-    val balancingCharge = BalancingCharge(Some(balancingChargeId), BalancingChargeCategory.OTHER, BigDecimal("1000.45"))
-    balancingChargeId match {
-      case "9999" => Future.successful(NotFound)
-      case _ => Future.successful(Ok(halResource(toJson(balancingCharge), Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId, balancingChargeId))))))
-    }
+    val balancingCharge = BalancingCharge(Some(balancingChargeId), BalancingChargeType.Other, BigDecimal("1000.45"))
+    Future.successful(Ok(halResource(toJson(balancingCharge), Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId, balancingChargeId))))))
   }
 
   def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
-    val balancingCharges = Seq(BalancingCharge(Some("1234"), BalancingChargeCategory.OTHER, BigDecimal("1000.45")),
-      BalancingCharge(Some("5678"), BalancingChargeCategory.BPRA, BigDecimal("1000.45")))
+    val balancingCharges = Seq(BalancingCharge(Some("1234"), BalancingChargeType.Other, BigDecimal("1000.45")),
+      BalancingCharge(Some("5678"), BalancingChargeType.BPRA, BigDecimal("1000.45")))
 
     val balancingChargesJson = toJson(balancingCharges.map(balancingCharge => halResource(obj(),
       Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId,  balancingCharge.id.get))))))
@@ -58,18 +55,12 @@ trait SelfEmploymentsBalancingChargesController extends BaseController with Link
 
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, balancingChargeId: SelfEmploymentBalancingChargeId) = Action.async { implicit request =>
-    balancingChargeId match {
-      case "9999" => Future.successful(NotFound)
-      case _ => Future.successful(NoContent)
-    }
+    Future.successful(NoContent)
   }
 
   def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, balancingChargeId: SelfEmploymentBalancingChargeId) = Action.async(parse.json) { implicit request =>
     withJsonBody[BalancingCharge] { _ =>
-      balancingChargeId match {
-        case "9999" => Future.successful(NotFound)
-        case _ => Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId, balancingChargeId))))))
-      }
+      Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId, balancingChargeId))))))
     }
   }
 }

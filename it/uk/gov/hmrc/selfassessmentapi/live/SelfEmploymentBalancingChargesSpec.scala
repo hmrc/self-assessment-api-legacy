@@ -3,7 +3,7 @@ package uk.gov.hmrc.selfassessmentapi.live
 import java.util.UUID
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.domain.{BalancingCharge, BalancingChargeCategory}
+import uk.gov.hmrc.selfassessmentapi.domain.{BalancingCharge, BalancingChargeType}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
@@ -16,7 +16,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(100.00)))))
+        .post(Some(Json.toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00)))))
         .to(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
         .thenAssertThat()
         .resourceIsNotImplemented()
@@ -50,7 +50,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(100.00)))))
+        .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00)))))
         .at(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
         .thenAssertThat()
         .resourceIsNotImplemented()

@@ -1,0 +1,125 @@
+<endpoint>
+    <name>Update Self Employment Balancing Charge</name>
+    <description>This endpoint updates a self-employment balancing charge</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource>PUT /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentId}/balancing-charges/{balancingChargeId}</resource>
+    </section>
+    <section id="path-parameters">
+        <title>Path Parameters</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>utr</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2234567890</code>
+                    </cell>
+                    <cell>The Self Assessment UTR of the customer</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>taxYear</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2016-17</code>
+                    </cell>
+                    <cell>The tax year the data applies to</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>selfEmploymentId</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>5728b53c4800005100d2d32d</code>
+                    </cell>
+                    <cell>The Self Employments id</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>balancingChargeId</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2349587</code>
+                    </cell>
+                    <cell>The Self Employment Balancing Charge id</cell>
+                </row>
+            </rows>
+        </table>
+    </section>
+    <section id="request-headers">
+        <title>Request Headers</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Value</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>Accept</code>
+                    </cell>
+                    <cell>
+                        <code>application/vnd.hmrc.1.0+json</code>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>Content-Type</code>
+                    </cell>
+                    <cell>
+                        <code>application/json</code>
+                    </cell>
+                </row>
+            </rows>
+        </table>
+    </section>
+    <section id="authorisation">
+        <title>Authorisation</title>
+        <authorisation>
+            <type>USER</type>
+            <scope>write:self-assessment</scope>
+        </authorisation>
+    </section>
+    <section id="sample-request">
+        <title>Sample Request</title>
+        <json>
+<![CDATA[{
+    "category": "OTHER",
+    "amount": 777.45
+}]]>
+        </json>
+    </section>
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>
+<![CDATA[{
+    "_links": {
+        "self": {
+        "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/balancing-charges/5728b53c4800005100d2d98a"
+        }
+    }
+}]]>
+        </json>
+    </section>
+</endpoint>

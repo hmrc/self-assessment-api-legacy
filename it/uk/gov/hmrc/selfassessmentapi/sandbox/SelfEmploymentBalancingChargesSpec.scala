@@ -35,12 +35,12 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
 
     "be available for an existing balancing charge id" in {
       when()
-        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
-        .body(_ \ "id").is("1234")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
+        .body(_ \ "id").is(s"$balancingChargeId")
         .body(_ \ "category").is("OTHER")
         .body(_ \ "amount").is(1000.45)
     }
@@ -54,7 +54,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
 
     "be deleted for valid balancing charge id" in {
       when()
-        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
         .thenAssertThat()
         .statusIs(204)
     }
@@ -69,17 +69,17 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
     "be updated for valid input" in {
       when()
         .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(100.00)))))
-        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
     }
 
     "not be updated for invalid input" in {
       when()
         .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeCategory.OTHER, BigDecimal(-100.00)))))
-        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()

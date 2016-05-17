@@ -17,29 +17,25 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType.SelfEmploymentIncomeType
+import uk.gov.hmrc.selfassessmentapi.domain.BalancingChargeCategory.BalancingChargeCategory
 
-
-object SelfEmploymentIncomeType extends Enumeration {
-  type SelfEmploymentIncomeType = Value
-  val TURNOVER, OTHER = Value
+object BalancingChargeCategory extends Enumeration {
+  type BalancingChargeCategory = Value
+  val BPRA, OTHER = Value
 }
 
+case class BalancingCharge(id: Option[String] = None, category: BalancingChargeCategory, amount: BigDecimal)
 
-case class SelfEmploymentIncome(id: Option[SelfEmploymentIncomeId] = None,
-                                `type`: SelfEmploymentIncomeType,
-                                amount: BigDecimal)
+object BalancingCharge {
 
-object SelfEmploymentIncome {
+  implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeCategory)
+  implicit val balancingChargeWrites = Json.writes[BalancingCharge]
 
-  implicit val seIncomeTypes = EnumJson.enumFormat(SelfEmploymentIncomeType, Some("Self Employment Income type is invalid"))
-  implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]
-  implicit val seIncomeReads: Reads[SelfEmploymentIncome] = (
+  implicit val balancingChangeReads: Reads[BalancingCharge] = (
     Reads.pure(None) and
-      (__ \ "type").read[SelfEmploymentIncomeType] and
+      (__ \ "category").read[BalancingChargeCategory] and
       (__ \ "amount").read[BigDecimal](amountValidator)
-    ) (SelfEmploymentIncome.apply _)
+    ) (BalancingCharge.apply _)
 }

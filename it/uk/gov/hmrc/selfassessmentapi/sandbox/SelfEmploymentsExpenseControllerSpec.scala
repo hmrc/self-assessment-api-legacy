@@ -1,5 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.sandbox
 
+import java.util.UUID
+
 import play.api.libs.json.Json
 import play.api.libs.json.Json._
 import reactivemongo.bson.BSONObjectID
@@ -9,8 +11,8 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
 
-  val selfEmploymentId = BSONObjectID.generate.stringify
-  val selfEmploymentIncomeId = BSONObjectID.generate.stringify
+  val selfEmploymentId = UUID.randomUUID()
+  val selfEmploymentIncomeId = UUID.randomUUID()
 
   "Create self-employment-expense " should {
 

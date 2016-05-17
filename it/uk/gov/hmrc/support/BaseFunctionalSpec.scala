@@ -1,5 +1,6 @@
 package uk.gov.hmrc.support
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
@@ -136,42 +137,11 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
 
   }
 
-  class HttpVerbs {
+  class HttpRequest(method: String, path: String, body: Option[JsValue]) {
+    assert(path.startsWith("/"), "please provide only a path starting with '/'")
     var addAcceptHeader = true
-    var method = ""
-    var url = ""
-    var body :Option[JsValue] = None
     var hc = HeaderCarrier()
-
-    def get(path: String) = {
-      assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      this.url = s"http://localhost:$port$path"
-      this.method = "GET"
-      this
-    }
-
-    def delete(path: String) = {
-      assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      this.url = s"http://localhost:$port$path"
-      this.method = "DELETE"
-      this
-    }
-
-    def post(path: String, body: Option[JsValue] = None) = {
-      assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      this.url = s"http://localhost:$port$path"
-      this.method = "POST"
-      this.body = body
-      this
-    }
-
-    def put(path: String, body: Option[JsValue]) = {
-      assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      this.url = s"http://localhost:$port$path"
-      this.method = "PUT"
-      this.body = body
-      this
-    }
+    val url = s"http://localhost:$port$path"
 
     def withoutAcceptHeader() = {
       this.addAcceptHeader = false
@@ -203,6 +173,33 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
       addAcceptHeader = true
       this
     }
+  }
+
+  class HttpBodyWrapper(method: String, body: Option[JsValue]) {
+    def to(url: String) = new HttpRequest(method, url, body)
+  }
+
+  class HttpVerbs {
+    def post(body: Some[JsValue]) = {
+      new HttpBodyWrapper("POST", body)
+    }
+
+    def get(path: String) = {
+      new HttpRequest("GET", path, None)
+    }
+
+    def delete(path: String) = {
+      new HttpRequest("DELETE", path, None)
+    }
+
+    def post(path: String, body: Option[JsValue] = None) = {
+      new HttpRequest("POST", path, body)
+    }
+
+    def put(path: String, body: Option[JsValue]) = {
+      new HttpRequest("PUT", path, body)
+    }
+
   }
 
   class Givens {

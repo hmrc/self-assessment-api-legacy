@@ -58,7 +58,7 @@ class SelfEmploymentIncomeSpec extends JsonSpec {
       assertValidationError[SelfEmploymentIncome](
         seIncome,
         Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected negative self-employment income")
+        "should fail with INVALID_MONETARY_AMOUNT error")
     }
   }
 }

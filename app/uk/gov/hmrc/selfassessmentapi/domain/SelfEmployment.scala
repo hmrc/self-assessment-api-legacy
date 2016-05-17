@@ -30,7 +30,7 @@ object SelfEmployment {
 
   implicit val selfEmploymentWrites = Json.writes[SelfEmployment]
 
-  def lengthValidator = Reads.of[String].filter(ValidationError("max field length exceeded the max 100 chars", ErrorCode("MAX_FIELD_LENGTH_EXCEEDED")))(_.length <= 100)
+  def lengthValidator = Reads.of[String].filter(ValidationError("field length exceeded the max 100 chars", ErrorCode("MAX_FIELD_LENGTH_EXCEEDED")))(_.length <= 100)
 
   def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past", ErrorCode("COMMENCEMENT_DATE_NOT_IN_THE_PAST")))(_.isBefore(LocalDate.now()))
 

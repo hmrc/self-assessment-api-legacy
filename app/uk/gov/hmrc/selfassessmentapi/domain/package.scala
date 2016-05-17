@@ -26,7 +26,8 @@ package object domain {
   type LiabilityId = String
   type SelfEmploymentIncomeId = String
   type SelfEmploymentExpenseId = String
+  type SelfEmploymentBalancingChargeId = String
+  val taxYearValidator = Reads.of[String].filter(ValidationError("tax year must be 2016-17", ErrorCode("TAX_YEAR_INVALID")))( _ == "2016-17")
   val amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
     ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
-
 }

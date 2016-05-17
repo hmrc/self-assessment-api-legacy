@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import play.api.mvc.hal._
 import play.api.hal.HalLink
 import play.api.libs.json.Json._
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -39,20 +39,29 @@ trait SelfEmploymentsBalancingChargesController extends BaseController with Link
   }
 
   def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, balancingChargeId: SelfEmploymentBalancingChargeId) = Action.async { implicit request =>
-    val balancingCharge = BalancingCharge(id = Some(balancingChargeId), category = BalancingChargeCategory.OTHER,
-      amount= BigDecimal("1000.45"))
+    val balancingCharge = BalancingCharge(Some(balancingChargeId), BalancingChargeCategory.OTHER, BigDecimal("1000.45"))
     balancingChargeId match {
       case "9999" => Future.successful(NotFound)
       case _ => Future.successful(Ok(halResource(toJson(balancingCharge), Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId, balancingChargeId))))))
     }
   }
 
+  def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
+    val balancingCharges = Seq(BalancingCharge(Some("1234"), BalancingChargeCategory.OTHER, BigDecimal("1000.45")),
+      BalancingCharge(Some("5678"), BalancingChargeCategory.BPRA, BigDecimal("1000.45")))
+
+    val balancingChargesJson = toJson(balancingCharges.map(balancingCharge => halResource(obj(),
+      Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId,  balancingCharge.id.get))))))
+
+    Ok(halResourceList("balancing-charges", balancingChargesJson, selfEmploymentBalancingChargesHref(saUtr, taxYear, seId)))
+  }
+
+
   def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, balancingChargeId: SelfEmploymentBalancingChargeId) = Action.async { implicit request =>
     balancingChargeId match {
       case "9999" => Future.successful(NotFound)
       case _ => Future.successful(NoContent)
     }
-
   }
 
   def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, balancingChargeId: SelfEmploymentBalancingChargeId) = Action.async(parse.json) { implicit request =>

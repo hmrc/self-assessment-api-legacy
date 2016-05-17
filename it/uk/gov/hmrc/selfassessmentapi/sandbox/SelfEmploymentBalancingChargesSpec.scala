@@ -94,8 +94,17 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
         .statusIs(404)
     }
 
+    "return a valid response when retrieving list of self employments" in {
+      when()
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
+        .bodyHasPath("""_embedded \ balancing-charges(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .bodyHasPath("""_embedded \ balancing-charges(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/5678")
+    }
+
   }
-
-
 
 }

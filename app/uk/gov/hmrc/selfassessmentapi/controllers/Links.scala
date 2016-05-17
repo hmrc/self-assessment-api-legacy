@@ -58,4 +58,7 @@ trait Links {
   def selfEmploymentBalancingChargeHref(utr: SaUtr, taxYear: TaxYear, seId: String, balancingChargeId: String): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsBalancingChargesController.findById(utr, taxYear, seId, balancingChargeId).url)
 
+  def selfEmploymentBalancingChargesHref(utr: SaUtr, taxYear: TaxYear, seId: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsBalancingChargesController.find(utr, taxYear, seId).url)
+
 }

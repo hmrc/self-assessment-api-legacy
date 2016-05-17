@@ -30,7 +30,7 @@ case class BalancingCharge(id: Option[String] = None, category: BalancingChargeC
 
 object BalancingCharge {
 
-  implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeCategory)
+  implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeCategory, Some("Self Employment Balancing charge category is invalid"))
   implicit val balancingChargeWrites = Json.writes[BalancingCharge]
 
   implicit val balancingChangeReads: Reads[BalancingCharge] = (

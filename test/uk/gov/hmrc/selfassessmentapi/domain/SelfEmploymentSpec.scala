@@ -38,5 +38,6 @@ class SelfEmploymentSpec extends JsonSpec {
         "Expected valid self-employment")
 
     }
+
   }
 }

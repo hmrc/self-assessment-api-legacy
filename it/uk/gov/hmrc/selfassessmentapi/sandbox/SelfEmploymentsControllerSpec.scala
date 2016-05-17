@@ -22,6 +22,8 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/.+".r)
+        .bodyHasLink("incomes", s"/self-assessment/$saUtr/$taxYear/self-employments/.+/incomes".r)
+        .bodyHasLink("expenses", s"/self-assessment/$saUtr/$taxYear/self-employments/.+/expenses".r)
     }
 
     "Create self-employment with invalid data" should {
@@ -46,6 +48,8 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId")
+        .bodyHasLink("incomes", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes")
+        .bodyHasLink("expenses", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses")
     }
 
     "return a valid response when retrieving list of self employments" in {
@@ -69,6 +73,8 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId")
+        .bodyHasLink("incomes", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes")
+        .bodyHasLink("expenses", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses")
     }
 
     "return 204 response when an existing self employment is deleted" in {

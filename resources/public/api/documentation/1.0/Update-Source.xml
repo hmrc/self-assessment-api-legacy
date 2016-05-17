@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Create Self Employment</name>
-    <description>This endpoint creates a self-employment</description>
+    <name>Update Source</name>
+    <description>This endpoint updates a source if income</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>POST /self-assessment/{utr}/{taxYear}/self-employments</resource>
+        <resource>PUT /self-assessment/{utr}/{taxYear}/{source}/{sourceId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -28,17 +28,30 @@
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
                 <row>
-                    <cell>
-                        <code>taxYear</code>
-                    </cell>
-                    <cell>
-                        <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>2016-17</code>
-                    </cell>
+                    <cell><code>taxYear</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>2016-17</code></cell>
                     <cell>The tax year the data applies to</cell>
                 </row>
+                <row>
+                    <cell>
+                        <code>source</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>self-employments</code>
+                    </cell>
+                    <cell>The type of source to create</cell>
+                </row>
+                <row>
+                    <cell><code>sourceId</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>5728b53c4800005100d2d32d</code></cell>
+                    <cell>The source id</cell>
+                </row>
+
             </rows>
         </table>
     </section>
@@ -77,7 +90,8 @@
         </authorisation>
     </section>
     <section id="sample-request">
-        <title>Sample Request</title>
+        <title>Self-Employments Request</title>
+        <resource>PUT /self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d</resource>
         <json>
 <![CDATA[{
     "name": "Awesome Plumbers",
@@ -86,14 +100,14 @@
         </json>
     </section>
     <section id="sample-response">
-        <title>Response</title>
-        <httpStatus>201 (CREATED)</httpStatus>
+        <title>Sample Response</title>
+        <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
     "_links": {
-       "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d"},
-       "incomes": { "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"},
-       "expenses": { "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"}
+       "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d" },
+       "incomes": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"},
+       "expenses": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"}
     }
 }]]>
         </json>

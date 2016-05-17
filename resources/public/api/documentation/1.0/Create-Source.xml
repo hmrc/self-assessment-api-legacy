@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employment</name>
-    <description>This endpoint returns a specific self-employment</description>
+    <name>Create Source of Income</name>
+    <description>This endpoint creates a source of income</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}</resource>
+        <resource>POST /self-assessment/{utr}/{taxYear}/{source}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -28,22 +28,28 @@
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
                 <row>
-                    <cell><code>taxYear</code></cell>
-                    <cell><code>String</code></cell>
-                    <cell><code>2016-17</code></cell>
-                    <cell>The tax year the data applies to</cell>
-                </row>
-                <row>
                     <cell>
-                        <code>selfEmploymentsId</code>
+                        <code>taxYear</code>
                     </cell>
                     <cell>
                         <code>String</code>
                     </cell>
                     <cell>
-                        <code>5728b53c4800005100d2d32d</code>
+                        <code>2016-17</code>
                     </cell>
-                    <cell>The Self Employments id</cell>
+                    <cell>The tax year the data applies to</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>source</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>self-employments</code>
+                    </cell>
+                    <cell>The type of source to create</cell>
                 </row>
             </rows>
         </table>
@@ -64,6 +70,14 @@
                         <code>application/vnd.hmrc.1.0+json</code>
                     </cell>
                 </row>
+                <row>
+                    <cell>
+                        <code>Content-Type</code>
+                    </cell>
+                    <cell>
+                        <code>application/json</code>
+                    </cell>
+                </row>
             </rows>
         </table>
     </section>
@@ -71,22 +85,29 @@
         <title>Authorisation</title>
         <authorisation>
             <type>USER</type>
-            <scope>read:self-assessment</scope>
+            <scope>write:self-assessment</scope>
         </authorisation>
     </section>
+    <section id="sample-request">
+        <title>Self-Employment Request</title>
+        <resource>POST /self-assessment/2234567890/2016-17/self-employments</resource>
+        <json>
+<![CDATA[{
+    "name": "Awesome Plumbers",
+    "commencementDate": "2016-04-06"
+}]]>
+        </json>
+    </section>
     <section id="sample-response">
-        <title>Response</title>
-        <httpStatus>200 (OK)</httpStatus>
+        <title>Sample Response</title>
+        <httpStatus>201 (CREATED)</httpStatus>
         <json>
 <![CDATA[{
     "_links": {
-        "self": { "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d" },
-       "incomes": { "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"},
-       "expenses": { "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"}
-    },
-    "id": "1234",
-    "name": "Awesome Bakers",
-    "commencementDate": "2016-05-03"
+       "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d"},
+       "incomes": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"},
+       "expenses": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"}
+    }
 }]]>
         </json>
     </section>

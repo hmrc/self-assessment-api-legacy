@@ -15,7 +15,7 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, TURNOVER, BigDecimal(1000)))))
+        .post(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes", Some(toJson(SelfEmploymentIncome(None, Turnover, BigDecimal(1000)))))
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -45,7 +45,7 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
     "return a resourceIsNotImplemented response" in {
       given().userIsAuthorisedForTheResource(saUtr)
         .when()
-        .put(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId", Some(toJson(SelfEmploymentIncome(None, OTHER, BigDecimal(2000)))))
+        .put(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/$selfEmploymentIncomeId", Some(toJson(SelfEmploymentIncome(None, Other, BigDecimal(2000)))))
         .thenAssertThat()
         .resourceIsNotImplemented()
     }

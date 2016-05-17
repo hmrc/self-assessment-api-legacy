@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employment Expense</name>
-    <description>This endpoint returns a specific self-employment expense</description>
+    <name>Retrieve Sources</name>
+    <description>This endpoint returns a list of sources of income</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/expenses/{selfEmploymentExpenseId}</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}/{source}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -28,40 +28,22 @@
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
                 <row>
-                    <cell>
-                        <code>taxYear</code>
-                    </cell>
-                    <cell>
-                        <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>2016-17</code>
-                    </cell>
+                    <cell><code>taxYear</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>2016-17</code></cell>
                     <cell>The tax year the data applies to</cell>
                 </row>
                 <row>
                     <cell>
-                        <code>selfEmploymentsId</code>
+                        <code>source</code>
                     </cell>
                     <cell>
-                        <code>String</code>
+                        <code>Enum</code>
                     </cell>
                     <cell>
-                        <code>5728b53c4800005100d2d32d</code>
+                        <code>self-employments</code>
                     </cell>
-                    <cell>The Self Employment id</cell>
-                </row>
-                <row>
-                    <cell>
-                        <code>selfEmploymentExpenseId</code>
-                    </cell>
-                    <cell>
-                        <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>2349587</code>
-                    </cell>
-                    <cell>The Self Employment Expense id</cell>
+                    <cell>The type of source to create</cell>
                 </row>
             </rows>
         </table>
@@ -97,14 +79,28 @@
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
-  "_links": {
-    "self": {
-      "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/1234"
+    "_links": {
+        "self": { "href": "/self-assessment/2234567890/2016-17/self-employments" }
+    },
+    "_embedded": {
+    "selfEmployments": [
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/1234" }
+        }
+      },
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/5678" }
+        }
+      },
+      {
+        "_links": {
+          "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/9101" }
+        }
+      }
+    ]
     }
-  },
-  "id": "1234",
-  "type": "CISPayments",
-  "amount": 1000.45
 }]]>
         </json>
     </section>

@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Delete Self Employment</name>
-    <description>This endpoint deletes a self-employment</description>
+    <name>Delete Transaction</name>
+    <description>This endpoint deletes a transaction</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>DELETE /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}</resource>
+        <resource>DELETE /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{transaction}/{transactionId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -28,10 +28,46 @@
                     <cell>The tax year the data applies to</cell>
                 </row>
                 <row>
-                    <cell><code>selfEmploymentsId</code></cell>
+                    <cell>
+                        <code>source</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>self-employments</code>
+                    </cell>
+                    <cell>The type of source</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>sourceId</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>5728b53c4800005100d2d32d</code>
+                    </cell>
+                    <cell>The source id</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>transaction</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>incomes, expenses</code>
+                    </cell>
+                    <cell>The type of transaction</cell>
+                </row>
+                <row>
+                    <cell><code>transactionId</code></cell>
                     <cell><code>String</code></cell>
-                    <cell><code>5728b53c4800005100d2d32d</code></cell>
-                    <cell>The Self Employments id</cell>
+                    <cell><code>5728b53c4800005100d2d98a</code></cell>
+                    <cell>The transaction id</cell>
                 </row>
             </rows>
         </table>
@@ -62,8 +98,9 @@
             <scope>write:self-assessment</scope>
         </authorisation>
     </section>
+
     <section id="sample-response">
-        <title>Response</title>
+        <title>Sample Response</title>
         <httpStatus>204 (NO_CONTENT)</httpStatus>
     </section>
 </endpoint>

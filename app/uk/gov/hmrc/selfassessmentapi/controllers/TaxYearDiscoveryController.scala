@@ -32,7 +32,8 @@ trait TaxYearDiscoveryController
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
       val links = Seq(HalLink("self", discoverTaxYearHref(utr, taxYear)),
                       HalLink("self-employments", selfEmploymentsHref(utr, taxYear)),
-                      HalLink("liabilities", liabilitiesHref(utr, taxYear)))
+                      HalLink("liabilities", liabilitiesHref(utr, taxYear)),
+                      HalLink("selfEmploymentExpenses", selfEmploymentExpensesHref(utr, taxYear, "<selfEmploymentId>")))
      Future.successful(Ok(halResource(JsObject(Nil), links)))
     }
 }

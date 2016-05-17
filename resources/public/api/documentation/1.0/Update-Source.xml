@@ -1,6 +1,6 @@
 <endpoint>
     <name>Update Source</name>
-    <description>This endpoint updates a source if income</description>
+    <description>This endpoint updates a source of income</description>
     <section id="resource">
         <title>Resource</title>
         <resource>PUT /self-assessment/{utr}/{taxYear}/{source}/{sourceId}</resource>

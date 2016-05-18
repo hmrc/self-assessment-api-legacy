@@ -72,116 +72,84 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentsId}",
-                endpointName = "Retrieve Self Employment",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}",
+                endpointName = "Retrieve Source",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments",
-                endpointName = "Retrieve Self Employments",
+                uriPattern = "/{utr}/{taxYear}/{source}",
+                endpointName = "Retrieve Sources",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments",
-                endpointName = "Create Self Employment",
+                uriPattern = "/{utr}/{taxYear}/{source}",
+                endpointName = "Create Source",
                 method = HttpMethod.POST,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentsId}",
-                endpointName = "Update Self Employment",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}",
+                endpointName = "Update Source",
                 method = HttpMethod.PUT,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentsId}",
-                endpointName = "Delete Self Employment",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}",
+                endpointName = "Delete Source",
                 method = HttpMethod.DELETE,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/incomes",
-                endpointName = "Create Self Employment Income",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}",
+                endpointName = "Create Summary",
                 method = HttpMethod.POST,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/incomes/{selfEmploymentIncomeId}",
-                endpointName = "Update Self Employment Income",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
+                endpointName = "Update Summary",
                 method = HttpMethod.PUT,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/incomes/{selfEmploymentIncomeId}",
-                endpointName = "Delete Self Employment Income",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
+                endpointName = "Delete Summary",
                 method = HttpMethod.DELETE,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/incomes/{selfEmploymentIncomeId}",
-                endpointName = "Retrieve Self Employment Income",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
+                endpointName = "Retrieve Summary",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses",
-                endpointName = "Create Self Employment Expense",
-                method = HttpMethod.POST,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses/{selfEmploymentExpenseId}",
-                endpointName = "Retrieve Self Employment Expense",
+                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}",
+                endpointName = "Retrieve Summaries",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses",
-                endpointName = "Retrieve Self Employment Expenses",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses/{selfEmploymentExpenseId}",
-                endpointName = "Update Self Employment Expense",
-                method = HttpMethod.PUT,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/self-employments/{selfEmploymentId}/expenses/{selfEmploymentExpenseId}",
-                endpointName = "Delete Self Employment Expense",
-                method = HttpMethod.DELETE,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
               ),
               Endpoint(
                 uriPattern = "/{utr}/{taxYear}/liabilities",

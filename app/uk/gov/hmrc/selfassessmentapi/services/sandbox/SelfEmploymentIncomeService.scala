@@ -26,11 +26,11 @@ object SelfEmploymentIncomeService extends uk.gov.hmrc.selfassessmentapi.service
   override def create(selfEmploymentIncome: SelfEmploymentIncome): Future[SelfEmploymentIncomeId] = Future.successful(BSONObjectID.generate.stringify)
 
   override def findBySelfEmploymentIncomeId(utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId): Future[Option[SelfEmploymentIncome]] =
-    Future.successful(Some(SelfEmploymentIncome(Some(selfEmploymentIncomeId), SelfEmploymentIncomeType.OTHER, BigDecimal("50000.00"))))
+    Future.successful(Some(SelfEmploymentIncome(Some(selfEmploymentIncomeId), SelfEmploymentIncomeType.Other, BigDecimal("50000.00"))))
 
   override def find(saUtr: SaUtr): Future[Seq[SelfEmploymentIncome]] =
-    Future.successful(Seq(SelfEmploymentIncome(Some("1234"), SelfEmploymentIncomeType.TURNOVER, BigDecimal("50000.00")),
-      SelfEmploymentIncome(Some("5678"), SelfEmploymentIncomeType.OTHER, BigDecimal("5000.00"))))
+    Future.successful(Seq(SelfEmploymentIncome(Some("1234"), SelfEmploymentIncomeType.Turnover, BigDecimal("50000.00")),
+      SelfEmploymentIncome(Some("5678"), SelfEmploymentIncomeType.Other, BigDecimal("5000.00"))))
 
   override def update(selfEmploymentIncome: SelfEmploymentIncome, utr: SaUtr, selfEmploymentId: SelfEmploymentId, selfEmploymentIncomeId: SelfEmploymentIncomeId): Future[Unit] =
     Future.successful(())

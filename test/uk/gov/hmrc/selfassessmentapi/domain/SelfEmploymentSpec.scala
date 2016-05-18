@@ -35,9 +35,10 @@ class SelfEmploymentSpec extends JsonSpec {
       assertValidationError[SelfEmployment](
         se,
         Map(COMMENCEMENT_DATE_NOT_IN_THE_PAST -> "commencement date should be in the past",
-            MAX_FIELD_LENGTH_EXCEEDED -> "max field length exceeded the max 100 chars"),
+            MAX_FIELD_LENGTH_EXCEEDED -> "field length exceeded the max 100 chars"),
         "Expected valid self-employment")
 
     }
+
   }
 }

@@ -40,12 +40,14 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
       }
     }
 
-    "reject negative amount" in {
-      val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = BigDecimal(-1000.12))
-      assertValidationError[SelfEmploymentExpense](
-        seExpense,
-        Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected negative self-employment expense")
+    "reject negative monetary amounts" in {
+      Seq(BigDecimal(-1000.12), BigDecimal(-10.12)).foreach { testAmount =>
+        val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = testAmount)
+        assertValidationError[SelfEmploymentExpense](
+          seExpense,
+          Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
+          "Expected invalid self-employment-income")
+      }
     }
 
     "reject invalid Expense category" in {

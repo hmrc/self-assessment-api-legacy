@@ -25,13 +25,14 @@ import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseType.SelfEmploy
 object SelfEmploymentExpenseType extends Enumeration {
   type SelfEmploymentExpenseType = Value
   val CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,
-  AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Deprecation, Other = Value
+  AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other = Value
 }
 
 case class SelfEmploymentExpense(id: Option[SelfEmploymentExpenseId] = None,
                                  `type`: SelfEmploymentExpenseType, amount: BigDecimal)
 
 object SelfEmploymentExpense {
+
   implicit val seExpenseTypes = EnumJson.enumFormat(SelfEmploymentExpenseType, Some("Self Employment Expense type is invalid"))
   implicit val seExpenseWrites = Json.writes[SelfEmploymentExpense]
   implicit val seExpenseReads: Reads[SelfEmploymentExpense] = (

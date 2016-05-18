@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Update Self Employment Income</name>
-    <description>This endpoint updates a self-employment income</description>
+    <name>Retrieve Summary</name>
+    <description>This endpoint returns a specific summary</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>PUT /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/incomes/{selfEmploymentIncomeId}</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -41,7 +41,19 @@
                 </row>
                 <row>
                     <cell>
-                        <code>selfEmploymentsId</code>
+                        <code>source</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>self-employments</code>
+                    </cell>
+                    <cell>The type of source</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>sourceId</code>
                     </cell>
                     <cell>
                         <code>String</code>
@@ -49,19 +61,25 @@
                     <cell>
                         <code>5728b53c4800005100d2d32d</code>
                     </cell>
-                    <cell>The Self Employments id</cell>
+                    <cell>The source id</cell>
                 </row>
                 <row>
                     <cell>
-                        <code>selfEmploymentIncomeId</code>
+                        <code>summary</code>
                     </cell>
                     <cell>
-                        <code>String</code>
+                        <code>Enum</code>
                     </cell>
                     <cell>
-                        <code>2349587</code>
+                        <code>incomes, expenses, balancing-charges</code>
                     </cell>
-                    <cell>The Self Employment Income id</cell>
+                    <cell>The type of summary</cell>
+                </row>
+                <row>
+                    <cell><code>summaryId</code></cell>
+                    <cell><code>String</code></cell>
+                    <cell><code>5728b53c4800005100d2d98a</code></cell>
+                    <cell>The summary id</cell>
                 </row>
             </rows>
         </table>
@@ -82,14 +100,6 @@
                         <code>application/vnd.hmrc.1.0+json</code>
                     </cell>
                 </row>
-                <row>
-                    <cell>
-                        <code>Content-Type</code>
-                    </cell>
-                    <cell>
-                        <code>application/json</code>
-                    </cell>
-                </row>
             </rows>
         </table>
     </section>
@@ -97,28 +107,54 @@
         <title>Authorisation</title>
         <authorisation>
             <type>USER</type>
-            <scope>write:self-assessment</scope>
+            <scope>read:self-assessment</scope>
         </authorisation>
     </section>
-    <section id="sample-request">
-        <title>Sample Request</title>
-        <json>
-<![CDATA[{
-    "type": "TURNOVER",
-    "amount": 40000.00
-}]]>
-        </json>
-    </section>
-    <section id="sample-response">
-        <title>Response</title>
+    <section id="sample-response-expenses">
+        <title>Expenses Response</title>
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
-    "_links": {
-        "self": {
-           "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/2349587"
-           }
+  "_links": {
+    "self": {
+      "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d98a"
     }
+  },
+  "id": "5728b53c4800005100d2d98a",
+  "type": "CISPayments",
+  "amount": 1000.45
+}]]>
+        </json>
+    </section>
+    <section id="sample-response-incomes">
+        <title>Incomes Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>
+<![CDATA[{
+   "_links":{
+      "self":{
+         "href":"/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5728b53c4800005100d2d98a"
+      }
+   },
+   "id":"5728b53c4800005100d2d98a",
+   "type":"Turnover",
+   "amount": 60000.00
+}]]>
+        </json>
+    </section>
+    <section id="sample-response-balancing-charges">
+        <title>Balancing Charges Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>
+<![CDATA[{
+   "_links":{
+      "self":{
+         "href":"/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/balancing-charges/5728b53c4800005100d2d98a"
+      }
+   },
+   "id": "5728b53c4800005100d2d98a",
+   "type": "Other",
+   "amount": 1000.45
 }]]>
         </json>
     </section>

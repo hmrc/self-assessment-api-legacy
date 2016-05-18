@@ -85,14 +85,20 @@
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
-    "_links": {
-        "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d" },
-       "incomes": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"},
-       "expenses": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"}
+  "_links": {
+    "self": {
+      "href":"/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d"
     },
-    "id": "1234",
-    "name": "Awesome Bakers",
-    "commencementDate": "2016-05-03"
+    "incomes": {
+      "href":"/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"
+    },
+    "expenses": {
+      "href":"/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"
+    }
+  },
+  "id":"1234",
+  "name":"Awesome Bakers",
+  "commencementDate":"2016-05-03"
 }]]>
         </json>
     </section>

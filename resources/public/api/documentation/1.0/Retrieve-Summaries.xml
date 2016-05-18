@@ -119,21 +119,21 @@
       {
         "_links": {
           "self": {
-            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/1234"
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d96j"
           }
         }
       },
       {
         "_links": {
           "self": {
-            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5678"
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d96u"
           }
         }
       },
       {
         "_links": {
           "self": {
-            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/4321"
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d96y"
           }
         }
       }
@@ -157,14 +157,14 @@
       {
         "_links": {
           "self": {
-            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/1234"
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5728b53c4800005100d2d98g"
           }
         }
       },
       {
         "_links": {
           "self": {
-            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5678"
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5728b53c4800005100d2d98h"
           }
         }
       }

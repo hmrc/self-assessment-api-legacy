@@ -32,9 +32,6 @@ case class SelfEmploymentExpense(id: Option[SelfEmploymentExpenseId] = None,
                                  `type`: SelfEmploymentExpenseType, amount: BigDecimal)
 
 object SelfEmploymentExpense {
-
-  val  a = BigDecimal(1.000000000000000000000000000000000000000000001)
-
   implicit val seExpenseTypes = EnumJson.enumFormat(SelfEmploymentExpenseType, Some("Self Employment Expense type is invalid"))
   implicit val seExpenseWrites = Json.writes[SelfEmploymentExpense]
   implicit val seExpenseReads: Reads[SelfEmploymentExpense] = (

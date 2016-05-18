@@ -74,9 +74,10 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
 
     private def bodyHasPath(path: Seq[String], value: String): Assertions = {
       def op(js: JsValue, pathElement: String) = {
-        val pattern = """(.+)\((\d+)\)""".r
+        val pattern = """(\w*)\((\d+)\)""".r
         pathElement match {
-          case pattern(arrayName, index) => (js \ arrayName)(index.toInt)
+          case pattern(arrayName, index) =>
+            if (arrayName.isEmpty) js(index.toInt) else (js \ arrayName)(index.toInt)
           case _ => js \ pathElement
         }
       }

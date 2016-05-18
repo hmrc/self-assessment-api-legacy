@@ -71,7 +71,7 @@
                         <code>Enum</code>
                     </cell>
                     <cell>
-                        <code>incomes, expenses</code>
+                        <code>incomes, expenses, balancing-charges</code>
                     </cell>
                     <cell>The type of summary</cell>
                 </row>
@@ -217,6 +217,58 @@
                 </rows>
             </table>
         </section>
+    <section id="sample-request-balancing-charges">
+        <title>Sample Balancing Charges Request</title>
+        <resource>POST /self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/balancing-charges</resource>
+        <description>Creates a balancing charge for the specified source</description>
+        <json>
+<![CDATA[{
+    "type": "BPRA",
+    "amount": 60000.00
+}]]>
+        </json>
+        <table>
+            <headings>
+                <cell>Source</cell>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>self-employments</code>
+                    </cell>
+                    <cell>
+                        <code>type</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>BPRA, Other</code>
+                    </cell>
+                    <cell>The type of income</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>All</code>
+                    </cell>
+                    <cell>
+                        <code>amount</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>60000.00</code>
+                    </cell>
+                    <cell>The amount of the income as a positive number with up to 2 decimal places</cell>
+                </row>
+            </rows>
+        </table>
+    </section>
         <section id="sample-response">
             <title>Sample Response</title>
             <httpStatus>201 (CREATED)</httpStatus>

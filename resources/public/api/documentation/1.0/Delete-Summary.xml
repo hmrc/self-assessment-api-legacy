@@ -59,7 +59,7 @@
                         <code>Enum</code>
                     </cell>
                     <cell>
-                        <code>incomes, expenses</code>
+                        <code>incomes, expenses, balancing-charge</code>
                     </cell>
                     <cell>The type of summary</cell>
                 </row>

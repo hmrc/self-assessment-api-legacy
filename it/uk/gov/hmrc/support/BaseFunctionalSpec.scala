@@ -125,6 +125,11 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
         content.as[String] shouldBe value
         assertions
       }
+
+      def is(value: BigDecimal) = {
+        content.as[BigDecimal] shouldBe value
+        assertions
+      }
     }
 
     class BodyListAssertions(content: Seq[JsValue], assertions: Assertions) {
@@ -136,42 +141,11 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
 
   }
 
-  class HttpVerbs {
+  class HttpRequest(method: String, path: String, body: Option[JsValue]) {
+    assert(path.startsWith("/"), "please provide only a path starting with '/'")
     var addAcceptHeader = true
-    var method = ""
-    var url = ""
-    var body :Option[JsValue] = None
     var hc = HeaderCarrier()
-
-    def get(path: String) = {
-      assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      this.url = s"http://localhost:$port$path"
-      this.method = "GET"
-      this
-    }
-
-    def delete(path: String) = {
-      assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      this.url = s"http://localhost:$port$path"
-      this.method = "DELETE"
-      this
-    }
-
-    def post(path: String, body: Option[JsValue] = None) = {
-      assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      this.url = s"http://localhost:$port$path"
-      this.method = "POST"
-      this.body = body
-      this
-    }
-
-    def put(path: String, body: Option[JsValue]) = {
-      assert(path.startsWith("/"), "please provide only a path starting with '/'")
-      this.url = s"http://localhost:$port$path"
-      this.method = "PUT"
-      this.body = body
-      this
-    }
+    val url = s"http://localhost:$port$path"
 
     def withoutAcceptHeader() = {
       this.addAcceptHeader = false
@@ -203,6 +177,41 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
       addAcceptHeader = true
       this
     }
+  }
+
+  class HttpPostBodyWrapper(method: String, body: Option[JsValue]) {
+    def to(url: String) = new HttpRequest(method, url, body)
+  }
+
+  class HttpPutBodyWrapper(method: String, body: Option[JsValue]) {
+    def at(url: String) = new HttpRequest(method, url, body)
+  }
+
+  class HttpVerbs {
+    def post(body: Some[JsValue]) = {
+      new HttpPostBodyWrapper("POST", body)
+    }
+
+    def put(body: Some[JsValue]) = {
+      new HttpPutBodyWrapper("PUT", body)
+    }
+
+    def get(path: String) = {
+      new HttpRequest("GET", path, None)
+    }
+
+    def delete(path: String) = {
+      new HttpRequest("DELETE", path, None)
+    }
+
+    def post(path: String, body: Option[JsValue] = None) = {
+      new HttpRequest("POST", path, body)
+    }
+
+    def put(path: String, body: Option[JsValue]) = {
+      new HttpRequest("PUT", path, body)
+    }
+
   }
 
   class Givens {

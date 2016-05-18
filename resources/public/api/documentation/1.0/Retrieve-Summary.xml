@@ -71,7 +71,7 @@
                         <code>Enum</code>
                     </cell>
                     <cell>
-                        <code>incomes, expenses</code>
+                        <code>incomes, expenses, balancing-charges</code>
                     </cell>
                     <cell>The type of summary</cell>
                 </row>
@@ -139,6 +139,22 @@
    "id":"5728b53c4800005100d2d98a",
    "type":"Turnover",
    "amount": 60000.00
+}]]>
+        </json>
+    </section>
+    <section id="sample-response-balancing-charges">
+        <title>Balancing Charges Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>
+<![CDATA[{
+   "_links":{
+      "self":{
+         "href":"/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/balancing-charges/5728b53c4800005100d2d98a"
+      }
+   },
+   "id": "5728b53c4800005100d2d98a",
+   "type": "Other",
+   "amount": 1000.45
 }]]>
         </json>
     </section>

@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-import play.api.data.validation.ValidationError
-import play.api.libs.json.Reads
-
-
-package object domain {
-
-  type SelfEmploymentId = String
-  type LiabilityId = String
-  type SelfEmploymentIncomeId = String
-  type SelfEmploymentExpenseId = String
-  type SelfEmploymentBalancingChargeId = String
-  val amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
-    ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
-}
+object SelfEmploymentsBalancingChargesController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsBalancingChargesController

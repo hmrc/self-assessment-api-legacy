@@ -32,7 +32,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
   private var mongod: MongodProcess = null
 
   private val embeddedPort = 12345
-  private val mongoUri: String = sys.env.getOrElse("MONGO_TEST_URI", "mongodb://localhost:12345/self-assessment-api")
+  private val mongoUri: String = sys.env.getOrElse("MONGO_TEST_URI", "mongodb://127.0.0.1:12345/self-assessment-api")
   private lazy val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
 
   implicit val mongo = new MongoConnector(mongoUri).db
@@ -41,7 +41,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
     if (useEmbeddedMongo) {
       mongodExe = MongodStarter.getDefaultInstance.prepare(new MongodConfigBuilder()
         .version(Version.Main.PRODUCTION)
-        .net(new Net(embeddedPort, Network.localhostIsIPv6()))
+        .net(new Net("127.0.0.1", embeddedPort, Network.localhostIsIPv6()))
         .build())
       mongod = mongodExe.start()
     }

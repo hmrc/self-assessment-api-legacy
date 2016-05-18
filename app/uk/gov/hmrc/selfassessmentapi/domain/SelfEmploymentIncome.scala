@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType.SelfEmploym
 
 object SelfEmploymentIncomeType extends Enumeration {
   type SelfEmploymentIncomeType = Value
-  val TURNOVER, OTHER = Value
+  val Turnover, Other = Value
 }
 
 

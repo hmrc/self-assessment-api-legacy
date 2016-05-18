@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employment Income</name>
-    <description>This endpoint returns a specific self-employment income</description>
+    <name>Create Source of Income</name>
+    <description>This endpoint creates a source of income</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/incomes/{selfEmploymentIncomeId}</resource>
+        <resource>POST /self-assessment/{utr}/{taxYear}/{source}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -41,27 +41,15 @@
                 </row>
                 <row>
                     <cell>
-                        <code>selfEmploymentsId</code>
+                        <code>source</code>
                     </cell>
                     <cell>
-                        <code>String</code>
+                        <code>Enum</code>
                     </cell>
                     <cell>
-                        <code>5728b53c4800005100d2d32d</code>
+                        <code>self-employments</code>
                     </cell>
-                    <cell>The Self Employment id</cell>
-                </row>
-                <row>
-                    <cell>
-                        <code>selfEmploymentIncomeId</code>
-                    </cell>
-                    <cell>
-                        <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>2349587</code>
-                    </cell>
-                    <cell>The Self Employment Income id</cell>
+                    <cell>The type of source to create</cell>
                 </row>
             </rows>
         </table>
@@ -82,6 +70,14 @@
                         <code>application/vnd.hmrc.1.0+json</code>
                     </cell>
                 </row>
+                <row>
+                    <cell>
+                        <code>Content-Type</code>
+                    </cell>
+                    <cell>
+                        <code>application/json</code>
+                    </cell>
+                </row>
             </rows>
         </table>
     </section>
@@ -89,22 +85,29 @@
         <title>Authorisation</title>
         <authorisation>
             <type>USER</type>
-            <scope>read:self-assessment</scope>
+            <scope>write:self-assessment</scope>
         </authorisation>
     </section>
-    <section id="sample-response">
-        <title>Response</title>
-        <httpStatus>200 (OK)</httpStatus>
+    <section id="sample-request">
+        <title>Self-Employment Request</title>
+        <resource>POST /self-assessment/2234567890/2016-17/self-employments</resource>
         <json>
 <![CDATA[{
-   "_links":{
-      "self":{
-         "href":"/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5728b53c4800005100d2d98a"
-      }
-   },
-   "id":"5728b53c4800005100d2d98a",
-   "type":"TURNOVER",
-   "amount": 60000.00
+    "name": "Awesome Plumbers",
+    "commencementDate": "2016-04-06"
+}]]>
+        </json>
+    </section>
+    <section id="sample-response">
+        <title>Sample Response</title>
+        <httpStatus>201 (CREATED)</httpStatus>
+        <json>
+<![CDATA[{
+    "_links": {
+       "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d"},
+       "incomes": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"},
+       "expenses": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"}
+    }
 }]]>
         </json>
     </section>

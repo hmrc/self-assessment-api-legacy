@@ -48,7 +48,7 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
     val seExpensesJson = toJson(seq.map(res => halResource(obj(),
       Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId,  res.id.get))))))
 
-    Ok(halResourceList("selfEmployments", seExpensesJson, selfEmploymentExpensesHref(saUtr, taxYear, seId)))
+    Ok(halResourceList("expenses", seExpensesJson, selfEmploymentExpensesHref(saUtr, taxYear, seId)))
   }
 
   def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>

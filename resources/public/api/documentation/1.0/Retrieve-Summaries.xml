@@ -1,9 +1,9 @@
 <endpoint>
-    <name>Retrieve Self Employment Expenses</name>
-    <description>This endpoint returns a list of self employment expenses</description>
+    <name>Retrieve Summaries</name>
+    <description>This endpoint returns a list of summaries</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/self-employments/{selfEmploymentsId}/expenses</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>
@@ -23,7 +23,7 @@
                         <code>String</code>
                     </cell>
                     <cell>
-                        <code>1097172564</code>
+                        <code>2234567890</code>
                     </cell>
                     <cell>The Self Assessment UTR of the customer</cell>
                 </row>
@@ -41,7 +41,19 @@
                 </row>
                 <row>
                     <cell>
-                        <code>selfEmploymentsId</code>
+                        <code>source</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>self-employments</code>
+                    </cell>
+                    <cell>The type of source</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>sourceId</code>
                     </cell>
                     <cell>
                         <code>String</code>
@@ -49,7 +61,19 @@
                     <cell>
                         <code>5728b53c4800005100d2d32d</code>
                     </cell>
-                    <cell>The Self Employment id</cell>
+                    <cell>The source id</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>summary</code>
+                    </cell>
+                    <cell>
+                        <code>Enum</code>
+                    </cell>
+                    <cell>
+                        <code>incomes, expenses</code>
+                    </cell>
+                    <cell>The type of summary</cell>
                 </row>
             </rows>
         </table>
@@ -80,36 +104,67 @@
             <scope>read:self-assessment</scope>
         </authorisation>
     </section>
-    <section id="sample-response">
-        <title>Response</title>
+    <section id="sample-response-expenses">
+        <title>Expenses Response</title>
         <httpStatus>200 (OK)</httpStatus>
         <json>
 <![CDATA[{
   "_links": {
     "self": {
-      "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"
+      "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"
     }
   },
   "_embedded": {
-    "selfEmployments": [
+    "expenses": [
       {
         "_links": {
           "self": {
-            "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/1234"
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d96j"
           }
         }
       },
       {
         "_links": {
           "self": {
-            "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5678"
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d96u"
           }
         }
       },
       {
         "_links": {
           "self": {
-            "href": "/self-assessment/1097172564/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/4321"
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses/5728b53c4800005100d2d96y"
+          }
+        }
+      }
+    ]
+  }
+}]]>
+        </json>
+    </section>
+    <section id="sample-response-incomes">
+        <title>Incomes Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>
+<![CDATA[{
+  "_links": {
+    "self": {
+      "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"
+    }
+  },
+  "_embedded": {
+    "incomes": [
+      {
+        "_links": {
+          "self": {
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5728b53c4800005100d2d98g"
+          }
+        }
+      },
+      {
+        "_links": {
+          "self": {
+            "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes/5728b53c4800005100d2d98h"
           }
         }
       }

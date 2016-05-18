@@ -42,7 +42,7 @@ trait MicroService {
     .settings(inConfig(FuncTest)(Defaults.testSettings): _*)
     .settings(
       Keys.fork in FuncTest := false,
-      unmanagedSourceDirectories in FuncTest <<= (baseDirectory in FuncTest)(base => Seq(base / "it")),
+      unmanagedSourceDirectories in FuncTest <<= (baseDirectory in FuncTest)(base => Seq(base / "func")),
       unmanagedClasspath in FuncTest += baseDirectory.value / "resources",
       unmanagedClasspath in Runtime += baseDirectory.value / "resources",
       unmanagedResourceDirectories in Compile += baseDirectory.value / "resources",

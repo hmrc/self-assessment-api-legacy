@@ -30,7 +30,7 @@ package object domain {
   val amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
     ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
 
-  val amountNoPenceValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number full pounds only",
-    ErrorCode("INVALID_MONETARY_AMOUNT_NO_PENCES")))(x => x >= 0 && x.scale == 0)
+  val amountNoPenceValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number and rounded to pounds",
+    ErrorCode("INVALID_MONETARY_AMOUNT_NO_PENCE")))(x => x >= 0 && x.scale == 0)
 
 }

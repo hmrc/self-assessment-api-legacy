@@ -67,13 +67,6 @@ class SelfEmploymentsGoodsAndServicesOwnUseControllerSpec extends BaseFunctional
         .thenAssertThat()
         .statusIs(204)
     }
-
-    "return 404 if the goods and services does not exist" in {
-      when()
-        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/12345678/goods-and-services-own-use")
-        .thenAssertThat()
-        .statusIs(404)
-    }
   }
 
 }

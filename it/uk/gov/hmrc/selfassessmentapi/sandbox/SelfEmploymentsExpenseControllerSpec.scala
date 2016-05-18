@@ -86,13 +86,6 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(204)
     }
-
-    "return 404 if the expense does not exist" in {
-      when()
-        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/1234")
-        .thenAssertThat()
-        .statusIs(404)
-    }
   }
 
 }

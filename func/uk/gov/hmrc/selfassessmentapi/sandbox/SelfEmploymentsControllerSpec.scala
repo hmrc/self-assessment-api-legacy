@@ -77,7 +77,7 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .bodyHasLink("incomes", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes")
         .bodyHasLink("expenses", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses")
-        .bodyHasLink("expenses", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
+        .bodyHasLink("balancing-charges", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
     }
 
     "return 204 response when an existing self employment is deleted" in {

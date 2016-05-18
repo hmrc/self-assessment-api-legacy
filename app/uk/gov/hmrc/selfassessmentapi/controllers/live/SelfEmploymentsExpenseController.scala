@@ -16,33 +16,4 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import play.api.libs.json.Json
-import play.api.mvc.Action
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.domain._
-
-import scala.concurrent.Future
-
-object SelfEmploymentsExpenseController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsExpenseController {
-
-  override def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { _ =>
-    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-  }
-
-  override def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action.async { _ =>
-    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-  }
-
-  override def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async { _ =>
-    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-  }
-
-  override def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action.async(parse.json)  { _ =>
-    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-  }
-
-  override def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action { _ =>
-   NotImplemented(Json.toJson(ErrorNotImplemented))
-  }
-}
+object SelfEmploymentsExpenseController extends NotImplementedSelfEmploymentCrudController

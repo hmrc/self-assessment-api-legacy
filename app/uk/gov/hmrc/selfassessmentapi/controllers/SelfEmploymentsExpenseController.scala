@@ -33,18 +33,14 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
   override lazy val context: String = AppContext.apiGatewayContext
 
   def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action { request =>
-    val seExpense = SelfEmploymentExpense(id = Some(seExpenseId), `type` = CISPayments,
-                                          amount= BigDecimal("1000.45"))
+    val seExpense = SelfEmploymentExpense(id = Some(seExpenseId), `type` = CISPayments, amount= BigDecimal("1000.45"))
     Ok(halResource(toJson(seExpense), Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId, seExpenseId)))))
   }
 
   def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
-    val seq = Seq(SelfEmploymentExpense(id = Some("1234"), `type` = CISPayments,
-                                                  amount = BigDecimal("1000.45")),
-                            SelfEmploymentExpense(id = Some("5678"), `type` = CoGBought,
-                                                  amount = BigDecimal("2000.50")),
-                            SelfEmploymentExpense(id = Some("4321"), `type` = StaffCosts,
-                                                  amount = BigDecimal("3000.50")))
+    val seq = Seq(SelfEmploymentExpense(id = Some("1234"), `type` = CISPayments, amount = BigDecimal("1000.45")),
+                            SelfEmploymentExpense(id = Some("5678"), `type` = CoGBought, amount = BigDecimal("2000.50")),
+                            SelfEmploymentExpense(id = Some("4321"), `type` = StaffCosts, amount = BigDecimal("3000.50")))
     val seExpensesJson = toJson(seq.map(res => halResource(obj(),
       Seq(HalLink("self", selfEmploymentExpenseHref(saUtr, taxYear, seId,  res.id.get))))))
 

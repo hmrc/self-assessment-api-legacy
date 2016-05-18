@@ -16,4 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-case class ErrorCode(value: String)
+object ErrorCode extends Enumeration {
+  type ErrorCode = Value
+  val MAX_FIELD_LENGTH_EXCEEDED,
+      INVALID_MONETARY_AMOUNT,
+      COMMENCEMENT_DATE_NOT_IN_THE_PAST,
+      INVALID_MONETARY_AMOUNT_NO_PENCE,
+      NO_VALUE_FOUND,
+      INVALID_TYPE= Value
+}
+

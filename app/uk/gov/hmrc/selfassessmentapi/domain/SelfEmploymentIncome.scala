@@ -22,7 +22,7 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType.SelfEmploymentIncomeType
-
+import ErrorCode._
 
 object SelfEmploymentIncomeType extends Enumeration {
   type SelfEmploymentIncomeType = Value
@@ -38,7 +38,7 @@ case class SelfEmploymentIncome(id: Option[SelfEmploymentIncomeId] = None,
 object SelfEmploymentIncome {
 
   private def amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
-    ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
+    INVALID_MONETARY_AMOUNT))(x => x >= 0 && x.scale < 3)
 
   implicit val seIncomeTypes = EnumJson.enumFormat(SelfEmploymentIncomeType, Some("Self Employment Income type is invalid"))
   implicit val seIncomeWrites = Json.writes[SelfEmploymentIncome]

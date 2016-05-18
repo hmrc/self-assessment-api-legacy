@@ -18,6 +18,7 @@ package uk.gov.hmrc.selfassessmentapi
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json.Reads
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 
 
 package object domain {
@@ -28,9 +29,9 @@ package object domain {
   type SelfEmploymentExpenseId = String
   type GoodsAndServicesOwnUseId = String
   val amountValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number up to 2 decimal values",
-    ErrorCode("INVALID_MONETARY_AMOUNT")))(x => x >= 0 && x.scale < 3)
+    INVALID_MONETARY_AMOUNT))(x => x >= 0 && x.scale < 3)
 
   val amountNoPenceValidator = Reads.of[BigDecimal].filter(ValidationError("amount should be non-negative number and rounded to pounds",
-    ErrorCode("INVALID_MONETARY_AMOUNT_NO_PENCE")))(x => x >= 0 && x.scale == 0)
+    INVALID_MONETARY_AMOUNT_NO_PENCE))(x => x >= 0 && x.scale == 0)
 
 }

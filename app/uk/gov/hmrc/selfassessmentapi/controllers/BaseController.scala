@@ -21,7 +21,7 @@ import play.api.hal.{Hal, HalLink, HalResource}
 import play.api.libs.json.{JsString, _}
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -71,7 +71,7 @@ trait BaseController
           "path" -> JsString(path.toString),
           "code" -> JsString(
             Try(error.args.filter(_.isInstanceOf[ErrorCode]).head.asInstanceOf[ErrorCode]) match {
-              case Success(code) => code.value
+              case Success(code) => code.toString
               case _ => "N/A"
             }
           ),

@@ -15,6 +15,7 @@
  */
 
 package uk.gov.hmrc.selfassessmentapi.domain
+import ErrorCode._
 
 class GoodsAndServicesOwnUseSpec extends JsonSpec {
 
@@ -32,7 +33,7 @@ class GoodsAndServicesOwnUseSpec extends JsonSpec {
         val gs = GoodsAndServicesOwnUse(amount = testAmount)
         assertValidationError[GoodsAndServicesOwnUse](
           gs,
-          Map(ErrorCode("INVALID_MONETARY_AMOUNT_NO_PENCE") -> "amount should be non-negative number and rounded to pounds"),
+          Map(INVALID_MONETARY_AMOUNT_NO_PENCE -> "amount should be non-negative number and rounded to pounds"),
           "Expected invalid self-employment-goods-and-services-for-own-use")
       }
     }
@@ -41,7 +42,7 @@ class GoodsAndServicesOwnUseSpec extends JsonSpec {
       val seExpense = GoodsAndServicesOwnUse(amount = BigDecimal(-1000.12))
       assertValidationError[GoodsAndServicesOwnUse](
         seExpense,
-        Map(ErrorCode("INVALID_MONETARY_AMOUNT_NO_PENCE") -> "amount should be non-negative number and rounded to pounds"),
+        Map(INVALID_MONETARY_AMOUNT_NO_PENCE -> "amount should be non-negative number and rounded to pounds"),
         "Expected negative self-employment-goods-and-services-for-own-use")
     }
   }

@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseType.SelfEmploy
 object SelfEmploymentExpenseType extends Enumeration {
   type SelfEmploymentExpenseType = Value
   val CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,
-  AdvertisingCosts, Internet, FinancialCharges, BadDept, ProfessionalFees, Deprecation, Other = Value
+  AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other = Value
 }
 
 case class SelfEmploymentExpense(id: Option[SelfEmploymentExpenseId] = None,

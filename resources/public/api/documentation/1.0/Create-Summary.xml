@@ -143,7 +143,7 @@
                     </cell>
                     <cell>
                         <code>CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,
-                            AdvertisingCosts, Internet, FinancialCharges, BadDept, ProfessionalFees, Deprecation, Other</code>
+                            AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other</code>
                     </cell>
                     <cell>The type of expense</cell>
                 </row>

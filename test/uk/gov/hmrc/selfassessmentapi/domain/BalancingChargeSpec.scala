@@ -47,7 +47,7 @@ class BalancingChargeSpec extends JsonSpec {
     "reject invalid Balancing charge category" in {
       val json = Json.parse(
         """
-          |{ "type": "BAZ",
+          |{"type": "BAZ",
           |"amount" : 10000.45
           |}
         """.

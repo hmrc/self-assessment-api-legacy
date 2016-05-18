@@ -247,7 +247,7 @@
                     <cell>
                         <code>BPRA, Other</code>
                     </cell>
-                    <cell>The type of income</cell>
+                    <cell>The type of balancing charge</cell>
                 </row>
                 <row>
                     <cell>
@@ -262,7 +262,7 @@
                     <cell>
                         <code>60000.00</code>
                     </cell>
-                    <cell>The amount of the income as a positive number with up to 2 decimal places</cell>
+                    <cell>The amount of the balancing charge as a positive number with up to 2 decimal places</cell>
                 </row>
             </rows>
         </table>

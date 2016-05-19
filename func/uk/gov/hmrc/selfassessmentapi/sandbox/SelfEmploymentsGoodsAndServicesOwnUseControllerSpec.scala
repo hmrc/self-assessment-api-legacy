@@ -15,7 +15,7 @@ class SelfEmploymentsGoodsAndServicesOwnUseControllerSpec extends BaseFunctional
 
     "return a 201 when the resource is created" in {
       when()
-        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use", Some(toJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000)))))
+        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use", Some(toJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000.75)))))
         .thenAssertThat()
         .statusIs(201)
         .contentTypeIsHalJson()
@@ -26,7 +26,7 @@ class SelfEmploymentsGoodsAndServicesOwnUseControllerSpec extends BaseFunctional
       val request = Json.parse(
         """
           | {
-          | "amount": 1234.99
+          | "amount": 1234.999
           | }
         """.stripMargin)
 
@@ -34,7 +34,7 @@ class SelfEmploymentsGoodsAndServicesOwnUseControllerSpec extends BaseFunctional
         .post(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use", Some(request))
         .thenAssertThat()
         .statusIs(400)
-        .body1(_ \\ "code").is("INVALID_MONETARY_AMOUNT_NO_PENCE")
+        .body1(_ \\ "code").is("INVALID_MONETARY_AMOUNT")
         .body1(_ \\ "path").is("/amount")
     }
   }
@@ -66,7 +66,7 @@ class SelfEmploymentsGoodsAndServicesOwnUseControllerSpec extends BaseFunctional
   "Modify a self-employment-goods-and-services-own-use" should {
     "return 200 and a valid response when an existing self employment goods and services is modified" in {
       when()
-        .put(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use/$goodsAndServiceOwnUseId", Some(toJson(GoodsAndServicesOwnUse(amount = BigDecimal(2000)))))
+        .put(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use/$goodsAndServiceOwnUseId", Some(toJson(GoodsAndServicesOwnUse(amount = BigDecimal(2000.99)))))
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()

@@ -26,12 +26,12 @@ class GoodsAndServicesOwnUseSpec extends JsonSpec {
   }
 
   "validate" should {
-    "reject amounts with more than 1 decimal values" in {
-      Seq(BigDecimal(1000.1), BigDecimal(1000.12), BigDecimal(1000.123), BigDecimal(1000.123456789)).foreach { testAmount =>
+    "reject amounts with more than 2 decimal values" in {
+      Seq(BigDecimal(1000.123), BigDecimal(1000.12456), BigDecimal(1000.123454), BigDecimal(1000.123456789)).foreach { testAmount =>
         val goodsAndServiceOwnUseId = GoodsAndServicesOwnUse(amount = testAmount)
         assertValidationError[GoodsAndServicesOwnUse](
           goodsAndServiceOwnUseId,
-          Map(INVALID_MONETARY_AMOUNT_NO_PENCE -> "amount should be non-negative number and rounded to pounds"),
+          Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
           "Expected invalid self-employment-goods-and-services-for-own-use")
       }
     }
@@ -40,7 +40,7 @@ class GoodsAndServicesOwnUseSpec extends JsonSpec {
       val seExpense = GoodsAndServicesOwnUse(amount = BigDecimal(-1000.12))
       assertValidationError[GoodsAndServicesOwnUse](
         seExpense,
-        Map(INVALID_MONETARY_AMOUNT_NO_PENCE -> "amount should be non-negative number and rounded to pounds"),
+        Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
         "Expected negative self-employment-goods-and-services-for-own-use")
     }
   }

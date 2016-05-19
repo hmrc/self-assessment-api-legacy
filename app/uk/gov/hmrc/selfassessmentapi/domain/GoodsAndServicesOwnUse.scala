@@ -26,6 +26,6 @@ object GoodsAndServicesOwnUse {
 
   implicit val goodsAndServicesOwnUseReads = (
     Reads.pure(None) and
-      (__ \ "amount").read[BigDecimal](amountNoPenceValidator)
+      (__ \ "amount").read[BigDecimal](amountValidator)
     ) (GoodsAndServicesOwnUse.apply _)
 }

@@ -2,9 +2,6 @@ package uk.gov.hmrc.selfassessmentapi.live
 
 import java.util.UUID
 
-import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseType.{apply => _, _}
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -15,75 +12,77 @@ class NotImplementedSummariesControllerSpec extends BaseFunctionalSpec {
 
   "create summaries" should {
     "not be implemented" in {
-      Map("balancing-charges" -> toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00))),
-        "incomes" -> toJson(SelfEmploymentIncome(None, Turnover, BigDecimal(1000))),
-        "expenses" -> toJson(SelfEmploymentExpense(None, CISPayments, BigDecimal(1000))),
-        "goods-and-services-own-use" -> toJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000)))).foreach {
-        case (summaryType, summaryJson) =>
-          given()
-            .userIsAuthorisedForTheResource(saUtr)
-            .when()
-            .post(Some(summaryJson))
-            .to(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType")
-            .thenAssertThat()
-            .resourceIsNotImplemented()
-      }
+     SourceTypes.types.foreach { source =>
+       source.summaryTypes.foreach { summary =>
+         given()
+           .userIsAuthorisedForTheResource(saUtr)
+           .when()
+           .post(Some(summary.example))
+           .to(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}")
+           .thenAssertThat()
+           .resourceIsNotImplemented()
+       }
+     }
     }
   }
 
   "get summaries" should {
     "not be implemented" in {
-      Seq("balancing-charges", "incomes", "expenses").foreach { summaryType =>
-        given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .get(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType/1234")
-          .thenAssertThat()
-          .resourceIsNotImplemented()
+      SourceTypes.types.foreach { source =>
+        source.summaryTypes.foreach { summary =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+            .when()
+            .get(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}/$summaryId")
+            .thenAssertThat()
+            .resourceIsNotImplemented()
+        }
       }
     }
   }
 
   "delete summaries" should {
     "not be implemented" in {
-      Seq("balancing-charges", "incomes", "expenses").foreach { summaryType =>
-        given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .delete(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType/1234")
-          .thenAssertThat()
-          .resourceIsNotImplemented()
+      SourceTypes.types.foreach { source =>
+        source.summaryTypes.foreach { summary =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+            .when()
+            .delete(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}/$summaryId")
+            .thenAssertThat()
+            .resourceIsNotImplemented()
+        }
       }
     }
   }
 
   "update summaries" should {
     "not be implemented" in {
-      Map("balancing-charges" -> toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00))),
-        "incomes" -> toJson(SelfEmploymentIncome(None, Turnover, BigDecimal(1000))),
-        "expenses" -> toJson(SelfEmploymentExpense(None, CISPayments, BigDecimal(1000))),
-        "goods-and-services-own-use" -> toJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000)))).foreach {
-        case (summaryType, summaryJson) =>
+      SourceTypes.types.foreach { source =>
+        source.summaryTypes.foreach { summary =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
             .when()
-            .put(Some(summaryJson))
-            .at(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType/1234")
+            .put(Some(summary.example))
+            .at(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}/$summaryId")
             .thenAssertThat()
             .resourceIsNotImplemented()
+        }
       }
     }
   }
 
   "get all summaries" should {
     "not be implemented" in {
-      Seq("balancing-charges", "incomes", "expenses").foreach { summaryType =>
-        given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .get(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType")
-          .thenAssertThat()
-          .resourceIsNotImplemented()
+      SourceTypes.types.foreach { source =>
+        source.summaryTypes.foreach { summary =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+            .when()
+            .get(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}")
+            .thenAssertThat()
+            .resourceIsNotImplemented()
+        }
       }
     }
   }

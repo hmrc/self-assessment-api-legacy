@@ -16,17 +16,24 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json._
+
 sealed trait SourceType {
   val name: String
+  val example: JsValue
+  val summaryTypes: Seq[SummaryType]
 }
 
 object SourceTypes {
-  private val types = Seq(SelfEmploymentsSourceType)
+  val types = Seq(SelfEmploymentsSourceType)
   private val typesByName = types.map(x => x.name -> x).toMap
 
   def fromName(name: String): Option[SourceType] = typesByName.get(name)
 }
 case object SelfEmploymentsSourceType extends SourceType {
   override val name = "self-employments"
+  override lazy val example: JsValue = toJson(SelfEmployment.example)
+  override val summaryTypes = Seq(IncomesSummaryType, ExpensesSummaryType, GoodsAndServicesOwnUseSummaryType, BalancingChargesSummaryType)
 }
 

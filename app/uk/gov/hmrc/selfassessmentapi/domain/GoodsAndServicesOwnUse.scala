@@ -28,4 +28,6 @@ object GoodsAndServicesOwnUse {
     Reads.pure(None) and
       (__ \ "amount").read[BigDecimal](amountValidator("amount"))
     ) (GoodsAndServicesOwnUse.apply _)
+
+  lazy val example: GoodsAndServicesOwnUse = GoodsAndServicesOwnUse(amount = BigDecimal(1000))
 }

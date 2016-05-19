@@ -16,28 +16,36 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json._
+
 sealed trait SummaryType {
   val name: String
+  val example: JsValue
 }
 
 object SummaryTypes {
-  private val summaryTypes = Seq(IncomesSummaryType, ExpensesSummaryType, BalancingChargesSummaryType, GoodsAndServicesOwnUseSummaryType)
-  private val summaryTypesByName = summaryTypes.map(x => x.name -> x).toMap
+  val types = Seq(IncomesSummaryType, ExpensesSummaryType, BalancingChargesSummaryType, GoodsAndServicesOwnUseSummaryType)
+  private val typesByName = types.map(x => x.name -> x).toMap
 
-  def fromName(name: String): Option[SummaryType] = summaryTypesByName.get(name)
+  def fromName(name: String): Option[SummaryType] = typesByName.get(name)
 }
 case object IncomesSummaryType extends SummaryType {
   override val name = "incomes"
+  override lazy val example: JsValue = toJson(SelfEmploymentIncome.example)
 }
 
 case object ExpensesSummaryType extends SummaryType {
   override val name = "expenses"
+  override lazy val example: JsValue = toJson(SelfEmploymentExpense.example)
 }
 
 case object BalancingChargesSummaryType extends SummaryType {
   override val name = "balancing-charges"
+  override lazy val example: JsValue = toJson(BalancingCharge.example)
 }
 
 case object GoodsAndServicesOwnUseSummaryType extends SummaryType {
   override val name = "goods-and-services-own-use"
+  override lazy val example: JsValue = toJson(GoodsAndServicesOwnUse.example)
 }

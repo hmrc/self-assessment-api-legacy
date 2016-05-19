@@ -42,4 +42,7 @@ object SelfEmployment {
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
       (__ \ "allowances").readNullable[SelfEmploymentAllowances]
     ) (SelfEmployment.apply _)
+
+
+  lazy val example: SelfEmployment = SelfEmployment(None, "name", LocalDate.now)
 }

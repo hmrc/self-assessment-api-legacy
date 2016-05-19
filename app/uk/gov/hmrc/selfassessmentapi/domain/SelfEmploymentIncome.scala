@@ -20,8 +20,8 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType.SelfEmploymentIncomeType
 import ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType.SelfEmploymentIncomeType
 
 object SelfEmploymentIncomeType extends Enumeration {
   type SelfEmploymentIncomeType = Value
@@ -42,4 +42,6 @@ object SelfEmploymentIncome {
       (__ \ "type").read[SelfEmploymentIncomeType] and
       (__ \ "amount").read[BigDecimal](amountValidator("amount"))
     ) (SelfEmploymentIncome.apply _)
+
+  lazy val example: SelfEmploymentIncome = SelfEmploymentIncome(None, SelfEmploymentIncomeType.Turnover, BigDecimal(1000))
 }

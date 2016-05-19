@@ -38,4 +38,6 @@ object BalancingCharge {
       (__ \ "type").read[BalancingChargeType] and
       (__ \ "amount").read[BigDecimal](amountValidator("amount"))
     ) (BalancingCharge.apply _)
+
+  lazy val example: BalancingCharge = BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00))
 }

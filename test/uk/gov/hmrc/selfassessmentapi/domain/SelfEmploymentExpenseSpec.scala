@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import SelfEmploymentExpenseType._
 import play.api.libs.json.Json
-
+import ErrorCode._
 class SelfEmploymentExpenseSpec extends JsonSpec {
 
   "format" should {
@@ -35,7 +35,7 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
         val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = testAmount)
         assertValidationError[SelfEmploymentExpense](
           seExpense,
-          Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+          Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
           "Expected invalid self-employment-income")
       }
     }
@@ -45,7 +45,7 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
         val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = testAmount)
         assertValidationError[SelfEmploymentExpense](
           seExpense,
-          Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+          Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
           "Expected invalid self-employment-income")
       }
     }
@@ -54,7 +54,7 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
       val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = BigDecimal(-1000.12))
       assertValidationError[SelfEmploymentExpense](
         seExpense,
-        Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+        Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
         "Expected negative self-employment expense")
     }
 
@@ -69,8 +69,8 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
 
       assertValidationError[SelfEmploymentExpense](
         json,
-        Map(ErrorCode("NO_VALUE_FOUND") -> "Self Employment Expense type is invalid"),
-        "Expected expense category not in { CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,  AdvertisingCosts, Internet, FinancialCharges, BadDept, ProfessionalFees, Deprecation, Other }")
+        Map(("/type", NO_VALUE_FOUND) -> "Self Employment Expense type is invalid"),
+        "Expected expense type not in { CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,  AdvertisingCosts, Internet, FinancialCharges, BadDept, ProfessionalFees, Deprecation, Other }")
     }
   }
 }

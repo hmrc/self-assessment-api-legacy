@@ -65,8 +65,8 @@ class BindersSpec extends UnitSpec {
     implicit val pathBindable = PathBindable.bindableString
 
     "return Right with a Summary Type instance for a balancing-charges" in {
-      val result = Binders.summaryTypeBinder.bind("summaryType", "balancingcharges")
-      result shouldEqual Right(SummaryType.balancingcharges)
+      val result = Binders.summaryTypeBinder.bind("summaryType", "balancing-charges")
+      result shouldEqual Right(SummaryType.`balancing-charges`)
     }
 
     "return Left for an ivalid taxYear string" in {

@@ -62,6 +62,6 @@ trait SelfEmploymentsExpenseController extends BaseController with Links {
   }
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seExpenseId: SelfEmploymentExpenseId) = Action {
-    if(seExpenseId == "1234") NotFound else  NoContent
+    NoContent
   }
 }

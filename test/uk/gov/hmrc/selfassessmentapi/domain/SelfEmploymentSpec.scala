@@ -17,12 +17,16 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import org.joda.time.LocalDate
+import ErrorCode._
 
 class SelfEmploymentSpec extends JsonSpec {
 
   "format" should {
     "round trip valid SelfEmployment json" in {
-      roundTripJson(SelfEmployment(name = "self employment 1", commencementDate = new LocalDate(2016, 4, 22)))
+      roundTripJson(SelfEmployment(
+        name = "self employment 1",
+        commencementDate = new LocalDate(2016, 4, 22),
+        allowances = Some(SelfEmploymentAllowances(annualInvestmentAllowance = Some(BigDecimal(10))))))
     }
   }
 
@@ -33,10 +37,22 @@ class SelfEmploymentSpec extends JsonSpec {
 
       assertValidationError[SelfEmployment](
         se,
-        Map(ErrorCode("COMMENCEMENT_DATE_NOT_IN_THE_PAST") -> "commencement date should be in the past",
-          ErrorCode("MAX_FIELD_LENGTH_EXCEEDED") -> "field length exceeded the max 100 chars"),
+        Map(("/commencementDate", COMMENCEMENT_DATE_NOT_IN_THE_PAST) -> "commencement date should be in the past",
+          ("/name", MAX_FIELD_LENGTH_EXCEEDED) -> "field length exceeded the max 100 chars"),
         "Expected valid self-employment")
+    }
 
+    "reject invalid allowances" in {
+
+      val se = SelfEmployment(
+        name = "self employment 1",
+        commencementDate = new LocalDate(2016, 4, 22),
+        allowances = Some(SelfEmploymentAllowances(annualInvestmentAllowance = Some(BigDecimal(-10)))))
+
+      assertValidationError[SelfEmployment](
+        se,
+        Map(("/allowances/annualInvestmentAllowance", INVALID_MONETARY_AMOUNT) -> s"annualInvestmentAllowance should be non-negative number up to 2 decimal values"),
+        "Expected valid self-employment")
     }
 
   }

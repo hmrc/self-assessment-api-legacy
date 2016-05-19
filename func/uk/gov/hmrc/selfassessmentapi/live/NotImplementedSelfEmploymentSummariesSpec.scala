@@ -5,7 +5,7 @@ import java.util.UUID
 import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentExpenseType.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.{BalancingCharge, BalancingChargeType, SelfEmploymentExpense, SelfEmploymentIncome}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
@@ -15,9 +15,10 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
 
   "create summaries" should {
     "not be implemented" in {
-      Map("balancingcharges" -> toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00))),
+      Map("balancing-charges" -> toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00))),
         "incomes" -> toJson(SelfEmploymentIncome(None, Turnover, BigDecimal(1000))),
-        "expenses" -> toJson(SelfEmploymentExpense(None, CISPayments, BigDecimal(1000)))).foreach {
+        "expenses" -> toJson(SelfEmploymentExpense(None, CISPayments, BigDecimal(1000))),
+        "goods-and-services-own-use" -> toJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000)))).foreach {
         case (summaryType, summaryJson) =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
@@ -32,7 +33,7 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
 
   "get summaries" should {
     "not be implemented" in {
-      Seq("balancingcharges", "incomes", "expenses").foreach { summaryType =>
+      Seq("balancing-charges", "incomes", "expenses").foreach { summaryType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -45,7 +46,7 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
 
   "delete summaries" should {
     "not be implemented" in {
-      Seq("balancingcharges", "incomes", "expenses").foreach { summaryType =>
+      Seq("balancing-charges", "incomes", "expenses").foreach { summaryType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -58,9 +59,10 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
 
   "update summaries" should {
     "not be implemented" in {
-      Map("balancingcharges" -> toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00))),
+      Map("balancing-charges" -> toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00))),
         "incomes" -> toJson(SelfEmploymentIncome(None, Turnover, BigDecimal(1000))),
-        "expenses" -> toJson(SelfEmploymentExpense(None, CISPayments, BigDecimal(1000)))).foreach {
+        "expenses" -> toJson(SelfEmploymentExpense(None, CISPayments, BigDecimal(1000))),
+        "goods-and-services-own-use" -> toJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000)))).foreach {
         case (summaryType, summaryJson) =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
@@ -75,7 +77,7 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
 
   "get all summaries" should {
     "not be implemented" in {
-      Seq("balancingcharges", "incomes", "expenses").foreach { summaryType =>
+      Seq("balancing-charges", "incomes", "expenses").foreach { summaryType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -83,7 +85,6 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
           .thenAssertThat()
           .resourceIsNotImplemented()
       }
-
     }
   }
 

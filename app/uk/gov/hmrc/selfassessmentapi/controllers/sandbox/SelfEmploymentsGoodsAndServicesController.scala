@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain
+package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-object SummaryType extends Enumeration {
-  type SummaryType = Value
-  val incomes, expenses, `balancing-charges`, `goods-and-services-own-use` = Value
-}
+object SelfEmploymentsGoodsAndServicesController extends uk.gov.hmrc.selfassessmentapi.controllers.SelfEmploymentsGoodsAndServicesController

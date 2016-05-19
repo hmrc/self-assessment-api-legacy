@@ -18,24 +18,14 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
-import uk.gov.hmrc.selfassessmentapi.domain.BalancingChargeType.BalancingChargeType
 
-object BalancingChargeType extends Enumeration {
-  type BalancingChargeType = Value
-  val BPRA, Other = Value
-}
+case class GoodsAndServicesOwnUse(id: Option[String] = None, amount: BigDecimal)
 
-case class BalancingCharge(id: Option[String] = None, `type`: BalancingChargeType, amount: BigDecimal)
+object GoodsAndServicesOwnUse {
+  implicit val goodsAndServicesOwnUseWrites = Json.writes[GoodsAndServicesOwnUse]
 
-object BalancingCharge {
-
-  implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeType, Some("Self Employment Balancing charge type is invalid"))
-  implicit val balancingChargeWrites = Json.writes[BalancingCharge]
-
-  implicit val balancingChangeReads: Reads[BalancingCharge] = (
+  implicit val goodsAndServicesOwnUseReads = (
     Reads.pure(None) and
-      (__ \ "type").read[BalancingChargeType] and
       (__ \ "amount").read[BigDecimal](amountValidator("amount"))
-    ) (BalancingCharge.apply _)
+    ) (GoodsAndServicesOwnUse.apply _)
 }

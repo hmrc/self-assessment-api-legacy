@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.Future
 
-object NotImplementedSelfEmploymentCrudController extends BaseController with Links {
+object NotImplementedSelfEmploymentSummariesController extends BaseController with Links {
 
   override val context: String = AppContext.apiGatewayContext
 

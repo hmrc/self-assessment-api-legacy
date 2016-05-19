@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.live
+package uk.gov.hmrc.selfassessmentapi.domain
 
-object SelfEmploymentsExpenseController extends NotImplementedSelfEmploymentCrudController
+object SummaryType extends Enumeration {
+  type SummaryType = Value
+  val incomes, expenses, balancingcharges = Value
+}

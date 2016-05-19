@@ -16,17 +16,17 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
     "be created for valid input" in {
       when()
         .post(Some(Json.toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00)))))
-        .to(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
+        .to(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges")
         .thenAssertThat()
         .statusIs(201)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/.+".r)
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/.+".r)
     }
 
     "not be created for invalid amount" in {
       when()
         .post(Some(Json.toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.123)))))
-        .to(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
+        .to(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
@@ -35,11 +35,11 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
 
     "be available for an existing balancing charge id" in {
       when()
-        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/$balancingChargeId")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/$balancingChargeId")
         .body(_ \ "id").is(s"$balancingChargeId")
         .body(_ \ "type").is("Other")
         .body(_ \ "amount").is(1000.45)
@@ -47,7 +47,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
 
     "be deleted for valid balancing charge id" in {
       when()
-        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
+        .delete(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/$balancingChargeId")
         .thenAssertThat()
         .statusIs(204)
     }
@@ -55,17 +55,17 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
     "be updated for valid input" in {
       when()
         .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00)))))
-        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
+        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/$balancingChargeId")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/$balancingChargeId")
     }
 
     "not be updated for invalid input" in {
       when()
         .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(-100.00)))))
-        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
+        .at(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/$balancingChargeId")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
@@ -74,15 +74,15 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
 
     "return a valid response when retrieving list of self employments" in {
       when()
-        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
+        .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
-        .bodyHasPath("""_embedded \ balancing-charges(0) \ _links \ self \ href""",
-          s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
-        .bodyHasPath("""_embedded \ balancing-charges(1) \ _links \ self \ href""",
-          s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/5678")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges")
+        .bodyHasPath("""_embedded \ balancingcharges(0) \ _links \ self \ href""",
+          s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/1234")
+        .bodyHasPath("""_embedded \ balancingcharges(1) \ _links \ self \ href""",
+          s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/5678")
     }
 
   }

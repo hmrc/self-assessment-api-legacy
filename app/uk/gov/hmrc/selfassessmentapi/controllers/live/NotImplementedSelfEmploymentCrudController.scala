@@ -25,27 +25,27 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.Future
 
-trait NotImplementedSelfEmploymentCrudController extends BaseController with Links {
+object NotImplementedSelfEmploymentCrudController extends BaseController with Links {
 
   override val context: String = AppContext.apiGatewayContext
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { _ =>
+  def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, summaryType: SummaryType.Value) = Action.async(parse.json) { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, id: String) = Action.async { _ =>
+  def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, summaryType: SummaryType.Value, id: String) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async { _ =>
+  def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, summaryType: SummaryType.Value) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, id: String) = Action.async(parse.json)  { _ =>
+  def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, summaryType: SummaryType.Value, id: String) = Action.async(parse.json)  { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, id: String) = Action.async { _ =>
+  def delete(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, summaryType: SummaryType.Value, id: String) = Action.async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 

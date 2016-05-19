@@ -16,11 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
+import java.net.URLDecoder
+
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.referencechecker.SelfAssessmentReferenceChecker
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.domain.SummaryType._
+import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, TaxYear}
 
 object Binders {
 
@@ -44,6 +47,18 @@ object Binders {
       AppContext.supportedTaxYears.contains(value) match {
         case true => Right(TaxYear(value))
         case false => Left("ERROR_TAX_YEAR_INVALID")
+      }
+    }
+  }
+
+  implicit def summaryTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SummaryType.Value] {
+
+    def unbind(key: String, summaryType: SummaryType.Value): String = summaryType.toString
+
+    def bind(key: String, value: String): Either[String, SummaryType] = {
+      SummaryType.values.find(_.toString.toLowerCase == value.toLowerCase) match {
+        case Some(v) => Right(v)
+        case None => Left("ERROR_INVALID_SUMMARY_TYPE")
       }
     }
   }

@@ -17,7 +17,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .post(Some(Json.toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00)))))
-        .to(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
+        .to(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -28,7 +28,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/1234")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -39,7 +39,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .delete(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .delete(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/1234")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -51,7 +51,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .put(Some(Json.toJson(BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00)))))
-        .at(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+        .at(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges/1234")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }
@@ -62,7 +62,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
+        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancingcharges")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }

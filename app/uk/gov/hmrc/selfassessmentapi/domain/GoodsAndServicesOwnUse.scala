@@ -16,12 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class GoodsAndServicesOwnUse(amount: BigDecimal)
+case class GoodsAndServicesOwnUse(id: Option[String] = None, amount: BigDecimal)
 
 object GoodsAndServicesOwnUse {
   implicit val goodsAndServicesOwnUseWrites = Json.writes[GoodsAndServicesOwnUse]
 
-  implicit val goodsAndServicesOwnUseReads = (__ \ "amount").read(amountNoPenceValidator).map(GoodsAndServicesOwnUse.apply _)
+  implicit val goodsAndServicesOwnUseReads = (
+    Reads.pure(None) and
+      (__ \ "amount").read[BigDecimal](amountNoPenceValidator)
+    ) (GoodsAndServicesOwnUse.apply _)
 }

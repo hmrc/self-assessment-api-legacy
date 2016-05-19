@@ -21,18 +21,16 @@ class GoodsAndServicesOwnUseSpec extends JsonSpec {
 
   "format" should {
     "round trip GoodsAndServicesOwnUse json" in {
-      SelfEmploymentExpenseType.values.foreach {
-        cat => roundTripJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000)))
-      }
+      roundTripJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000)))
     }
   }
 
   "validate" should {
     "reject amounts with more than 1 decimal values" in {
       Seq(BigDecimal(1000.1), BigDecimal(1000.12), BigDecimal(1000.123), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val gs = GoodsAndServicesOwnUse(amount = testAmount)
+        val goodsAndServiceOwnUseId = GoodsAndServicesOwnUse(amount = testAmount)
         assertValidationError[GoodsAndServicesOwnUse](
-          gs,
+          goodsAndServiceOwnUseId,
           Map(INVALID_MONETARY_AMOUNT_NO_PENCE -> "amount should be non-negative number and rounded to pounds"),
           "Expected invalid self-employment-goods-and-services-for-own-use")
       }

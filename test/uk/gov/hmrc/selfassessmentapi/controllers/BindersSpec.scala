@@ -69,9 +69,24 @@ class BindersSpec extends UnitSpec {
       result shouldEqual Right(BalancingChargesSummaryType)
     }
 
-    "return Left for an ivalid taxYear string" in {
+    "return Left for an invalid summaryType string" in {
       val result = Binders.summaryTypeBinder.bind("summaryType", "invalid")
       result shouldEqual Left("ERROR_INVALID_SUMMARY_TYPE")
+    }
+  }
+
+  "sourceType.bind" should {
+
+    implicit val pathBindable = PathBindable.bindableString
+
+    "return Right with a Source Type instance for a self-employments" in {
+      val result = Binders.sourceTypeBinder.bind("summaryType", "self-employments")
+      result shouldEqual Right(SelfEmploymentsSourceType)
+    }
+
+    "return Left for an invalid sourceType string" in {
+      val result = Binders.sourceTypeBinder.bind("summaryType", "invalid")
+      result shouldEqual Left("ERROR_INVALID_SOURCE_TYPE")
     }
   }
 

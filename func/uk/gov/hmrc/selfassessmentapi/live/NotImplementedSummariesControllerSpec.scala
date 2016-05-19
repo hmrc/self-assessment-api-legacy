@@ -8,10 +8,10 @@ import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
+class NotImplementedSummariesControllerSpec extends BaseFunctionalSpec {
 
-  val selfEmploymentId = UUID.randomUUID()
-  val balancingChargeId = UUID.randomUUID()
+  val sourceId = UUID.randomUUID()
+  val summaryId = UUID.randomUUID()
 
   "create summaries" should {
     "not be implemented" in {
@@ -24,7 +24,7 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
             .userIsAuthorisedForTheResource(saUtr)
             .when()
             .post(Some(summaryJson))
-            .to(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/$summaryType")
+            .to(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType")
             .thenAssertThat()
             .resourceIsNotImplemented()
       }
@@ -37,7 +37,7 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
-          .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/$summaryType/1234")
+          .get(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType/1234")
           .thenAssertThat()
           .resourceIsNotImplemented()
       }
@@ -50,7 +50,7 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
-          .delete(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/$summaryType/1234")
+          .delete(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType/1234")
           .thenAssertThat()
           .resourceIsNotImplemented()
       }
@@ -68,7 +68,7 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
             .userIsAuthorisedForTheResource(saUtr)
             .when()
             .put(Some(summaryJson))
-            .at(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/$summaryType/1234")
+            .at(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType/1234")
             .thenAssertThat()
             .resourceIsNotImplemented()
       }
@@ -81,7 +81,7 @@ class NotImplementedSelfEmploymentSummariesSpec extends BaseFunctionalSpec {
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
-          .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId/$summaryType")
+          .get(s"/$saUtr/$taxYear/self-employments/$sourceId/$summaryType")
           .thenAssertThat()
           .resourceIsNotImplemented()
       }

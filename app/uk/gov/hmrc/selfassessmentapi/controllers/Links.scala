@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SelfEmploymentsSourceType, SummaryType, TaxYear}
 
 trait Links {
 
@@ -43,11 +43,11 @@ trait Links {
   def selfEmploymentsHref(utr: SaUtr, taxYear: TaxYear): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SelfEmploymentsController.find(utr, taxYear).url)
 
-  def selfEmploymentSummaryTypeHref(utr: SaUtr, taxYear: TaxYear, seId: String, summaryType: SummaryType): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSelfEmploymentSummariesController.find(utr, taxYear, seId, summaryType).url)
+  def selfEmploymentSummaryTypeHref(utr: SaUtr, taxYear: TaxYear, seId: SourceId, summaryType: SummaryType): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSummariesController.find(utr, taxYear, SelfEmploymentsSourceType, seId, summaryType).url)
 
-  def selfEmploymentSummaryTypeIdHref(utr: SaUtr, taxYear: TaxYear, seId: String, summaryType: SummaryType, id: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSelfEmploymentSummariesController.findById(utr, taxYear, seId, summaryType, id).url)
+  def selfEmploymentSummaryTypeIdHref(utr: SaUtr, taxYear: TaxYear, seId: SourceId, summaryType: SummaryType, id: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSummariesController.findById(utr, taxYear, SelfEmploymentsSourceType, seId, summaryType, id).url)
 
 
 }

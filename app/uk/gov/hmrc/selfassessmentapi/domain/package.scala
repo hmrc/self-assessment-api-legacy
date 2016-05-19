@@ -24,6 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 package object domain {
 
   type SelfEmploymentId = String
+  type SourceId = String
   type LiabilityId = String
   type SelfEmploymentIncomeId = String
   type SelfEmploymentExpenseId = String

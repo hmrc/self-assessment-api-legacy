@@ -20,7 +20,7 @@ import play.api.libs.json.{Format, JsValue, Json}
 import uk.gov.hmrc.play.test.UnitSpec
 import ErrorCode._
 
-class JsonSpec extends UnitSpec {
+trait JsonSpec extends UnitSpec {
 
   def roundTripJson[T](json: T)(implicit format: Format[T]) = {
     val write = Json.toJson(json)
@@ -28,14 +28,14 @@ class JsonSpec extends UnitSpec {
     read.asOpt shouldEqual Some(json)
   }
 
-  def assertValidationError[T](o: T, expectedErrors: Map[ErrorCode, String], failureMessage: String)(implicit format: Format[T]): Unit = {
+  def assertValidationError[T](o: T, expectedErrors: Map[(String, ErrorCode), String], failureMessage: String)(implicit format: Format[T]): Unit = {
     val json = Json.toJson(o)(format)
     assertValidationError[T](json, expectedErrors, failureMessage)
   }
 
-  def assertValidationError[T](json: JsValue, expectedErrors: Map[ErrorCode, String], failureMessage: String)(implicit format: Format[T]): Unit = {
+  def assertValidationError[T](json: JsValue, expectedErrors: Map[(String, ErrorCode), String], failureMessage: String)(implicit format: Format[T]): Unit = {
     json.validate[T](format).fold(
-      invalid => invalid.flatMap(_._2).map(error => (error.args.head, error.message)) should contain theSameElementsAs expectedErrors,
+      invalid =>  invalid.flatMap(x => x._2.map(error => (x._1.toString, error.args.head) -> error.message)) should contain theSameElementsAs expectedErrors,
       valid => fail(failureMessage)
     )
   }

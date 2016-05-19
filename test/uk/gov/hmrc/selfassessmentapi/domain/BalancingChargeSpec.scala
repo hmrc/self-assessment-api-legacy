@@ -33,7 +33,7 @@ class BalancingChargeSpec extends JsonSpec {
       val balancingCharge = BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.123))
       assertValidationError[BalancingCharge](
         balancingCharge,
-        Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
+        Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
         "should fail with INVALID_MONETARY_AMOUNT error")
     }
 
@@ -41,7 +41,7 @@ class BalancingChargeSpec extends JsonSpec {
       val balancingCharge = BalancingCharge(None, BalancingChargeType.BPRA, BigDecimal(-100.12))
       assertValidationError[BalancingCharge](
         balancingCharge,
-        Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
+        Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
         "should fail with INVALID_MONETARY_AMOUNT error")
     }
 
@@ -56,7 +56,7 @@ class BalancingChargeSpec extends JsonSpec {
 
       assertValidationError[BalancingCharge](
         json,
-        Map(NO_VALUE_FOUND -> "Self Employment Balancing charge type is invalid"),
+        Map(("/type", NO_VALUE_FOUND) -> "Self Employment Balancing charge type is invalid"),
         "should fail with NO_VALUE_FOUND error")
     }
 

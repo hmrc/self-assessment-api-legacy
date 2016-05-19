@@ -101,7 +101,16 @@
   },
   "id":"5728b53c4800005100d2d32d",
   "name":"Awesome Bakers",
-  "commencementDate":"2016-05-03"
+  "commencementDate":"2016-05-03",
+  "allowances": {
+    "annualInvestmentAllowance": 1000.00,
+    "capitalAllowanceMainPool": 150.00,
+    "capitalAllowanceSpecialRatePool": 5000.50,
+    "restrictedCapitalAllowance": 400.00,
+    "businessPremisesRenovationAllowance": 600.00,
+    "enhancedCapitalAllowance": 50.00,
+    "allowancesOnSales": 3399.99
+  }
 }]]>
         </json>
     </section>

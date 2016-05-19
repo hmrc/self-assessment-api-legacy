@@ -94,9 +94,148 @@
         <json>
 <![CDATA[{
     "name": "Awesome Plumbers",
-    "commencementDate": "2016-04-06"
+    "commencementDate": "2016-04-06",
+    "allowances": {
+        "annualInvestmentAllowance": 1000.00,
+        "capitalAllowanceMainPool": 150.00,
+        "capitalAllowanceSpecialRatePool": 5000.50,
+        "restrictedCapitalAllowance": 400.00,
+        "businessPremisesRenovationAllowance": 600.00,
+        "enhancedCapitalAllowance": 50.00,
+        "allowancesOnSales": 3399.99
+    }
 }]]>
         </json>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                <row>
+                    <cell>
+                        <code>name</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>Awesome Plumbers</code>
+                    </cell>
+                    <cell>Name of the business. Max length 100 characters.</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>commencementDate</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>2016-04-06</code>
+                    </cell>
+                    <cell>The commencement date of the business in YYYY-MM-DD format.</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>allowances</code>
+                    </cell>
+                    <cell>
+                        <code>Object</code>
+                    </cell>
+                    <cell>
+                        <code>N/A</code>
+                    </cell>
+                    <cell>Optional</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>annualInvestmentAllowance</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>1000.00</code>
+                    </cell>
+                    <cell>Optional. The amount of annual investment allowance being claimed as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>capitalAllowanceMainPool</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>150.00</code>
+                    </cell>
+                    <cell>Optional. The amount of capital allowance being claimed in the main pool as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>capitalAllowanceSpecialRatePool</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>5000.50</code>
+                    </cell>
+                    <cell>Optional. The amount of capital allowance being claimed in the special rate pool as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>restrictedCapitalAllowance</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>400.00</code>
+                    </cell>
+                    <cell>Optional. The amount of restricted capital allowance being claimed as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>businessPremisesRenovationAllowance</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>600.00</code>
+                    </cell>
+                    <cell>Optional. The amount of business premises renovation allowance being claimed as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>enhancedCapitalAllowance</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>50.00</code>
+                    </cell>
+                    <cell>Optional. The amount of enhanced capital allowance being claimed as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>allowancesOnSales</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>3399.99</code>
+                    </cell>
+                    <cell>Optional. The amount of allowances on sales being claimed as a positive number with up to 2 decimal places</cell>
+                </row>
+            </rows>
+        </table>
     </section>
     <section id="sample-response">
         <title>Sample Response</title>
@@ -104,9 +243,12 @@
         <json>
 <![CDATA[{
     "_links": {
-       "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d"},
-       "incomes": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"},
-       "expenses": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"}
+        "self": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d"},
+        "incomes": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/incomes"},
+        "expenses": { "href": "/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/expenses"},
+        "balancing-charges": {
+          "href":"/self-assessment/2234567890/2016-17/self-employments/5728b53c4800005100d2d32d/balancing-charges"
+        }
     }
 }]]>
         </json>

@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.services.sandbox
 import org.joda.time.LocalDate
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentAllowances, SelfEmployment, SelfEmploymentId}
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentAdjustments, SelfEmploymentAllowances, SelfEmployment, SelfEmploymentId}
 
 import scala.concurrent.Future
 
@@ -40,7 +40,15 @@ object SelfEmploymentService extends uk.gov.hmrc.selfassessmentapi.services.Self
           restrictedCapitalAllowance = Some(BigDecimal(400.00)),
           businessPremisesRenovationAllowance = Some(BigDecimal(600.00)),
           enhancedCapitalAllowance = Some(BigDecimal(50.00)),
-          allowancesOnSales = Some(BigDecimal(3399.99))))
+          allowancesOnSales = Some(BigDecimal(3399.99)))),
+        Some(SelfEmploymentAdjustments(
+          includedNonTaxableProfits = Some(BigDecimal(50.00)),
+          basisAdjustment = Some(BigDecimal(20.10)),
+          overlapReliefUsed = Some(BigDecimal(500.00)),
+          accountingAdjustment = Some(BigDecimal(10.50)),
+          averagingAdjustment = Some(BigDecimal(-400.99)),
+          lossBroughtForward = Some(BigDecimal(10000.00)),
+          outstandingBusinessIncome = Some(BigDecimal(50.00))))
       )))
 
   override def find(saUtr: SaUtr): Future[Seq[SelfEmployment]] =

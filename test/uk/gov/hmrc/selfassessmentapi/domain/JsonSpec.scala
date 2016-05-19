@@ -28,6 +28,14 @@ trait JsonSpec extends UnitSpec {
     read.asOpt shouldEqual Some(json)
   }
 
+  def assertValidationPasses[T](o: T)(implicit format: Format[T]): Unit = {
+    val json = Json.toJson(o)(format)
+    json.validate[T](format).fold(
+      invalid => fail(invalid.seq.mkString(", ")),
+      valid =>  valid shouldEqual o
+    )
+  }
+
   def assertValidationError[T](o: T, expectedErrors: Map[(String, ErrorCode), String], failureMessage: String)(implicit format: Format[T]): Unit = {
     val json = Json.toJson(o)(format)
     assertValidationError[T](json, expectedErrors, failureMessage)

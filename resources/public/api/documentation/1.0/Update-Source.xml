@@ -104,6 +104,15 @@
         "businessPremisesRenovationAllowance": 600.00,
         "enhancedCapitalAllowance": 50.00,
         "allowancesOnSales": 3399.99
+    },
+    "adjustments": {
+        "includedNonTaxableProfits": 50.00,
+        "basisAdjustment": 20.10,
+        "overlapReliefUsed": 500.00,
+        "accountingAdjustment": 10.50,
+        "averagingAdjustment": -400.99,
+        "lossBroughtForward": 10000.00,
+        "outstandingBusinessIncome": 50.00
     }
 }]]>
         </json>
@@ -234,6 +243,102 @@
                         <code>3399.99</code>
                     </cell>
                     <cell>Optional. The amount of allowances on sales being claimed as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>adjustments</code>
+                    </cell>
+                    <cell>
+                        <code>Object</code>
+                    </cell>
+                    <cell>
+                        <code>N/A</code>
+                    </cell>
+                    <cell>Optional</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>includedNonTaxableProfits</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>50.00</code>
+                    </cell>
+                    <cell>Optional. The amount of included non taxable profits as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>basisAdjustment</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>50.00</code>
+                    </cell>
+                    <cell>Optional. The basis adjustment as a number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>overlapReliefUsed</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>500.00</code>
+                    </cell>
+                    <cell>Optional. The amount of overlap relief used as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>accountingAdjustment</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>10.50</code>
+                    </cell>
+                    <cell>Optional. The accounting adjustment as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>averagingAdjustment</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>-400.99</code>
+                    </cell>
+                    <cell>Optional. The averaging adjustment as a number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>lossBroughtForward</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>10000.00</code>
+                    </cell>
+                    <cell>Optional. The amount of loss brought forward as a positive number with up to 2 decimal places</cell>
+                </row>
+                <row>
+                    <cell>
+                        <code>outstandingBusinessIncome</code>
+                    </cell>
+                    <cell>
+                        <code>Number</code>
+                    </cell>
+                    <cell>
+                        <code>50.00</code>
+                    </cell>
+                    <cell>Optional. The amount of outstanding business income as a positive number with up to 2 decimal places</cell>
                 </row>
             </rows>
         </table>

@@ -32,12 +32,12 @@ object SelfEmploymentAllowances {
   implicit val writes = Json.writes[SelfEmploymentAllowances]
 
   implicit val reads: Reads[SelfEmploymentAllowances] = (
-      (__ \ "annualInvestmentAllowance").readNullable[BigDecimal](amountValidator("annualInvestmentAllowance")) and
-      (__ \ "capitalAllowanceMainPool").readNullable[BigDecimal](amountValidator("capitalAllowanceMainPool")) and
-      (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](amountValidator("capitalAllowanceSpecialRatePool")) and
-      (__ \ "restrictedCapitalAllowance").readNullable[BigDecimal](amountValidator("restrictedCapitalAllowance")) and
-      (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](amountValidator("businessPremisesRenovationAllowance")) and
-      (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](amountValidator("enhancedCapitalAllowance")) and
-      (__ \ "allowancesOnSales").readNullable[BigDecimal](amountValidator("allowancesOnSales"))
+      (__ \ "annualInvestmentAllowance").readNullable[BigDecimal](positiveAmountValidator("annualInvestmentAllowance")) and
+      (__ \ "capitalAllowanceMainPool").readNullable[BigDecimal](positiveAmountValidator("capitalAllowanceMainPool")) and
+      (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](positiveAmountValidator("capitalAllowanceSpecialRatePool")) and
+      (__ \ "restrictedCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator("restrictedCapitalAllowance")) and
+      (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](positiveAmountValidator("businessPremisesRenovationAllowance")) and
+      (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator("enhancedCapitalAllowance")) and
+      (__ \ "allowancesOnSales").readNullable[BigDecimal](positiveAmountValidator("allowancesOnSales"))
     ) (SelfEmploymentAllowances.apply _)
 }

@@ -55,5 +55,18 @@ class SelfEmploymentSpec extends JsonSpec {
         "Expected valid self-employment")
     }
 
+    "reject invalid adjustments" in {
+
+      val se = SelfEmployment(
+        name = "self employment 1",
+        commencementDate = new LocalDate(2016, 4, 22),
+        adjustments = Some(SelfEmploymentAdjustments(lossBroughtForward = Some(BigDecimal(-10)))))
+
+      assertValidationError[SelfEmployment](
+        se,
+        Map(("/adjustments/lossBroughtForward", INVALID_MONETARY_AMOUNT) -> s"lossBroughtForward should be non-negative number up to 2 decimal values"),
+        "Expected valid self-employment")
+    }
+
   }
 }

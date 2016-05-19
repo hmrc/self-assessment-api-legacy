@@ -29,6 +29,8 @@ package object domain {
   type SelfEmploymentExpenseId = String
   type SelfEmploymentBalancingChargeId = String
   type GoodsAndServicesOwnUseId = String
-  def amountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be non-negative number up to 2 decimal values",
+  def positiveAmountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be non-negative number up to 2 decimal values",
     INVALID_MONETARY_AMOUNT))(x => x >= 0 && x.scale < 3)
+  def amountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be a number up to 2 decimal values",
+    INVALID_MONETARY_AMOUNT))(x => x.scale < 3)
 }

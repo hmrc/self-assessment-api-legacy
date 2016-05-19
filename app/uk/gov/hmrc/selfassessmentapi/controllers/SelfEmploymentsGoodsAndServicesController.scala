@@ -33,13 +33,13 @@ trait SelfEmploymentsGoodsAndServicesController extends BaseController with Link
   def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[GoodsAndServicesOwnUse] { _ =>
       val goodsAndServiceOwnUseId = BSONObjectID.generate.stringify
-      Future.successful(Created(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, SummaryType.`goods-and-services-own-use`, goodsAndServiceOwnUseId))))))
+      Future.successful(Created(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, GoodsAndServicesOwnUseSummaryType, goodsAndServiceOwnUseId))))))
     }
   }
 
   def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, goodsAndServiceOwnUseId: GoodsAndServicesOwnUseId) = Action.async { implicit request =>
     val goodsAndServiceOwnUse = GoodsAndServicesOwnUse(Some(goodsAndServiceOwnUseId), BigDecimal("1000"))
-    Future.successful(Ok(halResource(toJson(goodsAndServiceOwnUse), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, SummaryType.`goods-and-services-own-use`, goodsAndServiceOwnUseId))))))
+    Future.successful(Ok(halResource(toJson(goodsAndServiceOwnUse), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, GoodsAndServicesOwnUseSummaryType, goodsAndServiceOwnUseId))))))
   }
 
   def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
@@ -47,14 +47,14 @@ trait SelfEmploymentsGoodsAndServicesController extends BaseController with Link
                                     GoodsAndServicesOwnUse(Some("5678"), BigDecimal("2000")))
 
     val goodsAndServiceOwnUseJson = toJson(goodsAndServiceOwnUse.map(gs => halResource(obj(),
-      Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, SummaryType.`goods-and-services-own-use`, gs.id.get))))))
+      Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, GoodsAndServicesOwnUseSummaryType, gs.id.get))))))
 
-    Ok(halResourceList("goods-and-services-own-use", goodsAndServiceOwnUseJson, selfEmploymentSummaryTypeHref(saUtr, taxYear, seId, SummaryType.`goods-and-services-own-use`)))
+    Ok(halResourceList("goods-and-services-own-use", goodsAndServiceOwnUseJson, selfEmploymentSummaryTypeHref(saUtr, taxYear, seId, GoodsAndServicesOwnUseSummaryType)))
   }
 
   def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, goodsAndServiceOwnUseId: GoodsAndServicesOwnUseId) = Action.async(parse.json) { implicit request =>
     withJsonBody[GoodsAndServicesOwnUse] { _ =>
-      Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, SummaryType.`goods-and-services-own-use`, goodsAndServiceOwnUseId))))))
+      Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, GoodsAndServicesOwnUseSummaryType, goodsAndServiceOwnUseId))))))
     }
   }
 

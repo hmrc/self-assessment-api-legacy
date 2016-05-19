@@ -16,7 +16,28 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-object SummaryType extends Enumeration {
-  type SummaryType = Value
-  val incomes, expenses, `balancing-charges`, `goods-and-services-own-use` = Value
+sealed trait SummaryType {
+  val name: String
+}
+
+object SummaryTypes {
+  private val summaryTypes = Seq(IncomesSummaryType, ExpensesSummaryType, BalancingChargesSummaryType, GoodsAndServicesOwnUseSummaryType)
+  private val summaryTypesByName = summaryTypes.map(x => x.name -> x).toMap
+
+  def fromName(name: String): Option[SummaryType] = summaryTypesByName.get(name)
+}
+case object IncomesSummaryType extends SummaryType {
+  override val name = "incomes"
+}
+
+case object ExpensesSummaryType extends SummaryType {
+  override val name = "expenses"
+}
+
+case object BalancingChargesSummaryType extends SummaryType {
+  override val name = "balancing-charges"
+}
+
+case object GoodsAndServicesOwnUseSummaryType extends SummaryType {
+  override val name = "goods-and-services-own-use"
 }

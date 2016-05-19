@@ -38,7 +38,7 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
   def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[AnyContent] = Action.async { request =>
     selfEmploymentIncomeService.findBySelfEmploymentIncomeId(saUtr, seId, seIncomeId) map {
       case Some(selfEmploymentIncome) => Ok(halResource(toJson(selfEmploymentIncome),
-        Seq(HalLink("self",  selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, SummaryType.incomes, seIncomeId)))))
+        Seq(HalLink("self",  selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, IncomesSummaryType, seIncomeId)))))
       case None => NotFound(toJson(ErrorNotFound))
     }
   }
@@ -46,16 +46,16 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
   def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action.async { request =>
     selfEmploymentIncomeService.find(saUtr) map { selfEmploymentIncomes =>
       val selfEmploymentIncomesJson = toJson(selfEmploymentIncomes.map(income => halResource(obj(),
-        Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, SummaryType.incomes, income.id.get))))))
+        Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, IncomesSummaryType, income.id.get))))))
 
-      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentSummaryTypeHref(saUtr, taxYear, seId, SummaryType.incomes)))
+      Ok(halResourceList("incomes", selfEmploymentIncomesJson, selfEmploymentSummaryTypeHref(saUtr, taxYear, seId, IncomesSummaryType)))
     }
   }
 
   def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmploymentIncome] { selfEmploymentIncome =>
       selfEmploymentIncomeService.create(selfEmploymentIncome) map { seIncomeId =>
-        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, SummaryType.incomes, seIncomeId)))))
+        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, IncomesSummaryType, seIncomeId)))))
       }
     }
   }
@@ -63,7 +63,7 @@ trait SelfEmploymentsIncomeController extends BaseController with Links {
   def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, seIncomeId: SelfEmploymentIncomeId): Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[SelfEmploymentIncome] { selfEmploymentIncome =>
       selfEmploymentIncomeService.update(selfEmploymentIncome, saUtr, seId, seIncomeId) map { _ =>
-        Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, SummaryType.incomes, seIncomeId)))))
+        Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, IncomesSummaryType, seIncomeId)))))
       }
     }
   }

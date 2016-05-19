@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 class BindersSpec extends UnitSpec {
 
@@ -66,7 +66,7 @@ class BindersSpec extends UnitSpec {
 
     "return Right with a Summary Type instance for a balancing-charges" in {
       val result = Binders.summaryTypeBinder.bind("summaryType", "balancing-charges")
-      result shouldEqual Right(SummaryType.`balancing-charges`)
+      result shouldEqual Right(BalancingChargesSummaryType)
     }
 
     "return Left for an ivalid taxYear string" in {

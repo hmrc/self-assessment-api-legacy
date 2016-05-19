@@ -22,8 +22,9 @@ import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.referencechecker.SelfAssessmentReferenceChecker
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.SummaryType._
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.{SummaryTypes, SummaryType, TaxYear}
+
+import scala.util.{Failure, Success, Try}
 
 object Binders {
 
@@ -51,12 +52,12 @@ object Binders {
     }
   }
 
-  implicit def summaryTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SummaryType.Value] {
+  implicit def summaryTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SummaryType] {
 
-    def unbind(key: String, summaryType: SummaryType.Value): String = summaryType.toString
+    def unbind(key: String, summaryType: SummaryType): String = summaryType.name
 
     def bind(key: String, value: String): Either[String, SummaryType] = {
-      SummaryType.values.find(_.toString.toLowerCase == value.toLowerCase) match {
+      SummaryTypes.fromName(value.toLowerCase) match {
         case Some(v) => Right(v)
         case None => Left("ERROR_INVALID_SUMMARY_TYPE")
       }

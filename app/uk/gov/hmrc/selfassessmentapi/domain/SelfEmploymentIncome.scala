@@ -21,7 +21,7 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType.SelfEmploymentIncomeType
-
+import ErrorCode._
 
 object SelfEmploymentIncomeType extends Enumeration {
   type SelfEmploymentIncomeType = Value

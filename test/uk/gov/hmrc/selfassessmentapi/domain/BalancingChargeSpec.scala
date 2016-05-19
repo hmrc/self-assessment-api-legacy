@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.Json
+import ErrorCode._
 
 class BalancingChargeSpec extends JsonSpec {
 
@@ -32,7 +33,7 @@ class BalancingChargeSpec extends JsonSpec {
       val balancingCharge = BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.123))
       assertValidationError[BalancingCharge](
         balancingCharge,
-        Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+        Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
         "should fail with INVALID_MONETARY_AMOUNT error")
     }
 
@@ -40,7 +41,7 @@ class BalancingChargeSpec extends JsonSpec {
       val balancingCharge = BalancingCharge(None, BalancingChargeType.BPRA, BigDecimal(-100.12))
       assertValidationError[BalancingCharge](
         balancingCharge,
-        Map(ErrorCode("INVALID_MONETARY_AMOUNT") -> "amount should be non-negative number up to 2 decimal values"),
+        Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
         "should fail with INVALID_MONETARY_AMOUNT error")
     }
 
@@ -55,7 +56,7 @@ class BalancingChargeSpec extends JsonSpec {
 
       assertValidationError[BalancingCharge](
         json,
-        Map(ErrorCode("NO_VALUE_FOUND") -> "Self Employment Balancing charge type is invalid"),
+        Map(NO_VALUE_FOUND -> "Self Employment Balancing charge type is invalid"),
         "should fail with NO_VALUE_FOUND error")
     }
 

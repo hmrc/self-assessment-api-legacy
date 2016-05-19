@@ -6,18 +6,18 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfterEach, Matchers}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, UnitSpec}
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 
 import scala.util.matching.Regex
 
-trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneServerPerSuite with Eventually with ScalaFutures
-  with BeforeAndAfterEach with IntegrationPatience with MockitoSugar {
+trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
+  with BeforeAndAfterEach with IntegrationPatience with MockitoSugar with BeforeAndAfterAll {
 
   val WIREMOCK_PORT = 22222
   val stubHost = "localhost"
@@ -28,7 +28,6 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
   private val wireMockServer = new WireMockServer(wireMockConfig().port(WIREMOCK_PORT))
 
   override def beforeAll = {
-    mongoStart()
     wireMockServer.stop()
     wireMockServer.start()
     WireMock.configureFor(stubHost, WIREMOCK_PORT)
@@ -75,9 +74,10 @@ trait BaseFunctionalSpec extends MongoEmbeddedDatabase with Matchers with OneSer
 
     private def bodyHasPath(path: Seq[String], value: String): Assertions = {
       def op(js: JsValue, pathElement: String) = {
-        val pattern = """(.+)\((\d+)\)""".r
+        val pattern = """(.*)\((\d+)\)""".r
         pathElement match {
-          case pattern(arrayName, index) => (js \ arrayName)(index.toInt)
+          case pattern(arrayName, index) =>
+            if (arrayName.isEmpty) js(index.toInt) else (js \ arrayName)(index.toInt)
           case _ => js \ pathElement
         }
       }

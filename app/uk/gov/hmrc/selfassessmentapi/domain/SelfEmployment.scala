@@ -21,6 +21,7 @@ import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import ErrorCode._
 
 case class SelfEmployment(id: Option[SelfEmploymentId] = None,
                           name: String,
@@ -30,9 +31,9 @@ object SelfEmployment {
 
   implicit val selfEmploymentWrites = Json.writes[SelfEmployment]
 
-  def lengthValidator = Reads.of[String].filter(ValidationError("field length exceeded the max 100 chars", ErrorCode("MAX_FIELD_LENGTH_EXCEEDED")))(_.length <= 100)
+  def lengthValidator = Reads.of[String].filter(ValidationError("field length exceeded the max 100 chars", MAX_FIELD_LENGTH_EXCEEDED))(_.length <= 100)
 
-  def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past", ErrorCode("COMMENCEMENT_DATE_NOT_IN_THE_PAST")))(_.isBefore(LocalDate.now()))
+  def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past", COMMENCEMENT_DATE_NOT_IN_THE_PAST))(_.isBefore(LocalDate.now()))
 
   implicit val selfEmploymentReads: Reads[SelfEmployment] = (
     Reads.pure(None) and

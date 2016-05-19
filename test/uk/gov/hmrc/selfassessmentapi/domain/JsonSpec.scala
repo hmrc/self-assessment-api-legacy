@@ -18,6 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Format, JsValue, Json}
 import uk.gov.hmrc.play.test.UnitSpec
+import ErrorCode._
 
 class JsonSpec extends UnitSpec {
 

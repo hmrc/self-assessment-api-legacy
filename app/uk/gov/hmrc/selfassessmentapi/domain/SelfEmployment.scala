@@ -25,7 +25,8 @@ import ErrorCode._
 
 case class SelfEmployment(id: Option[SelfEmploymentId] = None,
                           name: String,
-                          commencementDate: LocalDate)
+                          commencementDate: LocalDate,
+                          allowances: Option[SelfEmploymentAllowances] = None)
 
 object SelfEmployment {
 
@@ -38,6 +39,7 @@ object SelfEmployment {
   implicit val selfEmploymentReads: Reads[SelfEmployment] = (
     Reads.pure(None) and
       (__ \ "name").read[String](lengthValidator) and
-      (__ \ "commencementDate").read[LocalDate](commencementDateValidator)
+      (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
+      (__ \ "allowances").readNullable[SelfEmploymentAllowances]
     ) (SelfEmployment.apply _)
 }

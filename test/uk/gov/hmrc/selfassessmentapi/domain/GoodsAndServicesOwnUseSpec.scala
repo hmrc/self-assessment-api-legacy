@@ -31,7 +31,7 @@ class GoodsAndServicesOwnUseSpec extends JsonSpec {
         val goodsAndServiceOwnUseId = GoodsAndServicesOwnUse(amount = testAmount)
         assertValidationError[GoodsAndServicesOwnUse](
           goodsAndServiceOwnUseId,
-          Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
+          Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
           "Expected invalid self-employment-goods-and-services-for-own-use")
       }
     }
@@ -40,7 +40,7 @@ class GoodsAndServicesOwnUseSpec extends JsonSpec {
       val seExpense = GoodsAndServicesOwnUse(amount = BigDecimal(-1000.12))
       assertValidationError[GoodsAndServicesOwnUse](
         seExpense,
-        Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
+        Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
         "Expected negative self-employment-goods-and-services-for-own-use")
     }
   }

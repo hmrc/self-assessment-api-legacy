@@ -40,6 +40,6 @@ object SelfEmploymentIncome {
   implicit val seIncomeReads: Reads[SelfEmploymentIncome] = (
     Reads.pure(None) and
       (__ \ "type").read[SelfEmploymentIncomeType] and
-      (__ \ "amount").read[BigDecimal](amountValidator)
+      (__ \ "amount").read[BigDecimal](amountValidator("amount"))
     ) (SelfEmploymentIncome.apply _)
 }

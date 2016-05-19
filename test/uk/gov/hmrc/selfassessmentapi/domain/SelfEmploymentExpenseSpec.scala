@@ -35,8 +35,8 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
         val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = testAmount)
         assertValidationError[SelfEmploymentExpense](
           seExpense,
-          Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
-          "Expected invalid self-employment expense")
+          Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
+          "Expected invalid self-employment-income")
       }
     }
 
@@ -45,9 +45,17 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
         val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = testAmount)
         assertValidationError[SelfEmploymentExpense](
           seExpense,
-          Map(INVALID_MONETARY_AMOUNT -> "amount should be non-negative number up to 2 decimal values"),
+          Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
           "Expected invalid self-employment-income")
       }
+    }
+
+    "reject negative amount" in {
+      val seExpense = SelfEmploymentExpense(`type` = CISPayments, amount = BigDecimal(-1000.12))
+      assertValidationError[SelfEmploymentExpense](
+        seExpense,
+        Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
+        "Expected negative self-employment expense")
     }
 
     "reject invalid Expense category" in {
@@ -61,8 +69,8 @@ class SelfEmploymentExpenseSpec extends JsonSpec {
 
       assertValidationError[SelfEmploymentExpense](
         json,
-        Map(NO_VALUE_FOUND -> "Self Employment Expense type is invalid"),
-        "Expected expense category not in { CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,  AdvertisingCosts, Internet, FinancialCharges, BadDept, ProfessionalFees, Deprecation, Other }")
+        Map(("/type", NO_VALUE_FOUND) -> "Self Employment Expense type is invalid"),
+        "Expected expense type not in { CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,  AdvertisingCosts, Internet, FinancialCharges, BadDept, ProfessionalFees, Deprecation, Other }")
     }
   }
 }

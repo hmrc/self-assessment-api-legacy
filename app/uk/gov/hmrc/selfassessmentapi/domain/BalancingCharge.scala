@@ -36,6 +36,6 @@ object BalancingCharge {
   implicit val balancingChangeReads: Reads[BalancingCharge] = (
     Reads.pure(None) and
       (__ \ "type").read[BalancingChargeType] and
-      (__ \ "amount").read[BigDecimal](amountValidator)
+      (__ \ "amount").read[BigDecimal](amountValidator("amount"))
     ) (BalancingCharge.apply _)
 }

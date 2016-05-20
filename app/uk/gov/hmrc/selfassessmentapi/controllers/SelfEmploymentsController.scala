@@ -46,7 +46,8 @@ trait SelfEmploymentsController extends BaseController with Links {
       HalLink("self", selfEmploymentHref(utr, taxYear, seId)),
       HalLink("incomes", selfEmploymentSummaryTypeHref(utr, taxYear, seId, IncomesSummaryType)),
       HalLink("expenses", selfEmploymentSummaryTypeHref(utr, taxYear, seId, ExpensesSummaryType)),
-      HalLink("balancing-charges", selfEmploymentSummaryTypeHref(utr, taxYear, seId, BalancingChargesSummaryType))
+      HalLink("balancing-charges", selfEmploymentSummaryTypeHref(utr, taxYear, seId, BalancingChargesSummaryType)),
+      HalLink("goods-and-services-own-use", selfEmploymentSummaryTypeHref(utr, taxYear, seId, GoodsAndServicesOwnUseSummaryType))
     )
   }
 

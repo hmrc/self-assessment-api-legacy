@@ -44,4 +44,7 @@ object SelfEmployment {
       (__ \ "allowances").readNullable[SelfEmploymentAllowances] and
       (__ \ "adjustments").readNullable[SelfEmploymentAdjustments]
     ) (SelfEmployment.apply _)
+
+
+  lazy val example: SelfEmployment = SelfEmployment(None, "name", LocalDate.now)
 }

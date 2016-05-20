@@ -41,4 +41,6 @@ object SelfEmploymentExpense {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (SelfEmploymentExpense.apply _)
 
+  lazy val example: SelfEmploymentExpense = SelfEmploymentExpense(None, SelfEmploymentExpenseType.CISPayments, BigDecimal(1000))
+
 }

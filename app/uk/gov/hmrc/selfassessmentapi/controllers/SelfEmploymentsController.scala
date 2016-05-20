@@ -23,7 +23,7 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, SelfEmployment, SelfEmploymentId}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,9 +44,9 @@ trait SelfEmploymentsController extends BaseController with Links {
   def selfEmploymentLinks(utr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Seq[HalLink] = {
     Seq(
       HalLink("self", selfEmploymentHref(utr, taxYear, seId)),
-      HalLink("incomes", selfEmploymentIncomesHref(utr, taxYear, seId)),
-      HalLink("expenses", selfEmploymentExpensesHref(utr, taxYear, seId)),
-      HalLink("balancing-charges", selfEmploymentBalancingChargesHref(utr, taxYear, seId))
+      HalLink("incomes", selfEmploymentSummaryTypeHref(utr, taxYear, seId, IncomesSummaryType)),
+      HalLink("expenses", selfEmploymentSummaryTypeHref(utr, taxYear, seId, ExpensesSummaryType)),
+      HalLink("balancing-charges", selfEmploymentSummaryTypeHref(utr, taxYear, seId, BalancingChargesSummaryType))
     )
   }
 

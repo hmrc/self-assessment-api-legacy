@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 class BindersSpec extends UnitSpec {
 
@@ -57,6 +57,36 @@ class BindersSpec extends UnitSpec {
 
       val result = Binders.taxYearBinder.bind("taxYear", taxYear)
       result shouldEqual Left("ERROR_TAX_YEAR_INVALID")
+    }
+  }
+
+  "summaryType.bind" should {
+
+    implicit val pathBindable = PathBindable.bindableString
+
+    "return Right with a Summary Type instance for a balancing-charges" in {
+      val result = Binders.summaryTypeBinder.bind("summaryType", "balancing-charges")
+      result shouldEqual Right(BalancingChargesSummaryType)
+    }
+
+    "return Left for an invalid summaryType string" in {
+      val result = Binders.summaryTypeBinder.bind("summaryType", "invalid")
+      result shouldEqual Left("ERROR_INVALID_SUMMARY_TYPE")
+    }
+  }
+
+  "sourceType.bind" should {
+
+    implicit val pathBindable = PathBindable.bindableString
+
+    "return Right with a Source Type instance for a self-employments" in {
+      val result = Binders.sourceTypeBinder.bind("summaryType", "self-employments")
+      result shouldEqual Right(SelfEmploymentsSourceType)
+    }
+
+    "return Left for an invalid sourceType string" in {
+      val result = Binders.sourceTypeBinder.bind("summaryType", "invalid")
+      result shouldEqual Left("ERROR_INVALID_SOURCE_TYPE")
     }
   }
 

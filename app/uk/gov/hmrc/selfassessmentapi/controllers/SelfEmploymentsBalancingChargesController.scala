@@ -34,13 +34,14 @@ trait SelfEmploymentsBalancingChargesController extends BaseController with Link
   def create(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId) = Action.async(parse.json) { implicit request =>
     withJsonBody[BalancingCharge] { _ =>
       val balancingChargeId = BSONObjectID.generate.stringify
-      Future.successful(Created(halResource(obj(), Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId, balancingChargeId))))))
+      Future.successful(Created(halResource(obj(),
+        Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, BalancingChargesSummaryType, balancingChargeId))))))
     }
   }
 
   def findById(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, balancingChargeId: SelfEmploymentBalancingChargeId) = Action.async { implicit request =>
     val balancingCharge = BalancingCharge(Some(balancingChargeId), BalancingChargeType.Other, BigDecimal("1000.45"))
-    Future.successful(Ok(halResource(toJson(balancingCharge), Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId, balancingChargeId))))))
+    Future.successful(Ok(halResource(toJson(balancingCharge), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, BalancingChargesSummaryType, balancingChargeId))))))
   }
 
   def find(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId): Action[AnyContent] = Action { request =>
@@ -48,9 +49,9 @@ trait SelfEmploymentsBalancingChargesController extends BaseController with Link
       BalancingCharge(Some("5678"), BalancingChargeType.BPRA, BigDecimal("1000.45")))
 
     val balancingChargesJson = toJson(balancingCharges.map(balancingCharge => halResource(obj(),
-      Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId,  balancingCharge.id.get))))))
+      Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, BalancingChargesSummaryType, balancingCharge.id.get))))))
 
-    Ok(halResourceList("balancing-charges", balancingChargesJson, selfEmploymentBalancingChargesHref(saUtr, taxYear, seId)))
+    Ok(halResourceList("balancing-charges", balancingChargesJson, selfEmploymentSummaryTypeHref(saUtr, taxYear, seId, BalancingChargesSummaryType)))
   }
 
 
@@ -60,7 +61,7 @@ trait SelfEmploymentsBalancingChargesController extends BaseController with Link
 
   def update(saUtr: SaUtr, taxYear: TaxYear, seId: SelfEmploymentId, balancingChargeId: SelfEmploymentBalancingChargeId) = Action.async(parse.json) { implicit request =>
     withJsonBody[BalancingCharge] { _ =>
-      Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentBalancingChargeHref(saUtr, taxYear, seId, balancingChargeId))))))
+      Future.successful(Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, seId, BalancingChargesSummaryType, balancingChargeId))))))
     }
   }
 }

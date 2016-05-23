@@ -69,10 +69,23 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     }
 
     def bodyHasPath(path: String, value: String) : Assertions = {
-      bodyHasPath(path.filter(!_.isWhitespace).split('\\').toSeq.filter(!_.isEmpty), value)
+      extractPathElement(path) shouldEqual Some(value)
+      this
     }
 
-    private def bodyHasPath(path: Seq[String], value: String): Assertions = {
+    def bodyHasPath(path: String, valuePattern: Regex) = {
+      extractPathElement(path) match {
+        case Some(x) => valuePattern findFirstIn x match {
+          case Some(v) =>
+          case None => fail(s"$x did not match pattern")
+        }
+        case unknown => fail(s"No value found for $path")
+      }
+      this
+    }
+
+    private def extractPathElement(path: String): Option[String] = {
+      val pathSeq = path.filter(!_.isWhitespace).split('\\').toSeq.filter(!_.isEmpty)
       def op(js: JsValue, pathElement: String) = {
         val pattern = """(.*)\((\d+)\)""".r
         pathElement match {
@@ -81,9 +94,9 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
           case _ => js \ pathElement
         }
       }
-      path.foldLeft(response.json)(op).asOpt[String] shouldEqual Some(value)
-      this
+      pathSeq.foldLeft(response.json)(op).asOpt[String]
     }
+
 
     private def getLinkFromBody(rel: String): Option[String] = {
       val links = response.json \ "_links"

@@ -58,8 +58,8 @@ class SelfEmploymentsGoodsAndServicesOwnUseControllerSpec extends BaseFunctional
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use")
-        .bodyHasPath("""_embedded \ goods-and-services-own-use(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use/1234")
-        .bodyHasPath("""_embedded \ goods-and-services-own-use(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use/5678")
+        .bodyHasPath("""_embedded \ goods-and-services-own-use(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use/.+".r)
+        .bodyHasPath("""_embedded \ goods-and-services-own-use(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/goods-and-services-own-use/.+".r)
     }
   }
 

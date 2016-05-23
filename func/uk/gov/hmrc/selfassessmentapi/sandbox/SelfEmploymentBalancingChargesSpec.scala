@@ -42,7 +42,7 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/$balancingChargeId")
         .body(_ \ "id").is(s"$balancingChargeId")
         .body(_ \ "type").is("Other")
-        .body(_ \ "amount").is(1000.45)
+        .body(_ \ "amount").is(100.0)
     }
 
     "be deleted for valid balancing charge id" in {
@@ -80,9 +80,9 @@ class SelfEmploymentBalancingChargesSpec extends BaseFunctionalSpec {
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges")
         .bodyHasPath("""_embedded \ balancing-charges(0) \ _links \ self \ href""",
-          s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/1234")
+          s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/.+".r)
         .bodyHasPath("""_embedded \ balancing-charges(1) \ _links \ self \ href""",
-          s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/5678")
+          s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/balancing-charges/.+".r)
     }
 
   }

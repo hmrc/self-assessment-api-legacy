@@ -53,8 +53,8 @@ class SelfEmploymentsIncomeControllerSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes")
-        .bodyHasPath("""_embedded \ incomes(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/1234")
-        .bodyHasPath("""_embedded \ incomes(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/5678")
+        .bodyHasPath("""_embedded \ incomes(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/.+".r)
+        .bodyHasPath("""_embedded \ incomes(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/incomes/.+".r)
     }
   }
 

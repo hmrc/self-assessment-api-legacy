@@ -66,9 +66,9 @@ class SelfEmploymentsExpenseControllerSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses")
-        .bodyHasPath("""_embedded \ expenses(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/1234")
-        .bodyHasPath("""_embedded \ expenses(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/5678")
-        .bodyHasPath("""_embedded \ expenses(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/4321")
+        .bodyHasPath("""_embedded \ expenses(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/.+".r)
+        .bodyHasPath("""_embedded \ expenses(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/.+".r)
+        .bodyHasPath("""_embedded \ expenses(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/$selfEmploymentId/expenses/.+".r)
     }
   }
 

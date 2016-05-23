@@ -16,15 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import java.net.URLDecoder
-
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.referencechecker.SelfAssessmentReferenceChecker
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain._
-
-import scala.util.{Failure, Success, Try}
 
 object Binders {
 

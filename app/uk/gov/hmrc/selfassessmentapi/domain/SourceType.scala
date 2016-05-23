@@ -37,3 +37,9 @@ case object SelfEmploymentsSourceType extends SourceType {
   override val summaryTypes = Seq(IncomesSummaryType, ExpensesSummaryType, GoodsAndServicesOwnUseSummaryType, BalancingChargesSummaryType)
 }
 
+case object FurnishedHolidayLettingsSourceType extends SourceType {
+  override val name = "furnished-holiday-lettings"
+  override lazy val example: JsValue = toJson(FurnishedHolidayLettings.example)
+  override val summaryTypes = Seq()
+}
+

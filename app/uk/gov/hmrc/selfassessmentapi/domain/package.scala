@@ -24,12 +24,14 @@ import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 package object domain {
 
   type SelfEmploymentId = String
+  type FurnishedHolidayLettingsId = String
   type SourceId = String
   type LiabilityId = String
   type SelfEmploymentIncomeId = String
   type SelfEmploymentExpenseId = String
   type SelfEmploymentBalancingChargeId = String
   type GoodsAndServicesOwnUseId = String
+  def lengthValidator = Reads.of[String].filter(ValidationError("field length exceeded the max 100 chars", MAX_FIELD_LENGTH_EXCEEDED))(_.length <= 100)
   def positiveAmountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be non-negative number up to 2 decimal values",
     INVALID_MONETARY_AMOUNT))(x => x >= 0 && x.scale < 3)
   def amountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be a number up to 2 decimal values",

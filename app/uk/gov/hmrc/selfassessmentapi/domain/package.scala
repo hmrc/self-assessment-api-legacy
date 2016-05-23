@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import play.api.data.validation.ValidationError
-import play.api.libs.json.Reads
+import play.api.libs.json.{JsPath, Reads}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 
 
@@ -25,11 +25,14 @@ package object domain {
 
   type SelfEmploymentId = String
   type SourceId = String
+  type SummaryId = String
   type LiabilityId = String
   type SelfEmploymentIncomeId = String
   type SelfEmploymentExpenseId = String
   type SelfEmploymentBalancingChargeId = String
   type GoodsAndServicesOwnUseId = String
+  type ValidationErrors = Seq[(JsPath, Seq[ValidationError])]
+
   def positiveAmountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be non-negative number up to 2 decimal values",
     INVALID_MONETARY_AMOUNT))(x => x >= 0 && x.scale < 3)
   def amountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be a number up to 2 decimal values",

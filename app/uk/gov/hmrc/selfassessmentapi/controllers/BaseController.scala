@@ -61,7 +61,7 @@ trait BaseController
     }
 
 
-  private def failedValidationJson(errors: Seq[(JsPath, Seq[ValidationError])]) = {
+  def failedValidationJson(errors: Seq[(JsPath, Seq[ValidationError])]) = {
     JsArray(
       for {
         (path, errSeq) <- errors

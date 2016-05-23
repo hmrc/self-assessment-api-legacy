@@ -26,7 +26,7 @@ sealed trait SourceType {
 }
 
 object SourceTypes {
-  val types = Seq(SelfEmploymentsSourceType)
+  val types = Seq(SelfEmploymentsSourceType, FurnishedHolidayLettingsSourceType)
   private val typesByName = types.map(x => x.name -> x).toMap
 
   def fromName(name: String): Option[SourceType] = typesByName.get(name)

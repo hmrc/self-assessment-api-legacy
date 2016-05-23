@@ -28,7 +28,7 @@ object SelfEmploymentExpenseType extends Enumeration {
   AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other = Value
 }
 
-case class SelfEmploymentExpense(id: Option[SelfEmploymentExpenseId] = None,
+case class SelfEmploymentExpense(id: Option[SummaryId] = None,
                                  `type`: SelfEmploymentExpenseType, amount: BigDecimal)
 
 object SelfEmploymentExpense {

@@ -33,6 +33,7 @@ object SourceController extends BaseController with Links {
 
   def handler(sourceType: SourceType): SourceHandler[_] = sourceType match {
     case SelfEmploymentsSourceType => SelfEmploymentSourceHandler
+    case FurnishedHolidayLettingsSourceType => FurnishedHolidayLettingsSourceHandler
     case _ => throw new IllegalArgumentException(s"""Unsupported sourceType "${sourceType.name}""")
   }
 

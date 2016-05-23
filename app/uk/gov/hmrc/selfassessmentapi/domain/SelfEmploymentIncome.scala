@@ -20,7 +20,6 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
-import ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType.SelfEmploymentIncomeType
 
 object SelfEmploymentIncomeType extends Enumeration {
@@ -29,7 +28,7 @@ object SelfEmploymentIncomeType extends Enumeration {
 }
 
 
-case class SelfEmploymentIncome(id: Option[SelfEmploymentIncomeId] = None,
+case class SelfEmploymentIncome(id: Option[SummaryId] = None,
                                 `type`: SelfEmploymentIncomeType,
                                 amount: BigDecimal)
 

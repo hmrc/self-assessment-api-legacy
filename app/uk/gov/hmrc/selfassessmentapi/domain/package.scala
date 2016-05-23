@@ -28,10 +28,6 @@ package object domain {
   type SourceId = String
   type SummaryId = String
   type LiabilityId = String
-  type SelfEmploymentIncomeId = String
-  type SelfEmploymentExpenseId = String
-  type SelfEmploymentBalancingChargeId = String
-  type GoodsAndServicesOwnUseId = String
   type ValidationErrors = Seq[(JsPath, Seq[ValidationError])]
   def lengthValidator = Reads.of[String].filter(ValidationError("field length exceeded the max 100 chars", MAX_FIELD_LENGTH_EXCEEDED))(_.length <= 100)
   def positiveAmountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be non-negative number up to 2 decimal values",

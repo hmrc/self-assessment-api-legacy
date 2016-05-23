@@ -64,9 +64,9 @@ class SelfEmploymentsControllerSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/self-employments")
-        .bodyHasPath("""_embedded \ selfEmployments(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/1234")
-        .bodyHasPath("""_embedded \ selfEmployments(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/5678")
-        .bodyHasPath("""_embedded \ selfEmployments(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/9101")
+        .bodyHasPath("""_embedded \ self-employments(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/.+".r)
+        .bodyHasPath("""_embedded \ self-employments(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/.+".r)
+        .bodyHasPath("""_embedded \ self-employments(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/self-employments/.+".r)
     }
 
     "return 200 and a valid response when an existing self employment is modified" in {

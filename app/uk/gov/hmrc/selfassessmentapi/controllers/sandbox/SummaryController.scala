@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-import play.api.libs.json.{JsValue, Reads}
 import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -27,9 +26,7 @@ import play.api.hal.HalLink
 import play.api.libs.json.Json._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class SummaryTypeConfig(reads: Reads[_ <: Any], example: JsValue)
-
-object SandboxSummaryController extends BaseController with Links {
+object SummaryController extends BaseController with Links {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
@@ -50,14 +47,14 @@ object SandboxSummaryController extends BaseController with Links {
           case _ => BadRequest
         }
       case Right(id) =>
-        Created(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, sourceId, summaryType, id)))))
+        Created(halResource(obj(), Seq(HalLink("self",  sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id)))))
     }
   }
 
   def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = Action.async { implicit request =>
     handler(sourceType, summaryType).findById(summaryId) map {
       case Some(summary) =>
-        Ok(halResource(toJson(summary), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, sourceId, summaryType, summaryId)))))
+        Ok(halResource(toJson(summary), Seq(HalLink("self",  sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)))))
       case None =>
         NotFound
     }
@@ -72,7 +69,7 @@ object SandboxSummaryController extends BaseController with Links {
           case _ => BadRequest
         }
       case Right(id) =>
-        Ok(halResource(obj(), Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, sourceId, summaryType, id)))))
+        Ok(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id)))))
     }
   }
 
@@ -93,7 +90,7 @@ object SandboxSummaryController extends BaseController with Links {
       val json = toJson(summaryIds.map(id => halResource(obj(),
         Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, sourceId, summaryType, id))))))
 
-      Ok(halResourceList(svc.listName, json, selfEmploymentSummaryTypeHref(saUtr, taxYear, sourceId, summaryType)))
+      Ok(halResourceList(svc.listName, json, sourceTypeAndSummaryTypeHref(saUtr, taxYear, sourceType, sourceId, summaryType)))
     }
   }
 

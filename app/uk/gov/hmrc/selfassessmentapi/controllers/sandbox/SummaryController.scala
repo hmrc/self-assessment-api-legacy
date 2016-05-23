@@ -88,7 +88,7 @@ object SummaryController extends BaseController with Links {
     val svc = handler(sourceType, summaryType)
       svc.find map { summaryIds =>
       val json = toJson(summaryIds.map(id => halResource(obj(),
-        Seq(HalLink("self", selfEmploymentSummaryTypeIdHref(saUtr, taxYear, sourceId, summaryType, id))))))
+        Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id))))))
 
       Ok(halResourceList(svc.listName, json, sourceTypeAndSummaryTypeHref(saUtr, taxYear, sourceType, sourceId, summaryType)))
     }

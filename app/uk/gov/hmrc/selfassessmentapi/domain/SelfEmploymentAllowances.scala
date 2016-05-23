@@ -29,6 +29,16 @@ case class SelfEmploymentAllowances(annualInvestmentAllowance: Option[BigDecimal
                                     allowancesOnSales: Option[BigDecimal] = None)
 
 object SelfEmploymentAllowances {
+
+  lazy val example = SelfEmploymentAllowances(
+    annualInvestmentAllowance = Some(BigDecimal(1000.00)),
+    capitalAllowanceMainPool = Some(BigDecimal(150.00)),
+    capitalAllowanceSpecialRatePool = Some(BigDecimal(5000.50)),
+    restrictedCapitalAllowance = Some(BigDecimal(400.00)),
+    businessPremisesRenovationAllowance = Some(BigDecimal(600.00)),
+    enhancedCapitalAllowance = Some(BigDecimal(50.00)),
+    allowancesOnSales = Some(BigDecimal(3399.99)))
+
   implicit val writes = Json.writes[SelfEmploymentAllowances]
 
   implicit val reads: Reads[SelfEmploymentAllowances] = (

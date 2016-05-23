@@ -40,4 +40,13 @@ object SelfEmploymentAdjustments {
       (__ \ "lossBroughtForward").readNullable[BigDecimal](positiveAmountValidator("lossBroughtForward")) and
       (__ \ "outstandingBusinessIncome").readNullable[BigDecimal](positiveAmountValidator("outstandingBusinessIncome"))
     ) (SelfEmploymentAdjustments.apply _)
+
+  lazy val example = SelfEmploymentAdjustments(
+    includedNonTaxableProfits = Some(BigDecimal(50.00)),
+    basisAdjustment = Some(BigDecimal(20.10)),
+    overlapReliefUsed = Some(BigDecimal(500.00)),
+    accountingAdjustment = Some(BigDecimal(10.50)),
+    averagingAdjustment = Some(BigDecimal(-400.99)),
+    lossBroughtForward = Some(BigDecimal(10000.00)),
+    outstandingBusinessIncome = Some(BigDecimal(50.00)))
 }

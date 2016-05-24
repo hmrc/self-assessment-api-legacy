@@ -1,5 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi.definition
 
+import play.utils.UriEncoding
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.{APIStatus, SelfAssessmentApiDefinition}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -21,7 +22,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
       val definition = new SelfAssessmentApiDefinition("self-assessment", APIStatus.PROTOTYPED).definition
       definition.api.versions foreach { version =>
         version.endpoints foreach { endpoint =>
-          val nameInUrl = endpoint.endpointName.replaceAll(" ", "-")
+          val nameInUrl = UriEncoding.encodePathSegment(endpoint.endpointName, "UTF-8")
           given()
             .when()
             .get(s"/api/documentation/${version.version}/$nameInUrl").withoutAcceptHeader()

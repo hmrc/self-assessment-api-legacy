@@ -1,0 +1,20 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain._
+
+@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summaryId: SummaryId)
+<endpoint>
+    <name>Retrieve Summaries</name>
+    <description>This endpoint rerieves all summaries for the specified source and summary type</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource><![CDATA[GET /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}]]></resource>
+    </section>
+    @partials.pathParams(saUtr, taxYear, sourceId, None)
+    @partials.requestHeaders(false)
+    @partials.authorisation(false)
+    @SourceTypes.types.map { sourceType =>
+        @sourceType.summaryTypes.map { summaryType =>
+            @partials.summaryListResponse(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)
+        }
+    }
+</endpoint>

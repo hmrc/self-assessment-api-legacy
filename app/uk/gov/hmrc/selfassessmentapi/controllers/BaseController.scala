@@ -26,28 +26,12 @@ import uk.gov.hmrc.selfassessmentapi.domain.ValidationErrors
 import scala.util.{Success, Try}
 
 trait BaseController
-  extends uk.gov.hmrc.play.microservice.controller.BaseController {
+  extends uk.gov.hmrc.play.microservice.controller.BaseController with HalSupport {
 
   val context: String
 
   def hc(request: Request[Any]): HeaderCarrier =
     HeaderCarrier.fromHeadersAndSession(request.headers, None)
-
-  def halResource(jsValue: JsValue, links: Seq[HalLink]): HalResource = {
-    val halState = Hal.state(jsValue)
-    links.foldLeft(halState)((res, link) => res ++ link)
-  }
-
-  def halResourceList(name: String, value: JsValue, self: String) = {
-    halResource(
-      JsObject(
-        Seq(
-          "_embedded" -> JsObject(
-            Seq(name -> value))
-        )
-      ),
-      Seq(HalLink("self", self)))
-  }
 
   def failedValidationJson(errors: ValidationErrors) = {
     JsArray(

@@ -1,0 +1,112 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain._
+
+@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summaryId: Option[SummaryId])
+<section id="path-parameters">
+    <title>Path Parameters</title>
+    <table>
+        <headings>
+            <cell>Name</cell>
+            <cell>Type</cell>
+            <cell>Example</cell>
+            <cell>Description</cell>
+        </headings>
+        <rows>
+            <row>
+                <cell>
+                    <code>utr</code>
+                </cell>
+                <cell>
+                    <code>String</code>
+                </cell>
+                <cell>
+                    <code>@saUtr</code>
+                </cell>
+                <cell>The Self Assessment UTR of the customer</cell>
+            </row>
+            <row>
+                <cell>
+                    <code>taxYear</code>
+                </cell>
+                <cell>
+                    <code>String</code>
+                </cell>
+                <cell>
+                    <code>@taxYear</code>
+                </cell>
+                <cell>The tax year the data applies to</cell>
+            </row>
+            <row>
+                <cell>
+                    <code>source</code>
+                </cell>
+                <cell>
+                    <code>String</code>
+                </cell>
+                <cell>
+                    <code>self-employments</code>
+                </cell>
+                <cell>The type of source</cell>
+            </row>
+            <row>
+                <cell>
+                    <code>sourceId</code>
+                </cell>
+                <cell>
+                    <code>String</code>
+                </cell>
+                <cell>
+                    <code>@sourceId</code>
+                </cell>
+                <cell>The source id</cell>
+            </row>
+            <row>
+                <cell>
+                    <code>summary</code>
+                </cell>
+                <cell>
+                    <code>String</code>
+                </cell>
+                <cell>
+                    <code>incomes</code>
+                </cell>
+                <cell>The type of summary</cell>
+            </row>
+            @summaryId.map { id =>
+                <row>
+                    <cell>
+                        <code>summaryId</code>
+                    </cell>
+                    <cell>
+                        <code>String</code>
+                    </cell>
+                    <cell>
+                        <code>@id</code>
+                    </cell>
+                    <cell>The summary id</cell>
+                </row>
+            }
+        </rows>
+    </table>
+
+    Summary types are specific to the sources:
+
+    <table>
+        <headings>
+            <cell>Source</cell>
+            <cell>Summary types</cell>
+        </headings>
+        <rows>
+          @SourceTypes.types.map { sourceType =>
+            <row>
+                <cell>
+                    <code>@(sourceType.name)</code>
+                </cell>
+                <cell>
+                    <code>@sourceType.summaryTypes.map(_.name).mkString(", ")</code>
+                </cell>
+            </row>
+            }
+        </rows>
+    </table>
+</section>

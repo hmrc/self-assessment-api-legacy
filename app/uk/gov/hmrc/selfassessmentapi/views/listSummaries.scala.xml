@@ -3,18 +3,18 @@
 
 @(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summaryId: SummaryId)
 <endpoint>
-    <name>Retrieve Summary</name>
-    <description>This endpoint rerieves a summary for the specified source</description>
+    <name>Retrieve Summaries</name>
+    <description>This endpoint rerieves all summaries for the specified source and summary type</description>
     <section id="resource">
         <title>Resource</title>
-        <resource><![CDATA[GET /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}]]></resource>
+        <resource><![CDATA[GET /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}]]></resource>
     </section>
-    @partials.pathParams(saUtr, taxYear, sourceId, Some(summaryId))
+    @partials.pathParams(saUtr, taxYear, sourceId, None)
     @partials.requestHeaders(false)
     @partials.authorisation(false)
     @SourceTypes.types.map { sourceType =>
         @sourceType.summaryTypes.map { summaryType =>
-            @partials.summaryReadResponse(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)
+            @partials.summaryListResponse(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)
         }
     }
 </endpoint>

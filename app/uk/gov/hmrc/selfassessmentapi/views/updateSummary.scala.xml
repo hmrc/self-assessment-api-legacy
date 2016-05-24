@@ -13,7 +13,7 @@
     </section>
     @partials.pathParams(saUtr, taxYear, sourceId, Some(summaryId))
     @partials.requestHeaders(true)
-    @partials.authorisation()
+    @partials.authorisation(true)
     @SourceTypes.types.map { sourceType =>
         @sourceType.summaryTypes.map { summaryType =>
             @partials.summaryWriteRequest("PUT", saUtr, taxYear, sourceType, sourceId, summaryType, Some(summaryId))

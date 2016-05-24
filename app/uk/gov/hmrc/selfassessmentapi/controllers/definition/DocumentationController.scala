@@ -35,8 +35,10 @@ trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationC
 
   lazy val supportedDocs: Map[String, Xml] = Map(
     "Create Summary" -> SummaryDocumentation.createSummary,
+    "Retrieve Summary" -> SummaryDocumentation.readSummary,
     "Update Summary" -> SummaryDocumentation.updateSummary,
-    "Retrieve Summary" -> SummaryDocumentation.readSummary
+    "Delete Summary" -> SummaryDocumentation.deleteSummary,
+    "Retrieve Summaries" -> SummaryDocumentation.listSummaries
   )
 
   override def documentation(version: String, endpointName: String): Action[AnyContent] = {
@@ -69,5 +71,7 @@ object SummaryDocumentation extends BaseController with Links {
   val createSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceId, summaryId)
   val updateSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.updateSummary(utr, taxYear, sourceId, summaryId)
   val readSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceId, summaryId)
+  val deleteSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.deleteSummary(utr, taxYear, sourceId, summaryId)
+  val listSummaries: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.listSummaries(utr, taxYear, sourceId, summaryId)
 
 }

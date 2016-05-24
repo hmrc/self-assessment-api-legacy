@@ -5,7 +5,7 @@
 @(method: String, saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: Option[SummaryId])
 
 <section id="@(s"sample-request-${sourceType.name}-${summaryType.name}")">
-    <title>@(summaryType.title) Request</title>
+    <title>@(summaryType.title) request</title>
     <resource>@method /self-assessment/@saUtr/@taxYear/@(sourceType.name)/@(sourceId)/@(summaryType.name)@summaryId.map(x => s"/$x").getOrElse("")</resource>
     <description>@{summaryType.description(if(method=="POST") "Creates" else "Updates")}</description>
     <json>@prettyPrint(summaryType.example)</json>

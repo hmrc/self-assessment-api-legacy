@@ -22,6 +22,7 @@ import play.api.libs.json.Json._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryController._
 import uk.gov.hmrc.selfassessmentapi.controllers.{HalSupport, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
 
@@ -36,6 +37,13 @@ object Helpers extends HalSupport with Links {
 
   def sourceTypeAndSummaryTypeIdResponse(jsValue: JsValue, utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
     val hal = halResource(jsValue, Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType, summaryId))))
+    PCData(Json.prettyPrint(hal.json))
+  }
+
+  def sourceTypeAndSummaryTypeIdListResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
+    val json = toJson(Seq(summaryId, summaryId, summaryId).map(id => halResource(obj(),
+      Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType, id))))))
+    val hal = halResourceList(summaryType.name, json, sourceTypeAndSummaryTypeHref(utr, taxYear, sourceType, sourceId, summaryType))
     PCData(Json.prettyPrint(hal.json))
   }
 

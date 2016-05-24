@@ -1,7 +1,8 @@
+@(write: Boolean)
 <section id="authorisation">
     <title>Authorisation</title>
     <authorisation>
         <type>USER</type>
-        <scope>write:self-assessment</scope>
+        <scope>@if(write){write:self-assessment} else {read:self-assessment}</scope>
     </authorisation>
 </section>

@@ -9,7 +9,7 @@
         <title>Resource</title>
         <resource><![CDATA[DELETE /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}]]></resource>
     </section>
-    @partials.pathParams(saUtr, taxYear, sourceId, Some(summaryId))
+    @partials.pathParams(saUtr, taxYear, Some(sourceId), Some(IncomesSummaryType), Some(summaryId))
     @partials.requestHeaders(false)
     @partials.authorisation(true)
     <section id="sample-response">

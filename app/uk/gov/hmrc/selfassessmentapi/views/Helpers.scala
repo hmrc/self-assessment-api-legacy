@@ -40,6 +40,11 @@ object Helpers extends HalSupport with Links {
     PCData(Json.prettyPrint(hal.json))
   }
 
+  def sourceIdResponse(utr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = {
+    val hal = halResource(obj(), Seq(HalLink("self", sourceIdHref(utr, taxYear, SelfEmploymentsSourceType, sourceId))))
+    PCData(Json.prettyPrint(hal.json))
+  }
+
   def sourceTypeAndSummaryTypeIdListResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
     val json = toJson(Seq(summaryId, summaryId, summaryId).map(id => halResource(obj(),
       Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType, id))))))

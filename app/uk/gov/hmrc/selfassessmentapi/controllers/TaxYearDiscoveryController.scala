@@ -27,12 +27,14 @@ import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, TaxYear}
 import scala.concurrent.Future
 
 trait TaxYearDiscoveryController
-    extends BaseController with HeaderValidator with Links {
+  extends BaseController with HeaderValidator with Links {
 
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-      val links = Seq(HalLink("self", discoverTaxYearHref(utr, taxYear)),
-                      HalLink("self-employments", selfEmploymentsHref(utr, taxYear)),
-                      HalLink("liabilities", liabilitiesHref(utr, taxYear)))
-     Future.successful(Ok(halResource(JsObject(Nil), links)))
-    }
+    val links = Seq(
+      HalLink("self", discoverTaxYearHref(utr, taxYear)),
+      HalLink("self-employments", selfEmploymentsHref(utr, taxYear)),
+      HalLink("furnished-holiday-lettings", furnishedHolidayLettingsHref(utr, taxYear)),
+      HalLink("liabilities", liabilitiesHref(utr, taxYear)))
+    Future.successful(Ok(halResource(JsObject(Nil), links)))
+  }
 }

@@ -31,10 +31,11 @@ object SummaryController extends BaseController with Links {
   override lazy val context: String = AppContext.apiGatewayContext
 
   def handler(sourceType: SourceType, summaryType: SummaryType): SummaryHandler[_] = (sourceType, summaryType) match {
-    case (SelfEmploymentsSourceType, IncomesSummaryType) => IncomesSummaryHandler
-    case (SelfEmploymentsSourceType, ExpensesSummaryType) => ExpensesSummaryHandler
-    case (SelfEmploymentsSourceType, BalancingChargesSummaryType) => BalancingChargesSummaryHandler
-    case (SelfEmploymentsSourceType, GoodsAndServicesOwnUseSummaryType) => GoodsAndServiceOwnUseSummaryHandler
+    case (SelfEmploymentsSourceType, SummaryTypes.SelfEmploymentIncomes) => IncomesSummaryHandler
+    case (SelfEmploymentsSourceType, SummaryTypes.Expenses) => ExpensesSummaryHandler
+    case (SelfEmploymentsSourceType, SummaryTypes.BalancingCharges) => BalancingChargesSummaryHandler
+    case (SelfEmploymentsSourceType, SummaryTypes.GoodsAndServicesOwnUse) => GoodsAndServiceOwnUseSummaryHandler
+    case (FurnishedHolidayLettingsSourceType, SummaryTypes.FurnishedHolidayLettingsIncome) => FurnishedHolidayLettingsIncomeSummaryHandler
     case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "${summaryType.name}""")
   }
 

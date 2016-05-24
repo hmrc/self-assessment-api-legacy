@@ -22,7 +22,6 @@ import play.api.libs.json.Json._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryController._
 import uk.gov.hmrc.selfassessmentapi.controllers.{HalSupport, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
 
@@ -33,7 +32,7 @@ object Helpers extends HalSupport with Links {
   override val context: String = AppContext.apiGatewayContext
 
   def sourceTypeAndSummaryTypeResponse(utr: SaUtr, taxYear: TaxYear,  sourceId: SourceId, summaryId: SummaryId) =
-    sourceTypeAndSummaryTypeIdResponse(obj(), utr, taxYear, SelfEmploymentsSourceType, sourceId, IncomesSummaryType, summaryId)
+    sourceTypeAndSummaryTypeIdResponse(obj(), utr, taxYear, SelfEmploymentsSourceType, sourceId, SummaryTypes.SelfEmploymentIncomes, summaryId)
 
   def sourceTypeAndSummaryTypeIdResponse(jsValue: JsValue, utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
     val hal = halResource(jsValue, Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType, summaryId))))

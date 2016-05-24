@@ -44,5 +44,10 @@ object SelfEmployment {
     ) (SelfEmployment.apply _)
 
 
-  lazy val example: SelfEmployment = SelfEmployment(None, "name", LocalDate.parse("2016-01-01"))
+  lazy val example: SelfEmployment = SelfEmployment(
+    id = None,
+    name = "name",
+    commencementDate = LocalDate.parse("2016-01-01"),
+    allowances = Some(SelfEmploymentAllowances.example),
+    adjustments = Some(SelfEmploymentAdjustments.example))
 }

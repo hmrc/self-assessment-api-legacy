@@ -79,6 +79,17 @@ object SummaryTypes {
     )
   }
 
+  case object FurnishedHolidayLettingsExpense extends SummaryType {
+    override val name = "expenses"
+    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.FurnishedHolidayLettingsExpense.example)
+    override val title = "Sample expenses"
+    override def description(action: String) = s"$action an expense for the specified source"
+    override val fieldDescriptions = Seq(
+      FullFieldDescription("furnished-holiday-lettings", "type", "Enum", FurnishedHolidayLettingsExpenseType.values.mkString(", "), "Type of expense"),
+      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount")
+    )
+  }
+
   case object PrivateUseAdjustment extends SummaryType {
     override val name = "private-use-adjustments"
     override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.PrivateUseAdjustment.example)

@@ -87,3 +87,10 @@ object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHoli
   override def example(id: SourceId) = FurnishedHolidayLettings.example.copy(id = Some(id))
   override val listName = SourceTypes.FurnishedHolidayLettings.name
 }
+
+object UKPropertySourceHandler extends SourceHandler[UKProperty] {
+  override implicit val reads: Reads[UKProperty] = UKProperty.reads
+  override implicit val writes: Writes[UKProperty] = UKProperty.writes
+  override def example(id: SourceId) = UKProperty.example.copy(id = Some(id))
+  override val listName = SourceTypes.UKProperty.name
+}

@@ -26,7 +26,7 @@ sealed trait SourceType extends Documentable {
 }
 
 object SourceTypes {
-  val types = Seq(SelfEmployments, FurnishedHolidayLettings)
+  val types = Seq(SelfEmployments, FurnishedHolidayLettings, UKProperty)
   private val typesByName = types.map(x => x.name -> x).toMap
 
   def fromName(name: String): Option[SourceType] = typesByName.get(name)
@@ -79,6 +79,26 @@ object SourceTypes {
     )
   }
 
-}
+  case object UKProperty extends SourceType {
+    override val name = "uk-property"
+    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.UKProperty.example)
+    override val summaryTypes = Nil
+    override val title = "Sample UK property"
 
+    override def description(action: String) = s"$action a UK property"
+
+    override val fieldDescriptions = Seq(
+      FullFieldDescription(name, "name", "String", "London Apartment", "Identifier for the property"),
+      FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
+      PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", optional = true),
+      PositiveMonetaryFieldDescription(name, "businessPremisesRenovationAllowance", optional = true),
+      PositiveMonetaryFieldDescription(name, "otherCapitalAllowance", optional = true),
+      PositiveMonetaryFieldDescription(name, "wearAndTearAllowance", optional = true),
+      FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
+      PositiveMonetaryFieldDescription(name, "lossBroughtForward"),
+      PositiveMonetaryFieldDescription(name, "rentARoomRelief", optional = true)
+    )
+  }
+
+}
 

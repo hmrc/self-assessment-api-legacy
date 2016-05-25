@@ -32,8 +32,8 @@ object SourceController extends BaseController with Links {
   override lazy val context: String = AppContext.apiGatewayContext
 
   def handler(sourceType: SourceType): SourceHandler[_] = sourceType match {
-    case SelfEmploymentsSourceType => SelfEmploymentSourceHandler
-    case FurnishedHolidayLettingsSourceType => FurnishedHolidayLettingsSourceHandler
+    case SourceTypes.SelfEmployments => SelfEmploymentSourceHandler
+    case SourceTypes.FurnishedHolidayLettings => FurnishedHolidayLettingsSourceHandler
     case _ => throw new IllegalArgumentException(s"""Unsupported sourceType "${sourceType.name}""")
   }
 

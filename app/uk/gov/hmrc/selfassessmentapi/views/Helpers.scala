@@ -32,7 +32,7 @@ object Helpers extends HalSupport with Links {
   override val context: String = AppContext.apiGatewayContext
 
   def sourceTypeAndSummaryTypeResponse(utr: SaUtr, taxYear: TaxYear,  sourceId: SourceId, summaryId: SummaryId) =
-    sourceTypeAndSummaryTypeIdResponse(obj(), utr, taxYear, SelfEmploymentsSourceType, sourceId, IncomesSummaryType, summaryId)
+    sourceTypeAndSummaryTypeIdResponse(obj(), utr, taxYear, SourceTypes.SelfEmployments, sourceId, SummaryTypes.SelfEmploymentIncomes, summaryId)
 
   def sourceTypeAndSummaryTypeIdResponse(jsValue: JsValue, utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
     val hal = halResource(jsValue, Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType, summaryId))))
@@ -40,7 +40,7 @@ object Helpers extends HalSupport with Links {
   }
 
   def sourceLinkResponse(utr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = {
-    sourceModelResponse(obj(), utr, taxYear, SelfEmploymentsSourceType, sourceId)
+    sourceModelResponse(obj(), utr, taxYear, SourceTypes.SelfEmployments, sourceId)
   }
 
   def sourceModelResponse(jsValue: JsValue, utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
@@ -91,10 +91,15 @@ object Helpers extends HalSupport with Links {
   }
 
   def discoverTaxYearResponse(utr: SaUtr, taxYear: TaxYear) = {
-    val sourceLinks = SourceTypes.types.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
-    val links = sourceLinks :+ HalLink("liabilities", liabilitiesHref(utr, taxYear)) :+ HalLink("self", discoverTaxYearHref(utr, taxYear))
+    val links = discoveryLinks(utr, taxYear)
     val hal = halResource(obj(), links)
     prettyPrint(hal.json)
+  }
+
+  def discoveryLinks(utr: SaUtr, taxYear: TaxYear): Seq[HalLink] = {
+    val sourceLinks = SourceTypes.types.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
+    val links = sourceLinks :+ HalLink("liabilities", liabilitiesHref(utr, taxYear)) :+ HalLink("self", discoverTaxYearHref(utr, taxYear))
+    links
   }
 
   def prettyPrint(jsValue: JsValue): PCData =

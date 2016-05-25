@@ -34,8 +34,8 @@ case class SelfEmploymentExpense(id: Option[SummaryId] = None,
 object SelfEmploymentExpense {
 
   implicit val seExpenseTypes = EnumJson.enumFormat(SelfEmploymentExpenseType, Some("Self Employment Expense type is invalid"))
-  implicit val seExpenseWrites = Json.writes[SelfEmploymentExpense]
-  implicit val seExpenseReads: Reads[SelfEmploymentExpense] = (
+  implicit val writes = Json.writes[SelfEmploymentExpense]
+  implicit val reads: Reads[SelfEmploymentExpense] = (
     Reads.pure(None) and
       (__ \ "type").read[SelfEmploymentExpenseType] and
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))

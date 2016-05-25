@@ -46,7 +46,11 @@ trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationC
     "Retrieve Sources" -> Documentation.listSources,
     "Resolve Customer" -> Documentation.resolveCustomer,
     "Discover Tax Years" -> Documentation.discoverTaxYears,
-    "Discover Tax Year" -> Documentation.discoverTaxYear
+    "Discover Tax Year" -> Documentation.discoverTaxYear,
+    "Request Liability" -> Documentation.createLiability,
+    "Retrieve Liability" -> Documentation.readLiability,
+    "Delete Liability" -> Documentation.deleteLiability,
+    "Retrieve Liabilities" -> Documentation.listLiabilities
   )
 
   override def documentation(version: String, endpointName: String): Action[AnyContent] = {
@@ -72,6 +76,7 @@ object Documentation extends BaseController with Links {
 
   val sourceId: SourceId = "5728b53c4800005100d2d32d"
   val summaryId: SourceId = "5728b53c4800005100d2d98a"
+  val liabilityId: LiabilityId = "5728b53c4800005100d2d98a"
   val utr = SaUtr("2234567890")
   val taxYear = TaxYear("2016-17")
 
@@ -93,4 +98,8 @@ object Documentation extends BaseController with Links {
   val deleteSource: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceId)
   val listSources: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceId)
 
+  val createLiability: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.createLiability(utr, taxYear, liabilityId)
+  val readLiability: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.readLiability(utr, taxYear, liabilityId)
+  val deleteLiability: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.deleteLiability(utr, taxYear, liabilityId)
+  val listLiabilities: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.listLiabilities(utr, taxYear, liabilityId)
 }

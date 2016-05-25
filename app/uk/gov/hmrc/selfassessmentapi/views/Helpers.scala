@@ -67,6 +67,24 @@ object Helpers extends HalSupport with Links {
     prettyPrint(hal.json)
   }
 
+  def createLiabilityResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
+    val hal = halResource(obj(), Seq(HalLink("self", liabilityHref(utr, taxYear, liabilityId))))
+    prettyPrint(hal.json)
+  }
+
+
+  def liabilityListResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
+    val json = toJson(Seq(liabilityId, liabilityId, liabilityId).map(id => halResource(obj(),
+      Seq(HalLink("self", liabilityHref(utr, taxYear, id))))))
+    val hal = halResourceList("liabilities", json, liabilitiesHref(utr, taxYear))
+    prettyPrint(hal.json)
+  }
+
+  def liabilityResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
+    val hal = halResource(Json.toJson(Liability.example(liabilityId)), Seq(HalLink("self", liabilityHref(utr, taxYear, liabilityId))))
+    prettyPrint(hal.json)
+  }
+
   def discoverTaxYearsResponse(utr: SaUtr, taxYear: TaxYear) = {
     val hal = halResource(obj(), Seq(HalLink("self", discoverTaxYearsHref(utr)), HalLink(taxYear.taxYear, discoverTaxYearHref(utr, taxYear))))
     prettyPrint(hal.json)

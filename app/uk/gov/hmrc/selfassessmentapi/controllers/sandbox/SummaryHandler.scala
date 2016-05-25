@@ -140,6 +140,12 @@ object UKPropertyExpenseSummaryHandler extends SummaryHandler[UKPropertyExpense]
   override val listName = SummaryTypes.UKPropertyExpenses.name
 }
 
+object UKPropertyTaxPaidSummaryHandler extends SummaryHandler[UKPropertyTaxPaid] {
+  override implicit val reads: Reads[UKPropertyTaxPaid] = UKPropertyTaxPaid.reads
+  override implicit val writes: Writes[UKPropertyTaxPaid] = UKPropertyTaxPaid.writes
+  override def example(id: SummaryId) = UKPropertyTaxPaid.example.copy(id = Some(id))
+  override val listName = SummaryTypes.UKPropertyTaxPaid.name
+}
 
 
 

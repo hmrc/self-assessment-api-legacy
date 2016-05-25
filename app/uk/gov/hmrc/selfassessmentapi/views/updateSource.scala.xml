@@ -1,0 +1,25 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+
+@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId)
+
+<endpoint>
+    <name>Update a source of income</name>
+    <description>This endpoint updates a source of income</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource><![CDATA[PUT /self-assessment/{utr}/{taxYear}/{source}/{sourceId}]]></resource>
+    </section>
+    @partials.pathParams(saUtr, taxYear, Some(sourceId), None, None)
+    @partials.requestHeaders(true)
+    @partials.authorisation(true)
+    @SourceTypes.types.map { sourceType =>
+        @partials.sourceWriteRequest("PUT", saUtr, taxYear, sourceType, Some(sourceId))
+    }
+    <section id="sample-response">
+        <title>Sample Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>@sourceLinkResponse(saUtr, taxYear, sourceId)</json>
+    </section>
+</endpoint>

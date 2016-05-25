@@ -18,6 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.{Hal, HalLink, HalResource}
 import play.api.libs.json.{JsObject, JsValue}
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SourceController._
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 trait HalSupport {
 
@@ -35,6 +38,13 @@ trait HalSupport {
         )
       ),
       Seq(HalLink("self", self)))
+  }
+
+  def sourceLinks(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): Seq[HalLink] = {
+    HalLink("self", sourceIdHref(utr, taxYear, sourceType, seId)) +:
+      sourceType.summaryTypes.map { summaryType =>
+        HalLink(summaryType.name, sourceTypeAndSummaryTypeHref(utr, taxYear, sourceType, seId, summaryType))
+      }
   }
 
 }

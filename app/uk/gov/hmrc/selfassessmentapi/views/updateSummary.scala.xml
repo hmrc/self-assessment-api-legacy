@@ -11,7 +11,7 @@
         <title>Resource</title>
         <resource><![CDATA[PUT /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}]]></resource>
     </section>
-    @partials.pathParams(saUtr, taxYear, sourceId, Some(summaryId))
+    @partials.pathParams(saUtr, taxYear, Some(sourceId), Some(IncomesSummaryType), Some(summaryId))
     @partials.requestHeaders(true)
     @partials.authorisation(true)
     @SourceTypes.types.map { sourceType =>

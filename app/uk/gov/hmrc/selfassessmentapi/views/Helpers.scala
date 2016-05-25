@@ -91,10 +91,15 @@ object Helpers extends HalSupport with Links {
   }
 
   def discoverTaxYearResponse(utr: SaUtr, taxYear: TaxYear) = {
-    val sourceLinks = SourceTypes.types.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
-    val links = sourceLinks :+ HalLink("liabilities", liabilitiesHref(utr, taxYear)) :+ HalLink("self", discoverTaxYearHref(utr, taxYear))
+    val links = discoveryLinks(utr, taxYear)
     val hal = halResource(obj(), links)
     prettyPrint(hal.json)
+  }
+
+  def discoveryLinks(utr: SaUtr, taxYear: TaxYear): Seq[HalLink] = {
+    val sourceLinks = SourceTypes.types.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
+    val links = sourceLinks :+ HalLink("liabilities", liabilitiesHref(utr, taxYear)) :+ HalLink("self", discoverTaxYearHref(utr, taxYear))
+    links
   }
 
   def prettyPrint(jsValue: JsValue): PCData =

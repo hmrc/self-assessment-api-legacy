@@ -35,6 +35,7 @@ object SummaryController extends BaseController with Links {
     case (SelfEmploymentsSourceType, ExpensesSummaryType) => ExpensesSummaryHandler
     case (SelfEmploymentsSourceType, BalancingChargesSummaryType) => BalancingChargesSummaryHandler
     case (SelfEmploymentsSourceType, GoodsAndServicesOwnUseSummaryType) => GoodsAndServiceOwnUseSummaryHandler
+    case (FurnishedHolidayLettingsSourceType, PrivateUseAdjustmentSummaryType) => PrivateUseAdjustmentSummaryHandler
     case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "${summaryType.name}""")
   }
 

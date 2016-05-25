@@ -99,8 +99,15 @@ object BalancingChargesSummaryHandler extends SummaryHandler[BalancingCharge] {
 
 
 object GoodsAndServiceOwnUseSummaryHandler extends SummaryHandler[GoodsAndServicesOwnUse] {
-  override implicit val reads: Reads[GoodsAndServicesOwnUse] = GoodsAndServicesOwnUse.goodsAndServicesOwnUseReads
-  override implicit val writes: Writes[GoodsAndServicesOwnUse] = GoodsAndServicesOwnUse.goodsAndServicesOwnUseWrites
+  override implicit val reads: Reads[GoodsAndServicesOwnUse] = GoodsAndServicesOwnUse.reads
+  override implicit val writes: Writes[GoodsAndServicesOwnUse] = GoodsAndServicesOwnUse.writes
   override def example(id: SummaryId) = GoodsAndServicesOwnUse.example.copy(id = Some(id))
   override val listName = "goods-and-services-own-use"
+}
+
+object PrivateUseAdjustmentSummaryHandler extends SummaryHandler[PrivateUseAdjustment] {
+  override implicit val reads: Reads[PrivateUseAdjustment] = PrivateUseAdjustment.reads
+  override implicit val writes: Writes[PrivateUseAdjustment] = PrivateUseAdjustment.writes
+  override def example(id: SummaryId) = PrivateUseAdjustment.example.copy(id = Some(id))
+  override val listName = PrivateUseAdjustmentSummaryType.name
 }

@@ -93,11 +93,4 @@ object SourceController extends BaseController with Links {
     }
   }
 
-  private def sourceLinks(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): Seq[HalLink] = {
-    HalLink("self", sourceIdHref(utr, taxYear, sourceType, seId)) +:
-      sourceType.summaryTypes.map { summaryType =>
-        HalLink(summaryType.name, sourceTypeAndSummaryTypeHref(utr, taxYear, sourceType, seId, summaryType))
-      }
-  }
-
 }

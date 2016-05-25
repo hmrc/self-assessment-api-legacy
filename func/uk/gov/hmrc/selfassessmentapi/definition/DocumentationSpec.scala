@@ -30,7 +30,6 @@ class DocumentationSpec extends BaseFunctionalSpec {
             .statusIs(200)
             .contentTypeIsXml()
         }
-
       }
     }
   }

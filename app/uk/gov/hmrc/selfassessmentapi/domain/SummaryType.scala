@@ -25,7 +25,7 @@ sealed trait SummaryType extends Documentable {
 }
 
 object SummaryTypes {
-  val types = Seq(SelfEmploymentIncomes, Expenses, BalancingCharges, GoodsAndServicesOwnUse, FurnishedHolidayLettingsIncome)
+  val types = Seq(SelfEmploymentIncomes, Expenses, BalancingCharges, GoodsAndServicesOwnUse, FurnishedHolidayLettingsIncome, PrivateUseAdjustment)
   private val typesByName = types.map(x => x.name -> x).toMap
 
   def fromName(name: String): Option[SummaryType] = typesByName.get(name)
@@ -82,4 +82,15 @@ object SummaryTypes {
       PositiveMonetaryFieldDescription("self-employments", "amount")
     )
   }
+
+  case object PrivateUseAdjustment extends SummaryType {
+    override val name = "private-use-adjustments"
+    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.PrivateUseAdjustment.example)
+    override val title = "Sample private use adjustment"
+    override def description(action: String) = s"$action a private use adjustment summary for the specified source"
+    override val fieldDescriptions = Seq(
+      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount")
+    )
+  }
 }
+

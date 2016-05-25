@@ -22,9 +22,9 @@ import play.api.libs.json._
 case class GoodsAndServicesOwnUse(id: Option[String] = None, amount: BigDecimal)
 
 object GoodsAndServicesOwnUse {
-  implicit val goodsAndServicesOwnUseWrites = Json.writes[GoodsAndServicesOwnUse]
+  implicit val writes = Json.writes[GoodsAndServicesOwnUse]
 
-  implicit val goodsAndServicesOwnUseReads = (
+  implicit val reads = (
     Reads.pure(None) and
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (GoodsAndServicesOwnUse.apply _)

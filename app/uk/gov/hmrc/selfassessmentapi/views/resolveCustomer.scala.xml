@@ -1,0 +1,19 @@
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+@import uk.gov.hmrc.domain.SaUtr
+
+@(saUtr: SaUtr)
+<endpoint>
+    <name>Resolve Customer</name>
+    <description>This endpoint resolves a customer identifier from the provided Authorisation Bearer token</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource>GET /self-assessment</resource>
+    </section>
+    @partials.requestHeaders(false)
+    @partials.authorisation(false)
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>@resolveCustomerResponse(saUtr)</json>
+    </section>
+</endpoint>

@@ -1,15 +1,15 @@
 @import uk.gov.hmrc.domain.SaUtr
 @import uk.gov.hmrc.selfassessmentapi.domain._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId)
+@(saUtr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId)
 <endpoint>
-    <name>Delete Summary</name>
-    <description>This endpoint deletes a source of income</description>
+    <name>Delete Liability</name>
+    <description>This endpoint deletes a liability estimate</description>
     <section id="resource">
         <title>Resource</title>
-        <resource><![CDATA[DELETE /self-assessment/{utr}/{taxYear}/{source}/{sourceId}]]></resource>
+        <resource><![CDATA[DELETE /self-assessment/{utr}/{taxYear}/liabilities/{liabilityId}]]></resource>
     </section>
-    @partials.sourcePathParams(saUtr, taxYear, Some(sourceId), None, None)
+    @partials.liabilityPathParams(saUtr, taxYear, Some(liabilityId))
     @partials.requestHeaders(false)
     @partials.authorisation(true)
     <section id="sample-response">

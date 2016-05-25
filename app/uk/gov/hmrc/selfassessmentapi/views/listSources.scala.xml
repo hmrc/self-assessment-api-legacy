@@ -9,7 +9,7 @@
         <title>Resource</title>
         <resource><![CDATA[GET /self-assessment/{utr}/{taxYear}/{source}]]></resource>
     </section>
-    @partials.pathParams(saUtr, taxYear, None, None, None)
+    @partials.sourcePathParams(saUtr, taxYear, None, None, None)
     @partials.requestHeaders(false)
     @partials.authorisation(false)
     @SourceTypes.types.map { sourceType =>

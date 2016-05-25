@@ -20,6 +20,6 @@
     <section id="sample-response">
         <title>Sample Response</title>
         <httpStatus>200 (OK)</httpStatus>
-        <json>@sourceIdResponse(saUtr, taxYear, sourceId)</json>
+        <json>@sourceLinkResponse(saUtr, taxYear, sourceId)</json>
     </section>
 </endpoint>

@@ -43,7 +43,10 @@ trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationC
     "Retrieve Source" -> Documentation.readSource,
     "Delete Source" -> Documentation.deleteSource,
     "Update Source" -> Documentation.updateSource,
-    "Retrieve Sources" -> Documentation.listSources
+    "Retrieve Sources" -> Documentation.listSources,
+    "Resolve Customer" -> Documentation.resolveCustomer,
+    "Discover Tax Years" -> Documentation.discoverTaxYears,
+    "Discover Tax Year" -> Documentation.discoverTaxYear
   )
 
   override def documentation(version: String, endpointName: String): Action[AnyContent] = {
@@ -72,6 +75,10 @@ object Documentation extends BaseController with Links {
   val utr = SaUtr("2234567890")
   val taxYear = TaxYear("2016-17")
 
+
+  val resolveCustomer: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.resolveCustomer(utr)
+  val discoverTaxYears: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYears(utr, taxYear)
+  val discoverTaxYear: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYear(utr, taxYear)
 
   val createSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceId, summaryId)
   val updateSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.updateSummary(utr, taxYear, sourceId, summaryId)

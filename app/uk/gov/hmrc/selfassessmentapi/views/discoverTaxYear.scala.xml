@@ -1,0 +1,34 @@
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+
+@(saUtr: SaUtr, taxYear: TaxYear)
+<endpoint>
+    <name>Discover Tax Year</name>
+    <description>This endpoint provides links to the self assessment entry points for the specified tax year</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource>GET /self-assessment/{utr}/{taxYear}</resource>
+    </section>
+    <section id="path-parameters">
+        <title>Path Parameters</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                @partials.basePathParams(saUtr, Some(taxYear))
+            </rows>
+        </table>
+    </section>
+    @partials.requestHeaders(false)
+    @partials.authorisation(false)
+    <section id="sample-response">
+        <title>Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>@discoverTaxYearResponse(saUtr, taxYear)</json>
+    </section>
+</endpoint>

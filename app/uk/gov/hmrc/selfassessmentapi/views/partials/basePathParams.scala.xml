@@ -1,0 +1,30 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain._
+
+@(saUtr: SaUtr, taxYear: Option[TaxYear])
+<row>
+    <cell>
+        <code>utr</code>
+    </cell>
+    <cell>
+        <code>String</code>
+    </cell>
+    <cell>
+        <code>@saUtr</code>
+    </cell>
+    <cell>The Self Assessment UTR of the customer</cell>
+</row>
+@taxYear.map { ty =>
+    <row>
+        <cell>
+            <code>taxYear</code>
+        </cell>
+        <cell>
+            <code>String</code>
+        </cell>
+        <cell>
+            <code>@ty</code>
+        </cell>
+        <cell>The tax year the data applies to</cell>
+    </row>
+}

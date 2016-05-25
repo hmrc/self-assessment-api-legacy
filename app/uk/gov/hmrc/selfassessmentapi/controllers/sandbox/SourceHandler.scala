@@ -78,12 +78,12 @@ object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
   override implicit val reads: Reads[SelfEmployment] = SelfEmployment.selfEmploymentReads
   override implicit val writes: Writes[SelfEmployment] = SelfEmployment.selfEmploymentWrites
   override def example(id: SourceId) = SelfEmployment.example.copy(id = Some(id))
-  override val listName = SelfEmploymentsSourceType.name
+  override val listName = SourceTypes.SelfEmployments.name
 }
 
 object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHolidayLettings] {
   override implicit val reads: Reads[FurnishedHolidayLettings] = FurnishedHolidayLettings.reads
   override implicit val writes: Writes[FurnishedHolidayLettings] = FurnishedHolidayLettings.writes
   override def example(id: SourceId) = FurnishedHolidayLettings.example.copy(id = Some(id))
-  override val listName = FurnishedHolidayLettingsSourceType.name
+  override val listName = SourceTypes.FurnishedHolidayLettings.name
 }

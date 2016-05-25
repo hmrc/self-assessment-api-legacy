@@ -16,28 +16,33 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
+import play.api.hal.HalLink
+import play.api.libs.json.Json._
 import play.api.mvc.Action
+import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
-import play.api.mvc.hal._
-import play.api.hal.HalLink
-import play.api.libs.json.Json._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object SummaryController extends BaseController with Links {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
-  def handler(sourceType: SourceType, summaryType: SummaryType): SummaryHandler[_] = (sourceType, summaryType) match {
-    case (SelfEmploymentsSourceType, SummaryTypes.SelfEmploymentIncomes) => IncomesSummaryHandler
-    case (SelfEmploymentsSourceType, SummaryTypes.Expenses) => ExpensesSummaryHandler
-    case (SelfEmploymentsSourceType, SummaryTypes.BalancingCharges) => BalancingChargesSummaryHandler
-    case (SelfEmploymentsSourceType, SummaryTypes.GoodsAndServicesOwnUse) => GoodsAndServiceOwnUseSummaryHandler
-    case (FurnishedHolidayLettingsSourceType, SummaryTypes.PrivateUseAdjustment) => PrivateUseAdjustmentSummaryHandler
-    case (FurnishedHolidayLettingsSourceType, SummaryTypes.FurnishedHolidayLettingsIncome) => FurnishedHolidayLettingsIncomeSummaryHandler
-    case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "${summaryType.name}""")
+  def handler(sourceType: SourceType, summaryType: SummaryType): SummaryHandler[_] = {
+    import SourceTypes._
+    import SummaryTypes._
+    (sourceType, summaryType) match {
+      case (SelfEmployments, SelfEmploymentIncomes) => IncomesSummaryHandler
+      case (SelfEmployments, Expenses) => ExpensesSummaryHandler
+      case (SelfEmployments, BalancingCharges) => BalancingChargesSummaryHandler
+      case (SelfEmployments, GoodsAndServicesOwnUse) => GoodsAndServiceOwnUseSummaryHandler
+      case (FurnishedHolidayLettings, PrivateUseAdjustment) => PrivateUseAdjustmentSummaryHandler
+      case (FurnishedHolidayLettings, FurnishedHolidayLettingsIncome) => FurnishedHolidayLettingsIncomeSummaryHandler
+      case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "${summaryType.name}""")
+    }
   }
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType) = Action.async(parse.json) { implicit request =>
@@ -49,14 +54,14 @@ object SummaryController extends BaseController with Links {
           case _ => BadRequest
         }
       case Right(id) =>
-        Created(halResource(obj(), Seq(HalLink("self",  sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id)))))
+        Created(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id)))))
     }
   }
 
   def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = Action.async { implicit request =>
     handler(sourceType, summaryType).findById(summaryId) map {
       case Some(summary) =>
-        Ok(halResource(toJson(summary), Seq(HalLink("self",  sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)))))
+        Ok(halResource(toJson(summary), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)))))
       case None =>
         NotFound
     }
@@ -88,7 +93,7 @@ object SummaryController extends BaseController with Links {
 
   def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType) = Action.async { implicit request =>
     val svc = handler(sourceType, summaryType)
-      svc.find map { summaryIds =>
+    svc.find map { summaryIds =>
       val json = toJson(summaryIds.map(id => halResource(obj(),
         Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id))))))
 

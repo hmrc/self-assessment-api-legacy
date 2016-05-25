@@ -25,8 +25,8 @@ case class FurnishedHolidayLettingsIncome(id: Option[SummaryId] = None,
 
 object FurnishedHolidayLettingsIncome {
 
-  implicit val fhlIncomeWrites = Json.writes[FurnishedHolidayLettingsIncome]
-  implicit val fhlncomeReads: Reads[FurnishedHolidayLettingsIncome] = (
+  implicit val writes = Json.writes[FurnishedHolidayLettingsIncome]
+  implicit val reads: Reads[FurnishedHolidayLettingsIncome] = (
     Reads.pure(None) and
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (FurnishedHolidayLettingsIncome.apply _)

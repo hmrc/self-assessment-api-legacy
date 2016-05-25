@@ -31,9 +31,9 @@ case class BalancingCharge(id: Option[String] = None, `type`: BalancingChargeTyp
 object BalancingCharge {
 
   implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeType, Some("Self Employment Balancing charge type is invalid"))
-  implicit val balancingChargeWrites = Json.writes[BalancingCharge]
+  implicit val writes = Json.writes[BalancingCharge]
 
-  implicit val balancingChangeReads: Reads[BalancingCharge] = (
+  implicit val reads: Reads[BalancingCharge] = (
     Reads.pure(None) and
       (__ \ "type").read[BalancingChargeType] and
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))

@@ -22,7 +22,7 @@ import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, TaxYear}
 
 import scala.concurrent.Future
 
@@ -32,8 +32,8 @@ trait TaxYearDiscoveryController
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
     val links = Seq(
       HalLink("self", discoverTaxYearHref(utr, taxYear)),
-      HalLink("self-employments", selfEmploymentsHref(utr, taxYear)),
-      HalLink("furnished-holiday-lettings", furnishedHolidayLettingsHref(utr, taxYear)),
+      HalLink("self-employments", sourceHref(utr, taxYear, SourceTypes.SelfEmployments)),
+      HalLink("furnished-holiday-lettings", sourceHref(utr, taxYear, SourceTypes.FurnishedHolidayLettings)),
       HalLink("liabilities", liabilitiesHref(utr, taxYear)))
     Future.successful(Ok(halResource(JsObject(Nil), links)))
   }

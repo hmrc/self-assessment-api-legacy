@@ -81,7 +81,7 @@ class BindersSpec extends UnitSpec {
 
     "return Right with a Source Type instance for a self-employments" in {
       val result = Binders.sourceTypeBinder.bind("summaryType", "self-employments")
-      result shouldEqual Right(SelfEmploymentsSourceType)
+      result shouldEqual Right(SourceTypes.SelfEmployments)
     }
 
     "return Left for an invalid sourceType string" in {

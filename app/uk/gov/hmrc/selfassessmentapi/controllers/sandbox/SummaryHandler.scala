@@ -77,24 +77,24 @@ trait SummaryHandler[T] {
 }
 
 object IncomesSummaryHandler extends SummaryHandler[SelfEmploymentIncome] {
-  override implicit val reads: Reads[SelfEmploymentIncome] = SelfEmploymentIncome.seIncomeReads
-  override implicit val writes: Writes[SelfEmploymentIncome] = SelfEmploymentIncome.seIncomeWrites
+  override implicit val reads: Reads[SelfEmploymentIncome] = SelfEmploymentIncome.reads
+  override implicit val writes: Writes[SelfEmploymentIncome] = SelfEmploymentIncome.writes
   override def example(id: SummaryId) = SelfEmploymentIncome.example.copy(id = Some(id))
-  override val listName = "incomes"
+  override val listName = SummaryTypes.SelfEmploymentIncomes.name
 }
 
 object ExpensesSummaryHandler extends SummaryHandler[SelfEmploymentExpense] {
-  override implicit val reads: Reads[SelfEmploymentExpense] = SelfEmploymentExpense.seExpenseReads
-  override implicit val writes: Writes[SelfEmploymentExpense] = SelfEmploymentExpense.seExpenseWrites
+  override implicit val reads: Reads[SelfEmploymentExpense] = SelfEmploymentExpense.reads
+  override implicit val writes: Writes[SelfEmploymentExpense] = SelfEmploymentExpense.writes
   override def example(id: SummaryId) = SelfEmploymentExpense.example.copy(id = Some(id))
-  override val listName = "expenses"
+  override val listName = SummaryTypes.Expenses.name
 }
 
 object BalancingChargesSummaryHandler extends SummaryHandler[BalancingCharge] {
-  override implicit val reads: Reads[BalancingCharge] = BalancingCharge.balancingChangeReads
-  override implicit val writes: Writes[BalancingCharge] = BalancingCharge.balancingChargeWrites
+  override implicit val reads: Reads[BalancingCharge] = BalancingCharge.reads
+  override implicit val writes: Writes[BalancingCharge] = BalancingCharge.writes
   override def example(id: SummaryId) = BalancingCharge.example.copy(id = Some(id))
-  override val listName = "balancing-charges"
+  override val listName = SummaryTypes.BalancingCharges.name
 }
 
 
@@ -102,21 +102,21 @@ object GoodsAndServiceOwnUseSummaryHandler extends SummaryHandler[GoodsAndServic
   override implicit val reads: Reads[GoodsAndServicesOwnUse] = GoodsAndServicesOwnUse.reads
   override implicit val writes: Writes[GoodsAndServicesOwnUse] = GoodsAndServicesOwnUse.writes
   override def example(id: SummaryId) = GoodsAndServicesOwnUse.example.copy(id = Some(id))
-  override val listName = "goods-and-services-own-use"
+  override val listName = SummaryTypes.GoodsAndServicesOwnUse.name
 }
 
 object PrivateUseAdjustmentSummaryHandler extends SummaryHandler[PrivateUseAdjustment] {
   override implicit val reads: Reads[PrivateUseAdjustment] = PrivateUseAdjustment.reads
   override implicit val writes: Writes[PrivateUseAdjustment] = PrivateUseAdjustment.writes
   override def example(id: SummaryId) = PrivateUseAdjustment.example.copy(id = Some(id))
-  override val listName = PrivateUseAdjustmentSummaryType.name
+  override val listName = SummaryTypes.PrivateUseAdjustment.name
 }
 
 object FurnishedHolidayLettingsIncomeSummaryHandler extends SummaryHandler[FurnishedHolidayLettingsIncome] {
-  override implicit val reads: Reads[FurnishedHolidayLettingsIncome] = FurnishedHolidayLettingsIncome.fhlncomeReads
-  override implicit val writes: Writes[FurnishedHolidayLettingsIncome] = FurnishedHolidayLettingsIncome.fhlIncomeWrites
+  override implicit val reads: Reads[FurnishedHolidayLettingsIncome] = FurnishedHolidayLettingsIncome.reads
+  override implicit val writes: Writes[FurnishedHolidayLettingsIncome] = FurnishedHolidayLettingsIncome.writes
   override def example(id: SummaryId) = FurnishedHolidayLettingsIncome.example.copy(id = Some(id))
-  override val listName = "furnished-holiday-lettings-income"
+  override val listName = SummaryTypes.FurnishedHolidayLettingsIncome.name
 }
 
 

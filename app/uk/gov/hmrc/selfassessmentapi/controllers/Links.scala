@@ -37,21 +37,6 @@ trait Links {
   def liabilitiesHref(utr: SaUtr, taxYear: TaxYear): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.find(utr, taxYear).url)
 
-  def selfEmploymentHref(utr: SaUtr, taxYear: TaxYear, seId: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSourcesController.findById(utr, taxYear, SelfEmploymentsSourceType, seId).url)
-
-  def selfEmploymentsHref(utr: SaUtr, taxYear: TaxYear): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSourcesController.find(utr, taxYear, SelfEmploymentsSourceType).url)
-
-  def selfEmploymentSummaryTypeHref(utr: SaUtr, taxYear: TaxYear, seId: SourceId, summaryType: SummaryType): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSummariesController.find(utr, taxYear, SelfEmploymentsSourceType, seId, summaryType).url)
-
-  def selfEmploymentSummaryTypeIdHref(utr: SaUtr, taxYear: TaxYear, seId: SourceId, summaryType: SummaryType, id: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSummariesController.findById(utr, taxYear, SelfEmploymentsSourceType, seId, summaryType, id).url)
-
-  def furnishedHolidayLettingsHref(utr: SaUtr, taxYear: TaxYear): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSourcesController.find(utr, taxYear, FurnishedHolidayLettingsSourceType).url)
-
   def sourceIdHref(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSourcesController.findById(utr, taxYear, sourceType, seId).url)
 
@@ -63,6 +48,4 @@ trait Links {
 
   def sourceTypeAndSummaryTypeIdHref(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId, summaryType: SummaryType, id: String): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.NotImplementedSummariesController.findById(utr, taxYear, sourceType, seId, summaryType, id).url)
-
-
 }

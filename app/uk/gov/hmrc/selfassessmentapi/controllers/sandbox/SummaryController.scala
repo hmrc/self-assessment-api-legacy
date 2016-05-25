@@ -31,22 +31,24 @@ object SummaryController extends BaseController with Links {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
-  def handler(sourceType: SourceType, summaryType: SummaryType): SummaryHandler[_] = {
+  def handler(sourceType: SourceType, summaryTypeName: String): SummaryHandler[_] = {
     import SourceTypes._
     import SummaryTypes._
+    val summaryType = sourceType.summaryTypes.find(_.name == summaryTypeName)
     (sourceType, summaryType) match {
-      case (SelfEmployments, SelfEmploymentIncomes) => IncomesSummaryHandler
-      case (SelfEmployments, Expenses) => ExpensesSummaryHandler
-      case (SelfEmployments, BalancingCharges) => BalancingChargesSummaryHandler
-      case (SelfEmployments, GoodsAndServicesOwnUse) => GoodsAndServiceOwnUseSummaryHandler
-      case (FurnishedHolidayLettings, PrivateUseAdjustment) => PrivateUseAdjustmentSummaryHandler
-      case (FurnishedHolidayLettings, FurnishedHolidayLettingsIncome) => FurnishedHolidayLettingsIncomeSummaryHandler
-      case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "${summaryType.name}""")
+      case (SelfEmployments, Some(SelfEmploymentIncomes)) => IncomesSummaryHandler
+      case (SelfEmployments, Some(Expenses)) => ExpensesSummaryHandler
+      case (SelfEmployments, Some(BalancingCharges)) => BalancingChargesSummaryHandler
+      case (SelfEmployments, Some(GoodsAndServicesOwnUse)) => GoodsAndServiceOwnUseSummaryHandler
+      case (FurnishedHolidayLettings, Some(PrivateUseAdjustment)) => PrivateUseAdjustmentSummaryHandler
+      case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsIncome)) => FurnishedHolidayLettingsIncomeSummaryHandler
+      case (UKProperty, Some(UKPropertyIncomes)) => UKPropertyIncomeSummaryHandler
+      case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "$summaryTypeName""")
     }
   }
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType) = Action.async(parse.json) { implicit request =>
-    handler(sourceType, summaryType).create(request.body) map {
+  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = Action.async(parse.json) { implicit request =>
+    handler(sourceType, summaryTypeName).create(request.body) map {
       case Left(errorResult) =>
         errorResult match {
           case ErrorResult(Some(message), _) => BadRequest(message)
@@ -54,21 +56,21 @@ object SummaryController extends BaseController with Links {
           case _ => BadRequest
         }
       case Right(id) =>
-        Created(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id)))))
+        Created(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
     }
   }
 
-  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = Action.async { implicit request =>
-    handler(sourceType, summaryType).findById(summaryId) map {
+  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = Action.async { implicit request =>
+    handler(sourceType, summaryTypeName).findById(summaryId) map {
       case Some(summary) =>
-        Ok(halResource(toJson(summary), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)))))
+        Ok(halResource(toJson(summary), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
       case None =>
         NotFound
     }
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = Action.async(parse.json) { implicit request =>
-    handler(sourceType, summaryType).update(summaryId, request.body) map {
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = Action.async(parse.json) { implicit request =>
+    handler(sourceType, summaryTypeName).update(summaryId, request.body) map {
       case Left(errorResult) =>
         errorResult match {
           case ErrorResult(Some(message), _) => BadRequest(message)
@@ -76,13 +78,13 @@ object SummaryController extends BaseController with Links {
           case _ => BadRequest
         }
       case Right(id) =>
-        Ok(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id)))))
+        Ok(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
     }
   }
 
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = Action.async { implicit request =>
-    handler(sourceType, summaryType).delete(summaryId) map {
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = Action.async { implicit request =>
+    handler(sourceType, summaryTypeName).delete(summaryId) map {
       case true =>
         NoContent
       case false =>
@@ -91,13 +93,13 @@ object SummaryController extends BaseController with Links {
   }
 
 
-  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType) = Action.async { implicit request =>
-    val svc = handler(sourceType, summaryType)
+  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = Action.async { implicit request =>
+    val svc = handler(sourceType, summaryTypeName)
     svc.find map { summaryIds =>
       val json = toJson(summaryIds.map(id => halResource(obj(),
-        Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryType, id))))))
+        Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id))))))
 
-      Ok(halResourceList(svc.listName, json, sourceTypeAndSummaryTypeHref(saUtr, taxYear, sourceType, sourceId, summaryType)))
+      Ok(halResourceList(svc.listName, json, sourceTypeAndSummaryTypeHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName)))
     }
   }
 

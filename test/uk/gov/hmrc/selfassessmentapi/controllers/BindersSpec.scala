@@ -60,21 +60,6 @@ class BindersSpec extends UnitSpec {
     }
   }
 
-  "summaryType.bind" should {
-
-    implicit val pathBindable = PathBindable.bindableString
-
-    "return Right with a Summary Type instance for a balancing-charges" in {
-      val result = Binders.summaryTypeBinder.bind("summaryType", "balancing-charges")
-      result shouldEqual Right(SummaryTypes.BalancingCharges)
-    }
-
-    "return Left for an invalid summaryType string" in {
-      val result = Binders.summaryTypeBinder.bind("summaryType", "invalid")
-      result shouldEqual Left("ERROR_INVALID_SUMMARY_TYPE")
-    }
-  }
-
   "sourceType.bind" should {
 
     implicit val pathBindable = PathBindable.bindableString

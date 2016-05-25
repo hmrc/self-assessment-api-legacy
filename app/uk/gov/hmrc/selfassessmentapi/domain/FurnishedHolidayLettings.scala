@@ -70,7 +70,7 @@ object FurnishedHolidayLettings {
     ) (FurnishedHolidayLettings.apply _)
 
 
-  lazy val example: FurnishedHolidayLettings = FurnishedHolidayLettings(None, "Cosa del Sol apartment", PropertyLocationType.UK,
+  lazy val example: FurnishedHolidayLettings = FurnishedHolidayLettings(None, "Holiday Cottage", PropertyLocationType.UK,
     Some(FurnishedHolidayLettingsAllowances(BigDecimal(1000.00))),
     Some(FurnishedHolidayLettingsAdjustments(BigDecimal(500.00))))
 }

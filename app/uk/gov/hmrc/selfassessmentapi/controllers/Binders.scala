@@ -48,18 +48,6 @@ object Binders {
     }
   }
 
-  implicit def summaryTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SummaryType] {
-
-    def unbind(key: String, `type`: SummaryType): String = `type`.name
-
-    def bind(key: String, value: String): Either[String, SummaryType] = {
-      SummaryTypes.fromName(value.toLowerCase) match {
-        case Some(v) => Right(v)
-        case None => Left("ERROR_INVALID_SUMMARY_TYPE")
-      }
-    }
-  }
-
   implicit def sourceTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SourceType] {
 
     def unbind(key: String, `type`: SourceType): String = `type`.name

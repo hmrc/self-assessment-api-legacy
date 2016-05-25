@@ -42,51 +42,14 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   }
 
   override def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
-    val liability = createLiability(utr, liabilityId)
+    val liability = createLiability(liabilityId)
     val links = Seq(
       HalLink("self", liabilityHref(utr, taxYear, liabilityId))
     )
     Future.successful(Ok(halResource(Json.toJson(liability), links)))
   }
 
-  def createLiability(utr: SaUtr, id: String): Liability =
-    Liability(
-      id = Some(id),
-      income = Income(
-        incomes = Seq(
-          Amount("self-employment-profit", BigDecimal(92480)),
-          Amount("uk-interest-received", BigDecimal(93)),
-          Amount("uk-dividends", BigDecimal(466))
-        ),
-        totalIncomeReceived = BigDecimal(93039),
-        personalAllowance = BigDecimal(9440),
-        totalTaxableIncome = BigDecimal(83599)
-      ),
-      incomeTax = CalculatedAmount(
-        calculations = Seq(
-          Calculation("pay-pensions-profits", BigDecimal(32010), BigDecimal(20), BigDecimal(6402)),
-          Calculation("pay-pensions-profits", BigDecimal(41030), BigDecimal(40), BigDecimal(16412)),
-          Calculation("interest-received", BigDecimal(0), BigDecimal(10), BigDecimal(0)),
-          Calculation("interest-received", BigDecimal(0), BigDecimal(20), BigDecimal(0)),
-          Calculation("interest-received", BigDecimal(93), BigDecimal(40), BigDecimal(37.2)),
-          Calculation("dividends", BigDecimal(0), BigDecimal(10), BigDecimal(0)),
-          Calculation("dividends", BigDecimal(466), BigDecimal(32.5), BigDecimal(151.45))
-        ),
-        total = BigDecimal(23002.65)
-      ),
-      credits = Seq(
-        Amount("dividend", BigDecimal(46.6)),
-        Amount("interest-charged", BigDecimal(12.25))
-      ),
-      class4Nic = CalculatedAmount(
-        calculations = Seq(
-          Calculation("class-4-nic", BigDecimal(33695), BigDecimal(9), BigDecimal(3032.55)),
-          Calculation("class-4-nic", BigDecimal(41030), BigDecimal(2), BigDecimal(820.60))
-        ),
-        total = BigDecimal(3853.15)
-      ),
-      totalTaxDue = BigDecimal(25796.95)
-    )
+  def createLiability(id: LiabilityId): Liability = Liability.example(id)
 
 
   override def deleteLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
@@ -94,7 +57,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   }
 
   override def find(saUtr: SaUtr, taxYear: TaxYear): Action[AnyContent] = Action.async { request =>
-    val result= Seq(createLiability(saUtr, "1234"), createLiability(saUtr, "4321"), createLiability(saUtr, "7777"))
+    val result= Seq(createLiability("1234"), createLiability("4321"), createLiability("7777"))
     val liabilities = toJson(
       result.map(liability => halResource(obj(), Seq(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
     )

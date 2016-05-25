@@ -33,23 +33,10 @@ trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationC
     Ok(Json.toJson(apiDefinition))
   }
 
-  lazy val supportedDocs: Map[String, Xml] = Map(
-    "Create Summary" -> Documentation.createSummary,
-    "Retrieve Summary" -> Documentation.readSummary,
-    "Update Summary" -> Documentation.updateSummary,
-    "Delete Summary" -> Documentation.deleteSummary,
-    "Retrieve Summaries" -> Documentation.listSummaries,
-    "Create Source" -> Documentation.createSource,
-    "Retrieve Source" -> Documentation.readSource,
-    "Delete Source" -> Documentation.deleteSource,
-    "Update Source" -> Documentation.updateSource,
-    "Retrieve Sources" -> Documentation.listSources
-  )
-
-  override def documentation(version: String, endpointName: String): Action[AnyContent] = {
-    supportedDocs.get(endpointName) match {
-      case Some(docs) => Action { Ok(docs).withHeaders("Content-Type" -> "application/xml") }
-      case None => super.at(s"/public/api/documentation/$version", s"${endpointName.replaceAll(" ", "-")}.xml")
+  override def documentation(version: String, endpointName: String): Action[AnyContent] = Action {
+    Documentation.findDocumentation(endpointName) match {
+      case Some(docs) => Ok(docs).withHeaders("Content-Type" -> "application/xml")
+      case None => NotFound
     }
   }
 }
@@ -65,25 +52,40 @@ object DocumentationController extends DocumentationController {
 
 object Documentation extends BaseController with Links {
 
+  case class EndpointDocumentation(name: String, view: Xml)
+
   override val context: String = AppContext.apiGatewayContext
 
-  val sourceId: SourceId = "5728b53c4800005100d2d32d"
-  val summaryId: SourceId = "5728b53c4800005100d2d98a"
-  val utr = SaUtr("2234567890")
-  val taxYear = TaxYear("2016-17")
+  private val sourceId: SourceId = "5728b53c4800005100d2d32d"
+  private val summaryId: SourceId = "5728b53c4800005100d2d98a"
+  private val liabilityId: LiabilityId = "5728b53c4800005100d2d98a"
+  private val utr = SaUtr("2234567890")
+  private val taxYear = TaxYear("2016-17")
 
 
-  val createSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceId, summaryId)
-  val updateSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.updateSummary(utr, taxYear, sourceId, summaryId)
-  val readSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceId, summaryId)
-  val deleteSummary: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.deleteSummary(utr, taxYear, sourceId, summaryId)
-  val listSummaries: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.listSummaries(utr, taxYear, sourceId, summaryId)
+  private lazy val documentation = Seq(
+    EndpointDocumentation("Resolve Customer", uk.gov.hmrc.selfassessmentapi.views.xml.resolveCustomer(utr)),
+    EndpointDocumentation("Discover Tax Years", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYears(utr, taxYear)),
+    EndpointDocumentation("Discover Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYear(utr, taxYear)),
 
+    EndpointDocumentation("Create Summary", uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceId, summaryId)),
+    EndpointDocumentation("Retrieve Summary", uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceId, summaryId)),
+    EndpointDocumentation("Update Summary", uk.gov.hmrc.selfassessmentapi.views.xml.updateSummary(utr, taxYear, sourceId, summaryId)),
+    EndpointDocumentation("Delete Summary", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSummary(utr, taxYear, sourceId, summaryId)),
+    EndpointDocumentation("Retrieve Summaries", uk.gov.hmrc.selfassessmentapi.views.xml.listSummaries(utr, taxYear, sourceId, summaryId)),
 
-  val createSource: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.createSource(utr, taxYear, sourceId)
-  val readSource: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.readSource(utr, taxYear, sourceId)
-  val updateSource: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.updateSource(utr, taxYear, sourceId)
-  val deleteSource: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceId)
-  val listSources: Xml = uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceId)
+    EndpointDocumentation("Create Source", uk.gov.hmrc.selfassessmentapi.views.xml.createSource(utr, taxYear, sourceId)),
+    EndpointDocumentation("Retrieve Source", uk.gov.hmrc.selfassessmentapi.views.xml.readSource(utr, taxYear, sourceId)),
+    EndpointDocumentation("Update Source", uk.gov.hmrc.selfassessmentapi.views.xml.updateSource(utr, taxYear, sourceId)),
+    EndpointDocumentation("Delete Source", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceId)),
+    EndpointDocumentation("Retrieve Sources", uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceId)),
 
+    EndpointDocumentation("Request Liability", uk.gov.hmrc.selfassessmentapi.views.xml.createLiability(utr, taxYear, liabilityId)),
+    EndpointDocumentation("Retrieve Liability", uk.gov.hmrc.selfassessmentapi.views.xml.readLiability(utr, taxYear, liabilityId)),
+    EndpointDocumentation("Delete Liability", uk.gov.hmrc.selfassessmentapi.views.xml.deleteLiability(utr, taxYear, liabilityId)),
+    EndpointDocumentation("Retrieve Liabilities", uk.gov.hmrc.selfassessmentapi.views.xml.listLiabilities(utr, taxYear, liabilityId)))
+
+  private lazy val documentationByName = documentation.map(x => x.name -> x.view).toMap
+
+  def findDocumentation(endpointName: String): Option[Xml] = documentationByName.get(endpointName)
 }

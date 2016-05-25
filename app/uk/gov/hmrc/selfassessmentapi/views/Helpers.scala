@@ -36,7 +36,7 @@ object Helpers extends HalSupport with Links {
 
   def sourceTypeAndSummaryTypeIdResponse(jsValue: JsValue, utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
     val hal = halResource(jsValue, Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType, summaryId))))
-    PCData(Json.prettyPrint(hal.json))
+    prettyPrint(hal.json)
   }
 
   def sourceLinkResponse(utr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = {
@@ -45,7 +45,7 @@ object Helpers extends HalSupport with Links {
 
   def sourceModelResponse(jsValue: JsValue, utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     val hal = halResource(jsValue, sourceLinks(utr, taxYear, sourceType, sourceId))
-    PCData(Json.prettyPrint(hal.json))
+    prettyPrint(hal.json)
   }
 
   def sourceTypeAndSummaryTypeIdListResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
@@ -59,7 +59,42 @@ object Helpers extends HalSupport with Links {
     val json = toJson(Seq(sourceId, sourceId, sourceId).map(id => halResource(obj(),
       Seq(HalLink("self", sourceIdHref(utr, taxYear, sourceType, id))))))
     val hal = halResourceList(sourceType.name, json, sourceHref(utr, taxYear, sourceType))
-    PCData(Json.prettyPrint(hal.json))
+    prettyPrint(hal.json)
+  }
+
+  def resolveCustomerResponse(utr: SaUtr) = {
+    val hal = halResource(obj(), Seq(HalLink("self-assessment", discoverTaxYearsHref(utr))))
+    prettyPrint(hal.json)
+  }
+
+  def createLiabilityResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
+    val hal = halResource(obj(), Seq(HalLink("self", liabilityHref(utr, taxYear, liabilityId))))
+    prettyPrint(hal.json)
+  }
+
+
+  def liabilityListResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
+    val json = toJson(Seq(liabilityId, liabilityId, liabilityId).map(id => halResource(obj(),
+      Seq(HalLink("self", liabilityHref(utr, taxYear, id))))))
+    val hal = halResourceList("liabilities", json, liabilitiesHref(utr, taxYear))
+    prettyPrint(hal.json)
+  }
+
+  def liabilityResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
+    val hal = halResource(Json.toJson(Liability.example(liabilityId)), Seq(HalLink("self", liabilityHref(utr, taxYear, liabilityId))))
+    prettyPrint(hal.json)
+  }
+
+  def discoverTaxYearsResponse(utr: SaUtr, taxYear: TaxYear) = {
+    val hal = halResource(obj(), Seq(HalLink("self", discoverTaxYearsHref(utr)), HalLink(taxYear.taxYear, discoverTaxYearHref(utr, taxYear))))
+    prettyPrint(hal.json)
+  }
+
+  def discoverTaxYearResponse(utr: SaUtr, taxYear: TaxYear) = {
+    val sourceLinks = SourceTypes.types.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
+    val links = sourceLinks :+ HalLink("liabilities", liabilitiesHref(utr, taxYear)) :+ HalLink("self", discoverTaxYearHref(utr, taxYear))
+    val hal = halResource(obj(), links)
+    prettyPrint(hal.json)
   }
 
   def prettyPrint(jsValue: JsValue): PCData =

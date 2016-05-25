@@ -1,0 +1,21 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+
+@(saUtr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId)
+<endpoint>
+    <name>Retrieve Liabilities</name>
+    <description>This endpoint lists liability estimates for the specified utr and tax year</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource><![CDATA[GET /self-assessment/{utr}/{taxYear}/liabilities]]></resource>
+    </section>
+    @partials.liabilityPathParams(saUtr, taxYear, None)
+    @partials.requestHeaders(false)
+    @partials.authorisation(false)
+    <section id="sample-response">
+        <title>Sample Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json>@liabilityListResponse(saUtr, taxYear, liabilityId)</json>
+    </section>
+</endpoint>

@@ -24,56 +24,19 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
-import SourceTypes._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object SummaryController extends BaseController with Links {
+object SummaryController extends BaseController with Links with SourceTypeSupport {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
   def handler(sourceType: SourceType, summaryTypeName: String): SummaryHandler[_] = {
     val summaryType = sourceType.summaryTypes.find(_.name == summaryTypeName)
-    val handler = (sourceType, summaryType) match {
-      case (SelfEmployments, Some(st)) => selfEmploymentSourceHandler(st)
-      case (FurnishedHolidayLettings, Some(st)) => furnishedHolidayLettingsSourceHandler(st)
-      case (UKProperty, Some(st)) => ukPropertySourceHandler(st)
-      case _ => None
-    }
+    val handler = summaryType.flatMap(x => sourceHandler(sourceType).summaryHandler(x))
     handler.getOrElse(throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "$summaryTypeName"""))
   }
 
-  private def furnishedHolidayLettingsSourceHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
-    import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes._
-    summaryType match {
-      case PrivateUseAdjustments => Some(PrivateUseAdjustmentSummaryHandler)
-      case Incomes => Some(FurnishedHolidayLettingsIncomeSummaryHandler)
-      case Expenses => Some(FurnishedHolidayLettingsExpenseSummaryHandler)
-      case _ => None
-    }
-  }
-
-  private def selfEmploymentSourceHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
-    import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes._
-    summaryType match {
-      case Incomes => Some(IncomesSummaryHandler)
-      case Expenses => Some(ExpensesSummaryHandler)
-      case BalancingCharges => Some(BalancingChargesSummaryHandler)
-      case GoodsAndServicesOwnUse => Some(GoodsAndServiceOwnUseSummaryHandler)
-      case _ => None
-    }
-  }
-
-  private def ukPropertySourceHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
-    import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
-    summaryType match {
-      case Incomes => Some(UKPropertyIncomeSummaryHandler)
-      case Expenses => Some(UKPropertyExpenseSummaryHandler)
-      case TaxPaid => Some(UKPropertyTaxPaidSummaryHandler)
-      case BalancingCharges => Some(UKPropertyBalancingChargesSummaryHandler)
-      case _ => None
-    }
-  }
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = Action.async(parse.json) { implicit request =>
     handler(sourceType, summaryTypeName).create(request.body) map {

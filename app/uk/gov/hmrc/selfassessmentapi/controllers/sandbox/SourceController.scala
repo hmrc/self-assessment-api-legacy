@@ -27,19 +27,12 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object SourceController extends BaseController with Links {
+object SourceController extends BaseController with Links with SourceTypeSupport {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
-  def handler(sourceType: SourceType): SourceHandler[_] = sourceType match {
-    case SourceTypes.SelfEmployments => SelfEmploymentSourceHandler
-    case SourceTypes.FurnishedHolidayLettings => FurnishedHolidayLettingsSourceHandler
-    case SourceTypes.UKProperty => UKPropertySourceHandler
-    case _ => throw new IllegalArgumentException(s"""Unsupported sourceType "${sourceType.name}""")
-  }
-
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = Action.async(parse.json) { implicit request =>
-    handler(sourceType).create(request.body) map {
+    sourceHandler(sourceType).create(request.body) map {
       case Left(errorResult) =>
         errorResult match {
           case ErrorResult(Some(message), _) => BadRequest(message)
@@ -52,7 +45,7 @@ object SourceController extends BaseController with Links {
   }
 
   def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async { implicit request =>
-    handler(sourceType).findById(sourceId) map {
+    sourceHandler(sourceType).findById(sourceId) map {
       case Some(summary) =>
         Ok(halResource(toJson(summary), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
       case None =>
@@ -61,7 +54,7 @@ object SourceController extends BaseController with Links {
   }
 
   def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async(parse.json) { implicit request =>
-    handler(sourceType).update(sourceId, request.body) map {
+    sourceHandler(sourceType).update(sourceId, request.body) map {
       case Left(errorResult) =>
         errorResult match {
           case ErrorResult(Some(message), _) => BadRequest(message)
@@ -75,7 +68,7 @@ object SourceController extends BaseController with Links {
 
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async { implicit request =>
-    handler(sourceType).delete(sourceId) map {
+    sourceHandler(sourceType).delete(sourceId) map {
       case true =>
         NoContent
       case false =>
@@ -85,7 +78,7 @@ object SourceController extends BaseController with Links {
 
 
   def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = Action.async { implicit request =>
-    val svc = handler(sourceType)
+    val svc = sourceHandler(sourceType)
       svc.find map { ids =>
       val json = toJson(ids.map(id => halResource(obj(),
         Seq(HalLink("self", sourceIdHref(saUtr, taxYear, sourceType, id))))))

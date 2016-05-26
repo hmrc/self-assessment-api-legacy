@@ -64,4 +64,14 @@ object SummaryTypes {
     )
   }
 
+  case object PrivateUseAdjustments extends uk.gov.hmrc.selfassessmentapi.domain.SummaryType {
+    override val name = "private-use-adjustments"
+    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.ukproperty.PrivateUseAdjustment.example)
+    override val title = "Sample UK property private use adjustment"
+    override def description(action: String) = s"$action a private use adjustment for the specified UK Property"
+    override val fieldDescriptions = Seq(
+      PositiveMonetaryFieldDescription("uk-property", "amount")
+    )
+  }
+
 }

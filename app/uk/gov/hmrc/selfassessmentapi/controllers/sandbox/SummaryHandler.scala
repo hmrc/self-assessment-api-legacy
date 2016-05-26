@@ -164,3 +164,10 @@ object UKPropertyBalancingChargesSummaryHandler extends SummaryHandler[uk.gov.hm
   override val listName = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes.BalancingCharges.name
 }
 
+object UKPropertyPrivateUseAdjustmentsSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.PrivateUseAdjustment] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.PrivateUseAdjustment] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.PrivateUseAdjustment.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.PrivateUseAdjustment] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.PrivateUseAdjustment.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.PrivateUseAdjustment.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes.PrivateUseAdjustments.name
+}
+

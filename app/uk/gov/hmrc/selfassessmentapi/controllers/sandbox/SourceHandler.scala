@@ -128,6 +128,7 @@ object UKPropertySourceHandler extends SourceHandler[UKProperty] {
       case Expenses => Some(UKPropertyExpenseSummaryHandler)
       case TaxPaid => Some(UKPropertyTaxPaidSummaryHandler)
       case BalancingCharges => Some(UKPropertyBalancingChargesSummaryHandler)
+      case PrivateUseAdjustments => Some(UKPropertyPrivateUseAdjustmentsSummaryHandler)
       case _ => None
     }
   }

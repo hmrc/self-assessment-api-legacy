@@ -41,7 +41,7 @@ class BindersSpec extends UnitSpec {
     }
   }
 
-  "taxYearinder.bind" should {
+  "taxYear.bind" should {
 
     "return Right with a TaxYear instance for a valid tax year string" in {
       val taxYear = "2016-17"
@@ -51,7 +51,7 @@ class BindersSpec extends UnitSpec {
       result shouldEqual Right(TaxYear(taxYear))
     }
 
-    "return Left for an ivalid taxYear string" in {
+    "return Left for an invalid taxYear string" in {
       val taxYear = "invalid"
       implicit val pathBindable = PathBindable.bindableString
 
@@ -65,8 +65,10 @@ class BindersSpec extends UnitSpec {
     implicit val pathBindable = PathBindable.bindableString
 
     "return Right with a Source Type instance for a self-employments" in {
-      val result = Binders.sourceTypeBinder.bind("summaryType", "self-employments")
-      result shouldEqual Right(SourceTypes.SelfEmployments)
+      SourceTypes.types.foreach { `type` =>
+        val result = Binders.sourceTypeBinder.bind("sourceType", `type`.name)
+        result shouldEqual Right(`type`)
+      }
     }
 
     "return Left for an invalid sourceType string" in {

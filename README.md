@@ -6,7 +6,7 @@ This is the API project for self assessment
 
 ## Running Locally
 
-Install Service Manager, if you wont live endpoints, then start dependencies:
+Install Service Manager, if you want live endpoints, then start dependencies:
 
     sm --start MONGO
     sm --start AUTH -f

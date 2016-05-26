@@ -3,6 +3,7 @@ package uk.gov.hmrc.selfassessmentapi.sandbox
 import play.api.libs.json.Json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UKProperty
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
 import uk.gov.hmrc.support.BaseFunctionalSpec

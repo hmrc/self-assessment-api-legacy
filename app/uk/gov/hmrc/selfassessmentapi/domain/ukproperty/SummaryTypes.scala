@@ -18,13 +18,13 @@ package uk.gov.hmrc.selfassessmentapi.domain.ukproperty
 
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.domain.{FullFieldDescription, PositiveMonetaryFieldDescription}
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 object SummaryTypes {
 
-  case object Incomes extends uk.gov.hmrc.selfassessmentapi.domain.SummaryType {
+  case object Incomes extends SummaryType {
     override val name = "incomes"
-    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Income.example)
+    override lazy val example: JsValue = toJson(ukproperty.Income.example)
     override val title = "Sample UK property incomes"
     override def description(action: String) = s"$action an income for the specified UK Property"
     override val fieldDescriptions = Seq(
@@ -33,9 +33,9 @@ object SummaryTypes {
     )
   }
 
-  case object Expenses extends uk.gov.hmrc.selfassessmentapi.domain.SummaryType {
+  case object Expenses extends SummaryType {
     override val name = "expenses"
-    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Expenses.example)
+    override lazy val example: JsValue = toJson(ukproperty.Expenses.example)
     override val title = "Sample UK property expenses"
     override def description(action: String) = s"$action an expense for the specified UK Property"
     override val fieldDescriptions = Seq(
@@ -44,9 +44,9 @@ object SummaryTypes {
     )
   }
 
-  case object TaxPaid extends uk.gov.hmrc.selfassessmentapi.domain.SummaryType {
+  case object TaxPaid extends SummaryType {
     override val name = "tax-paid"
-    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid.example)
+    override lazy val example: JsValue = toJson(ukproperty.TaxPaid.example)
     override val title = "Sample UK property tax paid"
     override def description(action: String) = s"$action a tax paid for the specified UK Property"
     override val fieldDescriptions = Seq(
@@ -54,9 +54,9 @@ object SummaryTypes {
     )
   }
 
-  case object BalancingCharges extends uk.gov.hmrc.selfassessmentapi.domain.SummaryType {
+  case object BalancingCharges extends SummaryType {
     override val name = "balancing-charges"
-    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharge.example)
+    override lazy val example: JsValue = toJson(ukproperty.BalancingCharge.example)
     override val title = "Sample UK property balancing charge"
     override def description(action: String) = s"$action a balancing charge for the specified UK Property"
     override val fieldDescriptions = Seq(
@@ -64,9 +64,9 @@ object SummaryTypes {
     )
   }
 
-  case object PrivateUseAdjustments extends uk.gov.hmrc.selfassessmentapi.domain.SummaryType {
+  case object PrivateUseAdjustments extends SummaryType {
     override val name = "private-use-adjustments"
-    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.ukproperty.PrivateUseAdjustment.example)
+    override lazy val example: JsValue = toJson(ukproperty.PrivateUseAdjustment.example)
     override val title = "Sample UK property private use adjustment"
     override def description(action: String) = s"$action a private use adjustment for the specified UK Property"
     override val fieldDescriptions = Seq(

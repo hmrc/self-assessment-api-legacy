@@ -17,9 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.repositories
 
 import org.joda.time.LocalDate
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 

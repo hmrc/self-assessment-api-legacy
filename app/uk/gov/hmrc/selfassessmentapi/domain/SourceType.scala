@@ -18,8 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 
 sealed trait SourceType extends Documentable {
   val name: String
@@ -35,7 +33,7 @@ object SourceTypes {
 
   case object SelfEmployments extends SourceType {
     override val name = "self-employments"
-    override lazy val example: JsValue = toJson(SelfEmployment.example)
+    override lazy val example: JsValue = toJson(selfemployment.SelfEmployment.example)
     override val summaryTypes = Seq(selfemployment.SummaryTypes.Incomes, selfemployment.SummaryTypes.Expenses, selfemployment.SummaryTypes.GoodsAndServicesOwnUse, selfemployment.SummaryTypes.BalancingCharges)
     override val title = "Sample self-employments"
 
@@ -73,7 +71,7 @@ object SourceTypes {
 
     override val fieldDescriptions = Seq(
       FullFieldDescription(name, "name", "String", "Holiday Cottage", "Identifier for the property"),
-      FullFieldDescription(name, "propertyLocation", "Enum", PropertyLocationType.values.mkString(", "), "The location of the property"),
+      FullFieldDescription(name, "propertyLocation", "Enum", furnishedholidaylettings.PropertyLocationType.values.mkString(", "), "The location of the property"),
       FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "capitalAllowance"),
       FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),

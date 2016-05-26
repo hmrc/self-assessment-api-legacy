@@ -29,7 +29,7 @@ object SummaryTypes {
     override def description(action: String) = s"$action an income for the specified UK Property"
     override val fieldDescriptions = Seq(
       FullFieldDescription("uk-property", "type", "Enum", IncomeType.values.mkString(", "), "Type of income"),
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 
@@ -40,7 +40,7 @@ object SummaryTypes {
     override def description(action: String) = s"$action an expense for the specified UK Property"
     override val fieldDescriptions = Seq(
       FullFieldDescription("uk-property", "type", "Enum", ExpenseType.values.mkString(", "), "Type of expense"),
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 
@@ -50,7 +50,7 @@ object SummaryTypes {
     override val title = "Sample UK property tax paid"
     override def description(action: String) = s"$action a tax paid for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 
@@ -60,7 +60,7 @@ object SummaryTypes {
     override val title = "Sample UK property balancing charge"
     override def description(action: String) = s"$action a balancing charge for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 
@@ -70,7 +70,7 @@ object SummaryTypes {
     override val title = "Sample UK property private use adjustment"
     override def description(action: String) = s"$action a private use adjustment for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 

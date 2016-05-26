@@ -33,4 +33,15 @@ object SummaryTypes {
     )
   }
 
+  case object Expenses extends SummaryType {
+    override val name = "expenses"
+    override lazy val example: JsValue = toJson(Expense.example)
+    override val title = "Sample Employments expenses"
+    override def description(action: String) = s"$action an expense for the specified source"
+    override val fieldDescriptions = Seq(
+      FullFieldDescription("employments", "type", "Enum", ExpenseType.values.mkString(", "), "Type of expense"),
+      PositiveMonetaryFieldDescription("employments", "amount")
+    )
+  }
+
 }

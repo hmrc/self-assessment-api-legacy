@@ -104,7 +104,7 @@ object SourceTypes {
   case object Employments extends SourceType {
 
     override val name: String = "employments"
-    override val summaryTypes: Seq[SummaryType] = Seq(employment.SummaryTypes.Incomes)
+    override val summaryTypes: Seq[SummaryType] = Seq(employment.SummaryTypes.Incomes, employment.SummaryTypes.Expenses)
     override val example: JsValue = toJson(employment.Employment.example)
 
     override def description(action: String): String =  s"$action an employment"

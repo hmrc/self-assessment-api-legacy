@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.employment.ExpenseType.ExpenseType
 
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
-  val TravelSubsistence, FixedDeductions, ProfessionalFees, Other = Value
+  val TravelAndSubsistence, FixedDeductions, ProfessionalFees, Other = Value
 }
 
 case class Expense(id: Option[SummaryId] = None,
@@ -41,6 +41,6 @@ object Expense {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Expense.apply _)
 
-  lazy val example: Expense = Expense(None, ExpenseType.TravelSubsistence, BigDecimal(10000.00))
+  lazy val example: Expense = Expense(None, ExpenseType.TravelAndSubsistence, BigDecimal(10000.00))
 
 }

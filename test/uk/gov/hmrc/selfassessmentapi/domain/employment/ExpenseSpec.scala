@@ -49,7 +49,7 @@ class ExpenseSpec extends JsonSpec {
 
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.12456), BigDecimal(1000.123454), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val expense = Expense(`type` = TravelSubsistence, amount = testAmount)
+        val expense = Expense(`type` = TravelAndSubsistence, amount = testAmount)
         assertValidationError[Expense](
           expense,
           Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),

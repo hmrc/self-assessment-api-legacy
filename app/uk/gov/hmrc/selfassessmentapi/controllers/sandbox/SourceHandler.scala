@@ -109,6 +109,7 @@ object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHoli
       case PrivateUseAdjustments => Some(PrivateUseAdjustmentSummaryHandler)
       case Incomes => Some(FurnishedHolidayLettingsIncomeSummaryHandler)
       case Expenses => Some(FurnishedHolidayLettingsExpenseSummaryHandler)
+      case BalancingCharges => Some(FurnishedHolidayLettingsBalancingChargesSummaryHandler)
       case _ => None
     }
   }

@@ -20,7 +20,7 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Expense$, Income$, PrivateUseAdjustment}
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Expense$, BalancingCharge$, Income$, PrivateUseAdjustment}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{BalancingCharge, Expense$, GoodsAndServicesOwnUse, Income$}
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{BalancingCharge$, Expenses, Income$, TaxPaid$}
 
@@ -115,6 +115,13 @@ object PrivateUseAdjustmentSummaryHandler extends SummaryHandler[uk.gov.hmrc.sel
   override val listName = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes.PrivateUseAdjustments.name
 }
 
+object FurnishedHolidayLettingsBalancingChargesSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.BalancingCharge] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.BalancingCharge] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.BalancingCharge.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.BalancingCharge] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.BalancingCharge.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.BalancingCharge.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes.BalancingCharges.name
+}
+
 object FurnishedHolidayLettingsIncomeSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income] {
   override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income.reads
   override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income.writes
@@ -156,3 +163,4 @@ object UKPropertyBalancingChargesSummaryHandler extends SummaryHandler[uk.gov.hm
   override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharge.example.copy(id = Some(id))
   override val listName = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes.BalancingCharges.name
 }
+

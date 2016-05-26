@@ -53,4 +53,14 @@ object SummaryTypes {
     )
   }
 
+  case object BalancingCharges extends uk.gov.hmrc.selfassessmentapi.domain.SummaryType {
+    override val name = "balancing-charges"
+    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.BalancingCharge.example)
+    override val title = "Sample furnished holiday lettings balancing charge"
+    override def description(action: String) = s"$action a furnished holiday lettings balancing charge summary for the specified source"
+    override val fieldDescriptions = Seq(
+      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount")
+    )
+  }
+
 }

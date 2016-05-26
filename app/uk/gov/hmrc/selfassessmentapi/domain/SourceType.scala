@@ -66,7 +66,7 @@ object SourceTypes {
   case object FurnishedHolidayLettings extends SourceType {
     override val name = "furnished-holiday-lettings"
     override lazy val example: JsValue = toJson(furnishedholidaylettings.FurnishedHolidayLettings.example)
-    override val summaryTypes = Seq(furnishedholidaylettings.SummaryTypes.Incomes, furnishedholidaylettings.SummaryTypes.Expenses, furnishedholidaylettings.SummaryTypes.PrivateUseAdjustments)
+    override val summaryTypes = Seq(furnishedholidaylettings.SummaryTypes.Incomes, furnishedholidaylettings.SummaryTypes.Expenses, furnishedholidaylettings.SummaryTypes.PrivateUseAdjustments, furnishedholidaylettings.SummaryTypes.BalancingCharges)
     override val title = "Sample furnished holiday lettings"
 
     override def description(action: String) = s"$action a furnished holiday letting"
@@ -80,6 +80,7 @@ object SourceTypes {
       PositiveMonetaryFieldDescription(name, "lossBroughtForward")
     )
   }
+
 
   case object UKProperty extends SourceType {
     override val name = "uk-property"

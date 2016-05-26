@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain.selfemployment
+package uk.gov.hmrc.selfassessmentapi.domain.employment
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.{apply => _, _}
-import ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
-class ExpenseSpec extends JsonSpec {
+import uk.gov.hmrc.selfassessmentapi.domain.employment.BenefitType._
+
+class BenefitSpec extends JsonSpec {
 
   "format" should {
-    "round trip Expense json" in {
-      ExpenseType.values.foreach {
-        cat => roundTripJson(Expense(`type` = cat, amount = BigDecimal(1000.99)))
+    "round trip Benefit json" in {
+      BenefitType.values.foreach {
+        cat => roundTripJson(Benefit(`type` = cat, amount = BigDecimal(1000.99)))
       }
     }
   }
@@ -33,45 +34,45 @@ class ExpenseSpec extends JsonSpec {
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val seExpense = Expense(`type` = CISPayments, amount = testAmount)
-        assertValidationError[Expense](
-          seExpense,
+        val empBenefit = Benefit(`type` = PrivateInsurance, amount = testAmount)
+        assertValidationError[Benefit](
+          empBenefit,
           Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-          "Expected invalid self-employment-income")
+          "Expected invalid employment benefit amount")
       }
     }
 
     "reject negative monetary amounts" in {
       Seq(BigDecimal(-1000.12), BigDecimal(-10.12)).foreach { testAmount =>
-        val seExpense = Expense(`type` = CISPayments, amount = testAmount)
-        assertValidationError[Expense](
-          seExpense,
+        val empBenefit = Benefit(`type` = PrivateInsurance, amount = testAmount)
+        assertValidationError[Benefit](
+          empBenefit,
           Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-          "Expected invalid self-employment-income")
+          "Expected invalid employment benefit amount")
       }
     }
 
     "reject negative amount" in {
-      val seExpense = Expense(`type` = CISPayments, amount = BigDecimal(-1000.12))
-      assertValidationError[Expense](
-        seExpense,
+      val empBenefit = Benefit(`type` = PrivateInsurance, amount = BigDecimal(-1000.12))
+      assertValidationError[Benefit](
+        empBenefit,
         Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected negative self-employment expense")
+        "Expected negative employment benefit amount")
     }
 
-    "reject invalid Expense category" in {
+    "reject invalid Benefit category" in {
       val json = Json.parse(
         """
-          |{ "type": "BAZ",
+          |{ "type": "BAR",
           |"amount" : 10000.45
           |}
         """.
           stripMargin)
 
-      assertValidationError[Expense](
+      assertValidationError[Benefit](
         json,
-        Map(("/type", NO_VALUE_FOUND) -> "Self Employment Expense type is invalid"),
-        s"Expected expense type not in {${ExpenseType.values.mkString(", ")}}")
+        Map(("/type", NO_VALUE_FOUND) -> "Employment Benefit type is invalid"),
+        s"Expected benefit type not in {${BenefitType.values.mkString(", ")}}")
     }
   }
 }

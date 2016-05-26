@@ -28,41 +28,6 @@ object PropertyLocationType extends Enumeration {
   val UK, EEA = Value
 }
 
-case class PrivateUseAdjustment(id: Option[SummaryId]=None, amount: BigDecimal)
-
-object PrivateUseAdjustment {
-
-  implicit val writes = Json.writes[PrivateUseAdjustment]
-
-  implicit val reads = (
-    Reads.pure(None) and
-      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
-    ) (PrivateUseAdjustment.apply _)
-
-  lazy val example = PrivateUseAdjustment(amount = BigDecimal(1234.34))
-}
-
-case class Allowances(capitalAllowance: BigDecimal)
-
-object Allowances {
-  implicit val writes = Json.writes[Allowances]
-
-  implicit val reads: Reads[Allowances] = (__ \ "capitalAllowance").read[BigDecimal](positiveAmountValidator("capitalAllowance")).map {
-    Allowances(_)
-  }
-}
-
-case class Adjustments(lossBroughtForward: BigDecimal)
-
-object Adjustments {
-  implicit val writes = Json.writes[Adjustments]
-
-  implicit val reads: Reads[Adjustments] = (__ \ "lossBroughtForward").read[BigDecimal](positiveAmountValidator("lossBroughtForward")).map {
-    Adjustments(_)
-  }
-}
-
-
 case class FurnishedHolidayLettings(id: Option[FurnishedHolidayLettingsId] = None,
                                     name: String,
                                     propertyLocation: PropertyLocationType,
@@ -86,6 +51,6 @@ object FurnishedHolidayLettings {
 
 
   lazy val example: FurnishedHolidayLettings = FurnishedHolidayLettings(None, "Holiday Cottage", PropertyLocationType.UK,
-    Some(Allowances(BigDecimal(1000.00))),
-    Some(Adjustments(BigDecimal(500.00))))
+    Some(Allowances(Some(BigDecimal(1000.00)))),
+    Some(Adjustments(Some(BigDecimal(500.00)))))
 }

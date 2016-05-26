@@ -38,8 +38,7 @@ class AllowancesSpec extends JsonSpec {
     def validateNegative(model: Allowances, fieldName: String) = {
       assertValidationError[Allowances](
         model,
-        Map((s"/$fieldName", INVALID_MONETARY_AMOUNT) -> s"$fieldName should be non-negative number up to 2 decimal values"),
-        "Expected valid self-employment-allowance")
+        Map(fieldName -> INVALID_MONETARY_AMOUNT), "Expected valid self-employment-allowance")
     }
 
     "reject negative annualInvestmentAllowance" in {

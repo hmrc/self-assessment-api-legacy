@@ -37,7 +37,7 @@ class FurnishedHolidayLettingsSpec extends JsonSpec {
         Some(Adjustments(BigDecimal(500.00))))
       assertValidationError[FurnishedHolidayLettings](
         fhl,
-        Map(("/name", MAX_FIELD_LENGTH_EXCEEDED) -> "field length exceeded the max 100 chars"),
+        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED),
         "Expected invalid furnished-holiday-lettings")
     }
 
@@ -49,8 +49,7 @@ class FurnishedHolidayLettingsSpec extends JsonSpec {
           Some(Adjustments(BigDecimal(500.00))))
         assertValidationError[FurnishedHolidayLettings](
           fhl,
-          Map(("/allowances/capitalAllowance", INVALID_MONETARY_AMOUNT) -> "capitalAllowance should be non-negative number up to 2 decimal values"),
-          "Expected invalid furnished-holiday-lettings")
+          Map("/allowances/capitalAllowance" -> INVALID_MONETARY_AMOUNT), "Expected invalid furnished-holiday-lettings")
       }
     }
 
@@ -61,8 +60,7 @@ class FurnishedHolidayLettingsSpec extends JsonSpec {
           Some(Adjustments(amount)))
         assertValidationError[FurnishedHolidayLettings](
           fhl,
-          Map(("/adjustments/lossBroughtForward", INVALID_MONETARY_AMOUNT) -> "lossBroughtForward should be non-negative number up to 2 decimal values"),
-          "Expected invalid furnished-holiday-lettings")
+          Map("/adjustments/lossBroughtForward" -> INVALID_MONETARY_AMOUNT), "Expected invalid furnished-holiday-lettings")
       }
     }
 

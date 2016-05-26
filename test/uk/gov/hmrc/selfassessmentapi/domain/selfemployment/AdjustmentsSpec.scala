@@ -38,8 +38,7 @@ class AdjustmentsSpec extends JsonSpec {
     def validateNegative(model: Adjustments, fieldName: String) = {
       assertValidationError[Adjustments](
         model,
-        Map((s"/$fieldName", INVALID_MONETARY_AMOUNT) -> s"$fieldName should be non-negative number up to 2 decimal values"),
-        "Expected valid self-employment-adjustments")
+        Map(fieldName -> INVALID_MONETARY_AMOUNT), "Expected valid self-employment-adjustments")
     }
 
     "reject negative includedNonTaxableProfits" in {

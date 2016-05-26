@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment
 
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.employment.Employment
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes.Incomes
+import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes.{Expenses, Incomes}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 
 object EmploymentsSourceHandler extends SourceHandler[Employment] {
@@ -29,6 +29,7 @@ object EmploymentsSourceHandler extends SourceHandler[Employment] {
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
       case Incomes => Some(EmploymentsIncomeSummaryHandler)
+      case Expenses => Some(EmploymentsExpenseSummaryHandler)
       case _ => None
     }
   }

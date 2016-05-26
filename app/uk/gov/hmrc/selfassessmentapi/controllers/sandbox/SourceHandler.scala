@@ -127,3 +127,12 @@ object UKPropertySourceHandler extends SourceHandler[ukproperty.UKProperty] {
     }
   }
 }
+
+object EmploymentsSourceHandler extends SourceHandler[employment.Employment] {
+  override implicit val reads: Reads[employment.Employment] = employment.Employment.reads
+  override implicit val writes: Writes[employment.Employment] = employment.Employment.writes
+  override def example(id: SourceId) = employment.Employment.example.copy(id = Some(id))
+  override val listName = SourceTypes.Employments.name
+  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = None
+}
+

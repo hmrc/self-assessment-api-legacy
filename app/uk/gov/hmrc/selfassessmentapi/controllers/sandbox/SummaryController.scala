@@ -43,6 +43,7 @@ object SummaryController extends BaseController with Links {
       case (FurnishedHolidayLettings, Some(PrivateUseAdjustment)) => PrivateUseAdjustmentSummaryHandler
       case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsIncome)) => FurnishedHolidayLettingsIncomeSummaryHandler
       case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsExpense)) => FurnishedHolidayLettingsExpenseSummaryHandler
+      case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsBalancingCharges)) => FurnishedHolidayLettingsBalancingChargesSummaryHandler
       case (UKProperty, Some(UKPropertyIncomes)) => UKPropertyIncomeSummaryHandler
       case (UKProperty, Some(UKPropertyExpenses)) => UKPropertyExpenseSummaryHandler
       case (UKProperty, Some(UKPropertyTaxPaid)) => UKPropertyTaxPaidSummaryHandler

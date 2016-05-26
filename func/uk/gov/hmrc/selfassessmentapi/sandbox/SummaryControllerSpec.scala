@@ -2,8 +2,9 @@ package uk.gov.hmrc.selfassessmentapi.sandbox
 
 import play.api.libs.json.Json._
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentIncome, SourceTypes}
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncomeType._
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
@@ -31,7 +32,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     "return a 400 validation error" in {
       given()
         .when()
-        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$sourceId/incomes", Some(toJson(SelfEmploymentIncome(None, Turnover, BigDecimal(-1000.12)))))
+        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$sourceId/incomes", Some(toJson(Income(None, Turnover, BigDecimal(-1000.12)))))
         .thenAssertThat()
         .statusIs(400)
     }

@@ -18,6 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 
 sealed trait SourceType extends Documentable {
   val name: String
@@ -34,7 +36,7 @@ object SourceTypes {
   case object SelfEmployments extends SourceType {
     override val name = "self-employments"
     override lazy val example: JsValue = toJson(SelfEmployment.example)
-    override val summaryTypes = Seq(SummaryTypes.SelfEmploymentIncomes, SummaryTypes.Expenses, SummaryTypes.GoodsAndServicesOwnUse, SummaryTypes.BalancingCharges)
+    override val summaryTypes = Seq(selfemployment.SummaryTypes.Incomes, selfemployment.SummaryTypes.Expenses, selfemployment.SummaryTypes.GoodsAndServicesOwnUse, selfemployment.SummaryTypes.BalancingCharges)
     override val title = "Sample self-employments"
 
     override def description(action: String) = s"$action a self-employment"
@@ -63,9 +65,8 @@ object SourceTypes {
 
   case object FurnishedHolidayLettings extends SourceType {
     override val name = "furnished-holiday-lettings"
-    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.FurnishedHolidayLettings.example)
-    override val summaryTypes = Seq(SummaryTypes.FurnishedHolidayLettingsIncome, SummaryTypes.FurnishedHolidayLettingsExpense,
-                                    SummaryTypes.PrivateUseAdjustment, SummaryTypes.FurnishedHolidayLettingsBalancingCharges)
+    override lazy val example: JsValue = toJson(furnishedholidaylettings.FurnishedHolidayLettings.example)
+    override val summaryTypes = Seq(furnishedholidaylettings.SummaryTypes.Incomes, furnishedholidaylettings.SummaryTypes.Expenses, furnishedholidaylettings.SummaryTypes.PrivateUseAdjustments, furnishedholidaylettings.SummaryTypes.BalancingCharges)
     override val title = "Sample furnished holiday lettings"
 
     override def description(action: String) = s"$action a furnished holiday letting"
@@ -83,8 +84,8 @@ object SourceTypes {
 
   case object UKProperty extends SourceType {
     override val name = "uk-property"
-    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.UKProperty.example)
-    override val summaryTypes = Seq(SummaryTypes.UKPropertyIncomes, SummaryTypes.UKPropertyExpenses, SummaryTypes.UKPropertyTaxPaid)
+    override lazy val example: JsValue = toJson(ukproperty.UKProperty.example)
+    override val summaryTypes = Seq(ukproperty.SummaryTypes.Incomes, ukproperty.SummaryTypes.Expenses, ukproperty.SummaryTypes.TaxPaid, ukproperty.SummaryTypes.BalancingCharges)
     override val title = "Sample UK property"
 
     override def description(action: String) = s"$action a UK property"

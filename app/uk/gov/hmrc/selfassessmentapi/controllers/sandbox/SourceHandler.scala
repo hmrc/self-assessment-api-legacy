@@ -20,6 +20,9 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.FurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.UKProperty
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -72,6 +75,8 @@ trait SourceHandler[T] {
           Left(ErrorResult(message = Some(s"could not parse body due to ${e.getMessage}")))
       }
     )
+
+  def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]]
 }
 
 object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
@@ -79,6 +84,17 @@ object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
   override implicit val writes: Writes[SelfEmployment] = SelfEmployment.selfEmploymentWrites
   override def example(id: SourceId) = SelfEmployment.example.copy(id = Some(id))
   override val listName = SourceTypes.SelfEmployments.name
+
+  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
+    import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes._
+    summaryType match {
+      case Incomes => Some(IncomesSummaryHandler)
+      case Expenses => Some(ExpensesSummaryHandler)
+      case BalancingCharges => Some(BalancingChargesSummaryHandler)
+      case GoodsAndServicesOwnUse => Some(GoodsAndServiceOwnUseSummaryHandler)
+      case _ => None
+    }
+  }
 }
 
 object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHolidayLettings] {
@@ -86,6 +102,17 @@ object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHoli
   override implicit val writes: Writes[FurnishedHolidayLettings] = FurnishedHolidayLettings.writes
   override def example(id: SourceId) = FurnishedHolidayLettings.example.copy(id = Some(id))
   override val listName = SourceTypes.FurnishedHolidayLettings.name
+
+  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
+    import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes._
+    summaryType match {
+      case PrivateUseAdjustments => Some(PrivateUseAdjustmentSummaryHandler)
+      case Incomes => Some(FurnishedHolidayLettingsIncomeSummaryHandler)
+      case Expenses => Some(FurnishedHolidayLettingsExpenseSummaryHandler)
+      case BalancingCharges => Some(FurnishedHolidayLettingsBalancingChargesSummaryHandler)
+      case _ => None
+    }
+  }
 }
 
 object UKPropertySourceHandler extends SourceHandler[UKProperty] {
@@ -93,4 +120,15 @@ object UKPropertySourceHandler extends SourceHandler[UKProperty] {
   override implicit val writes: Writes[UKProperty] = UKProperty.writes
   override def example(id: SourceId) = UKProperty.example.copy(id = Some(id))
   override val listName = SourceTypes.UKProperty.name
+
+  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
+    import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
+    summaryType match {
+      case Incomes => Some(UKPropertyIncomeSummaryHandler)
+      case Expenses => Some(UKPropertyExpenseSummaryHandler)
+      case TaxPaid => Some(UKPropertyTaxPaidSummaryHandler)
+      case BalancingCharges => Some(UKPropertyBalancingChargesSummaryHandler)
+      case _ => None
+    }
+  }
 }

@@ -21,7 +21,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

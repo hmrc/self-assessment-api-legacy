@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain
+package uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings
 
-import play.api.libs.json.JsValue
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-trait SummaryType extends Documentable {
-  val name: String
-  val example: JsValue
+
+case class BalancingCharge(id: Option[SummaryId]=None, amount: BigDecimal)
+
+object BalancingCharge {
+
+  implicit val writes = Json.writes[BalancingCharge]
+
+  implicit val reads = (
+    Reads.pure(None) and
+      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
+    ) (BalancingCharge.apply _)
+
+  lazy val example = BalancingCharge(amount = BigDecimal(1234.34))
 }

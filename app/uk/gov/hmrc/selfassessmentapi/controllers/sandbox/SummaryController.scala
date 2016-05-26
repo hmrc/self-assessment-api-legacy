@@ -27,29 +27,16 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object SummaryController extends BaseController with Links {
+object SummaryController extends BaseController with Links with SourceTypeSupport {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
   def handler(sourceType: SourceType, summaryTypeName: String): SummaryHandler[_] = {
-    import SourceTypes._
-    import SummaryTypes._
     val summaryType = sourceType.summaryTypes.find(_.name == summaryTypeName)
-    (sourceType, summaryType) match {
-      case (SelfEmployments, Some(SelfEmploymentIncomes)) => IncomesSummaryHandler
-      case (SelfEmployments, Some(Expenses)) => ExpensesSummaryHandler
-      case (SelfEmployments, Some(BalancingCharges)) => BalancingChargesSummaryHandler
-      case (SelfEmployments, Some(GoodsAndServicesOwnUse)) => GoodsAndServiceOwnUseSummaryHandler
-      case (FurnishedHolidayLettings, Some(PrivateUseAdjustment)) => PrivateUseAdjustmentSummaryHandler
-      case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsIncome)) => FurnishedHolidayLettingsIncomeSummaryHandler
-      case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsExpense)) => FurnishedHolidayLettingsExpenseSummaryHandler
-      case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsBalancingCharges)) => FurnishedHolidayLettingsBalancingChargesSummaryHandler
-      case (UKProperty, Some(UKPropertyIncomes)) => UKPropertyIncomeSummaryHandler
-      case (UKProperty, Some(UKPropertyExpenses)) => UKPropertyExpenseSummaryHandler
-      case (UKProperty, Some(UKPropertyTaxPaid)) => UKPropertyTaxPaidSummaryHandler
-      case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "$summaryTypeName""")
-    }
+    val handler = summaryType.flatMap(x => sourceHandler(sourceType).summaryHandler(x))
+    handler.getOrElse(throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "$summaryTypeName"""))
   }
+
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = Action.async(parse.json) { implicit request =>
     handler(sourceType, summaryTypeName).create(request.body) map {

@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain
+package uk.gov.hmrc.selfassessmentapi.domain.ukproperty
 
-import play.api.libs.json.JsValue
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-trait SummaryType extends Documentable {
-  val name: String
-  val example: JsValue
+case class TaxPaid(id: Option[SummaryId] = None,
+                   amount: BigDecimal)
+
+object TaxPaid {
+
+  implicit val writes = Json.writes[TaxPaid]
+  implicit val reads: Reads[TaxPaid] = (
+    Reads.pure(None) and
+      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
+    ) (TaxPaid.apply _)
+
+  lazy val example: TaxPaid = TaxPaid(None, BigDecimal(1000))
 }

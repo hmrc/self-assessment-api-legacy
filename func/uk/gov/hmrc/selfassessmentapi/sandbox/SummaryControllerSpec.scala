@@ -16,8 +16,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     "return a 201 when the resource is created" in {
       SourceTypes.types.foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
-          given()
-            .when()
+          when()
             .post(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}", Some(summaryType.example))
             .thenAssertThat()
             .statusIs(201)
@@ -30,8 +29,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   // Only a single validation test is needed to show the validator is invoked. All validations are tested at a unit level.
   "Create summary with invalid data" should {
     "return a 400 validation error" in {
-      given()
-        .when()
+      when()
         .post(s"/sandbox/$saUtr/$taxYear/self-employments/$sourceId/incomes", Some(toJson(Income(None, Turnover, BigDecimal(-1000.12)))))
         .thenAssertThat()
         .statusIs(400)
@@ -42,8 +40,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     "return a HAL resource" in {
       SourceTypes.types.foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
-          given()
-            .when()
+          when()
             .get(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId")
             .thenAssertThat()
             .statusIs(200)
@@ -58,8 +55,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     "return all summaries as HAL resources" in {
       SourceTypes.types.foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
-          given()
-            .when()
+          when()
             .get(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}")
             .thenAssertThat()
             .statusIs(200)
@@ -77,8 +73,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     "return a 200 with HAL resource" in {
       SourceTypes.types.foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
-          given()
-            .when()
+          when()
             .put(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId", Some(summaryType.example))
             .thenAssertThat()
             .statusIs(200)
@@ -93,8 +88,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     "return a 204 response" in {
       SourceTypes.types.foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
-          given()
-            .when()
+          when()
             .delete(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId")
             .thenAssertThat()
             .statusIs(204)

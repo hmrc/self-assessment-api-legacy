@@ -6,8 +6,7 @@ class CustomerResolverControllerSpec extends BaseFunctionalSpec {
 
   "Sandbox Customer Resolver" should {
     "return a 200 response with a link to /self-assessment/utr" in {
-      given()
-        .when()
+      when()
         .get("/sandbox")
         .thenAssertThat()
         .statusIs(200)

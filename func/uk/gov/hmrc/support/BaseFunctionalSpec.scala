@@ -11,8 +11,9 @@ import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
 
 import scala.util.matching.Regex
 
@@ -40,11 +41,32 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
   }
 
   class Assertions(response: HttpResponse) {
+    def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, saUtr: SaUtr, taxYear: String) = {
+      sourceType.summaryTypes.foreach { summaryType =>
+       bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
+      }
+    }
+
+    def bodyHasSummaryLinks(sourceType: SourceType, saUtr: SaUtr, taxYear: String) = {
+      sourceType.summaryTypes.foreach { summaryType =>
+        bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
+      }
+      this
+    }
+
+    def bodyHasLinksForAllSourceTypes(saUtr: SaUtr, taxYear: String) = {
+      SourceTypes.types.foreach { sourceType =>
+        bodyHasLink(sourceType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}")
+      }
+      this
+    }
+
     def resourceIsNotImplemented() =  {
       statusIs(501)
         .contentTypeIsJson()
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)
         .body(_ \ "message").is(ErrorNotImplemented.message)
+      this
     }
 
     def contentTypeIsXml() = contentTypeIs("application/xml")

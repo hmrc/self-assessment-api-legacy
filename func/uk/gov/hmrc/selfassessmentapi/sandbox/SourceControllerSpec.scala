@@ -13,42 +13,31 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
     "return a 201 response with links to newly created source" in {
       SourceTypes.types.foreach { sourceType =>
-        val resp = given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
+        when()
           .post(s"/sandbox/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example))
           .thenAssertThat()
           .statusIs(201)
           .contentTypeIsHalJson()
           .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
-
-        sourceType.summaryTypes.foreach { summaryType =>
-          resp.bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
-        }
+          .bodyHasSummaryLinks(sourceType, saUtr, taxYear)
       }
     }
 
     "return a valid response containing an existing source" in {
       SourceTypes.types.foreach { sourceType =>
-        val resp = given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
+        when()
           .get(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId")
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsHalJson()
           .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId")
-
-        sourceType.summaryTypes.foreach { summaryType =>
-          resp.bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
-        }
+          .bodyHasSummaryLinks(sourceType, sourceId, saUtr, taxYear)
       }
     }
 
     "return a valid response when retrieving list of sources" in {
       SourceTypes.types.foreach { sourceType =>
-        given()
-          .when()
+        when()
           .get(s"/sandbox/$saUtr/$taxYear/${sourceType.name}")
           .thenAssertThat()
           .statusIs(200)
@@ -62,18 +51,13 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
     "return 200 and a valid response when an existing source is modified" in {
       SourceTypes.types.foreach { sourceType =>
-        val resp = given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
+        when()
           .put(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId", Some(sourceType.example))
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsHalJson()
           .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId".r)
-
-        sourceType.summaryTypes.foreach { summaryType =>
-          resp.bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
-        }
+          .bodyHasSummaryLinks(sourceType, sourceId, saUtr, taxYear)
       }
     }
 

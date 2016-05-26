@@ -17,7 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.services
 
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmployment, SelfEmploymentId}
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 
 import scala.concurrent.Future
 

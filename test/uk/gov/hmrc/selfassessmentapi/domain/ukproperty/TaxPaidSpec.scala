@@ -19,31 +19,31 @@ package uk.gov.hmrc.selfassessmentapi.domain.ukproperty
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
 
-class BalancingChargesSpec extends JsonSpec {
+class TaxPaidSpec extends JsonSpec {
 
   "format" should {
-    "round trip BalancingCharges json" in {
-      roundTripJson(BalancingCharge(amount = BigDecimal(1000)))
+    "round trip TaxPaid json" in {
+      roundTripJson(TaxPaid(amount = BigDecimal(1000)))
     }
   }
 
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.12456), BigDecimal(1000.123454), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val income = BalancingCharge(amount = testAmount)
-        assertValidationError[BalancingCharge](
+        val income = TaxPaid(amount = testAmount)
+        assertValidationError[TaxPaid](
           income,
           Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-          "Expected invalid amount with more than 2 decimal places")
+          "Expected invalid uk-property-tax-paid with more than 2 decimal places")
       }
     }
 
     "reject negative amount" in {
-      val income = BalancingCharge(amount = BigDecimal(-1000.13))
-      assertValidationError[BalancingCharge](
+      val income = TaxPaid(amount = BigDecimal(-1000.13))
+      assertValidationError[TaxPaid](
         income,
         Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected negative amount")
+        "Expected negative uk-property-tax-paid")
     }
   }
 }

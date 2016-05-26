@@ -20,7 +20,9 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharges
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Expense$, Income$, PrivateUseAdjustment}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{BalancingCharge, Expense$, GoodsAndServicesOwnUse, Income$}
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{BalancingCharge$, Expenses, Income$, TaxPaid$}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -77,83 +79,80 @@ trait SummaryHandler[T] {
     )
 }
 
-object IncomesSummaryHandler extends SummaryHandler[SelfEmploymentIncome] {
-  override implicit val reads: Reads[SelfEmploymentIncome] = SelfEmploymentIncome.reads
-  override implicit val writes: Writes[SelfEmploymentIncome] = SelfEmploymentIncome.writes
-  override def example(id: SummaryId) = SelfEmploymentIncome.example.copy(id = Some(id))
-  override val listName = SummaryTypes.SelfEmploymentIncomes.name
+object IncomesSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income] = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income] = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.Incomes.name
 }
 
-object ExpensesSummaryHandler extends SummaryHandler[SelfEmploymentExpense] {
-  override implicit val reads: Reads[SelfEmploymentExpense] = SelfEmploymentExpense.reads
-  override implicit val writes: Writes[SelfEmploymentExpense] = SelfEmploymentExpense.writes
-  override def example(id: SummaryId) = SelfEmploymentExpense.example.copy(id = Some(id))
-  override val listName = SummaryTypes.Expenses.name
+object ExpensesSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Expense] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Expense] = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Expense.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Expense] = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Expense.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Expense.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.Expenses.name
 }
 
-object BalancingChargesSummaryHandler extends SummaryHandler[BalancingCharge] {
-  override implicit val reads: Reads[BalancingCharge] = BalancingCharge.reads
-  override implicit val writes: Writes[BalancingCharge] = BalancingCharge.writes
-  override def example(id: SummaryId) = BalancingCharge.example.copy(id = Some(id))
-  override val listName = SummaryTypes.BalancingCharges.name
-}
-
-
-object GoodsAndServiceOwnUseSummaryHandler extends SummaryHandler[GoodsAndServicesOwnUse] {
-  override implicit val reads: Reads[GoodsAndServicesOwnUse] = GoodsAndServicesOwnUse.reads
-  override implicit val writes: Writes[GoodsAndServicesOwnUse] = GoodsAndServicesOwnUse.writes
-  override def example(id: SummaryId) = GoodsAndServicesOwnUse.example.copy(id = Some(id))
-  override val listName = SummaryTypes.GoodsAndServicesOwnUse.name
-}
-
-object PrivateUseAdjustmentSummaryHandler extends SummaryHandler[PrivateUseAdjustment] {
-  override implicit val reads: Reads[PrivateUseAdjustment] = PrivateUseAdjustment.reads
-  override implicit val writes: Writes[PrivateUseAdjustment] = PrivateUseAdjustment.writes
-  override def example(id: SummaryId) = PrivateUseAdjustment.example.copy(id = Some(id))
-  override val listName = SummaryTypes.PrivateUseAdjustment.name
-}
-
-object FurnishedHolidayLettingsIncomeSummaryHandler extends SummaryHandler[FurnishedHolidayLettingsIncome] {
-  override implicit val reads: Reads[FurnishedHolidayLettingsIncome] = FurnishedHolidayLettingsIncome.reads
-  override implicit val writes: Writes[FurnishedHolidayLettingsIncome] = FurnishedHolidayLettingsIncome.writes
-  override def example(id: SummaryId) = FurnishedHolidayLettingsIncome.example.copy(id = Some(id))
-  override val listName = SummaryTypes.FurnishedHolidayLettingsIncome.name
-}
-
-object FurnishedHolidayLettingsExpenseSummaryHandler extends SummaryHandler[FurnishedHolidayLettingsExpense] {
-  override implicit val reads: Reads[FurnishedHolidayLettingsExpense] = FurnishedHolidayLettingsExpense.reads
-  override implicit val writes: Writes[FurnishedHolidayLettingsExpense] = FurnishedHolidayLettingsExpense.writes
-  override def example(id: SummaryId) = FurnishedHolidayLettingsExpense.example.copy(id = Some(id))
-  override val listName = SummaryTypes.FurnishedHolidayLettingsExpense.name
-}
-
-object UKPropertyIncomeSummaryHandler extends SummaryHandler[UKPropertyIncome] {
-  override implicit val reads: Reads[UKPropertyIncome] = UKPropertyIncome.reads
-  override implicit val writes: Writes[UKPropertyIncome] = UKPropertyIncome.writes
-  override def example(id: SummaryId) = UKPropertyIncome.example.copy(id = Some(id))
-  override val listName = SummaryTypes.UKPropertyIncomes.name
-}
-
-object UKPropertyExpenseSummaryHandler extends SummaryHandler[UKPropertyExpense] {
-  override implicit val reads: Reads[UKPropertyExpense] = UKPropertyExpense.reads
-  override implicit val writes: Writes[UKPropertyExpense] = UKPropertyExpense.writes
-  override def example(id: SummaryId) = UKPropertyExpense.example.copy(id = Some(id))
-  override val listName = SummaryTypes.UKPropertyExpenses.name
-}
-
-object UKPropertyTaxPaidSummaryHandler extends SummaryHandler[UKPropertyTaxPaid] {
-  override implicit val reads: Reads[UKPropertyTaxPaid] = UKPropertyTaxPaid.reads
-  override implicit val writes: Writes[UKPropertyTaxPaid] = UKPropertyTaxPaid.writes
-  override def example(id: SummaryId) = UKPropertyTaxPaid.example.copy(id = Some(id))
-  override val listName = SummaryTypes.UKPropertyTaxPaid.name
-}
-
-object UKPropertyBalancingChargesSummaryHandler extends SummaryHandler[BalancingCharges] {
-  override implicit val reads: Reads[BalancingCharges] = BalancingCharges.reads
-  override implicit val writes: Writes[BalancingCharges] = BalancingCharges.writes
-  override def example(id: SummaryId) = BalancingCharges.example.copy(id = Some(id))
-  override val listName = SummaryTypes.UKPropertyBalancingCharges.name
+object BalancingChargesSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingCharge] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingCharge] = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingCharge.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingCharge] = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingCharge.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingCharge.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.BalancingCharges.name
 }
 
 
+object GoodsAndServiceOwnUseSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.GoodsAndServicesOwnUse] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.GoodsAndServicesOwnUse] = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.GoodsAndServicesOwnUse.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.selfemployment.GoodsAndServicesOwnUse] = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.GoodsAndServicesOwnUse.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.GoodsAndServicesOwnUse.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.GoodsAndServicesOwnUse.name
+}
 
+object PrivateUseAdjustmentSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PrivateUseAdjustment] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PrivateUseAdjustment] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PrivateUseAdjustment.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PrivateUseAdjustment] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PrivateUseAdjustment.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PrivateUseAdjustment.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes.PrivateUseAdjustments.name
+}
+
+object FurnishedHolidayLettingsIncomeSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Income.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes.Incomes.name
+}
+
+object FurnishedHolidayLettingsExpenseSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Expense] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Expense] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Expense.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Expense] = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Expense.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Expense.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes.Expenses.name
+}
+
+object UKPropertyIncomeSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Income] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Income] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Income.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Income] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Income.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Income.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes.Incomes.name
+}
+
+object UKPropertyExpenseSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Expenses] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Expenses] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Expenses.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Expenses] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Expenses.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.Expenses.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes.Expenses.name
+}
+
+object UKPropertyTaxPaidSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes.TaxPaid.name
+}
+
+object UKPropertyBalancingChargesSummaryHandler extends SummaryHandler[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharge] {
+  override implicit val reads: Reads[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharge] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharge.reads
+  override implicit val writes: Writes[uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharge] = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharge.writes
+  override def example(id: SummaryId) = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharge.example.copy(id = Some(id))
+  override val listName = uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes.BalancingCharges.name
+}

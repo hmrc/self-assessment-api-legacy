@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain
+package uk.gov.hmrc.selfassessmentapi.domain.selfemployment
 
-import play.api.libs.json.JsValue
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-trait SummaryType extends Documentable {
-  val name: String
-  val example: JsValue
+case class GoodsAndServicesOwnUse(id: Option[String] = None, amount: BigDecimal)
+
+object GoodsAndServicesOwnUse {
+  implicit val writes = Json.writes[GoodsAndServicesOwnUse]
+
+  implicit val reads = (
+    Reads.pure(None) and
+      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
+    ) (GoodsAndServicesOwnUse.apply _)
+
+  lazy val example: GoodsAndServicesOwnUse = GoodsAndServicesOwnUse(amount = BigDecimal(1000))
 }

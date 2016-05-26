@@ -24,6 +24,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
+import SourceTypes._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -32,22 +33,45 @@ object SummaryController extends BaseController with Links {
   override lazy val context: String = AppContext.apiGatewayContext
 
   def handler(sourceType: SourceType, summaryTypeName: String): SummaryHandler[_] = {
-    import SourceTypes._
-    import SummaryTypes._
     val summaryType = sourceType.summaryTypes.find(_.name == summaryTypeName)
-    (sourceType, summaryType) match {
-      case (SelfEmployments, Some(SelfEmploymentIncomes)) => IncomesSummaryHandler
-      case (SelfEmployments, Some(Expenses)) => ExpensesSummaryHandler
-      case (SelfEmployments, Some(BalancingCharges)) => BalancingChargesSummaryHandler
-      case (SelfEmployments, Some(GoodsAndServicesOwnUse)) => GoodsAndServiceOwnUseSummaryHandler
-      case (FurnishedHolidayLettings, Some(PrivateUseAdjustment)) => PrivateUseAdjustmentSummaryHandler
-      case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsIncome)) => FurnishedHolidayLettingsIncomeSummaryHandler
-      case (FurnishedHolidayLettings, Some(FurnishedHolidayLettingsExpense)) => FurnishedHolidayLettingsExpenseSummaryHandler
-      case (UKProperty, Some(UKPropertyIncomes)) => UKPropertyIncomeSummaryHandler
-      case (UKProperty, Some(UKPropertyExpenses)) => UKPropertyExpenseSummaryHandler
-      case (UKProperty, Some(UKPropertyTaxPaid)) => UKPropertyTaxPaidSummaryHandler
-      case (UKProperty, Some(UKPropertyBalancingCharges)) => UKPropertyBalancingChargesSummaryHandler
-      case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "$summaryTypeName""")
+    val handler = (sourceType, summaryType) match {
+      case (SelfEmployments, Some(st)) => selfEmploymentSourceHandler(st)
+      case (FurnishedHolidayLettings, Some(st)) => furnishedHolidayLettingsSourceHandler(st)
+      case (UKProperty, Some(st)) => ukPropertySourceHandler(st)
+      case _ => None
+    }
+    handler.getOrElse(throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "$summaryTypeName"""))
+  }
+
+  private def furnishedHolidayLettingsSourceHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
+    import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes._
+    summaryType match {
+      case PrivateUseAdjustments => Some(PrivateUseAdjustmentSummaryHandler)
+      case Incomes => Some(FurnishedHolidayLettingsIncomeSummaryHandler)
+      case Expenses => Some(FurnishedHolidayLettingsExpenseSummaryHandler)
+      case _ => None
+    }
+  }
+
+  private def selfEmploymentSourceHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
+    import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes._
+    summaryType match {
+      case Incomes => Some(IncomesSummaryHandler)
+      case Expenses => Some(ExpensesSummaryHandler)
+      case BalancingCharges => Some(BalancingChargesSummaryHandler)
+      case GoodsAndServicesOwnUse => Some(GoodsAndServiceOwnUseSummaryHandler)
+      case _ => None
+    }
+  }
+
+  private def ukPropertySourceHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
+    import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
+    summaryType match {
+      case Incomes => Some(UKPropertyIncomeSummaryHandler)
+      case Expenses => Some(UKPropertyExpenseSummaryHandler)
+      case TaxPaid => Some(UKPropertyTaxPaidSummaryHandler)
+      case BalancingCharges => Some(UKPropertyBalancingChargesSummaryHandler)
+      case _ => None
     }
   }
 

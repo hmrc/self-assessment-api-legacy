@@ -14,36 +14,39 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain.ukproperty
+package uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings
 
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
+import ExpenseType.PremisesRunningCosts
 
-class BalancingChargesSpec extends JsonSpec {
+class ExpenseSpec extends JsonSpec {
 
   "format" should {
-    "round trip BalancingCharges json" in {
-      roundTripJson(BalancingCharge(amount = BigDecimal(1000)))
+    "round trip Expense json" in {
+      ExpenseType.values.foreach { expenseType =>
+        roundTripJson(Expense(`type` = expenseType, amount = BigDecimal(1000)))
+      }
     }
   }
 
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.12456), BigDecimal(1000.123454), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val income = BalancingCharge(amount = testAmount)
-        assertValidationError[BalancingCharge](
-          income,
+        val expense = Expense(`type` = PremisesRunningCosts, amount = testAmount)
+        assertValidationError[Expense](
+          expense,
           Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-          "Expected invalid amount with more than 2 decimal places")
+          "Expected invalid furnished-holiday-lettings-expense")
       }
     }
 
     "reject negative amount" in {
-      val income = BalancingCharge(amount = BigDecimal(-1000.13))
-      assertValidationError[BalancingCharge](
-        income,
+      val expense = Expense(`type` = PremisesRunningCosts, amount = BigDecimal(-1000.13))
+      assertValidationError[Expense](
+        expense,
         Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected negative amount")
+        "Expected negative furnished-holiday-lettings-expense")
     }
   }
 }

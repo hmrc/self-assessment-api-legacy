@@ -21,7 +21,8 @@ import reactivemongo.api.DB
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmployment, SelfEmploymentId}
+import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
 
 import scala.concurrent.ExecutionContext.Implicits.global

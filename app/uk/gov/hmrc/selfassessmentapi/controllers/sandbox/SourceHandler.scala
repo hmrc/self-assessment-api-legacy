@@ -20,6 +20,9 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.FurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.UKProperty
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}

@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 
 case class MongoSelfEmployment(id: BSONObjectID, name: String, commencementDate: LocalDate) {
   def toSelfEmployment = SelfEmployment(Some(id.stringify), name, commencementDate)

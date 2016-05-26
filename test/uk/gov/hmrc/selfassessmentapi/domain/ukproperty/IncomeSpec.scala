@@ -16,34 +16,51 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.ukproperty
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType._
 
-class BalancingChargesSpec extends JsonSpec {
+class IncomeSpec extends JsonSpec {
 
   "format" should {
-    "round trip BalancingCharges json" in {
-      roundTripJson(BalancingCharge(amount = BigDecimal(1000)))
+
+    "round trip valid Income json" in {
+      roundTripJson(Income(`type` = RentIncome, amount = BigDecimal(1000.99)))
     }
   }
 
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
-      Seq(BigDecimal(1000.123), BigDecimal(1000.12456), BigDecimal(1000.123454), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val income = BalancingCharge(amount = testAmount)
-        assertValidationError[BalancingCharge](
-          income,
+      Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
+        val value = Income(`type` = RentIncome, amount = testAmount)
+        assertValidationError[Income](
+          value,
           Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-          "Expected invalid amount with more than 2 decimal places")
+          "Expected invalid uk-property-income with more than 2 decimal places")
       }
     }
 
+    "reject invalid Income type" in {
+      val json = Json.parse(
+        """
+          |{ "type": "FOO",
+          |"amount" : 10000.45
+          |}
+        """.stripMargin)
+
+      assertValidationError[Income](
+        json,
+        Map(("/type", NO_VALUE_FOUND) -> "UK Property Income type is invalid"),
+        "should fail with invalid type")
+    }
+
     "reject negative amount" in {
-      val income = BalancingCharge(amount = BigDecimal(-1000.13))
-      assertValidationError[BalancingCharge](
-        income,
+      val seIncome = Income(`type` = RentIncome, amount = BigDecimal(-1000.12))
+      assertValidationError[Income](
+        seIncome,
         Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected negative amount")
+        "should fail with INVALID_MONETARY_AMOUNT error")
     }
   }
 }

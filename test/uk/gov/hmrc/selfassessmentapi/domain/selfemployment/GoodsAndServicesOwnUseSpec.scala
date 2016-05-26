@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain.ukproperty
+package uk.gov.hmrc.selfassessmentapi.domain.selfemployment
 
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
 
-class BalancingChargesSpec extends JsonSpec {
+class GoodsAndServicesOwnUseSpec extends JsonSpec {
 
   "format" should {
-    "round trip BalancingCharges json" in {
-      roundTripJson(BalancingCharge(amount = BigDecimal(1000)))
+    "round trip GoodsAndServicesOwnUse json" in {
+      roundTripJson(GoodsAndServicesOwnUse(amount = BigDecimal(1000)))
     }
   }
 
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.12456), BigDecimal(1000.123454), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val income = BalancingCharge(amount = testAmount)
-        assertValidationError[BalancingCharge](
-          income,
+        val goodsAndServiceOwnUseId = GoodsAndServicesOwnUse(amount = testAmount)
+        assertValidationError[GoodsAndServicesOwnUse](
+          goodsAndServiceOwnUseId,
           Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-          "Expected invalid amount with more than 2 decimal places")
+          "Expected invalid self-employment-goods-and-services-for-own-use")
       }
     }
 
     "reject negative amount" in {
-      val income = BalancingCharge(amount = BigDecimal(-1000.13))
-      assertValidationError[BalancingCharge](
-        income,
+      val seExpense = GoodsAndServicesOwnUse(amount = BigDecimal(-1000.12))
+      assertValidationError[GoodsAndServicesOwnUse](
+        seExpense,
         Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected negative amount")
+        "Expected negative self-employment-goods-and-services-for-own-use")
     }
   }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmrc.selfassessmentapi.sandbox
 import play.api.libs.json.Json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UKProperty
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
 import uk.gov.hmrc.support.BaseFunctionalSpec
@@ -71,7 +72,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "Update summary" should {
     "return a 200 with HAL resource" in {
-      SourceTypes.types.foreach { sourceType =>
+      Seq(UKProperty).foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
           when()
             .put(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId", Some(summaryType.example))

@@ -26,7 +26,7 @@ sealed trait SourceType extends Documentable {
 }
 
 object SourceTypes {
-  val types = Seq(SelfEmployments, FurnishedHolidayLettings, UKProperty)
+  val types = Seq(SelfEmployments, FurnishedHolidayLettings, UKProperty, Employments)
   private val typesByName = types.map(x => x.name -> x).toMap
 
   def fromName(name: String): Option[SourceType] = typesByName.get(name)
@@ -98,6 +98,19 @@ object SourceTypes {
       FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "lossBroughtForward"),
       PositiveMonetaryFieldDescription(name, "rentARoomRelief", optional = true)
+    )
+  }
+
+  case object Employments extends SourceType {
+
+    override val name: String = "employments"
+    override val summaryTypes: Seq[SummaryType] = Seq()
+    override val example: JsValue = toJson(employment.Employment.example)
+
+    override def description(action: String): String =  s"$action an employment"
+    override val title: String = "Sample employment"
+    override val fieldDescriptions = Seq(
+      FullFieldDescription(name, "name", "String", employment.Employment.example.name, "Name of the employer")
     )
   }
 

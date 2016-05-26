@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
+package uk.gov.hmrc.selfassessmentapi.domain.employment
 
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-trait SourceTypeSupport {
 
-  def sourceHandler(sourceType: SourceType): SourceHandler[_] = sourceType match {
-    case SourceTypes.SelfEmployments => SelfEmploymentSourceHandler
-    case SourceTypes.FurnishedHolidayLettings => FurnishedHolidayLettingsSourceHandler
-    case SourceTypes.UKProperty => UKPropertySourceHandler
-    case SourceTypes.Employments => EmploymentsSourceHandler
-  }
+case class Employment(id: Option[SourceId]=None, name: String)
 
+object Employment {
+
+  implicit val writes = Json.writes[Employment]
+
+  implicit val reads = (
+    Reads.pure(None) and
+      (__ \ "name").read[String](lengthValidator)
+    ) (Employment.apply _)
+
+  lazy val example = Employment(name = "Acme Corporation")
 }

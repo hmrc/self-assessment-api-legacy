@@ -20,9 +20,6 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Expense$, BalancingCharge$, Income$, PrivateUseAdjustment}
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{BalancingCharge, Expense$, GoodsAndServicesOwnUse, Income$}
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{BalancingCharge$, Expenses, Income$, TaxPaid$}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}

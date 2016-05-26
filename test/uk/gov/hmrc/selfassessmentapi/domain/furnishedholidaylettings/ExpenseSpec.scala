@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
 import ExpenseType.PremisesRunningCosts
@@ -31,6 +32,21 @@ class ExpenseSpec extends JsonSpec {
   }
 
   "validate" should {
+
+    "reject invalid Expense type" in {
+      val json = Json.parse(
+        """
+          |{ "type": "Blah",
+          |"amount" : 10000.45
+          |}
+        """.stripMargin)
+
+      assertValidationError[Expense](
+        json,
+        Map(("/type", NO_VALUE_FOUND) -> "Furnished Holiday Lettings Expense type is invalid"),
+        "Expected invalid furnished-holiday-lettings-expense")
+    }
+
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.12456), BigDecimal(1000.123454), BigDecimal(1000.123456789)).foreach { testAmount =>
         val expense = Expense(`type` = PremisesRunningCosts, amount = testAmount)

@@ -72,7 +72,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "Update summary" should {
     "return a 200 with HAL resource" in {
-      Seq(UKProperty).foreach { sourceType =>
+      SourceTypes.types.foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
           when()
             .put(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId", Some(summaryType.example))

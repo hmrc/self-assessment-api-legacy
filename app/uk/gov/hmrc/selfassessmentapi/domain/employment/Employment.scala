@@ -22,7 +22,7 @@ import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 
-case class Employment(id: Option[SummaryId]=None, name: String)
+case class Employment(id: Option[SourceId]=None, name: String)
 
 object Employment {
 

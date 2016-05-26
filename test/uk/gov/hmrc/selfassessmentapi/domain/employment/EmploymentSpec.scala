@@ -28,7 +28,7 @@ class EmploymentSpec extends JsonSpec {
   }
 
   "validate" should {
-    "reject name longer than 100 characters and commencement date after the present date" in {
+    "reject name longer than 100 characters" in {
 
       val se = Employment(name = "a" * 101)
 

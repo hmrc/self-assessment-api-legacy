@@ -6,7 +6,8 @@ class CustomerResolverControllerSpec extends BaseFunctionalSpec {
 
   "Live Customer Resolver" should {
     "return a 200 response with a link to /self-assessment/utr when the customer is enrolled in SA" in {
-      given().userIsEnrolledInSa(saUtr)
+      given()
+        .userIsEnrolledInSa(saUtr)
         .when()
         .get("/")
         .thenAssertThat()
@@ -16,7 +17,8 @@ class CustomerResolverControllerSpec extends BaseFunctionalSpec {
     }
 
     "return a 401 response the customer is not enrolled in SA" in {
-      given().userIsNotEnrolledInSa
+      given()
+        .userIsNotEnrolledInSa
         .when()
         .get("/")
         .thenAssertThat()

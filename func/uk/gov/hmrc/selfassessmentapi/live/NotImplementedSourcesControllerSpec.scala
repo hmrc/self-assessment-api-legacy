@@ -11,7 +11,8 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
   "Create source" should {
     "return a resourceIsNotImplemented response" in {
       SourceTypes.types.foreach { source =>
-        given().userIsAuthorisedForTheResource(saUtr)
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
           .when()
           .post(s"/$saUtr/$taxYear/${source.name}", Some(source.example))
           .thenAssertThat()
@@ -23,7 +24,8 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
   "Find source by id" should {
     "return a resourceIsNotImplemented response" in {
       SourceTypes.types.foreach { source =>
-        given().userIsAuthorisedForTheResource(saUtr)
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
           .when()
           .get(s"/$saUtr/$taxYear/${source.name}/$sourceId")
           .thenAssertThat()
@@ -35,7 +37,8 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
   "Find all source" should {
     "return a resourceIsNotImplemented response" in {
       SourceTypes.types.foreach { source =>
-        given().userIsAuthorisedForTheResource(saUtr)
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
           .when()
           .get(s"/$saUtr/$taxYear/${source.name}")
           .thenAssertThat()
@@ -47,7 +50,8 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
   "Update source" should {
     "return a resourceIsNotImplemented response" in {
       SourceTypes.types.foreach { source =>
-        given().userIsAuthorisedForTheResource(saUtr)
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
           .when()
           .put(s"/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example))
           .thenAssertThat()
@@ -59,7 +63,8 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
   "Delete source" should {
     "return a resourceIsNotImplemented response" in {
       SourceTypes.types.foreach { source =>
-        given().userIsAuthorisedForTheResource(saUtr)
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
           .when()
           .delete(s"/$saUtr/$taxYear/${source.name}/$sourceId")
           .thenAssertThat()

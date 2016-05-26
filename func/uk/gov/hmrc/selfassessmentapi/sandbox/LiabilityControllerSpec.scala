@@ -7,8 +7,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
 
   "request liability" should {
     "return a 202 response with a link to retrieve the liability" in {
-      given()
-        .when()
+      when()
         .post(s"/sandbox/$saUtr/$taxYear/liabilities")
         .thenAssertThat()
         .statusIs(202)
@@ -59,8 +58,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |}
         """.stripMargin)
 
-      given()
-        .when()
+      when()
         .get(s"/sandbox/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()
         .statusIs(200)
@@ -70,8 +68,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     }
 
     "return a valid response when retrieving list of liabilities" in {
-      given()
-        .when()
+      when()
         .get(s"/sandbox/$saUtr/$taxYear/liabilities")
         .thenAssertThat()
         .statusIs(200)
@@ -86,8 +83,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
 
   "delete liability" should {
     "return a 204 response" in {
-      given()
-        .when()
+      when()
         .delete(s"/sandbox/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()
         .statusIs(204)

@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment
 
-import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler, employment}
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.employment.Employment
+import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes.Incomes
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 
 object EmploymentsSourceHandler extends SourceHandler[Employment] {
@@ -26,5 +26,10 @@ object EmploymentsSourceHandler extends SourceHandler[Employment] {
   override implicit val writes = Employment.writes
   override def example(id: SourceId) = Employment.example.copy(id = Some(id))
   override val listName = SourceTypes.Employments.name
-  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = None
+  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
+    summaryType match {
+      case Incomes => Some(EmploymentsIncomeSummaryHandler)
+      case _ => None
+    }
+  }
 }

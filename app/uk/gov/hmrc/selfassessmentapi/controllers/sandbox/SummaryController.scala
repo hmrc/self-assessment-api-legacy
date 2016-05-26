@@ -46,6 +46,7 @@ object SummaryController extends BaseController with Links {
       case (UKProperty, Some(UKPropertyIncomes)) => UKPropertyIncomeSummaryHandler
       case (UKProperty, Some(UKPropertyExpenses)) => UKPropertyExpenseSummaryHandler
       case (UKProperty, Some(UKPropertyTaxPaid)) => UKPropertyTaxPaidSummaryHandler
+      case (UKProperty, Some(UKPropertyBalancingCharges)) => UKPropertyBalancingChargesSummaryHandler
       case _ => throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "$summaryTypeName""")
     }
   }

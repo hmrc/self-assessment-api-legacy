@@ -20,6 +20,7 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharges
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -145,6 +146,13 @@ object UKPropertyTaxPaidSummaryHandler extends SummaryHandler[UKPropertyTaxPaid]
   override implicit val writes: Writes[UKPropertyTaxPaid] = UKPropertyTaxPaid.writes
   override def example(id: SummaryId) = UKPropertyTaxPaid.example.copy(id = Some(id))
   override val listName = SummaryTypes.UKPropertyTaxPaid.name
+}
+
+object UKPropertyBalancingChargesSummaryHandler extends SummaryHandler[BalancingCharges] {
+  override implicit val reads: Reads[BalancingCharges] = BalancingCharges.reads
+  override implicit val writes: Writes[BalancingCharges] = BalancingCharges.writes
+  override def example(id: SummaryId) = BalancingCharges.example.copy(id = Some(id))
+  override val listName = SummaryTypes.UKPropertyBalancingCharges.name
 }
 
 

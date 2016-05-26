@@ -132,5 +132,15 @@ object SummaryTypes {
       PositiveMonetaryFieldDescription("uk-property", "amount")
     )
   }
+
+  case object UKPropertyBalancingCharges extends SummaryType {
+    override val name = "balancing-charges"
+    override lazy val example: JsValue = toJson(uk.gov.hmrc.selfassessmentapi.domain.ukproperty.BalancingCharges.example)
+    override val title = "Sample UK property balancing charge"
+    override def description(action: String) = s"$action a balancing charge for the specified UK Property"
+    override val fieldDescriptions = Seq(
+      PositiveMonetaryFieldDescription("uk-property", "amount")
+    )
+  }
 }
 

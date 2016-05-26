@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain
+package uk.gov.hmrc.selfassessmentapi.domain.ukproperty
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-case class UKPropertyTaxPaid(id: Option[SummaryId] = None,
+case class BalancingCharges(id: Option[SummaryId] = None,
                              amount: BigDecimal)
 
-object UKPropertyTaxPaid {
+object BalancingCharges {
 
-  implicit val writes = Json.writes[UKPropertyTaxPaid]
-  implicit val reads: Reads[UKPropertyTaxPaid] = (
+  implicit val writes = Json.writes[BalancingCharges]
+  implicit val reads: Reads[BalancingCharges] = (
     Reads.pure(None) and
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
-    ) (UKPropertyTaxPaid.apply _)
+    ) (BalancingCharges.apply _)
 
-  lazy val example: UKPropertyTaxPaid = UKPropertyTaxPaid(None, BigDecimal(1000))
+  lazy val example: BalancingCharges = BalancingCharges(None, BigDecimal(1000))
 }

@@ -24,18 +24,18 @@ class FurnishedHolidayLettingsSpec extends JsonSpec {
   "FurnishedHolidayLettings" should {
 
     "make a valid json round trip" in {
-      roundTripJson(FurnishedHolidayLettings(None, "Cosa del Sol apartment", PropertyLocationType.UK, None, None))
+      roundTripJson(FurnishedHolidayLetting(None, "Cosa del Sol apartment", PropertyLocationType.UK, None, None))
 
-      roundTripJson(FurnishedHolidayLettings(None, "Cosa del Sol apartment", PropertyLocationType.UK,
+      roundTripJson(FurnishedHolidayLetting(None, "Cosa del Sol apartment", PropertyLocationType.UK,
         Some(Allowances(Some(BigDecimal(1000.00)))),
         Some(Adjustments(Some(BigDecimal(500.00))))))
     }
 
     "reject name with more than 100 characters" in {
-      val fhl = FurnishedHolidayLettings(None, "Abcd" * 100, PropertyLocationType.UK,
+      val fhl = FurnishedHolidayLetting(None, "Abcd" * 100, PropertyLocationType.UK,
         Some(Allowances(Some(BigDecimal(1000.00)))),
         Some(Adjustments(Some(BigDecimal(500.00)))))
-        assertValidationError[FurnishedHolidayLettings](
+        assertValidationError[FurnishedHolidayLetting](
         fhl,
         Map(("/name", MAX_FIELD_LENGTH_EXCEEDED) -> "field length exceeded the max 100 chars"),
         "Expected invalid furnished-holiday-lettings")
@@ -44,10 +44,10 @@ class FurnishedHolidayLettingsSpec extends JsonSpec {
 
     "reject capitalAllowance with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
-        val fhl = FurnishedHolidayLettings(None, "Cosa del Sol apartment", PropertyLocationType.UK,
+        val fhl = FurnishedHolidayLetting(None, "Cosa del Sol apartment", PropertyLocationType.UK,
           Some(Allowances(Some(amount))),
           Some(Adjustments(Some(BigDecimal(500.00)))))
-          assertValidationError[FurnishedHolidayLettings](
+          assertValidationError[FurnishedHolidayLetting](
           fhl,
           Map(("/allowances/capitalAllowance", INVALID_MONETARY_AMOUNT) -> "capitalAllowance should be non-negative number up to 2 decimal values"),
           "Expected invalid furnished-holiday-lettings")
@@ -56,10 +56,10 @@ class FurnishedHolidayLettingsSpec extends JsonSpec {
 
     "reject lossBroughtForward with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
-        val fhl = FurnishedHolidayLettings(None, "Cosa del Sol apartment", PropertyLocationType.UK,
+        val fhl = FurnishedHolidayLetting(None, "Cosa del Sol apartment", PropertyLocationType.UK,
           Some(Allowances(Some(BigDecimal(500.00)))),
           Some(Adjustments(Some(amount))))
-          assertValidationError[FurnishedHolidayLettings](
+          assertValidationError[FurnishedHolidayLetting](
           fhl,
           Map(("/adjustments/lossBroughtForward", INVALID_MONETARY_AMOUNT) -> "lossBroughtForward should be non-negative number up to 2 decimal values"),
           "Expected invalid furnished-holiday-lettings")

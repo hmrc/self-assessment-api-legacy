@@ -22,10 +22,10 @@ import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryType
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 
-object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHolidayLettings] {
-  override implicit val reads: Reads[FurnishedHolidayLettings] = FurnishedHolidayLettings.reads
-  override implicit val writes: Writes[FurnishedHolidayLettings] = FurnishedHolidayLettings.writes
-  override def example(id: SourceId) = FurnishedHolidayLettings.example.copy(id = Some(id))
+object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHolidayLetting] {
+  override implicit val reads: Reads[FurnishedHolidayLetting] = FurnishedHolidayLetting.reads
+  override implicit val writes: Writes[FurnishedHolidayLetting] = FurnishedHolidayLetting.writes
+  override def example(id: SourceId) = FurnishedHolidayLetting.example.copy(id = Some(id))
   override val listName = SourceTypes.FurnishedHolidayLettings.name
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {

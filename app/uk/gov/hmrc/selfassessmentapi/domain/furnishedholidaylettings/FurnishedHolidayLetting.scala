@@ -28,29 +28,29 @@ object PropertyLocationType extends Enumeration {
   val UK, EEA = Value
 }
 
-case class FurnishedHolidayLettings(id: Option[FurnishedHolidayLettingsId] = None,
-                                    name: String,
-                                    propertyLocation: PropertyLocationType,
-                                    allowances: Option[Allowances] = None,
-                                    adjustments: Option[Adjustments] = None)
+case class FurnishedHolidayLetting(id: Option[FurnishedHolidayLettingsId] = None,
+                                   name: String,
+                                   propertyLocation: PropertyLocationType,
+                                   allowances: Option[Allowances] = None,
+                                   adjustments: Option[Adjustments] = None)
 
 
-object FurnishedHolidayLettings {
+object FurnishedHolidayLetting {
 
   implicit val propertyLocationTypes = EnumJson.enumFormat(PropertyLocationType, Some("Furnished holiday lettings property location type is invalid"))
 
-  implicit val writes = Json.writes[FurnishedHolidayLettings]
+  implicit val writes = Json.writes[FurnishedHolidayLetting]
 
-  implicit val reads: Reads[FurnishedHolidayLettings] = (
+  implicit val reads: Reads[FurnishedHolidayLetting] = (
     Reads.pure(None) and
       (__ \ "name").read[String](lengthValidator) and
       (__ \ "propertyLocation").read[PropertyLocationType] and
       (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments]
-    ) (FurnishedHolidayLettings.apply _)
+    ) (FurnishedHolidayLetting.apply _)
 
 
-  lazy val example: FurnishedHolidayLettings = FurnishedHolidayLettings(None, "Holiday Cottage", PropertyLocationType.UK,
+  lazy val example: FurnishedHolidayLetting = FurnishedHolidayLetting(None, "Holiday Cottage", PropertyLocationType.UK,
     Some(Allowances(Some(BigDecimal(1000.00)))),
     Some(Adjustments(Some(BigDecimal(500.00)))))
 }

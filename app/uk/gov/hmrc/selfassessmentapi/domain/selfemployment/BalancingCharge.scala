@@ -29,7 +29,7 @@ object BalancingChargeType extends Enumeration {
 
 case class BalancingCharge(id: Option[String] = None, `type`: BalancingChargeType, amount: BigDecimal)
 
-object BalancingCharge {
+object BalancingCharge extends BaseDomain[BalancingCharge] {
 
   implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeType, Some("Self Employment Balancing charge type is invalid"))
   implicit val writes = Json.writes[BalancingCharge]
@@ -41,4 +41,6 @@ object BalancingCharge {
     ) (BalancingCharge.apply _)
 
   lazy val example: BalancingCharge = BalancingCharge(None, BalancingChargeType.Other, BigDecimal(100.00))
+
+  override def example(id: SummaryId): BalancingCharge = BalancingCharge(Some(id), BalancingChargeType.Other, BigDecimal(100.00))
 }

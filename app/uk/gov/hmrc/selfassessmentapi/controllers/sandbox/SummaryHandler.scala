@@ -19,19 +19,18 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 case class ErrorResult(message: Option[String] = None, validationErrors: Option[ValidationErrors] = None)
 
-trait SummaryHandler[T] {
+case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
 
-  implicit val reads: Reads[T]
-  implicit val writes: Writes[T]
-  def example(id: SummaryId): T
-  val listName: String
+  implicit val reads: Reads[T] = domain.reads
+  implicit val writes: Writes[T] = domain.writes
+  def example(id: SummaryId): T = domain.example(id)
 
   private def generateId: String = BSONObjectID.generate.stringify
 
@@ -75,5 +74,4 @@ trait SummaryHandler[T] {
       }
     )
 }
-
 

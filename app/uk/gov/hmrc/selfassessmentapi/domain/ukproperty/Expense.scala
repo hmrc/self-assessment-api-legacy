@@ -29,19 +29,21 @@ object ExpenseType extends Enumeration {
 }
 
 
-case class Expenses(id: Option[SummaryId] = None,
-                    `type`: ExpenseType,
-                    amount: BigDecimal)
+case class Expense(id: Option[SummaryId] = None,
+                   `type`: ExpenseType,
+                   amount: BigDecimal)
 
-object Expenses {
+object Expense extends BaseDomain[Expense] {
 
   implicit val types = EnumJson.enumFormat(ExpenseType, Some("UK Property Expense type is invalid"))
-  implicit val writes = Json.writes[Expenses]
-  implicit val reads: Reads[Expenses] = (
+  implicit val writes = Json.writes[Expense]
+  implicit val reads: Reads[Expense] = (
     Reads.pure(None) and
       (__ \ "type").read[ExpenseType] and
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
-    ) (Expenses.apply _)
+    ) (Expense.apply _)
 
-  lazy val example: Expenses = Expenses(None, ExpenseType.PremisesRunningCosts, BigDecimal(1000))
+  lazy val example: Expense = Expense(None, ExpenseType.PremisesRunningCosts, BigDecimal(1000))
+
+  override def example(id: SummaryId): Expense = Expense(Some(id), ExpenseType.PremisesRunningCosts, BigDecimal(1000))
 }

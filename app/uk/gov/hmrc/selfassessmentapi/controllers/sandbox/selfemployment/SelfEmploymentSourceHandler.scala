@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.selfemployment
 
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes._
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 
 object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
@@ -30,10 +30,10 @@ object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Incomes => Some(IncomesSummaryHandler)
-      case Expenses => Some(ExpensesSummaryHandler)
-      case BalancingCharges => Some(BalancingChargesSummaryHandler)
-      case GoodsAndServicesOwnUse => Some(GoodsAndServiceOwnUseSummaryHandler)
+      case Incomes => Some(SummaryHandler(Incomes.name, Income))
+      case Expenses => Some(SummaryHandler(Expenses.name, Expense))
+      case BalancingCharges => Some(SummaryHandler(BalancingCharges.name, BalancingCharge))
+      case GoodsAndServicesOwnUses => Some(SummaryHandler(GoodsAndServicesOwnUses.name, GoodsAndServicesOwnUse))
       case _ => None
     }
   }

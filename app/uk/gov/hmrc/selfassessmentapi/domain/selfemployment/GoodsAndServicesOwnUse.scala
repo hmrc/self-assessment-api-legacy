@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class GoodsAndServicesOwnUse(id: Option[String] = None, amount: BigDecimal)
 
-object GoodsAndServicesOwnUse {
+object GoodsAndServicesOwnUse extends BaseDomain[GoodsAndServicesOwnUse]{
   implicit val writes = Json.writes[GoodsAndServicesOwnUse]
 
   implicit val reads = (
@@ -31,4 +31,6 @@ object GoodsAndServicesOwnUse {
     ) (GoodsAndServicesOwnUse.apply _)
 
   lazy val example: GoodsAndServicesOwnUse = GoodsAndServicesOwnUse(amount = BigDecimal(1000))
+
+  override def example(id: SummaryId): GoodsAndServicesOwnUse = GoodsAndServicesOwnUse(Some(id), amount = BigDecimal(1000))
 }

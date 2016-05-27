@@ -24,7 +24,7 @@ object SummaryTypes {
 
   case object Incomes extends SummaryType {
     override val name = "incomes"
-    override lazy val example: JsValue = toJson(selfemployment.Income.example)
+    override lazy val example: JsValue = toJson(Income.example)
     override val title = "Sample self-employment incomes"
     override def description(action: String) = s"$action an income for the specified source"
     override val fieldDescriptions = Seq(
@@ -35,7 +35,7 @@ object SummaryTypes {
 
   case object Expenses extends SummaryType {
     override val name = "expenses"
-    override lazy val example: JsValue = toJson(selfemployment.Expense.example)
+    override lazy val example: JsValue = toJson(Expense.example)
     override val title = "Sample self-employment expenses"
     override def description(action: String) = s"$action an expense for the specified source"
     override val fieldDescriptions = Seq(
@@ -46,7 +46,7 @@ object SummaryTypes {
 
   case object BalancingCharges extends SummaryType {
     override val name = "balancing-charges"
-    override lazy val example: JsValue = toJson(selfemployment.BalancingCharge.example)
+    override lazy val example: JsValue = toJson(BalancingCharge.example)
     override val title = "Sample self-employment balancing charges"
     override def description(action: String) = s"$action a balancing charge for the specified source"
     override val fieldDescriptions = Seq(
@@ -55,9 +55,9 @@ object SummaryTypes {
     )
   }
 
-  case object GoodsAndServicesOwnUse extends SummaryType {
-    override val name = "goods-and-services-own-use"
-    override lazy val example: JsValue = toJson(selfemployment.GoodsAndServicesOwnUse.example)
+  case object GoodsAndServicesOwnUses extends SummaryType {
+    override val name = "goods-and-services-own-uses"
+    override lazy val example: JsValue = toJson(GoodsAndServicesOwnUse.example)
     override val title = "Sample self-employment goods and service for own use"
     override def description(action: String) = s"$action a goods and service for own use summary for the specified source"
     override val fieldDescriptions = Seq(

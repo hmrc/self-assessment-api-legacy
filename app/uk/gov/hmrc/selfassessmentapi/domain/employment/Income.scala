@@ -31,7 +31,7 @@ object IncomeType extends Enumeration {
 case class Income(id: Option[SummaryId] = None,
                   `type`: IncomeType, amount: BigDecimal)
 
-object Income {
+object Income extends BaseDomain[Income]{
 
   implicit val types = EnumJson.enumFormat(IncomeType, Some("Employments income type is invalid"))
   implicit val writes = Json.writes[Income]
@@ -43,4 +43,5 @@ object Income {
 
   lazy val example: Income = Income(None, IncomeType.Salary, BigDecimal(10000.00))
 
+  override def example(id: SummaryId): Income = Income(Some(id), IncomeType.Salary, BigDecimal(10000.00))
 }

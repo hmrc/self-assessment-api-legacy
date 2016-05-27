@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 case class BalancingCharge(id: Option[SummaryId] = None,
                            amount: BigDecimal)
 
-object BalancingCharge {
+object BalancingCharge extends BaseDomain[BalancingCharge]{
 
   implicit val writes = Json.writes[BalancingCharge]
   implicit val reads: Reads[BalancingCharge] = (
@@ -33,4 +33,6 @@ object BalancingCharge {
     ) (BalancingCharge.apply _)
 
   lazy val example: BalancingCharge = BalancingCharge(None, BigDecimal(1000))
+
+  override def example(id: SummaryId): BalancingCharge = BalancingCharge(Some(id), BigDecimal(1000))
 }

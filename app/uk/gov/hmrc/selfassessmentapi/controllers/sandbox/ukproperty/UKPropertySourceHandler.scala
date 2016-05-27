@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.UKProperty
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 
 object UKPropertySourceHandler extends SourceHandler[UKProperty] {
@@ -30,11 +30,11 @@ object UKPropertySourceHandler extends SourceHandler[UKProperty] {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Incomes => Some(IncomeSummaryHandler)
-      case Expenses => Some(ExpenseSummaryHandler)
-      case TaxPaid => Some(TaxPaidSummaryHandler)
-      case BalancingCharges => Some(BalancingChargesSummaryHandler)
-      case PrivateUseAdjustments => Some(PrivateUseAdjustmentsSummaryHandler)
+      case Incomes => Some(SummaryHandler(Incomes.name, Income))
+      case Expenses => Some(SummaryHandler(Expenses.name, Expense))
+      case TaxesPaid => Some(SummaryHandler(TaxesPaid.name, TaxPaid))
+      case BalancingCharges => Some(SummaryHandler(BalancingCharges.name, BalancingCharge))
+      case PrivateUseAdjustments => Some(SummaryHandler(PrivateUseAdjustments.name, PrivateUseAdjustment))
       case _ => None
     }
   }

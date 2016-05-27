@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.furnishedholidaylettin
 
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.FurnishedHolidayLettings
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes._
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 
 object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHolidayLettings] {
@@ -30,10 +30,10 @@ object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHoli
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case PrivateUseAdjustments => Some(PrivateUseAdjustmentSummaryHandler)
-      case Incomes => Some(IncomeSummaryHandler)
-      case Expenses => Some(ExpenseSummaryHandler)
-      case BalancingCharges => Some(BalancingChargesSummaryHandler)
+      case PrivateUseAdjustments => Some(SummaryHandler(PrivateUseAdjustments.name, PrivateUseAdjustment))
+      case Incomes => Some(SummaryHandler(Incomes.name, Income))
+      case Expenses => Some(SummaryHandler(Expenses.name, Expense))
+      case BalancingCharges => Some(SummaryHandler(BalancingCharges.name, BalancingCharge))
       case _ => None
     }
   }

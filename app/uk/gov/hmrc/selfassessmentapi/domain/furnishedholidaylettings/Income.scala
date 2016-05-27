@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 case class Income(id: Option[SummaryId] = None,
                   amount: BigDecimal)
 
-object Income {
+object Income extends BaseDomain[Income] {
 
   implicit val writes = Json.writes[Income]
   implicit val reads: Reads[Income] = (
@@ -33,4 +33,6 @@ object Income {
     ) (Income.apply _)
 
   lazy val example: Income = Income(None, BigDecimal(1000))
+
+  override def example(id: SummaryId): Income = Income(Some(id), BigDecimal(1000))
 }

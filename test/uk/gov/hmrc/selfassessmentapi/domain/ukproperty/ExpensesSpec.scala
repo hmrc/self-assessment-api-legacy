@@ -26,15 +26,15 @@ class ExpensesSpec extends JsonSpec {
   "format" should {
 
     "round trip valid Expenses json" in {
-      roundTripJson(Expenses(`type` = RepairsAndMaintenance, amount = BigDecimal(1000.99)))
+      roundTripJson(Expense(`type` = RepairsAndMaintenance, amount = BigDecimal(1000.99)))
     }
   }
 
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
-        val value = Expenses(`type` = RepairsAndMaintenance, amount = testAmount)
-        assertValidationError[Expenses](
+        val value = Expense(`type` = RepairsAndMaintenance, amount = testAmount)
+        assertValidationError[Expense](
           value,
           Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
           "Expected invalid uk-property-expense with more than 2 decimal places")
@@ -49,15 +49,15 @@ class ExpensesSpec extends JsonSpec {
           |}
         """.stripMargin)
 
-      assertValidationError[Expenses](
+      assertValidationError[Expense](
         json,
         Map(("/type", NO_VALUE_FOUND) -> "UK Property Expense type is invalid"),
         "should fail with invalid type")
     }
 
     "reject negative amount" in {
-      val seIncome = Expenses(`type` = RepairsAndMaintenance, amount = BigDecimal(-1000.12))
-      assertValidationError[Expenses](
+      val seIncome = Expense(`type` = RepairsAndMaintenance, amount = BigDecimal(-1000.12))
+      assertValidationError[Expense](
         seIncome,
         Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
         "should fail with INVALID_MONETARY_AMOUNT error")

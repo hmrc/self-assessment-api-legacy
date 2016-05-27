@@ -34,7 +34,7 @@ object SourceTypes {
   case object SelfEmployments extends SourceType {
     override val name = "self-employments"
     override lazy val example: JsValue = toJson(selfemployment.SelfEmployment.example)
-    override val summaryTypes = Seq(selfemployment.SummaryTypes.Incomes, selfemployment.SummaryTypes.Expenses, selfemployment.SummaryTypes.GoodsAndServicesOwnUse, selfemployment.SummaryTypes.BalancingCharges)
+    override val summaryTypes = Seq(selfemployment.SummaryTypes.Incomes, selfemployment.SummaryTypes.Expenses, selfemployment.SummaryTypes.GoodsAndServicesOwnUses, selfemployment.SummaryTypes.BalancingCharges)
     override val title = "Sample self-employments"
 
     override def description(action: String) = s"$action a self-employment"
@@ -83,7 +83,7 @@ object SourceTypes {
   case object UKProperty extends SourceType {
     override val name = "uk-properties"
     override lazy val example: JsValue = toJson(ukproperty.UKProperty.example)
-    override val summaryTypes = Seq(ukproperty.SummaryTypes.Incomes, ukproperty.SummaryTypes.Expenses, ukproperty.SummaryTypes.TaxPaid, ukproperty.SummaryTypes.BalancingCharges, ukproperty.SummaryTypes.PrivateUseAdjustments)
+    override val summaryTypes = Seq(ukproperty.SummaryTypes.Incomes, ukproperty.SummaryTypes.Expenses, ukproperty.SummaryTypes.TaxesPaid, ukproperty.SummaryTypes.BalancingCharges, ukproperty.SummaryTypes.PrivateUseAdjustments)
     override val title = "Sample UK property"
 
     override def description(action: String) = s"$action a UK property"

@@ -32,7 +32,7 @@ object BenefitType extends Enumeration {
 case class Benefit(id: Option[SummaryId] = None,
                    `type`: BenefitType, amount: BigDecimal)
 
-object Benefit {
+object Benefit extends BaseDomain[Benefit] {
 
   implicit val seExpenseTypes = EnumJson.enumFormat(BenefitType, Some("Employment Benefit type is invalid"))
   implicit val writes = Json.writes[Benefit]
@@ -44,4 +44,5 @@ object Benefit {
 
   lazy val example: Benefit = Benefit(None, BenefitType.PrivateInsurance, BigDecimal(1000))
 
+  override def example(id: SummaryId): Benefit = Benefit(Some(id), BenefitType.PrivateInsurance, BigDecimal(1000))
 }

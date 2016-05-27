@@ -17,9 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment
 
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.Employment
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes._
-import uk.gov.hmrc.selfassessmentapi.domain._
 
 object EmploymentsSourceHandler extends SourceHandler[Employment] {
   override implicit val reads = Employment.reads

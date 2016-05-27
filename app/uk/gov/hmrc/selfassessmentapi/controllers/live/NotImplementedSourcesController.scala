@@ -17,12 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import play.api.libs.json.Json
+import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.{Links, BaseController, ErrorNotImplemented}
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear, SelfEmploymentId}
-import uk.gov.hmrc.selfassessmentapi.services.live.SelfEmploymentService
-import play.api.mvc.Action
+import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorNotImplemented, Links}
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear}
 
 import scala.concurrent.Future
 

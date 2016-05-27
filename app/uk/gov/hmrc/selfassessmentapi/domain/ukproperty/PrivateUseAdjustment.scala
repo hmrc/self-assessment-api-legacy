@@ -32,7 +32,5 @@ object PrivateUseAdjustment extends BaseDomain[PrivateUseAdjustment] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (PrivateUseAdjustment.apply _)
 
-  lazy val example: PrivateUseAdjustment = PrivateUseAdjustment(None, BigDecimal(1000))
-
-  override def example(id: SummaryId): PrivateUseAdjustment = PrivateUseAdjustment(Some(id), BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None) = PrivateUseAdjustment(id, BigDecimal(1000))
 }

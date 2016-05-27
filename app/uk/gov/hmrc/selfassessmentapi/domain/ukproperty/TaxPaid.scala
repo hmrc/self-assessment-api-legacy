@@ -32,7 +32,5 @@ object TaxPaid extends BaseDomain[TaxPaid] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (TaxPaid.apply _)
 
-  lazy val example: TaxPaid = TaxPaid(None, BigDecimal(1000))
-
-  override def example(id: SummaryId) = TaxPaid(Some(id), BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None) = TaxPaid(id, BigDecimal(1000))
 }

@@ -21,5 +21,5 @@ import play.api.libs.json.{Reads, Writes}
 trait BaseDomain[T] {
   val writes : Writes[T]
   val reads : Reads[T]
-  def example(id: SummaryId) : T
+  def example(id: Option[SummaryId]) : T
 }

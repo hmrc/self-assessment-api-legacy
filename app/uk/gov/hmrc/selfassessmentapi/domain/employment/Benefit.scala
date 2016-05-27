@@ -42,7 +42,5 @@ object Benefit extends BaseDomain[Benefit] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Benefit.apply _)
 
-  lazy val example: Benefit = Benefit(None, BenefitType.PrivateInsurance, BigDecimal(1000))
-
-  override def example(id: SummaryId): Benefit = Benefit(Some(id), BenefitType.PrivateInsurance, BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None) = Benefit(id, BenefitType.PrivateInsurance, BigDecimal(1000))
 }

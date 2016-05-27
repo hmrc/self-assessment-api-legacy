@@ -33,7 +33,5 @@ object BalancingCharge extends BaseDomain[BalancingCharge] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (BalancingCharge.apply _)
 
-  lazy val example = BalancingCharge(amount = BigDecimal(1234.34))
-
-  override def example (id: SummaryId) = BalancingCharge(Some(id), BigDecimal(1234.34))
+  override def example (id: Option[SummaryId]=None) = BalancingCharge(id, BigDecimal(1234.34))
 }

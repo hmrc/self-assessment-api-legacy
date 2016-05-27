@@ -41,7 +41,5 @@ object Expense extends BaseDomain[Expense] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Expense.apply _)
 
-  lazy val example: Expense = Expense(None, ExpenseType.PremisesRunningCosts, BigDecimal(1000))
-
-  override def example(id: SummaryId): Expense = Expense(Some(id), ExpenseType.PremisesRunningCosts, BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None) = Expense(id, ExpenseType.PremisesRunningCosts, BigDecimal(1000))
 }

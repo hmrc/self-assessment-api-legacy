@@ -30,7 +30,7 @@ case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
 
   implicit val reads: Reads[T] = domain.reads
   implicit val writes: Writes[T] = domain.writes
-  def example(id: SummaryId): T = domain.example(id)
+  def example(id: Option[SummaryId]): T = domain.example(id)
 
   private def generateId: String = BSONObjectID.generate.stringify
 
@@ -46,7 +46,7 @@ case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
     )
 
   def findById(summaryId: SummaryId): Future[Option[JsValue]] = {
-    Future.successful(Some(toJson(example(summaryId))))
+    Future.successful(Some(toJson(example(Some(summaryId)))))
   }
 
   def find: Future[Seq[SummaryId]] =

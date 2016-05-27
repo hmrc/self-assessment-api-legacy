@@ -43,7 +43,5 @@ object Income extends BaseDomain[Income] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Income.apply _)
 
-  lazy val example: Income = Income(None, IncomeType.Turnover, BigDecimal(1000))
-
-  override def example(id: SummaryId): Income = Income(Some(id), IncomeType.Turnover, BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None)= Income(id, IncomeType.Turnover, BigDecimal(1000))
 }

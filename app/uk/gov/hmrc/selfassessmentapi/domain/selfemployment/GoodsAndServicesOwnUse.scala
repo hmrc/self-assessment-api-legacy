@@ -30,7 +30,5 @@ object GoodsAndServicesOwnUse extends BaseDomain[GoodsAndServicesOwnUse]{
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (GoodsAndServicesOwnUse.apply _)
 
-  lazy val example: GoodsAndServicesOwnUse = GoodsAndServicesOwnUse(amount = BigDecimal(1000))
-
-  override def example(id: SummaryId): GoodsAndServicesOwnUse = GoodsAndServicesOwnUse(Some(id), amount = BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None) = GoodsAndServicesOwnUse(id, amount = BigDecimal(1000))
 }

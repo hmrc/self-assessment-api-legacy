@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty
 
-import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.SummaryId
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty._

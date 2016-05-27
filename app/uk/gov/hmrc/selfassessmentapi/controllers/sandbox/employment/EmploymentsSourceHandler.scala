@@ -17,9 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment
 
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.Employment
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes.{Expenses, Incomes}
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes._
 
 object EmploymentsSourceHandler extends SourceHandler[Employment] {
   override implicit val reads = Employment.reads
@@ -28,8 +28,9 @@ object EmploymentsSourceHandler extends SourceHandler[Employment] {
   override val listName = SourceTypes.Employments.name
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Incomes => Some(EmploymentsIncomeSummaryHandler)
-      case Expenses => Some(EmploymentsExpenseSummaryHandler)
+      case Incomes => Some(IncomeSummaryHandler)
+      case Expenses => Some(ExpenseSummaryHandler)
+      case Benefits => Some(BenefitsSummaryHandler)
       case _ => None
     }
   }

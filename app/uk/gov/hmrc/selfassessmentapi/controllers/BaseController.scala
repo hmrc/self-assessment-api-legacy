@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import play.api.hal.{Hal, HalLink, HalResource}
 import play.api.libs.json.{JsString, _}
 import play.api.mvc.Request
 import uk.gov.hmrc.play.http.HeaderCarrier

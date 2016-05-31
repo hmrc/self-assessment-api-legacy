@@ -54,4 +54,14 @@ object SummaryTypes {
       PositiveMonetaryFieldDescription("employments", "amount")
     )
   }
+
+  case object UKTaxesPaid extends SummaryType {
+    override val name = "uk-taxes-paid"
+    override lazy val example: JsValue = toJson(UKTaxPaid.example())
+    override val title = "Sample UK Taxes paid"
+    override def description(action: String) = s"$action an UK Tax paid for the specified source"
+    override val fieldDescriptions = Seq(
+      PositiveMonetaryFieldDescription("employments", "amount")
+    )
+  }
 }

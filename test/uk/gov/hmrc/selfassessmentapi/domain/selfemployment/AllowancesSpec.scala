@@ -43,37 +43,37 @@ class AllowancesSpec extends JsonSpec {
 
     "reject negative annualInvestmentAllowance" in {
       val se = Allowances(annualInvestmentAllowance = Some(BigDecimal(-10.00)))
-     validateNegative(se, "annualInvestmentAllowance")
+     validateNegative(se, "/annualInvestmentAllowance")
     }
 
     "reject negative capitalAllowanceMainPool" in {
       val se = Allowances(capitalAllowanceMainPool = Some(BigDecimal(-10.00)))
-     validateNegative(se, "capitalAllowanceMainPool")
+     validateNegative(se, "/capitalAllowanceMainPool")
     }
 
     "reject negative capitalAllowanceSpecialRatePool" in {
       val se = Allowances(capitalAllowanceSpecialRatePool = Some(BigDecimal(-10.00)))
-     validateNegative(se, "capitalAllowanceSpecialRatePool")
+     validateNegative(se, "/capitalAllowanceSpecialRatePool")
     }
 
     "reject negative restrictedCapitalAllowance" in {
       val se = Allowances(restrictedCapitalAllowance = Some(BigDecimal(-10.00)))
-     validateNegative(se, "restrictedCapitalAllowance")
+     validateNegative(se, "/restrictedCapitalAllowance")
     }
 
     "reject negative businessPremisesRenovationAllowance" in {
       val se = Allowances(businessPremisesRenovationAllowance = Some(BigDecimal(-10.00)))
-     validateNegative(se, "businessPremisesRenovationAllowance")
+     validateNegative(se, "/businessPremisesRenovationAllowance")
     }
 
     "reject negative enhancedCapitalAllowance" in {
       val se = Allowances(enhancedCapitalAllowance = Some(BigDecimal(-10.00)))
-     validateNegative(se, "enhancedCapitalAllowance")
+     validateNegative(se, "/enhancedCapitalAllowance")
     }
 
     "reject negative allowancesOnSales" in {
       val se = Allowances(allowancesOnSales = Some(BigDecimal(-10.00)))
-     validateNegative(se, "allowancesOnSales")
+     validateNegative(se, "/allowancesOnSales")
     }
 
   }

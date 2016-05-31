@@ -17,8 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
+import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.domain.{SimpleName, SimpleObjectReads, SimpleObjectWrites}
 
 case class TaxYear(taxYear: String) extends SimpleName {

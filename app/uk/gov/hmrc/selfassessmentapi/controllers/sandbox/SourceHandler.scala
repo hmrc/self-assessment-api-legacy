@@ -76,54 +76,11 @@ trait SourceHandler[T] {
   def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]]
 }
 
-object SelfEmploymentSourceHandler extends SourceHandler[selfemployment.SelfEmployment] {
-  override implicit val reads: Reads[selfemployment.SelfEmployment] = selfemployment.SelfEmployment.selfEmploymentReads
-  override implicit val writes: Writes[selfemployment.SelfEmployment] = selfemployment.SelfEmployment.selfEmploymentWrites
-  override def example(id: SourceId) = selfemployment.SelfEmployment.example.copy(id = Some(id))
-  override val listName = SourceTypes.SelfEmployments.name
 
-  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
-    summaryType match {
-      case selfemployment.SummaryTypes.Incomes => Some(IncomesSummaryHandler)
-      case selfemployment.SummaryTypes.Expenses => Some(ExpensesSummaryHandler)
-      case selfemployment.SummaryTypes.BalancingCharges => Some(BalancingChargesSummaryHandler)
-      case selfemployment.SummaryTypes.GoodsAndServicesOwnUse => Some(GoodsAndServiceOwnUseSummaryHandler)
-      case _ => None
-    }
-  }
-}
 
-object FurnishedHolidayLettingsSourceHandler extends SourceHandler[furnishedholidaylettings.FurnishedHolidayLettings] {
-  override implicit val reads: Reads[furnishedholidaylettings.FurnishedHolidayLettings] = furnishedholidaylettings.FurnishedHolidayLettings.reads
-  override implicit val writes: Writes[furnishedholidaylettings.FurnishedHolidayLettings] = furnishedholidaylettings.FurnishedHolidayLettings.writes
-  override def example(id: SourceId) = furnishedholidaylettings.FurnishedHolidayLettings.example.copy(id = Some(id))
-  override val listName = SourceTypes.FurnishedHolidayLettings.name
 
-  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
-    summaryType match {
-      case furnishedholidaylettings.SummaryTypes.PrivateUseAdjustments => Some(PrivateUseAdjustmentSummaryHandler)
-      case furnishedholidaylettings.SummaryTypes.Incomes => Some(FurnishedHolidayLettingsIncomeSummaryHandler)
-      case furnishedholidaylettings.SummaryTypes.Expenses => Some(FurnishedHolidayLettingsExpenseSummaryHandler)
-      case furnishedholidaylettings.SummaryTypes.BalancingCharges => Some(FurnishedHolidayLettingsBalancingChargesSummaryHandler)
-      case _ => None
-    }
-  }
-}
 
-object UKPropertySourceHandler extends SourceHandler[ukproperty.UKProperty] {
-  override implicit val reads: Reads[ukproperty.UKProperty] = ukproperty.UKProperty.reads
-  override implicit val writes: Writes[ukproperty.UKProperty] = ukproperty.UKProperty.writes
-  override def example(id: SourceId) = ukproperty.UKProperty.example.copy(id = Some(id))
-  override val listName = SourceTypes.UKProperty.name
 
-  override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
-    summaryType match {
-      case ukproperty.SummaryTypes.Incomes => Some(UKPropertyIncomeSummaryHandler)
-      case ukproperty.SummaryTypes.Expenses => Some(UKPropertyExpenseSummaryHandler)
-      case ukproperty.SummaryTypes.TaxPaid => Some(UKPropertyTaxPaidSummaryHandler)
-      case ukproperty.SummaryTypes.BalancingCharges => Some(UKPropertyBalancingChargesSummaryHandler)
-      case ukproperty.SummaryTypes.PrivateUseAdjustments => Some(UKPropertyPrivateUseAdjustmentsSummaryHandler)
-      case _ => None
-    }
-  }
-}
+
+
+

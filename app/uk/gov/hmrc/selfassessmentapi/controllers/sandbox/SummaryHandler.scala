@@ -19,19 +19,18 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 case class ErrorResult(message: Option[String] = None, validationErrors: Option[ValidationErrors] = None)
 
-trait SummaryHandler[T] {
+case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
 
-  implicit val reads: Reads[T]
-  implicit val writes: Writes[T]
-  def example(id: SummaryId): T
-  val listName: String
+  implicit val reads: Reads[T] = domain.reads
+  implicit val writes: Writes[T] = domain.writes
+  def example(id: Option[SummaryId]): T = domain.example(id)
 
   private def generateId: String = BSONObjectID.generate.stringify
 
@@ -47,7 +46,7 @@ trait SummaryHandler[T] {
     )
 
   def findById(summaryId: SummaryId): Future[Option[JsValue]] = {
-    Future.successful(Some(toJson(example(summaryId))))
+    Future.successful(Some(toJson(example(Some(summaryId)))))
   }
 
   def find: Future[Seq[SummaryId]] =
@@ -74,97 +73,5 @@ trait SummaryHandler[T] {
           Left(ErrorResult(message = Some(s"could not parse body due to ${e.getMessage}")))
       }
     )
-}
-
-object IncomesSummaryHandler extends SummaryHandler[selfemployment.Income] {
-  override implicit val reads: Reads[selfemployment.Income] = selfemployment.Income.reads
-  override implicit val writes: Writes[selfemployment.Income] = selfemployment.Income.writes
-  override def example(id: SummaryId) = selfemployment.Income.example.copy(id = Some(id))
-  override val listName = selfemployment.SummaryTypes.Incomes.name
-}
-
-object ExpensesSummaryHandler extends SummaryHandler[selfemployment.Expense] {
-  override implicit val reads: Reads[selfemployment.Expense] = selfemployment.Expense.reads
-  override implicit val writes: Writes[selfemployment.Expense] = selfemployment.Expense.writes
-  override def example(id: SummaryId) = selfemployment.Expense.example.copy(id = Some(id))
-  override val listName = selfemployment.SummaryTypes.Expenses.name
-}
-
-object BalancingChargesSummaryHandler extends SummaryHandler[selfemployment.BalancingCharge] {
-  override implicit val reads: Reads[selfemployment.BalancingCharge] = selfemployment.BalancingCharge.reads
-  override implicit val writes: Writes[selfemployment.BalancingCharge] = selfemployment.BalancingCharge.writes
-  override def example(id: SummaryId) = selfemployment.BalancingCharge.example.copy(id = Some(id))
-  override val listName = selfemployment.SummaryTypes.BalancingCharges.name
-}
-
-
-object GoodsAndServiceOwnUseSummaryHandler extends SummaryHandler[selfemployment.GoodsAndServicesOwnUse] {
-  override implicit val reads: Reads[selfemployment.GoodsAndServicesOwnUse] = selfemployment.GoodsAndServicesOwnUse.reads
-  override implicit val writes: Writes[selfemployment.GoodsAndServicesOwnUse] = selfemployment.GoodsAndServicesOwnUse.writes
-  override def example(id: SummaryId) = selfemployment.GoodsAndServicesOwnUse.example.copy(id = Some(id))
-  override val listName = selfemployment.SummaryTypes.GoodsAndServicesOwnUse.name
-}
-
-object PrivateUseAdjustmentSummaryHandler extends SummaryHandler[furnishedholidaylettings.PrivateUseAdjustment] {
-  override implicit val reads: Reads[furnishedholidaylettings.PrivateUseAdjustment] = furnishedholidaylettings.PrivateUseAdjustment.reads
-  override implicit val writes: Writes[furnishedholidaylettings.PrivateUseAdjustment] = furnishedholidaylettings.PrivateUseAdjustment.writes
-  override def example(id: SummaryId) = furnishedholidaylettings.PrivateUseAdjustment.example.copy(id = Some(id))
-  override val listName = furnishedholidaylettings.SummaryTypes.PrivateUseAdjustments.name
-}
-
-object FurnishedHolidayLettingsBalancingChargesSummaryHandler extends SummaryHandler[furnishedholidaylettings.BalancingCharge] {
-  override implicit val reads: Reads[furnishedholidaylettings.BalancingCharge] = furnishedholidaylettings.BalancingCharge.reads
-  override implicit val writes: Writes[furnishedholidaylettings.BalancingCharge] = furnishedholidaylettings.BalancingCharge.writes
-  override def example(id: SummaryId) = furnishedholidaylettings.BalancingCharge.example.copy(id = Some(id))
-  override val listName = furnishedholidaylettings.SummaryTypes.BalancingCharges.name
-}
-
-object FurnishedHolidayLettingsIncomeSummaryHandler extends SummaryHandler[furnishedholidaylettings.Income] {
-  override implicit val reads: Reads[furnishedholidaylettings.Income] = furnishedholidaylettings.Income.reads
-  override implicit val writes: Writes[furnishedholidaylettings.Income] = furnishedholidaylettings.Income.writes
-  override def example(id: SummaryId) = furnishedholidaylettings.Income.example.copy(id = Some(id))
-  override val listName = furnishedholidaylettings.SummaryTypes.Incomes.name
-}
-
-object FurnishedHolidayLettingsExpenseSummaryHandler extends SummaryHandler[furnishedholidaylettings.Expense] {
-  override implicit val reads: Reads[furnishedholidaylettings.Expense] = furnishedholidaylettings.Expense.reads
-  override implicit val writes: Writes[furnishedholidaylettings.Expense] = furnishedholidaylettings.Expense.writes
-  override def example(id: SummaryId) = furnishedholidaylettings.Expense.example.copy(id = Some(id))
-  override val listName = furnishedholidaylettings.SummaryTypes.Expenses.name
-}
-
-object UKPropertyIncomeSummaryHandler extends SummaryHandler[ukproperty.Income] {
-  override implicit val reads: Reads[ukproperty.Income] = ukproperty.Income.reads
-  override implicit val writes: Writes[ukproperty.Income] = ukproperty.Income.writes
-  override def example(id: SummaryId) = ukproperty.Income.example.copy(id = Some(id))
-  override val listName = ukproperty.SummaryTypes.Incomes.name
-}
-
-object UKPropertyExpenseSummaryHandler extends SummaryHandler[ukproperty.Expenses] {
-  override implicit val reads: Reads[ukproperty.Expenses] = ukproperty.Expenses.reads
-  override implicit val writes: Writes[ukproperty.Expenses] = ukproperty.Expenses.writes
-  override def example(id: SummaryId) = ukproperty.Expenses.example.copy(id = Some(id))
-  override val listName = ukproperty.SummaryTypes.Expenses.name
-}
-
-object UKPropertyTaxPaidSummaryHandler extends SummaryHandler[ukproperty.TaxPaid] {
-  override implicit val reads: Reads[ukproperty.TaxPaid] = ukproperty.TaxPaid.reads
-  override implicit val writes: Writes[ukproperty.TaxPaid] = ukproperty.TaxPaid.writes
-  override def example(id: SummaryId) = ukproperty.TaxPaid.example.copy(id = Some(id))
-  override val listName = ukproperty.SummaryTypes.TaxPaid.name
-}
-
-object UKPropertyBalancingChargesSummaryHandler extends SummaryHandler[ukproperty.BalancingCharge] {
-  override implicit val reads: Reads[ukproperty.BalancingCharge] = ukproperty.BalancingCharge.reads
-  override implicit val writes: Writes[ukproperty.BalancingCharge] = ukproperty.BalancingCharge.writes
-  override def example(id: SummaryId) = ukproperty.BalancingCharge.example.copy(id = Some(id))
-  override val listName = ukproperty.SummaryTypes.BalancingCharges.name
-}
-
-object UKPropertyPrivateUseAdjustmentsSummaryHandler extends SummaryHandler[ukproperty.PrivateUseAdjustment] {
-  override implicit val reads: Reads[ukproperty.PrivateUseAdjustment] = ukproperty.PrivateUseAdjustment.reads
-  override implicit val writes: Writes[ukproperty.PrivateUseAdjustment] = ukproperty.PrivateUseAdjustment.writes
-  override def example(id: SummaryId) = ukproperty.PrivateUseAdjustment.example.copy(id = Some(id))
-  override val listName = ukproperty.SummaryTypes.PrivateUseAdjustments.name
 }
 

@@ -32,7 +32,7 @@ object ExpenseType extends Enumeration {
 case class Expense(id: Option[SummaryId] = None,
                    `type`: ExpenseType, amount: BigDecimal)
 
-object Expense {
+object Expense extends BaseDomain[Expense]{
 
   implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
   implicit val writes = Json.writes[Expense]
@@ -42,6 +42,5 @@ object Expense {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Expense.apply _)
 
-  lazy val example: Expense = Expense(None, ExpenseType.CISPayments, BigDecimal(1000))
-
+    override def example(id: Option[SummaryId]=None) = Expense(id, ExpenseType.CISPayments, BigDecimal(1000))
 }

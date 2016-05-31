@@ -33,15 +33,15 @@ case class Income(id: Option[SummaryId] = None,
                   `type`: IncomeType,
                   amount: BigDecimal)
 
-object Income {
+object Income extends BaseDomain[Income] {
 
   implicit val types = EnumJson.enumFormat(IncomeType, Some("UK Property Income type is invalid"))
-  implicit val writes = Json.writes[Income]
-  implicit val reads: Reads[Income] = (
+  override implicit val writes = Json.writes[Income]
+  override implicit val reads: Reads[Income] = (
     Reads.pure(None) and
       (__ \ "type").read[IncomeType] and
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Income.apply _)
 
-  lazy val example: Income = Income(None, IncomeType.RentIncome, BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None) = Income(id, IncomeType.RentIncome, BigDecimal(1000))
 }

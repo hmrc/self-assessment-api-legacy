@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 case class TaxPaid(id: Option[SummaryId] = None,
                    amount: BigDecimal)
 
-object TaxPaid {
+object TaxPaid extends BaseDomain[TaxPaid] {
 
   implicit val writes = Json.writes[TaxPaid]
   implicit val reads: Reads[TaxPaid] = (
@@ -32,5 +32,5 @@ object TaxPaid {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (TaxPaid.apply _)
 
-  lazy val example: TaxPaid = TaxPaid(None, BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None) = TaxPaid(id, BigDecimal(1000))
 }

@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 case class PrivateUseAdjustment(id: Option[SummaryId] = None,
                            amount: BigDecimal)
 
-object PrivateUseAdjustment {
+object PrivateUseAdjustment extends BaseDomain[PrivateUseAdjustment] {
 
   implicit val writes = Json.writes[PrivateUseAdjustment]
   implicit val reads: Reads[PrivateUseAdjustment] = (
@@ -32,5 +32,5 @@ object PrivateUseAdjustment {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (PrivateUseAdjustment.apply _)
 
-  lazy val example: PrivateUseAdjustment = PrivateUseAdjustment(None, BigDecimal(1000))
+  override def example(id: Option[SummaryId]=None) = PrivateUseAdjustment(id, BigDecimal(1000))
 }

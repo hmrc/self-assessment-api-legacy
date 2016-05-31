@@ -6,7 +6,8 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
 
   "Live tax years discovery" should {
     "return a 200 response with links" in {
-      given().userIsAuthorisedForTheResource(saUtr)
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr")
         .thenAssertThat()
@@ -19,7 +20,8 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
 
   "Live tax year discovery" should {
     "return a 200 response with links" in {
-      given().userIsAuthorisedForTheResource(saUtr)
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/$taxYear")
         .thenAssertThat()

@@ -1,6 +1,5 @@
 package uk.gov.hmrc.selfassessmentapi
 
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.{APIStatus, SelfAssessmentApiDefinition}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class MetricsSpec extends BaseFunctionalSpec {

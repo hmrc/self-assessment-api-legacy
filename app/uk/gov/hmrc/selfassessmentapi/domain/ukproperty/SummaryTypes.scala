@@ -24,53 +24,53 @@ object SummaryTypes {
 
   case object Incomes extends SummaryType {
     override val name = "incomes"
-    override lazy val example: JsValue = toJson(ukproperty.Income.example)
+    override lazy val example: JsValue = toJson(Income.example())
     override val title = "Sample UK property incomes"
     override def description(action: String) = s"$action an income for the specified UK Property"
     override val fieldDescriptions = Seq(
       FullFieldDescription("uk-property", "type", "Enum", IncomeType.values.mkString(", "), "Type of income"),
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 
   case object Expenses extends SummaryType {
     override val name = "expenses"
-    override lazy val example: JsValue = toJson(ukproperty.Expenses.example)
+    override lazy val example: JsValue = toJson(Expense.example())
     override val title = "Sample UK property expenses"
     override def description(action: String) = s"$action an expense for the specified UK Property"
     override val fieldDescriptions = Seq(
       FullFieldDescription("uk-property", "type", "Enum", ExpenseType.values.mkString(", "), "Type of expense"),
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 
-  case object TaxPaid extends SummaryType {
-    override val name = "tax-paid"
-    override lazy val example: JsValue = toJson(ukproperty.TaxPaid.example)
-    override val title = "Sample UK property tax paid"
+  case object TaxesPaid extends SummaryType {
+    override val name = "taxes-paid"
+    override lazy val example: JsValue = toJson(TaxPaid.example())
+    override val title = "Sample UK property taxes paid"
     override def description(action: String) = s"$action a tax paid for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 
   case object BalancingCharges extends SummaryType {
     override val name = "balancing-charges"
-    override lazy val example: JsValue = toJson(ukproperty.BalancingCharge.example)
-    override val title = "Sample UK property balancing charge"
+    override lazy val example: JsValue = toJson(BalancingCharge.example())
+    override val title = "Sample UK property balancing charges"
     override def description(action: String) = s"$action a balancing charge for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 
   case object PrivateUseAdjustments extends SummaryType {
     override val name = "private-use-adjustments"
-    override lazy val example: JsValue = toJson(ukproperty.PrivateUseAdjustment.example)
+    override lazy val example: JsValue = toJson(PrivateUseAdjustment.example())
     override val title = "Sample UK property private use adjustment"
     override def description(action: String) = s"$action a private use adjustment for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-property", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount")
     )
   }
 

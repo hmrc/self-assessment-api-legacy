@@ -17,89 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.JsValue
-import play.api.libs.json.Json._
 
-sealed trait SourceType extends Documentable {
+trait SourceType extends Documentable {
   val name: String
   val example: JsValue
   val summaryTypes: Seq[SummaryType]
-}
-
-object SourceTypes {
-  val types = Seq(SelfEmployments, FurnishedHolidayLettings, UKProperty)
-  private val typesByName = types.map(x => x.name -> x).toMap
-
-  def fromName(name: String): Option[SourceType] = typesByName.get(name)
-
-  case object SelfEmployments extends SourceType {
-    override val name = "self-employments"
-    override lazy val example: JsValue = toJson(selfemployment.SelfEmployment.example)
-    override val summaryTypes = Seq(selfemployment.SummaryTypes.Incomes, selfemployment.SummaryTypes.Expenses, selfemployment.SummaryTypes.GoodsAndServicesOwnUse, selfemployment.SummaryTypes.BalancingCharges)
-    override val title = "Sample self-employments"
-
-    override def description(action: String) = s"$action a self-employment"
-
-    override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "name", "String", "Painter", "Name of the self-employment"),
-      FullFieldDescription(name, "commencementDate", "Date", "2016-01-01", "Date in yyyy-dd-mm format"),
-      FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this self-employment", optional = true),
-      PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", optional = true),
-      PositiveMonetaryFieldDescription(name, "capitalAllowanceMainPool", optional = true),
-      PositiveMonetaryFieldDescription(name, "capitalAllowanceSpecialRatePool", optional = true),
-      PositiveMonetaryFieldDescription(name, "restrictedCapitalAllowance", optional = true),
-      PositiveMonetaryFieldDescription(name, "businessPremisesRenovationAllowance", optional = true),
-      PositiveMonetaryFieldDescription(name, "enhancedCapitalAllowance", optional = true),
-      PositiveMonetaryFieldDescription(name, "allowancesOnSales", optional = true),
-      FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this self-employment", optional = true),
-      PositiveMonetaryFieldDescription(name, "includedNonTaxableProfits", optional = true),
-      MonetaryFieldDescription(name, "basisAdjustment", optional = true),
-      PositiveMonetaryFieldDescription(name, "overlapReliefUsed", optional = true),
-      PositiveMonetaryFieldDescription(name, "accountingAdjustment", optional = true),
-      MonetaryFieldDescription(name, "averagingAdjustment", optional = true),
-      PositiveMonetaryFieldDescription(name, "lossBroughtForward", optional = true),
-      PositiveMonetaryFieldDescription(name, "outstandingBusinessIncome", optional = true)
-    )
-  }
-
-  case object FurnishedHolidayLettings extends SourceType {
-    override val name = "furnished-holiday-lettings"
-    override lazy val example: JsValue = toJson(furnishedholidaylettings.FurnishedHolidayLettings.example)
-    override val summaryTypes = Seq(furnishedholidaylettings.SummaryTypes.Incomes, furnishedholidaylettings.SummaryTypes.Expenses, furnishedholidaylettings.SummaryTypes.PrivateUseAdjustments, furnishedholidaylettings.SummaryTypes.BalancingCharges)
-    override val title = "Sample furnished holiday lettings"
-
-    override def description(action: String) = s"$action a furnished holiday letting"
-
-    override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "name", "String", "Holiday Cottage", "Identifier for the property"),
-      FullFieldDescription(name, "propertyLocation", "Enum", furnishedholidaylettings.PropertyLocationType.values.mkString(", "), "The location of the property"),
-      FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
-      PositiveMonetaryFieldDescription(name, "capitalAllowance"),
-      FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
-      PositiveMonetaryFieldDescription(name, "lossBroughtForward")
-    )
-  }
-
-
-  case object UKProperty extends SourceType {
-    override val name = "uk-property"
-    override lazy val example: JsValue = toJson(ukproperty.UKProperty.example)
-    override val summaryTypes = Seq(ukproperty.SummaryTypes.Incomes, ukproperty.SummaryTypes.Expenses, ukproperty.SummaryTypes.TaxPaid, ukproperty.SummaryTypes.BalancingCharges, ukproperty.SummaryTypes.PrivateUseAdjustments)
-    override val title = "Sample UK property"
-
-    override def description(action: String) = s"$action a UK property"
-
-    override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "name", "String", "London Apartment", "Identifier for the property"),
-      FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
-      PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", optional = true),
-      PositiveMonetaryFieldDescription(name, "businessPremisesRenovationAllowance", optional = true),
-      PositiveMonetaryFieldDescription(name, "otherCapitalAllowance", optional = true),
-      PositiveMonetaryFieldDescription(name, "wearAndTearAllowance", optional = true),
-      FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
-      PositiveMonetaryFieldDescription(name, "lossBroughtForward"),
-      PositiveMonetaryFieldDescription(name, "rentARoomRelief", optional = true)
-    )
-  }
-
 }
 

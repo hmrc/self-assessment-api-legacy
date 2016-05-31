@@ -68,8 +68,7 @@ class ExpenseSpec extends JsonSpec {
       assertValidationError[Expense](
         json,
         Map("/type" -> NO_VALUE_FOUND),
-        "Expected expense type not in { CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, " +
-          "AdminCosts,  AdvertisingCosts, Internet, FinancialCharges, BadDept, ProfessionalFees, Deprecation, Other }")
+        s"Expected expense type not in {${ExpenseType.values.mkString(", ")}}")
     }
   }
 }

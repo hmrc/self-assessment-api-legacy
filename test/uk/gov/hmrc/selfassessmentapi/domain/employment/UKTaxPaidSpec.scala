@@ -34,17 +34,10 @@ class UKTaxPaidSpec extends JsonSpec {
         val ukTaxPaid = UKTaxPaid(amount = testAmount)
         assertValidationError[UKTaxPaid](
           ukTaxPaid,
-          Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
+          Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be a number up to 2 decimal values"),
           "Expected invalid employments-ukTaxPaid")
       }
     }
 
-    "reject negative amount" in {
-      val ukTaxPaid = UKTaxPaid(amount = BigDecimal(-1000.13))
-      assertValidationError[UKTaxPaid](
-        ukTaxPaid,
-        Map(("/amount", INVALID_MONETARY_AMOUNT) -> "amount should be non-negative number up to 2 decimal values"),
-        "Expected negative employments-ukTaxPaid")
-    }
   }
 }

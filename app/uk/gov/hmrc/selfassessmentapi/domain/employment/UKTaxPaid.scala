@@ -27,7 +27,7 @@ object UKTaxPaid extends BaseDomain[UKTaxPaid]{
   implicit val writes = Json.writes[UKTaxPaid]
   implicit val reads: Reads[UKTaxPaid] = (
     Reads.pure(None) and
-      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
+      (__ \ "amount").read[BigDecimal](amountValidator("amount"))
     ) (UKTaxPaid.apply _)
 
   override def example(id: Option[SummaryId]=None) = UKTaxPaid(id, BigDecimal(10000.00))

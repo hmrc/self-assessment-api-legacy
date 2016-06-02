@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
 
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.SavingsIncomes
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Dividends, SavingsIncomes}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{UnearnedIncome, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 
@@ -33,6 +33,7 @@ object UnearnedIncomeSourceHandler extends SourceHandler[UnearnedIncome] {
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] =
     summaryType match {
       case SavingsIncomes => Some(SummaryHandler(SavingsIncomes.name, SavingsIncome))
+      case Dividends => Some(SummaryHandler(Dividends.name, Dividend))
       case _ => None
     }
 }

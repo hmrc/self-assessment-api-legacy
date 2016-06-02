@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.{FullFieldDescription, PositiveMonet
 object SummaryTypes {
 
   case object SavingsIncomes extends SummaryType {
-    override val name = "savings-incomes"
+    override val name = "savings"
     override lazy val example: JsValue = toJson(SavingsIncome.example())
     override val title = "Sample unearned income savings incomes"
 

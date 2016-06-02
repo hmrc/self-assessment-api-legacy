@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
+import SavingsIncomeType._
 
 class UnearnedIncomeSpec extends JsonSpec {
 
@@ -30,11 +32,40 @@ class UnearnedIncomeSpec extends JsonSpec {
   "validate" should {
     "reject name longer than 100 characters" in {
 
-      val se = UnearnedIncome(name = "a" * 101)
+      val income = UnearnedIncome(name = "a" * 101)
 
       assertValidationError[UnearnedIncome](
-        se,
-        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED), "Expected valid unearned income")
+        income,
+        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED), "Expected invalid unearned income")
+    }
+
+    "reject amounts with more than 2 decimal values" in {
+      Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
+        val savingsIncome = SavingsIncome(`type` = InterestFromBanksTaxed, amount = testAmount)
+        assertValidationError[SavingsIncome](
+          savingsIncome,
+          Map("/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid unearned-income-savings-income with more than 2 decimal places")
+      }
+    }
+
+    "reject invalid Savings Income type" in {
+      val json = Json.parse(
+        """
+          |{ "type": "FOO",
+          |"amount" : 10000.45
+          |}
+        """.stripMargin)
+
+      assertValidationError[SavingsIncome](
+        json,
+        Map("/type" -> NO_VALUE_FOUND), "Expected savings income type not in { InterestFromBanksTaxed, InterestFromBanksUntaxed }")
+    }
+
+    "reject negative amount" in {
+      val income = SavingsIncome(`type` = InterestFromBanksUntaxed, amount = BigDecimal(-1000.12))
+      assertValidationError[SavingsIncome](
+        income,
+        Map("/amount" -> INVALID_MONETARY_AMOUNT), "should fail with INVALID_MONETARY_AMOUNT error")
     }
   }
 }

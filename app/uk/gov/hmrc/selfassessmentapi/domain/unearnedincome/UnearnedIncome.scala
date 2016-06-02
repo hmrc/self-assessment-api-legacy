@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain.employment
+package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-class EmploymentSpec extends JsonSpec {
 
-  "format" should {
-    "round trip valid Employment json" in {
-      roundTripJson(Employment(name = "employment 1"))
-    }
-  }
+case class UnearnedIncome(id: Option[SourceId] = None, name: String)
 
-  "validate" should {
-    "reject name longer than 100 characters" in {
+object UnearnedIncome {
 
-      val se = Employment(name = "a" * 101)
+  implicit val writes = Json.writes[UnearnedIncome]
 
-      assertValidationError[Employment](
-        se,
-        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED), "Expected valid employment")
-    }
-  }
+  implicit val reads = (
+    Reads.pure(None) and
+      (__ \ "name").read[String](lengthValidator)
+    ) (UnearnedIncome.apply _)
+
+  lazy val example = UnearnedIncome(name = "Unearned Income")
 }

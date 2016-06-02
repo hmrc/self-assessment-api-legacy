@@ -20,6 +20,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment.EmploymentsS
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.furnishedholidaylettings.FurnishedHolidayLettingsSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.selfemployment.SelfEmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty.UKPropertySourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome.UnearnedIncomeSourceHandler
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
 
 trait SourceTypeSupport {
@@ -29,6 +30,7 @@ trait SourceTypeSupport {
     case SourceTypes.FurnishedHolidayLettings => FurnishedHolidayLettingsSourceHandler
     case SourceTypes.UKProperty => UKPropertySourceHandler
     case SourceTypes.Employments => EmploymentsSourceHandler
+    case SourceTypes.UnearnedIncome => UnearnedIncomeSourceHandler
   }
 
 }

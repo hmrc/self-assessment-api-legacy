@@ -21,8 +21,9 @@ object SourceTypes {
   val FurnishedHolidayLettings = furnishedholidaylettings.SourceType.FurnishedHolidayLettings
   val UKProperty = ukproperty.SourceType.UKProperties
   val Employments = employment.SourceType.Employments
+  val UnearnedIncome = unearnedincome.SourceType.UnearnedIncomes
 
-  val types = Seq(SelfEmployments, FurnishedHolidayLettings, UKProperty, Employments)
+  val types = Seq(SelfEmployments, FurnishedHolidayLettings, UKProperty, Employments, UnearnedIncome)
   private val typesByName = types.map(x => x.name -> x).toMap
   def fromName(name: String): Option[SourceType] = typesByName.get(name)
 }

@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain.employment
+package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
 
-class EmploymentSpec extends JsonSpec {
+class UnearnedIncomeSpec extends JsonSpec {
 
   "format" should {
-    "round trip valid Employment json" in {
-      roundTripJson(Employment(name = "employment 1"))
+    "round trip valid UnearnedIncome json" in {
+      roundTripJson(UnearnedIncome(name = "Unearned income"))
     }
   }
 
   "validate" should {
     "reject name longer than 100 characters" in {
 
-      val se = Employment(name = "a" * 101)
+      val se = UnearnedIncome(name = "a" * 101)
 
-      assertValidationError[Employment](
+      assertValidationError[UnearnedIncome](
         se,
-        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED), "Expected valid employment")
+        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED), "Expected valid unearned income")
     }
   }
 }

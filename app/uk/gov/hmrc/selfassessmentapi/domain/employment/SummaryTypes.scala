@@ -37,7 +37,7 @@ object SummaryTypes {
     override val name = "benefits"
     override lazy val example: JsValue = toJson(Benefit.example())
     override val title = "Sample employment benefits"
-    override def description(action: String) = s"$action employment benefit"
+    override def description(action: String) = s"$action an employment benefit for the specified source"
     override val fieldDescriptions = Seq(
       FullFieldDescription("employments", "type", "Enum", BenefitType.values.mkString(", "), "Type of benefit"),
       PositiveMonetaryFieldDescription("employments", "amount")

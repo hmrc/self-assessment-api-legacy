@@ -31,7 +31,7 @@ case class SavingsIncome(id: Option[String] = None, `type`: SavingsIncomeType, a
 
 object SavingsIncome extends BaseDomain[SavingsIncome] {
 
-  implicit val savingsIncomeTypes = EnumJson.enumFormat(SavingsIncomeType, Some("Unearned income savings income type is invalid"))
+  implicit val savingsIncomeTypes = EnumJson.enumFormat(SavingsIncomeType, Some("Unearned Income Savings Income type is invalid"))
   implicit val writes = Json.writes[SavingsIncome]
 
   implicit val reads: Reads[SavingsIncome] = (

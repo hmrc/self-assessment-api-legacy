@@ -16,21 +16,19 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import play.api.libs.json.JsObject
-import play.api.mvc.Action
-import play.api.mvc.hal._
-import uk.gov.hmrc.api.controllers.HeaderValidator
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
-import uk.gov.hmrc.selfassessmentapi.views.Helpers.discoveryLinks
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
 
-import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
-trait TaxYearDiscoveryController
-  extends BaseController with HeaderValidator with Links {
+package object sandbox {
 
-  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    val links = discoveryLinks(utr, taxYear)
-    Future.successful(Ok(halResource(JsObject(Nil), links)))
+  def validate[T](id: String, jsValue: JsValue)(implicit reads: Reads[T]): Either[ErrorResult, String] = {
+    Try(jsValue.validate[T]) match {
+      case Success(JsSuccess(payload, _)) => Right(id)
+      case Success(JsError(errors)) =>
+        Left(ErrorResult(validationErrors = Some(errors)))
+      case Failure(e) =>
+        Left(ErrorResult(message = Some(s"could not parse body due to ${e.getMessage}")))
+    }
   }
 }

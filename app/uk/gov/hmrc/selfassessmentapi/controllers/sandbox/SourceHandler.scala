@@ -22,7 +22,6 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
 
 trait SourceHandler[T] {
 
@@ -34,15 +33,7 @@ trait SourceHandler[T] {
   private def generateId: String = BSONObjectID.generate.stringify
 
   def create(jsValue: JsValue): Future[Either[ErrorResult, SourceId]] =
-    Future.successful (
-      Try(jsValue.validate[T]) match {
-        case Success(JsSuccess(payload, _)) => Right(generateId)
-        case Success(JsError(errors)) =>
-          Left(ErrorResult(validationErrors = Some(errors)))
-        case Failure(e) =>
-          Left(ErrorResult(message = Some(s"could not parse body due to ${e.getMessage}")))
-      }
-    )
+    Future.successful(validate[T](generateId, jsValue))
 
   def findById(sourceId: SourceId): Future[Option[JsValue]] = {
     Future.successful(Some(toJson(example(sourceId))))
@@ -63,15 +54,7 @@ trait SourceHandler[T] {
     Future.successful(true)
 
   def update(sourceId: SourceId, jsValue: JsValue): Future[Either[ErrorResult, SourceId]] =
-    Future.successful (
-      Try(jsValue.validate[T]) match {
-        case Success(JsSuccess(payload, _)) => Right(sourceId)
-        case Success(JsError(errors)) =>
-          Left(ErrorResult(validationErrors = Some(errors)))
-        case Failure(e) =>
-          Left(ErrorResult(message = Some(s"could not parse body due to ${e.getMessage}")))
-      }
-    )
+    Future.successful (validate[T](sourceId, jsValue))
 
   def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]]
 }

@@ -1,6 +1,7 @@
 GET        /                       uk.gov.hmrc.selfassessmentapi.controllers.live.CustomerResolverController.resolve()
 GET        /:utr                   uk.gov.hmrc.selfassessmentapi.controllers.live.TaxYearsDiscoveryController.discoverTaxYears(utr: uk.gov.hmrc.domain.SaUtr)
 GET        /:utr/:taxYear          uk.gov.hmrc.selfassessmentapi.controllers.live.TaxYearDiscoveryController.discoverTaxYear(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
+PUT        /:utr/:taxYear          uk.gov.hmrc.selfassessmentapi.controllers.live.TaxYearDiscoveryController.update(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
 
 POST       /:utr/:taxYear/liabilities                    uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.requestLiability(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
 GET        /:utr/:taxYear/liabilities                    uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.find(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)

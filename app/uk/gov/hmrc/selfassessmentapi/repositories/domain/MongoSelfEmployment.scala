@@ -16,21 +16,68 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
+import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
+import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Adjustments, Allowances, SelfEmployment}
 
-case class MongoSelfEmployment(id: BSONObjectID, name: String, commencementDate: LocalDate) {
-  def toSelfEmployment = SelfEmployment(Some(id.stringify), name, commencementDate)
+case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
+                                            `type`: IncomeType,
+                                            amount: BigDecimal)
+
+object MongoSelfEmploymentIncomeSummary {
+  import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income.seIncomeTypes
+  implicit val format = Json.format[MongoSelfEmploymentIncomeSummary]
+}
+
+case class MongoSelfEmployment(id: BSONObjectID,
+                               sourceId: SourceId,
+                               saUtr: SaUtr,
+                               taxYear: TaxYear,
+                               lastModifiedDateTime: DateTime,
+                               createdDateTime: DateTime,
+                               name: String,
+                               commencementDate: LocalDate,
+                               allowances: Option[Allowances] = None,
+                               adjustments: Option[Adjustments] = None,
+                               incomes: Seq[MongoSelfEmploymentIncomeSummary] = Nil) extends SourceMetadata {
+
+  def toSelfEmployment = SelfEmployment(
+    id = Some(sourceId),
+    name = name,
+    commencementDate = commencementDate,
+    allowances = allowances,
+    adjustments = adjustments)
 }
 
 object MongoSelfEmployment {
+  implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
+  implicit val localDateFormat = ReactiveMongoFormats.localDateFormats
 
-  implicit val formats =  ReactiveMongoFormats.mongoEntity(Json.format[MongoSelfEmployment])
+  implicit val mongoFormats = ReactiveMongoFormats.mongoEntity({
+    implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
+    implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
+    implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
+    Format(Json.reads[MongoSelfEmployment], Json.writes[MongoSelfEmployment])
+  })
 
-  def from(se: SelfEmployment) = {
-    MongoSelfEmployment(se.id.map(BSONObjectID(_)).getOrElse(BSONObjectID.generate), se.name, se.commencementDate)
+  def create(saUtr: SaUtr, taxYear: TaxYear, se: SelfEmployment): MongoSelfEmployment = {
+    val id = BSONObjectID.generate
+    val now = DateTime.now(DateTimeZone.UTC)
+    MongoSelfEmployment(
+      id = id,
+      sourceId = id.stringify,
+      saUtr = saUtr,
+      taxYear = taxYear,
+      lastModifiedDateTime = now,
+      createdDateTime = now,
+      name = se.name,
+      commencementDate = se.commencementDate,
+      allowances = se.allowances,
+      adjustments = se.adjustments)
   }
 }

@@ -16,12 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
+import org.joda.time.{DateTime, DateTimeZone}
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
-import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.mongo.ReactiveRepository
+import reactivemongo.api.indexes.Index
+import reactivemongo.api.indexes.IndexType.Ascending
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONLong, BSONNull, BSONObjectID, BSONString}
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
 
@@ -29,9 +33,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait SelfEmploymentRepository {
-  def create(se: SelfEmployment): Future[SelfEmploymentId]
+  def create(saUtr: SaUtr, taxYear: TaxYear, selfEmployment: SelfEmployment): Future[SourceId]
 
-  def findById(id: SelfEmploymentId): Future[Option[SelfEmployment]]
+  def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[SelfEmployment]]
+
+  def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, selfEmployment: SelfEmployment): Future[Boolean]
+
+  def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean]
+
+  def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]]
 }
 
 object SelfEmploymentRepository extends MongoDbConnection {
@@ -42,18 +52,79 @@ object SelfEmploymentRepository extends MongoDbConnection {
 
 class SelfEmploymentMongoRepository(implicit mongo: () => DB)
   extends ReactiveRepository[MongoSelfEmployment, BSONObjectID](
-    "selfEmployment",
+    "self-employments",
     mongo,
-    domainFormat = MongoSelfEmployment.formats,
+    domainFormat = MongoSelfEmployment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
-    with SelfEmploymentRepository {
+    with SelfEmploymentRepository with AtomicUpdate[MongoSelfEmployment]{
 
-  override def create(se: SelfEmployment): Future[SelfEmploymentId] = {
-    val mongoSe = MongoSelfEmployment.from(se)
-    insert(mongoSe).map(_ => mongoSe.id.stringify)
+  override def indexes: Seq[Index] = Seq(
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("se_utr_taxyear"), unique = false),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending)), name = Some("se_utr_taxyear_sourceid"), unique = true),
+    Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("se_last_modified"), unique = false))
+
+  override def isInsertion(suppliedId: BSONObjectID, returned: MongoSelfEmployment): Boolean =
+    suppliedId.equals(returned.id)
+
+  override def create(saUtr: SaUtr, taxYear: TaxYear, se: SelfEmployment): Future[SourceId] = {
+    val mongoSe = MongoSelfEmployment.create(saUtr, taxYear, se)
+    insert(mongoSe).map(_ => mongoSe.sourceId)
   }
 
-  override def findById(id: SelfEmploymentId): Future[Option[SelfEmployment]] = {
-    for (option <- findById(BSONObjectID(id))) yield option.map(_.toSelfEmployment)
+  override def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[SelfEmployment]] = {
+    for (option <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear, "sourceId" -> id)) yield option.map(_.toSelfEmployment).headOption
+  }
+
+  override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]] = {
+    for (option <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield option.map(_.toSelfEmployment)
+  }
+
+  override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, selfEmployment: SelfEmployment): Future[Boolean] = {
+    val baseModifiers = Seq(
+      "$set" -> BSONDocument("name" -> selfEmployment.name),
+      "$set" -> BSONDocument("commencementDate" -> BSONDateTime(selfEmployment.commencementDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).getMillis)),
+      "$set" -> BSONDocument("lastModifiedDateTime" -> BSONDateTime(DateTime.now(DateTimeZone.UTC).getMillis))
+    )
+
+    val allowancesModifiers = selfEmployment.allowances.map(allowances =>
+      Seq(
+        "$set" -> BSONDocument("allowances" -> BSONDocument(Seq(
+          "annualInvestmentAllowance" -> allowances.annualInvestmentAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "capitalAllowanceMainPool" -> allowances.capitalAllowanceMainPool.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "capitalAllowanceSpecialRatePool" -> allowances.capitalAllowanceSpecialRatePool.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "restrictedCapitalAllowance" -> allowances.restrictedCapitalAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "businessPremisesRenovationAllowance" -> allowances.businessPremisesRenovationAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "enhancedCapitalAllowance" -> allowances.enhancedCapitalAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "allowancesOnSales" -> allowances.allowancesOnSales.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
+        )))
+      )
+    ).getOrElse(Seq("$set" -> BSONDocument("allowances" -> BSONNull)))
+
+    val adjustmentsModifiers = selfEmployment.adjustments.map(adjustments =>
+      Seq(
+        "$set" -> BSONDocument("adjustments" -> BSONDocument(Seq(
+          "accountingAdjustment" -> adjustments.accountingAdjustment.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "averagingAdjustment" -> adjustments.averagingAdjustment.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "basisAdjustment" -> adjustments.basisAdjustment.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "includedNonTaxableProfits" -> adjustments.includedNonTaxableProfits.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "lossBroughtForward" -> adjustments.lossBroughtForward.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "outstandingBusinessIncome" -> adjustments.outstandingBusinessIncome.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+          "overlapReliefUsed" -> adjustments.overlapReliefUsed.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
+        )))
+      )
+    ).getOrElse(Seq("$set" -> BSONDocument("adjustments" -> BSONNull)))
+
+    val modifiers = BSONDocument(baseModifiers ++ allowancesModifiers ++ adjustmentsModifiers)
+
+    for {
+      result <- atomicUpdate(
+        BSONDocument("saUtr" -> BSONString(saUtr.toString), "taxYear" -> BSONString(taxYear.toString), "sourceId" -> BSONString(id)),
+        modifiers
+      )
+    } yield result.nonEmpty
+  }
+
+  override def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean] = {
+    for (option <- remove("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear, "sourceId" -> id)) yield option.n == 1
   }
 }

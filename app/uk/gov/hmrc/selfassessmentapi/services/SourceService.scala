@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories
+package uk.gov.hmrc.selfassessmentapi.services
 
-import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, TaxYear}
 
-package object domain {
-  implicit val idFormat = ReactiveMongoFormats.objectIdFormats
+import scala.concurrent.Future
+
+trait SourceService[T] {
+
+  def create(saUtr: SaUtr, taxYear: TaxYear, source: T) : Future[SourceId]
+
+  def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) : Future[Option[T]]
+
+  def list(saUtr: SaUtr, taxYear: TaxYear) : Future[Seq[T]]
+
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, source: T): Future[Boolean]
+
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Boolean]
 }

@@ -48,4 +48,17 @@ object SummaryTypes {
     )
   }
 
+  case object Benefits extends SummaryType {
+    override val name = "benefits"
+    override lazy val example: JsValue = toJson(Benefit.example())
+    override val title = "Sample unearned income benefits"
+
+    override def description(action: String) = s"$action a benefit for the specified source"
+
+    override val fieldDescriptions = Seq(
+      FullFieldDescription("unearned income", "type", "Enum", BenefitType.values.mkString(", "), "Type of benefit"),
+      PositiveMonetaryFieldDescription("unearned income", "amount")
+    )
+  }
+
 }

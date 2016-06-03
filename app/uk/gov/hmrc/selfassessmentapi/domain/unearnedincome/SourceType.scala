@@ -19,17 +19,18 @@ package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Dividends, SavingsIncomes}
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Benefits, Dividends, SavingsIncomes}
 
 object SourceType {
 
   case object UnearnedIncomes extends SourceType {
 
     override val name: String = "unearned-incomes"
-    override val summaryTypes: Seq[SummaryType] = Seq(SavingsIncomes, Dividends)
+    override val summaryTypes: Seq[SummaryType] = Seq(SavingsIncomes, Dividends, Benefits)
     override val example: JsValue = toJson(UnearnedIncome.example)
 
-    override def description(action: String): String =  s"$action an unearned income"
+    override def description(action: String): String = s"$action an unearned income"
+
     override val title: String = "Sample unearned income"
     override val fieldDescriptions = Seq(
       FullFieldDescription(name, "name", "String", UnearnedIncome.example.name, "Name of the unearned income")

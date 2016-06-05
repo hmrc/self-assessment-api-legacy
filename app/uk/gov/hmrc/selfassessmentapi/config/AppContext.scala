@@ -30,17 +30,10 @@ object AppContext extends ServicesConfig {
   lazy val authUrl: String = baseUrl("auth")
   lazy val desUrl: String = baseUrl("des")
   lazy val registrationEnabled: Boolean = current.configuration.getBoolean(s"$env.microservice.services.service-locator.enabled").getOrElse(true)
-  lazy val featureSwitch = new FeatureSwitch(current.configuration.getObject(s"$env.feature-switch"))
+  lazy val featureSwitch = current.configuration.getObject(s"$env.feature-switch")
 
   val supportedTaxYears: Seq[String] = Seq("2016-17")
 }
 
-case class FeatureSwitch(value: Option[ConfigObject]) {
 
-  def isSourceEnabled(source: SourceType) = value match {
-    case Some(config) =>
-      config.get(s"${source.name}.enabled").asInstanceOf[Boolean]
-    case None =>
-  }
-}
 

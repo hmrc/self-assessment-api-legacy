@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories
+package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import reactivemongo.bson.BSONDocument
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-package object domain {
-  implicit val idFormat = ReactiveMongoFormats.objectIdFormats
+trait MongoSummary {
+  def toBsonDocument: BSONDocument
+  val summaryId: SummaryId
+  val arrayName: String
 }

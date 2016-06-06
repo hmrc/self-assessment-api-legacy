@@ -24,7 +24,7 @@ import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.domain._
 
-case class SelfEmployment(id: Option[SelfEmploymentId] = None,
+case class SelfEmployment(id: Option[SourceId] = None,
                           name: String,
                           commencementDate: LocalDate,
                           allowances: Option[Allowances] = None,

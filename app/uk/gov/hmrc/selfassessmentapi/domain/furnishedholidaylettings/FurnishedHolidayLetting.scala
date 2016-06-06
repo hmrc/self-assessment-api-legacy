@@ -28,7 +28,7 @@ object PropertyLocationType extends Enumeration {
   val UK, EEA = Value
 }
 
-case class FurnishedHolidayLetting(id: Option[FurnishedHolidayLettingsId] = None,
+case class FurnishedHolidayLetting(id: Option[SourceId] = None,
                                    name: String,
                                    propertyLocation: PropertyLocationType,
                                    allowances: Option[Allowances] = None,

@@ -18,20 +18,45 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.libs.json.{Format, Json}
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Adjustments, Allowances, SelfEmployment}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Adjustments, Allowances, Income, SelfEmployment}
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
                                             `type`: IncomeType,
-                                            amount: BigDecimal)
+                                            amount: BigDecimal) extends MongoSummary {
+  val arrayName = MongoSelfEmploymentIncomeSummary.arrayName
+
+  def toIncome: Income =
+    Income(id = Some(summaryId),
+      `type` = `type`,
+      amount = amount)
+
+  def toBsonDocument = BSONDocument(
+    "summaryId" -> summaryId,
+    "amount" -> BSONDouble(amount.doubleValue()),
+    "type" -> BSONString(`type`.toString)
+  )
+}
 
 object MongoSelfEmploymentIncomeSummary {
+
   import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income.seIncomeTypes
+
+  val arrayName = "incomes"
+
   implicit val format = Json.format[MongoSelfEmploymentIncomeSummary]
+
+  def toMongoSummary(income: Income, id: Option[SummaryId] = None): MongoSelfEmploymentIncomeSummary = {
+    MongoSelfEmploymentIncomeSummary(
+      summaryId = id.getOrElse(BSONObjectID.generate.stringify),
+      `type` = income.`type`,
+      amount = income.amount
+    )
+  }
 }
 
 case class MongoSelfEmployment(id: BSONObjectID,

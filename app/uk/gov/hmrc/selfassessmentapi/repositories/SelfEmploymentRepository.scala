@@ -21,13 +21,13 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONLong, BSONNull, BSONObjectID, BSONString}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONNull, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, SelfEmployment}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -44,6 +44,19 @@ trait SelfEmploymentRepository {
   def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]]
 }
 
+trait SelfEmploymentIncomesRepository {
+  def createIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: Income): Future[Option[SummaryId]]
+
+  def findIncomeById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[Income]]
+
+  def updateIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, income: Income): Future[Boolean]
+
+  def deleteIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean]
+
+  def listIncomes(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]]
+}
+
+
 object SelfEmploymentRepository extends MongoDbConnection {
   private lazy val repository = new SelfEmploymentMongoRepository
 
@@ -56,15 +69,14 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
     mongo,
     domainFormat = MongoSelfEmployment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
-    with SelfEmploymentRepository with AtomicUpdate[MongoSelfEmployment]{
+    with SelfEmploymentRepository with SelfEmploymentIncomesRepository with AtomicUpdate[MongoSelfEmployment] with TypedSourceSummaryRepository[MongoSelfEmployment, BSONObjectID]{
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("se_utr_taxyear"), unique = false),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending)), name = Some("se_utr_taxyear_sourceid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("incomes.summaryId", Ascending)), name = Some("se_utr_taxyear_source_incomesid"), unique = true),
     Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("se_last_modified"), unique = false))
 
-  override def isInsertion(suppliedId: BSONObjectID, returned: MongoSelfEmployment): Boolean =
-    suppliedId.equals(returned.id)
 
   override def create(saUtr: SaUtr, taxYear: TaxYear, se: SelfEmployment): Future[SourceId] = {
     val mongoSe = MongoSelfEmployment.create(saUtr, taxYear, se)
@@ -72,18 +84,22 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
   }
 
   override def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[SelfEmployment]] = {
-    for (option <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear, "sourceId" -> id)) yield option.map(_.toSelfEmployment).headOption
+    for(option <- findMongoObjectById(saUtr, taxYear, id)) yield option.map(_.toSelfEmployment)
   }
 
   override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]] = {
-    for (option <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield option.map(_.toSelfEmployment)
+    for (list <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield list.map(_.toSelfEmployment)
   }
 
+  /*
+    We need to perform updates manually as we are using one collection per source and it includes the arrays of summaries. This
+    update is however partial so we should only update the fields provided and not override the summary arrays.
+   */
   override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, selfEmployment: SelfEmployment): Future[Boolean] = {
     val baseModifiers = Seq(
       "$set" -> BSONDocument("name" -> selfEmployment.name),
       "$set" -> BSONDocument("commencementDate" -> BSONDateTime(selfEmployment.commencementDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).getMillis)),
-      "$set" -> BSONDocument("lastModifiedDateTime" -> BSONDateTime(DateTime.now(DateTimeZone.UTC).getMillis))
+      modifierStatementLastModified
     )
 
     val allowancesModifiers = selfEmployment.allowances.map(allowances =>
@@ -124,7 +140,19 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
     } yield result.nonEmpty
   }
 
-  override def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean] = {
-    for (option <- remove("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear, "sourceId" -> id)) yield option.n == 1
-  }
+
+  override def createIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: Income): Future[Option[SummaryId]] =
+    createSummary(saUtr, taxYear, sourceId, MongoSelfEmploymentIncomeSummary.toMongoSummary(income))
+
+  override def findIncomeById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[Income]] =
+    findSummaryById[Income](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.incomes.find(_.summaryId == id).map(_.toIncome))
+
+  override def updateIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, income: Income): Future[Boolean] =
+    updateSummary(saUtr, taxYear, sourceId, MongoSelfEmploymentIncomeSummary.toMongoSummary(income, Some(id)), (se: MongoSelfEmployment) => se.incomes.exists(_.summaryId == id))
+
+  override def deleteIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
+    deleteSummary(saUtr, taxYear, sourceId, id, MongoSelfEmploymentIncomeSummary.arrayName, (se: MongoSelfEmployment) => se.incomes.exists(_.summaryId == id))
+
+  override def listIncomes(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]] =
+    listSummaries[Income](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.incomes.map(_.toIncome))
 }

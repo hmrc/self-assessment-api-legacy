@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
+
 class TaxYearPropertiesSpec extends JsonSpec {
 
 
@@ -43,8 +44,8 @@ class TaxYearPropertiesSpec extends JsonSpec {
           PensionContribution(employerScheme = Some(testAmount)),
           Map("/employerScheme" -> INVALID_MONETARY_AMOUNT), "Expected invalid employer annuity with more than 2 decimal places")
         assertValidationError[PensionContribution](
-          PensionContribution(overseasPensions = Some(testAmount)),
-          Map("/overseasPensions" -> INVALID_MONETARY_AMOUNT), "Expected invalid overseas pension with more than 2 decimal places")
+          PensionContribution(overseasPension = Some(testAmount)),
+          Map("/overseasPension" -> INVALID_MONETARY_AMOUNT), "Expected invalid overseas pension with more than 2 decimal places")
 
       }
     }
@@ -61,8 +62,8 @@ class TaxYearPropertiesSpec extends JsonSpec {
           PensionContribution(employerScheme = Some(testAmount)),
           Map("/employerScheme" -> INVALID_MONETARY_AMOUNT), "Expected invalid employer annuity with more than 2 decimal places")
         assertValidationError[PensionContribution](
-          PensionContribution(overseasPensions = Some(testAmount)),
-          Map("/overseasPensions" -> INVALID_MONETARY_AMOUNT), "Expected invalid overseas pension with more than 2 decimal places")
+          PensionContribution(overseasPension = Some(testAmount)),
+          Map("/overseasPension" -> INVALID_MONETARY_AMOUNT), "Expected invalid overseas pension with more than 2 decimal places")
 
       }
     }

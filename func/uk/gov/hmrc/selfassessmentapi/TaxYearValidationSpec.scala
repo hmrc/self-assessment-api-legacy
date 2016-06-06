@@ -14,7 +14,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .bodyHasPath("""pensionContributions \ ukRegisteredPension""", PensionContribution.example().ukRegisteredPension.get)
         .bodyHasPath("""pensionContributions \ retirementAnnuity""", PensionContribution.example().retirementAnnuity.get)
         .bodyHasPath("""pensionContributions \ employerScheme""", PensionContribution.example().employerScheme.get)
-        .bodyHasPath("""pensionContributions \ overseasPensions""", PensionContribution.example().overseasPensions.get)
+        .bodyHasPath("""pensionContributions \ overseasPension""", PensionContribution.example().overseasPension.get)
     }
   }
 

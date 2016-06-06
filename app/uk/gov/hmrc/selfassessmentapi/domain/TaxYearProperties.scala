@@ -23,7 +23,7 @@ import play.api.libs.json._
 case class PensionContribution(ukRegisteredPension: Option[BigDecimal] = None,
                                retirementAnnuity: Option[BigDecimal] = None,
                                employerScheme: Option[BigDecimal] = None,
-                               overseasPensions: Option[BigDecimal] = None)
+                               overseasPension: Option[BigDecimal] = None)
 
 object PensionContribution extends BaseDomain[PensionContribution] {
 
@@ -32,13 +32,13 @@ object PensionContribution extends BaseDomain[PensionContribution] {
   val ukRegisteredPension = "ukRegisteredPension"
   val retirementAnnuity = "retirementAnnuity"
   val employerScheme = "employerScheme"
-  val overseasPensions = "overseasPensions"
+  val overseasPension = "overseasPension"
 
   override implicit val reads = (
     (__ \ ukRegisteredPension).readNullable[BigDecimal](positiveAmountValidator("ukRegisteredPension")) and
       (__ \ retirementAnnuity).readNullable[BigDecimal](positiveAmountValidator("retirementAnnuity")) and
       (__ \ employerScheme).readNullable[BigDecimal](positiveAmountValidator("employerScheme")) and
-      (__ \ overseasPensions).readNullable[BigDecimal](positiveAmountValidator("overseasPensions"))
+      (__ \ overseasPension).readNullable[BigDecimal](positiveAmountValidator("overseasPension"))
     ) (PensionContribution.apply _)
 
   override def example(id: Option[String] = None) =
@@ -46,7 +46,7 @@ object PensionContribution extends BaseDomain[PensionContribution] {
       ukRegisteredPension = Some(1000.45),
       retirementAnnuity = Some(1000.00),
       employerScheme = Some(12000.05),
-      overseasPensions = Some(1234.43))
+      overseasPension = Some(1234.43))
 }
 
 case object PensionContributions extends TaxYearPropertyType {
@@ -63,7 +63,7 @@ case object PensionContributions extends TaxYearPropertyType {
     PositiveMonetaryFieldDescription(name, ukRegisteredPension, optional = true),
     PositiveMonetaryFieldDescription(name, retirementAnnuity, optional = true),
     PositiveMonetaryFieldDescription(name, employerScheme, optional = true),
-    PositiveMonetaryFieldDescription(name, overseasPensions, optional = true)
+    PositiveMonetaryFieldDescription(name, overseasPension, optional = true)
   )
 }
 

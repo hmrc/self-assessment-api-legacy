@@ -90,9 +90,9 @@ object Helpers extends HalSupport with Links {
     prettyPrint(hal.json)
   }
 
-  def discoverTaxYearResponse(utr: SaUtr, taxYear: TaxYear) = {
+  def discoverTaxYearResponse(utr: SaUtr, taxYear: TaxYear, jsValue: Option[JsValue] = None) = {
     val links = discoveryLinks(utr, taxYear)
-    val hal = halResource(toJson(TaxYearProperties.example()), links)
+    val hal = halResource(jsValue.getOrElse(obj()), links)
     prettyPrint(hal.json)
   }
 

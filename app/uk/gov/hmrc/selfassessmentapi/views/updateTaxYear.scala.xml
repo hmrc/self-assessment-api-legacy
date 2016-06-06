@@ -33,6 +33,6 @@
     <section id="sample-response">
         <title>Sample Response</title>
         <httpStatus>200 (OK)</httpStatus>
-        <json></json>
+        <json>@discoverTaxYearResponse(saUtr, taxYear)</json>
     </section>
 </endpoint>

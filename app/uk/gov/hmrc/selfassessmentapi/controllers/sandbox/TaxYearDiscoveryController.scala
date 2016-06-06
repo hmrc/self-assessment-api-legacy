@@ -38,7 +38,7 @@ object TaxYearDiscoveryController extends BaseController with Links {
   final def update(utr: SaUtr, taxYear: TaxYear) = Action.async(parse.json) { implicit request =>
     withJsonBody[TaxYearProperties] {
       taxYearProperties =>
-        Future.successful(Ok(halResource(toJson(taxYearProperties), discoveryLinks(utr, taxYear))))
+        Future.successful(Ok(halResource(obj(), discoveryLinks(utr, taxYear))))
     }
   }
 }

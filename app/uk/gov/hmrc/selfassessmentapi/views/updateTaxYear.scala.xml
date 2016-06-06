@@ -1,0 +1,38 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+
+@(saUtr: SaUtr, taxYear: TaxYear)
+
+<endpoint>
+    <name>Update Tax Year</name>
+    <description>This endpoint updates a tax year</description>
+    <section id="resource">
+        <title>Resource</title>
+        <resource><![CDATA[PUT /self-assessment/{utr}/{taxYear}]]></resource>
+    </section>
+    <section id="path-parameters">
+        <title>Path Parameters</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Type</cell>
+                <cell>Example</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                @partials.basePathParams(saUtr, Some(taxYear))
+            </rows>
+        </table>
+    </section>
+    @partials.requestHeaders(true)
+    @partials.authorisation(true)
+    @TaxYearPropertyTypes.types.map { taxYearPropertyType =>
+    @partials.taxYearPropertyWriteRequest("PUT", saUtr, taxYear, taxYearPropertyType)
+    }
+    <section id="sample-response">
+        <title>Sample Response</title>
+        <httpStatus>200 (OK)</httpStatus>
+        <json></json>
+    </section>
+</endpoint>

@@ -17,12 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.{JsString, _}
-import play.api.mvc.Request
+import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.ValidationErrors
+import scala.concurrent.Future
 
-import scala.util.{Success, Try}
+import scala.util.{Success, Try, Failure}
 
 trait BaseController
   extends uk.gov.hmrc.play.microservice.controller.BaseController with HalSupport {
@@ -31,6 +32,16 @@ trait BaseController
 
   def hc(request: Request[Any]): HeaderCarrier =
     HeaderCarrier.fromHeadersAndSession(request.headers, None)
+
+  override protected def withJsonBody[T](f: (T) => Future[Result])(
+    implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) =
+    Try(request.body.validate[T]) match {
+      case Success(JsSuccess(payload, _)) => f(payload)
+      case Success(JsError(errors)) =>
+        Future.successful(BadRequest(failedValidationJson(errors)))
+      case Failure(e) =>
+        Future.successful(BadRequest(s"could not parse body due to ${e.getMessage}"))
+    }
 
   def failedValidationJson(errors: ValidationErrors) = {
     JsArray(

@@ -8,7 +8,7 @@ import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{JsObject, JsValue, Reads}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
@@ -90,13 +90,13 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       this
     }
 
-    def bodyHasPath(path: String, value: String) : Assertions = {
+    def bodyHasPath[T](path: String, value: T)(implicit reads: Reads[T]) : Assertions = {
       extractPathElement(path) shouldEqual Some(value)
       this
     }
 
     def bodyHasPath(path: String, valuePattern: Regex) = {
-      extractPathElement(path) match {
+      extractPathElement[String](path) match {
         case Some(x) => valuePattern findFirstIn x match {
           case Some(v) =>
           case None => fail(s"$x did not match pattern")
@@ -106,7 +106,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       this
     }
 
-    private def extractPathElement(path: String): Option[String] = {
+    private def extractPathElement[T](path: String)(implicit reads: Reads[T]): Option[T] = {
       val pathSeq = path.filter(!_.isWhitespace).split('\\').toSeq.filter(!_.isEmpty)
       def op(js: JsValue, pathElement: String) = {
         val pattern = """(.*)\((\d+)\)""".r
@@ -116,7 +116,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
           case _ => js \ pathElement
         }
       }
-      pathSeq.foldLeft(response.json)(op).asOpt[String]
+      pathSeq.foldLeft(response.json)(op).asOpt[T]
     }
 
 

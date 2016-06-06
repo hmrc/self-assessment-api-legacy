@@ -1,5 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi
 
+import uk.gov.hmrc.selfassessmentapi.domain.PensionContribution
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class TaxYearValidationSpec extends BaseFunctionalSpec {
@@ -10,6 +11,10 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/sandbox/$saUtr/$taxYear").withAcceptHeader()
         .thenAssertThat().statusIs(200)
+        .bodyHasPath("""pensionContributions \ ukRegisteredPension""", PensionContribution.example().ukRegisteredPension.get)
+        .bodyHasPath("""pensionContributions \ retirementAnnuity""", PensionContribution.example().retirementAnnuity.get)
+        .bodyHasPath("""pensionContributions \ employerScheme""", PensionContribution.example().employerScheme.get)
+        .bodyHasPath("""pensionContributions \ overseasPensions""", PensionContribution.example().overseasPensions.get)
     }
   }
 
@@ -25,12 +30,12 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
   }
 
   "if the tax year in the path is valid for a live request, they" should {
-    "receive 200" in {
+    "receive 501" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/$taxYear").withAcceptHeader()
-        .thenAssertThat().statusIs(200)
+        .thenAssertThat().statusIs(501)
     }
   }
 

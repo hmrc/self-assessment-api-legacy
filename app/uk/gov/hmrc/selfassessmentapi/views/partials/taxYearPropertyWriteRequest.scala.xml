@@ -1,0 +1,28 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+
+@(method: String, saUtr: SaUtr, taxYear: TaxYear, taxYearPropertyType: TaxYearPropertyType)
+
+<section id="@(s"sample-request-${taxYearPropertyType.name}")">
+    <title>@(taxYearPropertyType.title) request</title>
+    <resource>@method /self-assessment/@saUtr/@taxYear</resource>
+    <description>@{taxYearPropertyType.description("Updates")}</description>
+    <json>@prettyPrint(taxYearPropertyType.example)</json>
+    @if(taxYearPropertyType.fieldDescriptions.nonEmpty) {
+    <table>
+        <headings>
+            <cell>Name</cell>
+            <cell>Type</cell>
+            <cell>Example</cell>
+            <cell>Description</cell>
+            <cell>Optional</cell>
+        </headings>
+        <rows>
+            @taxYearPropertyType.fieldDescriptions.map { cur =>
+               @fieldDescription(cur, false)
+            }
+        </rows>
+    </table>
+    }
+</section>

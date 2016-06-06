@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
-case class ErrorResult(message: Option[String] = None, validationErrors: Option[ValidationErrors] = None)
+
 
 case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
 
@@ -35,15 +35,7 @@ case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
   private def generateId: String = BSONObjectID.generate.stringify
 
   def create(jsValue: JsValue): Future[Either[ErrorResult, SummaryId]] =
-    Future.successful (
-      Try(jsValue.validate[T]) match {
-        case Success(JsSuccess(payload, _)) => Right(generateId)
-        case Success(JsError(errors)) =>
-          Left(ErrorResult(validationErrors = Some(errors)))
-        case Failure(e) =>
-          Left(ErrorResult(message = Some(s"could not parse body due to ${e.getMessage}")))
-      }
-    )
+    Future.successful (validate[T](generateId, jsValue))
 
   def findById(summaryId: SummaryId): Future[Option[JsValue]] = {
     Future.successful(Some(toJson(example(Some(summaryId)))))
@@ -64,14 +56,6 @@ case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
     Future.successful(true)
 
   def update(summaryId: SummaryId, jsValue: JsValue): Future[Either[ErrorResult, SummaryId]] =
-    Future.successful (
-      Try(jsValue.validate[T]) match {
-        case Success(JsSuccess(payload, _)) => Right(summaryId)
-        case Success(JsError(errors)) =>
-          Left(ErrorResult(validationErrors = Some(errors)))
-        case Failure(e) =>
-          Left(ErrorResult(message = Some(s"could not parse body due to ${e.getMessage}")))
-      }
-    )
+    Future.successful (validate[T](summaryId, jsValue))
 }
 

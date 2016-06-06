@@ -16,8 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
+import play.api.libs.json.Json
+import play.api.mvc.Action
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorNotImplemented, Links}
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 
-object TaxYearDiscoveryController extends uk.gov.hmrc.selfassessmentapi.controllers.TaxYearDiscoveryController {
+object TaxYearDiscoveryController extends BaseController with Links{
   override val context: String = AppContext.apiGatewayContext
+
+  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action {
+    NotImplemented(Json.toJson(ErrorNotImplemented))
+  }
+
+  final def update(utr: SaUtr, taxYear: TaxYear) = Action {
+   NotImplemented(Json.toJson(ErrorNotImplemented))
+  }
 }

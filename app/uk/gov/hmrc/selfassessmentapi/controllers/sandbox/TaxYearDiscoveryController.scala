@@ -16,8 +16,29 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
+import play.api.libs.json.Json._
+import play.api.mvc.Action
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties._
+import uk.gov.hmrc.selfassessmentapi.views.Helpers._
+import play.api.mvc.hal._
+import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 
-object TaxYearDiscoveryController extends uk.gov.hmrc.selfassessmentapi.controllers.TaxYearDiscoveryController {
+import scala.concurrent.Future
+
+object TaxYearDiscoveryController extends BaseController with Links {
   override val context: String = AppContext.apiGatewayContext
+
+  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
+    Future.successful(Ok(halResource(toJson(TaxYearProperties.example()), discoveryLinks(utr, taxYear))))
+  }
+
+  final def update(utr: SaUtr, taxYear: TaxYear) = Action.async(parse.json) { implicit request =>
+    withJsonBody[TaxYearProperties] {
+      taxYearProperties =>
+        Future.successful(Ok(halResource(obj(), discoveryLinks(utr, taxYear))))
+    }
+  }
 }

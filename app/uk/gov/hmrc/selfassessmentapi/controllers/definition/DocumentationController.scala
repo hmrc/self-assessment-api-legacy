@@ -67,6 +67,7 @@ object Documentation extends BaseController with Links {
     EndpointDocumentation("Resolve Customer", uk.gov.hmrc.selfassessmentapi.views.xml.resolveCustomer(utr)),
     EndpointDocumentation("Discover Tax Years", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYears(utr, taxYear)),
     EndpointDocumentation("Discover Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYear(utr, taxYear)),
+    EndpointDocumentation("Update Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.updateTaxYear(utr, taxYear)),
 
     EndpointDocumentation("Create Summary", uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceId, summaryId)),
     EndpointDocumentation("Retrieve Summary", uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceId, summaryId)),

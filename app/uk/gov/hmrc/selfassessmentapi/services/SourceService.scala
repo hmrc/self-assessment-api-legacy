@@ -17,20 +17,19 @@
 package uk.gov.hmrc.selfassessmentapi.services
 
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentId
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, TaxYear}
 
 import scala.concurrent.Future
 
-trait SelfEmploymentService {
+trait SourceService[T] {
 
-  def create(selfEmployment: SelfEmployment) : Future[SelfEmploymentId]
+  def create(saUtr: SaUtr, taxYear: TaxYear, source: T) : Future[SourceId]
 
-  def findBySelfEmploymentId(utr: SaUtr, selfEmploymentId: SelfEmploymentId) : Future[Option[SelfEmployment]]
+  def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) : Future[Option[T]]
 
-  def find(saUtr: SaUtr) : Future[Seq[SelfEmployment]]
+  def list(saUtr: SaUtr, taxYear: TaxYear) : Future[Seq[T]]
 
-  def update(selfEmployment: SelfEmployment, utr: SaUtr, selfEmploymentId: SelfEmploymentId): Future[Unit]
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, source: T): Future[Boolean]
 
-  def delete(utr: SaUtr, selfEmploymentId: SelfEmploymentId): Future[Boolean]
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Boolean]
 }

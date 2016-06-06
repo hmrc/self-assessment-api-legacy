@@ -26,15 +26,15 @@ trait FieldDescription {
 }
 
 case class PositiveMonetaryFieldDescription(source: String, name: String, optional: Boolean = false) extends FieldDescription {
-  val `type` = "Monetary"
+  val `type` = "Money"
   val example = "100.00"
-  val description = "Monetary amount as a positive number with up to 2 decimal places."
+  val description = "Positive monetary amount"
 }
 
 case class MonetaryFieldDescription(source: String, name: String, optional: Boolean = false) extends FieldDescription {
-  val `type` = "Monetary"
+  val `type` = "Money"
   val example = "-100.00"
-  val description = "Monetary amount as a number with up to 2 decimal places."
+  val description = "Monetary amount"
 }
 
 case class FullFieldDescription(source: String, name: String, `type`: String, example: String, description: String, optional: Boolean = false) extends FieldDescription

@@ -92,7 +92,7 @@ object Helpers extends HalSupport with Links {
 
   def discoverTaxYearResponse(utr: SaUtr, taxYear: TaxYear) = {
     val links = discoveryLinks(utr, taxYear)
-    val hal = halResource(obj(), links)
+    val hal = halResource(toJson(TaxYearProperties.example()), links)
     prettyPrint(hal.json)
   }
 

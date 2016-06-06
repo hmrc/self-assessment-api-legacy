@@ -32,15 +32,13 @@ object TaxYearDiscoveryController extends BaseController with Links {
   override val context: String = AppContext.apiGatewayContext
 
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    val links = discoveryLinks(utr, taxYear)
-    Future.successful(Ok(halResource(toJson(TaxYearProperties.example()), links)))
+    Future.successful(Ok(halResource(toJson(TaxYearProperties.example()), discoveryLinks(utr, taxYear))))
   }
 
   final def update(utr: SaUtr, taxYear: TaxYear) = Action.async(parse.json) { implicit request =>
     withJsonBody[TaxYearProperties] {
       taxYearProperties =>
-        val links = discoveryLinks(utr, taxYear)
-        Future.successful(Ok(halResource(toJson(taxYearProperties), links)))
+        Future.successful(Ok(halResource(toJson(taxYearProperties), discoveryLinks(utr, taxYear))))
     }
   }
 }

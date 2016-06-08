@@ -30,6 +30,6 @@ object UKTaxPaid extends BaseDomain[UKTaxPaid]{
       (__ \ "amount").read[BigDecimal](amountValidator("amount"))
     ) (UKTaxPaid.apply _)
 
-  override def example(id: Option[SummaryId]=None) = UKTaxPaid(id, BigDecimal(10000.00))
+  override def example(id: Option[SummaryId]) = UKTaxPaid(id, BigDecimal(10000.00))
 
 }

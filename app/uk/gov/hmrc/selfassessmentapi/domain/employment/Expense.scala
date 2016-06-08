@@ -41,5 +41,5 @@ object Expense extends BaseDomain[Expense]{
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Expense.apply _)
 
-  override def example(id: Option[SummaryId]=None) = Expense(id, ExpenseType.TravelAndSubsistence, BigDecimal(10000.00))
+  override def example(id: Option[SummaryId]) = Expense(id, ExpenseType.TravelAndSubsistence, BigDecimal(10000.00))
 }

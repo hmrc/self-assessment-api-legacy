@@ -17,9 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 object TaxYearPropertyTypes {
-  val types = Seq(PensionContributions)
+  val types = Seq(PensionContributionsType, CharitableGivingsType)
   private val typesByName = types.map(x => x.name -> x).toMap
-
   def fromName(name: String): Option[TaxYearPropertyType] = typesByName.get(name)
-
 }

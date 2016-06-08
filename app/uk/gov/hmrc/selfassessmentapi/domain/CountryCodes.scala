@@ -16,9 +16,20 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.domain.CountryCodes.CountryCode
+
+
+case class CountryDetails(name: String, doubleTaxAgreement: Boolean = true)
+
 object CountryCodes extends Enumeration {
+
+  implicit val format = EnumJson.enumFormat(CountryCodes, Some("Country code is invalid"))
+
   type CountryCode = Value
-  val AFG,ALB,DZA,ASM,AND,AGO,AIA,ATG,ARG,ARM,ABW,AUS,AUT,AZ,BHR,BGD,BRB,BLR,BEL,BLZ,BEN,BMU,BTN,BOL,BES1,BIH,BWA,BRA,
+  val AFG,ALB,DZA,ASM,AND,AGO,AIA,ATG,ARG,ARM,ABW,AUS,AUT,AZE,BHR,BGD,BRB,BLR,BEL,BLZ,BEN,BMU,BTN,BOL,BES1,BIH,BWA,BRA,
   VGB,BRN,BGR,BFA,MMR,BDI,KHM,CMR,CAN,CPV,CYM,CAF,TCD,CHL,CHN,CXR,CCK,COL,COM,COG,COK,CRI,CIV,HRV,CUW,CYP,CZE,COD,DNK,
   DJI,DMA,DOM,ECU,EGY,SLV,GNQ,ERI,EST,ETH,FLK,FRO,FJI,FIN,FRA,GUF,PYF,GAB,GMB,GEO,DEU,GHA,GIB,GRC,GRL,GRD,GLP,GUM,GTM,
   GGY,GIN,GNB,GUY,HTI,HND,HKG,HUN,ISL,IND,IDN,IRN,IRQ,IRL,IMN,ISR,ITA,JAM,JPN,JEY,JOR,KAZ,KEN,KIR,KWT,KGZ,LAO,LVA,LBN,
@@ -28,50 +39,70 @@ object CountryCodes extends Enumeration {
   SJM,SWZ,SWE,CHE,SYR,TWN,TJK,TZA,THA,TLS,TGO,TKL,TON,TTO,TUN,TUR,TKM,TCA,TUV,UGA,UKR,ARE,GBR,USA,VIR,URY,UZB,VUT,VAT,
   VEN,VNM,WLF,YEM,ZMB,ZWE,ZZZ = Value
 
-
   def details =
     Map(
-      (AFG, ("Afghanistan", false)),(ALB, ("Albania", false)),(DZA, ("Algeria", false)),(ASM, ("American Samoa", false)),(AND, ("Andorra", false)),
-      (AGO, ("Angola", false)),(AIA, ("Anguilla", false)),(ATG, ("Antigua and Barbuda", true)),(ARG, ("Argentina", true)),(ARM, ("Armenia", true)),
-      (ABW, ("Aruba", false)),(AUS, ("Australia", true)),(AUT, ("Austria", true)),(AZ, ("Azerbaijan", true)),(BHR, ("Bahrain", true)),(BGD, ("Bangladesh", true)),
-      (BRB, ("Barbados", true)),(BLR, ("Belarus", true)),(BEL, ("Belgium", true)),(BLZ, ("Belize", true)),(BEN, ("Benin", false)),(BMU, ("Bermuda", false)),
-      (BTN, ("Bhutan", false)),(BOL, ("Bolivia", true)),(BES1, ("Bonaire", true)),(BIH, ("Bosnia and Herzegovina", true)),(BWA, ("Botswana", true)),(BRA, ("Brazil", false)),
-      (VGB, ("British Virgin Islands", true)),(BRN, ("Brunei Darussalam", true)),(BGR, ("Bulgaria", true)),(BFA, ("Burkino Faso", false)),
-      (MMR, ("Burma (also known as Myanmar)", true)),(BDI, ("Burundi", false)),(KHM, ("Cambodia", false)),(CMR, ("Cameroon", false)),(CAN, ("Canada", true)),
-      (CPV, ("Cape Verde", false)),(CYM, ("Cayman Islands", true)),(CAF, ("Central African Republic", false)),(TCD, ("Chad", false)),(CHL, ("Chile", true)), (CHN, ("China", true)),
-      (CXR, ("Christmas Island", true)),(CCK, ("Cocos (Keeling) Islands", true)),(COL, ("Colombia", false)),(COM, ("Comoros", false)),(COG, ("Congo", false)),
-      (COK, ("Cook Islands", false)),(CRI, ("Costa Rica", false)),(CIV, ("Côte d’Ivoire", true)),(HRV, ("Croatia", true)),(CUW, ("Curaçao", true)),(CYP, ("Cyprus", true)),
-      (CZE, ("Czech Republic", true)),(COD, ("Democratic Republic of the Congo (formerly Zaire)", false)),(DNK, ("Denmark", true)),(DJI, ("Djibouti", false)),(DMA, ("Dominica", false)),
-      (DOM, ("Dominican Republic", false)),(ECU, ("Ecuador", false)),(EGY, ("Egypt", true)),(SLV, ("El Salvador", false)),(GNQ, ("Equatorial Guinea", false)),(ERI, ("Eritrea", false)),
-      (EST, ("Estonia", true)),(ETH, ("Ethiopia", true)),(FLK, ("Falkland Islands", true)),(FRO, ("Faroe Islands", true)),(FJI, ("Fiji", true)),(FIN, ("Finland", true)),
-      (FRA, ("France", true)),(GUF, ("French Guiana", true)),(PYF, ("French Polynesia", false)),(GAB, ("Gabon", false)),(GMB, ("Gambia", true)),(GEO, ("Georgia", true)),
-      (DEU, ("Germany", true)),(GHA, ("Ghana", true)),(GIB, ("Gibraltar", false)),(GRC, ("Greece", true)),(GRL, ("Greenland", false)),(GRD, ("Grenada", true)),
-      (GLP, ("Guadeloupe", true)),(GUM, ("Guam", false)),(GTM, ("Guatemala", false)),(GGY, ("Guernsey", true)),(GIN, ("Guinea", false)),(GNB, ("Guinea-Bissau", false)),
-      (GUY, ("Guyana", true)),(HTI, ("Haiti", false)),(HND, ("Honduras", false)),(HKG, ("Hong Kong (SAR)", true)),(HUN, ("Hungary", true)),(ISL, ("Iceland", true)),
-      (IND, ("India", true)),(IDN, ("Indonesia", true)),(IRN, ("Iran", false)),(IRQ, ("Iraq", false)),(IRL, ("Ireland (Republic of)", true)),(IMN, ("Isle of Man", true)),
-      (ISR, ("Israel", true)),(ITA, ("Italy", true)),(JAM, ("Jamaica", true)),(JPN, ("Japan", true)),(JEY, ("Jersey", true)),(JOR, ("Jordan", true)),(KAZ, ("Kazakhstan", true)),
-      (KEN, ("Kenya", true)),(KIR, ("Kiribati", true)),(KWT, ("Kuwait", true)),(KGZ, ("Kyrgyzstan", false)),(LAO, ("Laos", false)),(LVA, ("Latvia", true)),(LBN, ("Lebanon", false)),
-      (LSO, ("Lesotho", true)),(LBR, ("Liberia", false)),(LBY, ("Libya", true)),(LIE, ("Liechtenstein", true)),(LTU, ("Lithuania", true)),(LUX, ("Luxembourg", true)),
-      (MAC, ("Macao (SAR)", false)),(MKD, ("Macedonia (FYR)", true)),(MDG, ("Madagascar", false)),(MWI, ("Malawi", true)),(MYS, ("Malaysia", true)),(MDV, ("Maldives", false)),
-      (MLI, ("Mali", false)),(MLT, ("Malta", true)),(MHL, ("Marshall Islands", false)),(MTQ, ("Martinique", true)),(MRT, ("Mauritania", false)),(MUS, ("Mauritius", true)),
-      (MYT, ("Mayotte", false)),(MEX, ("Mexico", true)),(FSM, ("Micronesia", false)),(MDA, ("Moldova", true)),(MCO, ("Monaco", false)),(MNG, ("Mongolia", true)),
-      (MNE, ("Montenegro", true)),(MSR, ("Montserrat", true)),(MAR, ("Morocco", true)),(MOZ, ("Mozambique", false)),(NAM, ("Namibia", true)),(NRU, ("Nauru", false)),
-      (NPL, ("Nepal", false)),(NLD, ("Netherlands", true)),(NCL, ("New Caledonia", false)),(NZL, ("New Zealand", true)),(NIC, ("Nicaragua", false)),(NER, ("Niger", false)),
-      (NGA, ("Nigeria", true)),(NIU, ("Niue", false)),(NFK, ("Norfolk Island", true)),(PRK, ("North Korea", false)),(MNP, ("Northern Mariana Islands", false)),(NOR, ("Norway", true)),
-      (OMN, ("Oman", true)),(PAK, ("Pakistan", true)),(PLW, ("Palau", false)),(PAN, ("Panama", false)),(PNG, ("Papua New Guinea", true)),(PRY, ("Paraguay", false)),
-      (PER, ("Peru", false)),(PHL, ("Philippines", true)),(PCN, ("Pitcairn Island", false)),(POL, ("Poland", true)),(PRT, ("Portugal", true)),(PRI, ("Puerto Rico", false)),
-      (QAT, ("Qatar", true)),(REU, ("Reunion", true)),(ROU, ("Romania", true)),(RUS, ("Russian Federation", true)),(RWA, ("Rwanda", false)),
-      (SHN, ("St Helena and Dependencies", false)),(KNA, ("St Kitts and Nevis", true)),(LCA, ("St Lucia", false)),(SPM, ("St Pierre and Miquelon", false)),
-      (VCT, ("St Vincent and the Grenadines", false)),(BES2, ("Saba", true)),(WSM, ("Samoa", false)),(SMR, ("San Marino", false)),(STP, ("Sao Tome and Principe", false)),
-      (SAU, ("Saudi Arabia", true)),(SEN, ("Senegal", false)),(SRB, ("Serbia and Montenegro", true)),(SYC, ("Seychelles", false)),(SLE, ("Sierra Leone", true)),
-      (SGP, ("Singapore", true)),(BES3, ("Sint Eustatius", true)),(SXM, ("Sint Maarten (Dutch part)", true)),(SVK, ("Slovak Republic", true)),(SVN, ("Slovenia", true)),
-      (SLB, ("Solomon Islands", true)),(SOM, ("Somalia", false)),(ZAF, ("South Africa", true)),(KOR, ("South Korea", true)),(SSD, ("South Sudan", false)),(ESP, ("Spain", true)),
-      (LKA, ("Sri Lanka", true)),(SDN, ("Sudan", true)),(SUR, ("Suriname", false)),(SJM, ("Svalbard and Jan Mayen Islands", false)),(SWZ, ("Swaziland", true)),(SWE, ("Sweden", true)),
-      (CHE, ("Switzerland", true)),(SYR, ("Syria", false)),(TWN, ("Taiwan", true)),(TJK, ("Tajikistan", true)),(TZA, ("Tanzania", false)),(THA, ("Thailand", true)),
-      (TLS, ("Timor-Leste", false)),(TGO, ("Togo", false)),(TKL, ("Tokelau", false)),(TON, ("Tonga", false)),(TTO, ("Trinidad and Tobago", true)),(TUN, ("Tunisia", true)),
-      (TUR, ("Turkey", true)),(TKM, ("Turkmenistan", true)),(TCA, ("Turks and Caicos Islands", false)),(TUV, ("Tuvalu", true)),(UGA, ("Uganda", true)),(UKR, ("Ukraine", true)),
-      (ARE, ("United Arab Emirates", false)),(GBR, ("United Kingdom", false)),(USA, ("United States of America", true)),(VIR, ("United States Virgin Islands", false)),
-      (URY, ("Uruguay", false)),(UZB, ("Uzbekistan", true)),(VUT, ("Vanuatu", false)),(VAT, ("Vatican", false)),(VEN, ("Venezuela", true)),(VNM, ("Vietnam", true)),
-      (WLF, ("Wallis and Futuna Islands", false)),(YEM, ("Yemen", false)),(ZMB, ("Zambia", true)),(ZWE, ("Zimbabwe", true)),(ZZZ, ("None of the above", false))
+      AFG -> CountryDetails("Afghanistan", false),ALB -> CountryDetails("Albania", false),DZA -> CountryDetails("Algeria", false),ASM -> CountryDetails("American Samoa", false),
+      AND -> CountryDetails("Andorra", false), AGO -> CountryDetails("Angola", false),AIA -> CountryDetails("Anguilla", false),ATG -> CountryDetails("Antigua and Barbuda"),
+      ARG -> CountryDetails("Argentina"),ARM -> CountryDetails("Armenia"),ABW -> CountryDetails("Aruba", false),AUS -> CountryDetails("Australia"),AUT -> CountryDetails("Austria"),
+      AZE -> CountryDetails("Azerbaijan"),BHR -> CountryDetails("Bahrain"),BGD -> CountryDetails("Bangladesh"),BRB -> CountryDetails("Barbados"),BLR -> CountryDetails("Belarus"),
+      BEL -> CountryDetails("Belgium"),BLZ -> CountryDetails("Belize"),BEN -> CountryDetails("Benin", false),BMU -> CountryDetails("Bermuda", false),BTN -> CountryDetails("Bhutan", false),
+      BOL -> CountryDetails("Bolivia"),BES1 -> CountryDetails("Bonaire"),BIH -> CountryDetails("Bosnia and Herzegovina"),BWA -> CountryDetails("Botswana"),
+      BRA -> CountryDetails("Brazil", false),VGB -> CountryDetails("British Virgin Islands"),BRN -> CountryDetails("Brunei Darussalam"),BGR -> CountryDetails("Bulgaria"),
+      BFA -> CountryDetails("Burkino Faso", false),MMR -> CountryDetails("Burma also known as Myanmar"),BDI -> CountryDetails("Burundi", false),KHM -> CountryDetails("Cambodia", false),
+      CMR -> CountryDetails("Cameroon", false),CAN -> CountryDetails("Canada"),CPV -> CountryDetails("Cape Verde", false),CYM -> CountryDetails("Cayman Islands"),
+      CAF -> CountryDetails("Central African Republic", false),TCD -> CountryDetails("Chad", false),CHL -> CountryDetails("Chile"), CHN -> CountryDetails("China"),
+      CXR -> CountryDetails("Christmas Island"),CCK -> CountryDetails("Cocos Keeling Islands"),COL -> CountryDetails("Colombia", false),COM -> CountryDetails("Comoros", false),
+      COG -> CountryDetails("Congo", false),COK -> CountryDetails("Cook Islands", false),CRI -> CountryDetails("Costa Rica", false),CIV -> CountryDetails("Côte d’Ivoire"),
+      HRV -> CountryDetails("Croatia"),CUW -> CountryDetails("Curaçao"),CYP -> CountryDetails("Cyprus"),CZE -> CountryDetails("Czech Republic"),
+      COD -> CountryDetails("Democratic Republic of the Congo formerly Zaire", false),DNK -> CountryDetails("Denmark"),DJI -> CountryDetails("Djibouti", false),
+      DMA -> CountryDetails("Dominica", false),DOM -> CountryDetails("Dominican Republic", false),ECU -> CountryDetails("Ecuador", false),EGY -> CountryDetails("Egypt"),
+      SLV -> CountryDetails("El Salvador", false),GNQ -> CountryDetails("Equatorial Guinea", false),ERI -> CountryDetails("Eritrea", false),EST -> CountryDetails("Estonia"),
+      ETH -> CountryDetails("Ethiopia"),FLK -> CountryDetails("Falkland Islands"),FRO -> CountryDetails("Faroe Islands"),FJI -> CountryDetails("Fiji"),
+      FIN -> CountryDetails("Finland"),FRA -> CountryDetails("France"),GUF -> CountryDetails("French Guiana"),PYF -> CountryDetails("French Polynesia", false),GAB -> CountryDetails("Gabon", false),
+      GMB -> CountryDetails("Gambia"),GEO -> CountryDetails("Georgia"),DEU -> CountryDetails("Germany"),GHA -> CountryDetails("Ghana"),GIB -> CountryDetails("Gibraltar", false),
+      GRC -> CountryDetails("Greece"),GRL -> CountryDetails("Greenland", false),GRD -> CountryDetails("Grenada"),GLP -> CountryDetails("Guadeloupe"),GUM -> CountryDetails("Guam", false),
+      GTM -> CountryDetails("Guatemala", false),GGY -> CountryDetails("Guernsey"),GIN -> CountryDetails("Guinea", false),GNB -> CountryDetails("Guinea-Bissau", false),GUY -> CountryDetails("Guyana"),
+      HTI -> CountryDetails("Haiti", false),HND -> CountryDetails("Honduras", false),HKG -> CountryDetails("Hong Kong SAR"),HUN -> CountryDetails("Hungary"),ISL -> CountryDetails("Iceland"),
+      IND -> CountryDetails("India"),IDN -> CountryDetails("Indonesia"),IRN -> CountryDetails("Iran", false),IRQ -> CountryDetails("Iraq", false),IRL -> CountryDetails("Ireland Republic of"),
+      IMN -> CountryDetails("Isle of Man"),ISR -> CountryDetails("Israel"),ITA -> CountryDetails("Italy"),JAM -> CountryDetails("Jamaica"),JPN -> CountryDetails("Japan"),
+      JEY -> CountryDetails("Jersey"),JOR -> CountryDetails("Jordan"),KAZ -> CountryDetails("Kazakhstan"),KEN -> CountryDetails("Kenya"),KIR -> CountryDetails("Kiribati"),
+      KWT -> CountryDetails("Kuwait"),KGZ -> CountryDetails("Kyrgyzstan", false),LAO -> CountryDetails("Laos", false),LVA -> CountryDetails("Latvia"),LBN -> CountryDetails("Lebanon", false),
+      LSO -> CountryDetails("Lesotho"),LBR -> CountryDetails("Liberia", false),LBY -> CountryDetails("Libya"),LIE -> CountryDetails("Liechtenstein"),LTU -> CountryDetails("Lithuania"),
+      LUX -> CountryDetails("Luxembourg"),MAC -> CountryDetails("Macao SAR", false),MKD -> CountryDetails("Macedonia FYR"),MDG -> CountryDetails("Madagascar", false),MWI -> CountryDetails("Malawi"),
+      MYS -> CountryDetails("Malaysia"),MDV -> CountryDetails("Maldives", false),MLI -> CountryDetails("Mali", false),MLT -> CountryDetails("Malta"),MHL -> CountryDetails("Marshall Islands", false),
+      MTQ -> CountryDetails("Martinique"),MRT -> CountryDetails("Mauritania", false),MUS -> CountryDetails("Mauritius"),MYT -> CountryDetails("Mayotte", false),MEX -> CountryDetails("Mexico"),
+      FSM -> CountryDetails("Micronesia", false),MDA -> CountryDetails("Moldova"),MCO -> CountryDetails("Monaco", false),MNG -> CountryDetails("Mongolia"),MNE -> CountryDetails("Montenegro"),
+      MSR -> CountryDetails("Montserrat"),MAR -> CountryDetails("Morocco"),MOZ -> CountryDetails("Mozambique", false),NAM -> CountryDetails("Namibia"),NRU -> CountryDetails("Nauru", false),
+      NPL -> CountryDetails("Nepal", false),NLD -> CountryDetails("Netherlands"),NCL -> CountryDetails("New Caledonia", false),NZL -> CountryDetails("New Zealand"),NIC -> CountryDetails("Nicaragua", false),
+      NER -> CountryDetails("Niger", false),NGA -> CountryDetails("Nigeria"),NIU -> CountryDetails("Niue", false),NFK -> CountryDetails("Norfolk Island"),PRK -> CountryDetails("North Korea", false),
+      MNP -> CountryDetails("Northern Mariana Islands", false),NOR -> CountryDetails("Norway"),OMN -> CountryDetails("Oman"),PAK -> CountryDetails("Pakistan"),PLW -> CountryDetails("Palau", false),
+      PAN -> CountryDetails("Panama", false),PNG -> CountryDetails("Papua New Guinea"),PRY -> CountryDetails("Paraguay", false),PER -> CountryDetails("Peru", false),PHL -> CountryDetails("Philippines"),
+      PCN -> CountryDetails("Pitcairn Island", false),POL -> CountryDetails("Poland"),PRT -> CountryDetails("Portugal"),PRI -> CountryDetails("Puerto Rico", false),QAT -> CountryDetails("Qatar"),
+      REU -> CountryDetails("Reunion"),ROU -> CountryDetails("Romania"),RUS -> CountryDetails("Russian Federation"),RWA -> CountryDetails("Rwanda", false),SHN -> CountryDetails("St Helena and Dependencies", false),
+      KNA -> CountryDetails("St Kitts and Nevis"),LCA -> CountryDetails("St Lucia", false),SPM -> CountryDetails("St Pierre and Miquelon", false),VCT -> CountryDetails("St Vincent and the Grenadines", false),
+      BES2 -> CountryDetails("Saba"),WSM -> CountryDetails("Samoa", false),SMR -> CountryDetails("San Marino", false),STP -> CountryDetails("Sao Tome and Principe", false),SAU -> CountryDetails("Saudi Arabia"),
+      SEN -> CountryDetails("Senegal", false),SRB -> CountryDetails("Serbia and Montenegro"),SYC -> CountryDetails("Seychelles", false),SLE -> CountryDetails("Sierra Leone"),SGP -> CountryDetails("Singapore"),
+      BES3 -> CountryDetails("Sint Eustatius"),SXM -> CountryDetails("Sint Maarten Dutch part"),SVK -> CountryDetails("Slovak Republic"),SVN -> CountryDetails("Slovenia"),
+      SLB -> CountryDetails("Solomon Islands"),SOM -> CountryDetails("Somalia", false),ZAF -> CountryDetails("South Africa"),KOR -> CountryDetails("South Korea"),SSD -> CountryDetails("South Sudan", false),
+      ESP -> CountryDetails("Spain"),LKA -> CountryDetails("Sri Lanka"),SDN -> CountryDetails("Sudan"),SUR -> CountryDetails("Suriname", false),SJM -> CountryDetails("Svalbard and Jan Mayen Islands", false),
+      SWZ -> CountryDetails("Swaziland"),SWE -> CountryDetails("Sweden"), CHE -> CountryDetails("Switzerland"),SYR -> CountryDetails("Syria", false),TWN -> CountryDetails("Taiwan"),
+      TJK -> CountryDetails("Tajikistan"),TZA -> CountryDetails("Tanzania", false),THA -> CountryDetails("Thailand"),TLS -> CountryDetails("Timor-Leste", false),TGO -> CountryDetails("Togo", false),
+      TKL -> CountryDetails("Tokelau", false),TON -> CountryDetails("Tonga", false),TTO -> CountryDetails("Trinidad and Tobago"),TUN -> CountryDetails("Tunisia"),TUR -> CountryDetails("Turkey"),
+      TKM -> CountryDetails("Turkmenistan"),TCA -> CountryDetails("Turks and Caicos Islands", false),TUV -> CountryDetails("Tuvalu"),UGA -> CountryDetails("Uganda"),UKR -> CountryDetails("Ukraine"),
+      ARE -> CountryDetails("United Arab Emirates", false),GBR -> CountryDetails("United Kingdom", false),USA -> CountryDetails("United States of America"),VIR -> CountryDetails("United States Virgin Islands", false),
+      URY -> CountryDetails("Uruguay", false),UZB -> CountryDetails("Uzbekistan"),VUT -> CountryDetails("Vanuatu", false),VAT -> CountryDetails("Vatican", false),VEN -> CountryDetails("Venezuela"),
+      VNM -> CountryDetails("Vietnam"),WLF -> CountryDetails("Wallis and Futuna Islands", false),YEM -> CountryDetails("Yemen", false),ZMB -> CountryDetails("Zambia"),ZWE -> CountryDetails("Zimbabwe"),
+      ZZZ -> CountryDetails("None of the above", false)
     )
+}
+
+case class CountryAndAmount(countryCode: CountryCode, amount: BigDecimal)
+
+object CountryAndAmount extends BaseDomain[CountryAndAmount]{
+  override implicit val writes = Json.writes[CountryAndAmount]
+  override implicit val reads = (
+    (__ \ "countryCode").read[CountryCode] and
+      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
+    )(CountryAndAmount.apply _)
+  override def example(id: Option[String]) = CountryAndAmount(CountryCodes.GBR, BigDecimal(1000.00))
 }

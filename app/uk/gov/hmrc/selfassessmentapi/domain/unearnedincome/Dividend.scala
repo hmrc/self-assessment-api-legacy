@@ -40,5 +40,5 @@ object Dividend extends BaseDomain[Dividend] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Dividend.apply _)
 
-  override def example(id: Option[SummaryId] = None) = Dividend(id, DividendType.FromUKCompanies, BigDecimal(1000.00))
+  override def example(id: Option[SummaryId]) = Dividend(id, DividendType.FromUKCompanies, BigDecimal(1000.00))
 }

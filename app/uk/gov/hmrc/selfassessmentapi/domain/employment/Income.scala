@@ -41,5 +41,5 @@ object Income extends BaseDomain[Income] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Income.apply _)
 
-  override def example(id: Option[SummaryId]=None) = Income(id, IncomeType.Salary, BigDecimal(10000.00))
+  override def example(id: Option[SummaryId]) = Income(id, IncomeType.Salary, BigDecimal(10000.00))
 }

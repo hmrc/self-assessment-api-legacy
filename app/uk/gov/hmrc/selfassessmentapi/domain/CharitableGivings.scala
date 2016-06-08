@@ -78,7 +78,7 @@ case object CharitableGivingsType extends TaxYearPropertyType {
   override val name: String = "charitable-givings"
   override val example: JsValue = toJson(CharitableGiving.example())
 
-  override def description(action: String): String = s"$action a pension-contribution"
+  override def description(action: String): String = s"$action a charitable giving"
 
   override val title: String = "Sample charitable givings"
 

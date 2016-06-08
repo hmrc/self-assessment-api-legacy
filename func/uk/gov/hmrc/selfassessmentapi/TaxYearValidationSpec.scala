@@ -1,6 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi
 
-import uk.gov.hmrc.selfassessmentapi.domain.PensionContribution
+import uk.gov.hmrc.selfassessmentapi.domain.{CharitableGiving, PensionContribution}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class TaxYearValidationSpec extends BaseFunctionalSpec {
@@ -15,6 +15,10 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .bodyHasPath("""pensionContributions \ retirementAnnuity""", PensionContribution.example().retirementAnnuity.get)
         .bodyHasPath("""pensionContributions \ employerScheme""", PensionContribution.example().employerScheme.get)
         .bodyHasPath("""pensionContributions \ overseasPension""", PensionContribution.example().overseasPension.get)
+        .bodyHasPath("""charitableGivings \ giftAidPayments \ amount """, CharitableGiving.example().giftAidPayments.get.amount)
+        .bodyHasPath("""charitableGivings \ giftAidPayments \ countryCode """, CharitableGiving.example().giftAidPayments.get.countryCode)
+        .bodyHasPath("""charitableGivings \ landProperties \ amount """, CharitableGiving.example().landProperties.get.amount)
+        .bodyHasPath("""charitableGivings \ landProperties \ countryCode """, CharitableGiving.example().landProperties.get.countryCode)
     }
   }
 

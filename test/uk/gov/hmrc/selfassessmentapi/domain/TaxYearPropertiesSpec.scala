@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
+import uk.gov.hmrc.selfassessmentapi.domain.CountryCodes.GBR
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 
 class TaxYearPropertiesSpec extends JsonSpec {
@@ -26,13 +27,18 @@ class TaxYearPropertiesSpec extends JsonSpec {
       roundTripJson(PensionContribution.example())
     }
 
+     "round trip valid CharitableGiving json" in {
+      roundTripJson(CharitableGiving.example())
+    }
+
     "round trip valid TaxYearProperties json" in {
       roundTripJson(TaxYearProperties.example())
     }
   }
 
   "validate" should {
-    "reject amounts with more than 2 decimal values" in {
+
+    "in PensionContribution reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
         assertValidationError[PensionContribution](
           PensionContribution(ukRegisteredPension = Some(testAmount)),
@@ -50,7 +56,7 @@ class TaxYearPropertiesSpec extends JsonSpec {
       }
     }
 
-    "reject negative amount" in {
+    "in PensionContribution reject negative amount" in {
       Seq(BigDecimal(-1000.12), BigDecimal(-1000)).foreach { testAmount =>
         assertValidationError[PensionContribution](
           PensionContribution(ukRegisteredPension = Some(testAmount)),
@@ -64,8 +70,87 @@ class TaxYearPropertiesSpec extends JsonSpec {
         assertValidationError[PensionContribution](
           PensionContribution(overseasPension = Some(testAmount)),
           Map("/overseasPension" -> INVALID_MONETARY_AMOUNT), "Expected invalid overseas pension with more than 2 decimal places")
-
       }
+    }
+
+    "in CharitableGiving reject amounts with more than 2 decimal values" in {
+      Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
+        assertValidationError[CharitableGiving](
+          CharitableGiving(giftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/giftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(oneoffGiftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/oneoffGiftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(sharesSecurities = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/sharesSecurities/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(landProperties = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/landProperties/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(giftAidPaymentsCarriedBackToPreviousYear = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/giftAidPaymentsCarriedBackToPreviousYear/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(giftAidPaymentsCarriedForwardToNextYear = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/giftAidPaymentsCarriedForwardToNextYear/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+      }
+    }
+
+    "in CharitableGiving reject negative amount" in {
+      Seq(BigDecimal(-1000.12), BigDecimal(-1000)).foreach { testAmount =>
+        assertValidationError[CharitableGiving](
+          CharitableGiving(giftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/giftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(oneoffGiftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/oneoffGiftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(sharesSecurities = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/sharesSecurities/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(landProperties = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/landProperties/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(giftAidPaymentsCarriedBackToPreviousYear = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/giftAidPaymentsCarriedBackToPreviousYear/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+        assertValidationError[CharitableGiving](
+          CharitableGiving(giftAidPaymentsCarriedForwardToNextYear = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/giftAidPaymentsCarriedForwardToNextYear/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+      }
+    }
+
+    "reject if oneoffGiftAidPayments is defined but giftAidPayments element is not defined" in {
+      assertValidationError[CharitableGiving](
+        CharitableGiving(oneoffGiftAidPayments = Some(CountryAndAmount(GBR, 1000.00))),
+        Map("" -> UNDEFINED_REQUIRED_ELEMENT), "Expected CharitableGiving instance with giftAitPayments = None")
+    }
+
+    "reject if oneoffGiftAidPayments is defined and greater than giftAidPayments" in {
+      assertValidationError[CharitableGiving](
+        CharitableGiving(giftAidPayments= Some(CountryAndAmount(GBR, 999.99)),
+                         oneoffGiftAidPayments = Some(CountryAndAmount(GBR, 1000.00))),
+        Map("" -> MAXIMUM_AMOUNT_EXCEEDED), "Expected CharitableGiving instance with giftAitPayments < oneoffGiftAidPayments")
+    }
+
+    "reject if giftAidPaymentsCarriedBackToPreviousYear defined but giftAidPayments element is not defined" in {
+      assertValidationError[CharitableGiving](
+        CharitableGiving(giftAidPaymentsCarriedBackToPreviousYear = Some(CountryAndAmount(GBR, 1000.00))),
+        Map("" -> UNDEFINED_REQUIRED_ELEMENT), "Expected CharitableGiving instance with giftAitPayments = None")
+    }
+
+    "reject if giftAidPaymentsCarriedForwardToNextYear defined but giftAidPayments element is not defined" in {
+      assertValidationError[CharitableGiving](
+        CharitableGiving(giftAidPaymentsCarriedForwardToNextYear = Some(CountryAndAmount(GBR, 1000.00))),
+        Map("" -> UNDEFINED_REQUIRED_ELEMENT), "Expected CharitableGiving instance with giftAitPayments = None")
+    }
+
+    "reject if giftAidPaymentsCarriedForwardToNextYear + giftAidPaymentsCarriedBackToPreviousYear > giftAidPayments" in {
+      assertValidationError[CharitableGiving](
+        CharitableGiving(giftAidPayments= Some(CountryAndAmount(GBR, 999.99)),
+                         giftAidPaymentsCarriedForwardToNextYear = Some(CountryAndAmount(GBR, 500.00)),
+                         giftAidPaymentsCarriedBackToPreviousYear = Some(CountryAndAmount(GBR, 500.00))),
+        Map("" -> MAXIMUM_AMOUNT_EXCEEDED), "Expected CharitableGiving instance with " +
+          "giftAitPayments < (giftAidPaymentsCarriedForwardToNextYear + giftAidPaymentsCarriedBackToPreviousYear)")
     }
   }
 

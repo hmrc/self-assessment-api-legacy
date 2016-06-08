@@ -17,57 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.Json._
 import play.api.libs.json._
 
-case class PensionContribution(ukRegisteredPension: Option[BigDecimal] = None,
-                               retirementAnnuity: Option[BigDecimal] = None,
-                               employerScheme: Option[BigDecimal] = None,
-                               overseasPension: Option[BigDecimal] = None)
-
-object PensionContribution extends BaseDomain[PensionContribution] {
-
-  override implicit val writes = Json.writes[PensionContribution]
-
-  val ukRegisteredPension = "ukRegisteredPension"
-  val retirementAnnuity = "retirementAnnuity"
-  val employerScheme = "employerScheme"
-  val overseasPension = "overseasPension"
-
-  override implicit val reads = (
-    (__ \ ukRegisteredPension).readNullable[BigDecimal](positiveAmountValidator("ukRegisteredPension")) and
-      (__ \ retirementAnnuity).readNullable[BigDecimal](positiveAmountValidator("retirementAnnuity")) and
-      (__ \ employerScheme).readNullable[BigDecimal](positiveAmountValidator("employerScheme")) and
-      (__ \ overseasPension).readNullable[BigDecimal](positiveAmountValidator("overseasPension"))
-    ) (PensionContribution.apply _)
-
-  override def example(id: Option[String] = None) =
-    PensionContribution(
-      ukRegisteredPension = Some(1000.45),
-      retirementAnnuity = Some(1000.00),
-      employerScheme = Some(12000.05),
-      overseasPension = Some(1234.43))
-}
-
-case object PensionContributions extends TaxYearPropertyType {
-  override val name: String = "pension-contributions"
-  override val example: JsValue = toJson(PensionContribution.example())
-
-  override def description(action: String): String = s"$action a pension-contribution"
-
-  override val title: String = "Sample pension contributions"
-
-  import PensionContribution._
-
-  override val fieldDescriptions = Seq(
-    PositiveMonetaryFieldDescription(name, ukRegisteredPension, optional = true),
-    PositiveMonetaryFieldDescription(name, retirementAnnuity, optional = true),
-    PositiveMonetaryFieldDescription(name, employerScheme, optional = true),
-    PositiveMonetaryFieldDescription(name, overseasPension, optional = true)
-  )
-}
-
-case class TaxYearProperties(id: Option[String] = None, pensionContributions: Option[PensionContribution] = None)
+case class TaxYearProperties(id: Option[String] = None, pensionContributions: Option[PensionContribution] = None,
+                                                        charitableGivings: Option[CharitableGiving] = None)
 
 object TaxYearProperties extends BaseDomain[TaxYearProperties] {
 
@@ -75,9 +28,11 @@ object TaxYearProperties extends BaseDomain[TaxYearProperties] {
 
   override implicit val reads = (
     Reads.pure(None) and
-      (__ \ "pensionContributions").readNullable[PensionContribution]
+      (__ \ "pensionContributions").readNullable[PensionContribution] and
+      (__ \ "charitableGivings").readNullable[CharitableGiving]
     ) (TaxYearProperties.apply _)
 
-  override def example(id: Option[String] = None) = TaxYearProperties(pensionContributions = Some(PensionContribution.example()))
+  override def example(id: Option[String]) = TaxYearProperties(pensionContributions = Some(PensionContribution.example()),
+                                                                      charitableGivings = Some(CharitableGiving.example()))
 
 }

@@ -16,7 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.domain.CountryCodes.CountryCode
+
+
 object CountryCodes extends Enumeration {
+
+  implicit val format = EnumJson.enumFormat(CountryCodes, Some("Country code is invalid"))
+
   type CountryCode = Value
   val AFG,ALB,DZA,ASM,AND,AGO,AIA,ATG,ARG,ARM,ABW,AUS,AUT,AZ,BHR,BGD,BRB,BLR,BEL,BLZ,BEN,BMU,BTN,BOL,BES1,BIH,BWA,BRA,
   VGB,BRN,BGR,BFA,MMR,BDI,KHM,CMR,CAN,CPV,CYM,CAF,TCD,CHL,CHN,CXR,CCK,COL,COM,COG,COK,CRI,CIV,HRV,CUW,CYP,CZE,COD,DNK,
@@ -27,6 +36,7 @@ object CountryCodes extends Enumeration {
   RWA,SHN,KNA,LCA,SPM,VCT,BES2,WSM,SMR,STP,SAU,SEN,SRB,SYC,SLE,SGP,BES3,SXM,SVK,SVN,SLB,SOM,ZAF,KOR,SSD,ESP,LKA,SDN,SUR,
   SJM,SWZ,SWE,CHE,SYR,TWN,TJK,TZA,THA,TLS,TGO,TKL,TON,TTO,TUN,TUR,TKM,TCA,TUV,UGA,UKR,ARE,GBR,USA,VIR,URY,UZB,VUT,VAT,
   VEN,VNM,WLF,YEM,ZMB,ZWE,ZZZ = Value
+
 
 
   def details =
@@ -74,4 +84,14 @@ object CountryCodes extends Enumeration {
       (URY, ("Uruguay", false)),(UZB, ("Uzbekistan", true)),(VUT, ("Vanuatu", false)),(VAT, ("Vatican", false)),(VEN, ("Venezuela", true)),(VNM, ("Vietnam", true)),
       (WLF, ("Wallis and Futuna Islands", false)),(YEM, ("Yemen", false)),(ZMB, ("Zambia", true)),(ZWE, ("Zimbabwe", true)),(ZZZ, ("None of the above", false))
     )
+}
+case class CountryAndAmount(countryCode: CountryCode, amount: BigDecimal)
+
+object CountryAndAmount extends BaseDomain[CountryAndAmount]{
+  override implicit val writes = Json.writes[CountryAndAmount]
+  override implicit val reads = (
+    (__ \ "countryCode").read[CountryCode] and
+      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
+    )(CountryAndAmount.apply _)
+  override def example(id: Option[String]) = CountryAndAmount(CountryCodes.GBR, BigDecimal(1000.00))
 }

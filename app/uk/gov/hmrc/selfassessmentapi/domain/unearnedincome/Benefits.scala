@@ -45,5 +45,5 @@ object Benefit extends BaseDomain[Benefit] {
     benefits => benefits.taxDeduction <= benefits.amount
   }
 
-  override def example(id: Option[SummaryId] = None) = Benefit(id, BenefitType.JobSeekersAllowance, BigDecimal(1000.00), BigDecimal(400.00))
+  override def example(id: Option[SummaryId]) = Benefit(id, BenefitType.JobSeekersAllowance, BigDecimal(1000.00), BigDecimal(400.00))
 }

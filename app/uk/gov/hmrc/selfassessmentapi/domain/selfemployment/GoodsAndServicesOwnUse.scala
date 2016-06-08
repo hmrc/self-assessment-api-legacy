@@ -30,5 +30,5 @@ object GoodsAndServicesOwnUse extends BaseDomain[GoodsAndServicesOwnUse]{
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (GoodsAndServicesOwnUse.apply _)
 
-  override def example(id: Option[SummaryId]=None) = GoodsAndServicesOwnUse(id, amount = BigDecimal(1000))
+  override def example(id: Option[SummaryId]) = GoodsAndServicesOwnUse(id, amount = BigDecimal(1000))
 }

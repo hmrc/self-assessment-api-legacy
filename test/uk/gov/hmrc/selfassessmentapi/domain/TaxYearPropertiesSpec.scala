@@ -79,8 +79,8 @@ class TaxYearPropertiesSpec extends JsonSpec {
           CharitableGiving(giftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
           Map("/giftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
         assertValidationError[CharitableGiving](
-          CharitableGiving(oneoffGiftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
-          Map("/oneoffGiftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+          CharitableGiving(oneOffGiftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/oneOffGiftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
         assertValidationError[CharitableGiving](
           CharitableGiving(sharesSecurities = Some(CountryAndAmount(GBR, testAmount))),
           Map("/sharesSecurities/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
@@ -102,8 +102,8 @@ class TaxYearPropertiesSpec extends JsonSpec {
           CharitableGiving(giftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
           Map("/giftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
         assertValidationError[CharitableGiving](
-          CharitableGiving(oneoffGiftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
-          Map("/oneoffGiftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
+          CharitableGiving(oneOffGiftAidPayments = Some(CountryAndAmount(GBR, testAmount))),
+          Map("/oneOffGiftAidPayments/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
         assertValidationError[CharitableGiving](
           CharitableGiving(sharesSecurities = Some(CountryAndAmount(GBR, testAmount))),
           Map("/sharesSecurities/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk registered pension with more than 2 decimal places")
@@ -119,17 +119,17 @@ class TaxYearPropertiesSpec extends JsonSpec {
       }
     }
 
-    "reject if oneoffGiftAidPayments is defined but giftAidPayments element is not defined" in {
+    "reject if oneOffGiftAidPayments is defined but giftAidPayments element is not defined" in {
       assertValidationError[CharitableGiving](
-        CharitableGiving(oneoffGiftAidPayments = Some(CountryAndAmount(GBR, 1000.00))),
+        CharitableGiving(oneOffGiftAidPayments = Some(CountryAndAmount(GBR, 1000.00))),
         Map("" -> UNDEFINED_REQUIRED_ELEMENT), "Expected CharitableGiving instance with giftAitPayments = None")
     }
 
-    "reject if oneoffGiftAidPayments is defined and greater than giftAidPayments" in {
+    "reject if oneOffGiftAidPayments is defined and greater than giftAidPayments" in {
       assertValidationError[CharitableGiving](
         CharitableGiving(giftAidPayments= Some(CountryAndAmount(GBR, 999.99)),
-                         oneoffGiftAidPayments = Some(CountryAndAmount(GBR, 1000.00))),
-        Map("" -> MAXIMUM_AMOUNT_EXCEEDED), "Expected CharitableGiving instance with giftAitPayments < oneoffGiftAidPayments")
+                         oneOffGiftAidPayments = Some(CountryAndAmount(GBR, 1000.00))),
+        Map("" -> MAXIMUM_AMOUNT_EXCEEDED), "Expected CharitableGiving instance with giftAitPayments < oneOffGiftAidPayments")
     }
 
     "reject if giftAidPaymentsCarriedBackToPreviousYear defined but giftAidPayments element is not defined" in {

@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.CountryCodes._
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 
 case class CharitableGiving(giftAidPayments: Option[CountryAndAmount] = None,
-                            oneoffGiftAidPayments: Option[CountryAndAmount] = None,
+                            oneOffGiftAidPayments: Option[CountryAndAmount] = None,
                             sharesSecurities: Option[CountryAndAmount] = None,
                             landProperties: Option[CountryAndAmount] = None,
                             giftAidPaymentsCarriedBackToPreviousYear: Option[CountryAndAmount] = None,
@@ -38,23 +38,23 @@ object CharitableGiving extends BaseDomain[CharitableGiving] {
 
   override implicit val reads = (
     (__ \ "giftAidPayments").readNullable[CountryAndAmount] and
-      (__ \ "oneoffGiftAidPayments").readNullable[CountryAndAmount] and
+      (__ \ "oneOffGiftAidPayments").readNullable[CountryAndAmount] and
       (__ \ "sharesSecurities").readNullable[CountryAndAmount] and
       (__ \ "landProperties").readNullable[CountryAndAmount] and
       (__ \ "giftAidPaymentsCarriedBackToPreviousYear").readNullable[CountryAndAmount] and
       (__ \ "giftAidPaymentsCarriedForwardToNextYear").readNullable[CountryAndAmount]
     ) (CharitableGiving.apply _).filter(ValidationError("giftAidPayments must be defined if " +
-    "oneoffGiftAidPayments or giftAidPaymentsCarriedBackToPreviousYear or giftAidPaymentsCarriedForwardToNextYear " +
+    "oneOffGiftAidPayments or giftAidPaymentsCarriedBackToPreviousYear or giftAidPaymentsCarriedForwardToNextYear " +
     "is defined", UNDEFINED_REQUIRED_ELEMENT)) {
     donations => donations.giftAidPayments.isDefined &&
-      (donations.oneoffGiftAidPayments.isDefined ||
+      (donations.oneOffGiftAidPayments.isDefined ||
         donations.giftAidPaymentsCarriedBackToPreviousYear.isDefined ||
         donations.giftAidPaymentsCarriedForwardToNextYear.isDefined)
-  }.filter(ValidationError("giftAidPayments must be greater than oneoffGiftAidPayments", MAXIMUM_AMOUNT_EXCEEDED)) {
+  }.filter(ValidationError("giftAidPayments must be greater than oneOffGiftAidPayments", MAXIMUM_AMOUNT_EXCEEDED)) {
     donations =>
       val totalPayments = donations.giftAidPayments
-      val oneOfPayments = donations.oneoffGiftAidPayments
-      totalPayments.getOrElse(NoCountryZeroAmount).amount >= oneOfPayments.getOrElse(NoCountryZeroAmount).amount
+      val oneOffPayments = donations.oneOffGiftAidPayments
+      totalPayments.getOrElse(NoCountryZeroAmount).amount >= oneOffPayments.getOrElse(NoCountryZeroAmount).amount
   }.filter(ValidationError("giftAidPayments must be greater than or equal to the sum of " +
     "giftAidPaymentsCarriedBackToPreviousYear and giftAidPaymentsCarriedForwardToNextYear", MAXIMUM_AMOUNT_EXCEEDED)) {
     donations =>
@@ -67,7 +67,7 @@ object CharitableGiving extends BaseDomain[CharitableGiving] {
 
   override def example(id: Option[SummaryId] = None) =
     CharitableGiving(giftAidPayments = Some(CountryAndAmount(GBR, 100000)),
-      oneoffGiftAidPayments = Some(CountryAndAmount(USA, 5000.00)),
+      oneOffGiftAidPayments = Some(CountryAndAmount(USA, 5000.00)),
       sharesSecurities = Some(CountryAndAmount(CAN, 53000.00)),
       landProperties = Some(CountryAndAmount(RUS, 1000000.00)),
       giftAidPaymentsCarriedBackToPreviousYear = Some(CountryAndAmount(AUS, 2000.00)),
@@ -84,7 +84,7 @@ case object CharitableGivingsType extends TaxYearPropertyType {
 
   override val fieldDescriptions = Seq(
     ObjectFieldDescription(name, "giftAidPayments", toJson(CountryAndAmount(GBR, 100000)), optional = true),
-    ObjectFieldDescription(name, "oneoffGiftAidPayments", toJson(CountryAndAmount(GBR, 5000)), optional = true),
+    ObjectFieldDescription(name, "oneOffGiftAidPayments", toJson(CountryAndAmount(GBR, 5000)), optional = true),
     ObjectFieldDescription(name, "sharesSecurities", toJson(CountryAndAmount(GBR, 5000)), optional = true),
     ObjectFieldDescription(name, "landProperties", toJson(CountryAndAmount(GBR, 1000000)), optional = true),
     ObjectFieldDescription(name, "giftAidPaymentsCarriedBackToPreviousYear", toJson(CountryAndAmount(GBR, 1000)), optional = true),

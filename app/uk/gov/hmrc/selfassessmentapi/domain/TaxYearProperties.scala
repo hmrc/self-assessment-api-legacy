@@ -18,9 +18,14 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.domain.blindperson.BlindPerson
+import uk.gov.hmrc.selfassessmentapi.domain.charitablegiving.CharitableGiving
+import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
+
 
 case class TaxYearProperties(id: Option[String] = None, pensionContributions: Option[PensionContribution] = None,
-                                                        charitableGivings: Option[CharitableGiving] = None)
+                             charitableGivings: Option[CharitableGiving] = None,
+                             blindPerson: Option[BlindPerson] = None)
 
 object TaxYearProperties extends BaseDomain[TaxYearProperties] {
 
@@ -29,10 +34,12 @@ object TaxYearProperties extends BaseDomain[TaxYearProperties] {
   override implicit val reads = (
     Reads.pure(None) and
       (__ \ "pensionContributions").readNullable[PensionContribution] and
-      (__ \ "charitableGivings").readNullable[CharitableGiving]
+      (__ \ "charitableGivings").readNullable[CharitableGiving] and
+      (__ \ "blindPerson").readNullable[BlindPerson]
     ) (TaxYearProperties.apply _)
 
   override def example(id: Option[String]) = TaxYearProperties(pensionContributions = Some(PensionContribution.example()),
-                                                                      charitableGivings = Some(CharitableGiving.example()))
+    charitableGivings = Some(CharitableGiving.example()),
+    blindPerson = Some(BlindPerson.example()))
 
 }

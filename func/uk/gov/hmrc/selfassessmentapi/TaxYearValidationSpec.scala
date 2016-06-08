@@ -1,6 +1,8 @@
 package uk.gov.hmrc.selfassessmentapi
 
-import uk.gov.hmrc.selfassessmentapi.domain.{CharitableGiving, PensionContribution}
+import uk.gov.hmrc.selfassessmentapi.domain.blindperson.BlindPerson
+import uk.gov.hmrc.selfassessmentapi.domain.charitablegiving.CharitableGiving
+import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class TaxYearValidationSpec extends BaseFunctionalSpec {
@@ -19,6 +21,10 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .bodyHasPath("""charitableGivings \ giftAidPayments \ countryCode """, CharitableGiving.example().giftAidPayments.get.countryCode)
         .bodyHasPath("""charitableGivings \ landProperties \ amount """, CharitableGiving.example().landProperties.get.amount)
         .bodyHasPath("""charitableGivings \ landProperties \ countryCode """, CharitableGiving.example().landProperties.get.countryCode)
+        .bodyHasPath("""blindPerson \ country""", BlindPerson.example().country)
+        .bodyHasPath("""blindPerson \ registrationAuthority""", BlindPerson.example().registrationAuthority.get)
+        .bodyHasPath("""blindPerson \ spouseSurplusAllowance""", BlindPerson.example().spouseSurplusAllowance.get)
+        .bodyHasPath("""blindPerson \ wantSpouseToUseSurplusAllowance""", BlindPerson.example().wantSpouseToUseSurplusAllowance)
     }
   }
 

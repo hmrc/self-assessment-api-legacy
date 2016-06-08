@@ -21,6 +21,7 @@ import play.api.libs.json.Json._
 import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
@@ -31,7 +32,7 @@ object SourceController extends BaseController with Links with SourceTypeSupport
 
   override lazy val context: String = AppContext.apiGatewayContext
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = Action.async(parse.json) { implicit request =>
+  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async(parse.json) { implicit request =>
     sourceHandler(sourceType).create(request.body) map {
       case Left(errorResult) =>
         errorResult match {
@@ -44,7 +45,7 @@ object SourceController extends BaseController with Links with SourceTypeSupport
     }
   }
 
-  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async { implicit request =>
+  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async { implicit request =>
     sourceHandler(sourceType).findById(sourceId) map {
       case Some(summary) =>
         Ok(halResource(toJson(summary), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
@@ -53,7 +54,7 @@ object SourceController extends BaseController with Links with SourceTypeSupport
     }
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async(parse.json) { implicit request =>
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async(parse.json) { implicit request =>
     sourceHandler(sourceType).update(sourceId, request.body) map {
       case Left(errorResult) =>
         errorResult match {
@@ -67,7 +68,7 @@ object SourceController extends BaseController with Links with SourceTypeSupport
   }
 
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async { implicit request =>
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async { implicit request =>
     sourceHandler(sourceType).delete(sourceId) map {
       case true =>
         NoContent
@@ -77,7 +78,7 @@ object SourceController extends BaseController with Links with SourceTypeSupport
   }
 
 
-  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = Action.async { implicit request =>
+  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async { implicit request =>
     val svc = sourceHandler(sourceType)
       svc.find map { ids =>
       val json = toJson(ids.map(id => halResource(obj(),

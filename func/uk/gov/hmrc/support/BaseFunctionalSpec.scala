@@ -1,5 +1,7 @@
 package uk.gov.hmrc.support
 
+import java.util.concurrent.TimeUnit
+
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
@@ -15,10 +17,13 @@ import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
 
+import scala.concurrent.duration.FiniteDuration
 import scala.util.matching.Regex
 
 trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
   with BeforeAndAfterEach with IntegrationPatience with MockitoSugar with BeforeAndAfterAll {
+
+  override implicit val defaultTimeout = FiniteDuration(100, TimeUnit.SECONDS)
 
   val WIREMOCK_PORT = 22222
   val stubHost = "localhost"
@@ -40,10 +45,10 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     WireMock.reset()
   }
 
-  class Assertions(response: HttpResponse) {
+  class Assertions(request: String, response: HttpResponse) {
     def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, saUtr: SaUtr, taxYear: String) = {
       sourceType.summaryTypes.foreach { summaryType =>
-       bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
+        bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
       }
     }
 
@@ -61,7 +66,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
       this
     }
 
-    def resourceIsNotImplemented() =  {
+    def resourceIsNotImplemented() = {
       statusIs(501)
         .contentTypeIsJson()
         .body(_ \ "code").is(ErrorNotImplemented.errorCode)
@@ -112,7 +117,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
         val pattern = """(.*)\((\d+)\)""".r
         pathElement match {
           case pattern(arrayName, index) =>
-            if (arrayName.isEmpty) js(index.toInt) else (js \ arrayName)(index.toInt)
+            if (arrayName.isEmpty) js(index.toInt) else (js \ arrayName) (index.toInt)
           case _ => js \ pathElement
         }
       }
@@ -138,7 +143,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     }
 
     def statusIs(statusCode: Int) = {
-      response.status shouldBe statusCode
+      withClue(s"expected $request to return $statusCode; but got ${response.status}\n") { response.status shouldBe statusCode }
       this
     }
 
@@ -192,17 +197,17 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
 
       withClue(s"Request $method $url") {
         method match {
-          case "GET" => new Assertions(Http.get(url)(hc))
-          case "DELETE" => new Assertions(Http.delete(url)(hc))
+          case "GET" => new Assertions(s"GET@$url", Http.get(url)(hc))
+          case "DELETE" => new Assertions(s"DELETE@$url", Http.delete(url)(hc))
           case "POST" => {
             body match {
-              case Some(jsonBody) => new Assertions(Http.postJson(url, jsonBody)(hc))
-              case None => new Assertions(Http.postEmpty(url)(hc))
+              case Some(jsonBody) => new Assertions(s"POST@$url", Http.postJson(url, jsonBody)(hc))
+              case None => new Assertions(s"POST@$url",Http.postEmpty(url)(hc))
             }
           }
           case "PUT" => {
             val jsonBody = body.getOrElse(throw new RuntimeException("Body for PUT must be provided"))
-            new Assertions(Http.putJson(url, jsonBody)(hc))
+            new Assertions(s"PUT@$url", Http.putJson(url, jsonBody)(hc))
           }
         }
       }
@@ -278,7 +283,8 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
            |}
       """.stripMargin
 
-      stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type", "application/json")))
+      stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type",
+        "application/json")))
       this
     }
 
@@ -292,7 +298,8 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
            |}
       """.stripMargin
 
-      stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type", "application/json")))
+      stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type",
+        "application/json")))
       this
     }
 
@@ -300,6 +307,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
   }
 
   def given() = new Givens()
+
   def when() = new HttpVerbs()
 
 }

@@ -108,23 +108,6 @@ object HeaderValidatorFilter extends Filter with HeaderValidator {
   }
 }
 
-object FeatureSwitchFilter extends Filter {
-  override def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    "/sandbox/\\d+/[\\d-]+/(\\w+)/\\w+/(\\w+)[/\\w]*".r findFirstMatchIn rh.path match {
-      case Some(regexMatch) =>
-        if (FeatureSwitch(AppContext.featureSwitch).isSummaryEnabled(regexMatch.group(1), regexMatch.group(2))) next(rh)
-        else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-      case None =>
-        "/sandbox/\\d+/[\\d-]+/(\\w+)[/\\w]*".r findFirstMatchIn rh.path match {
-          case Some(regexMatch) =>
-            if (FeatureSwitch(AppContext.featureSwitch).isSourceEnabled(regexMatch.group(1))) next(rh)
-            else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-          case None => next(rh)
-      }
-    }
-  }
-}
-
 trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLocatorConfig {
   override lazy val registrationEnabled: Boolean = AppContext.registrationEnabled
   override val slConnector: ServiceLocatorConnector = ServiceLocatorConnector(WSHttp)
@@ -142,6 +125,6 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override val authFilter = Some(MicroserviceAuthFilter)
 
-  override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter, FeatureSwitchFilter) ++ defaultMicroserviceFilters
+  override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter) ++ defaultMicroserviceFilters
 
 }

@@ -19,23 +19,36 @@ package uk.gov.hmrc.selfassessmentapi.config
 import java.util
 
 import com.typesafe.config.ConfigObject
+import uk.gov.hmrc.selfassessmentapi.domain.SourceType
 
 case class FeatureSwitch(value: Option[ConfigObject]) {
+  def isEnabled(sourceType: SourceType, summary: String): Boolean = value match {
+    case Some(config) =>
+      FeatureConfig(config).isSourceEnabled(sourceType.name) &&
+        (if (summary.isEmpty) true else FeatureConfig(config).isSummaryEnabled(sourceType.name, summary))
+    case None => true
+  }
+}
+
+case class FeatureConfig(config: ConfigObject) {
+  val configMap = config.unwrapped()
+
   def isSummaryEnabled(source: String, summary: String): Boolean = {
-    isSourceEnabled(source, summary)
+    if (configMap.containsKey(source)) {
+      val sourceConfig = configMap.get(source).asInstanceOf[util.Map[String, Object]]
+      if (sourceConfig.containsKey("enabled")) sourceConfig.get("enabled").asInstanceOf[Boolean]
+      else if (sourceConfig.containsKey(summary)) sourceConfig.get(summary).asInstanceOf[util.Map[String, Boolean]].get("enabled")
+      else true
+    }
+    else true
   }
 
-  def isSourceEnabled(source: String, summary: String = ""): Boolean = value match {
-    case Some(config) =>
-      val configValue = config.get(source)
-      if(configValue == null) true
-      else {
-        if (summary.isEmpty) configValue.unwrapped().asInstanceOf[util.HashMap[String, Boolean]].get("enabled")
-        else {
-          val summarySwitch = configValue.unwrapped().asInstanceOf[util.HashMap[String, util.HashMap[String, Boolean]]].get(summary)
-          if(summarySwitch == null) true else summarySwitch.get("enabled")
-        }
-      }
-    case None => true
+  def isSourceEnabled(source: String): Boolean = {
+    if (configMap.containsKey(source)) {
+      val sourceConfig = configMap.get(source).asInstanceOf[util.Map[String, Object]]
+      if (sourceConfig.containsKey("enabled")) sourceConfig.get("enabled").asInstanceOf[Boolean]
+      else true
+    }
+    else true
   }
 }

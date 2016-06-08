@@ -28,9 +28,6 @@ class BenefitSpec extends JsonSpec {
       BenefitType.values.foreach {
         cat => roundTripJson(Benefit(`type` = cat, amount = BigDecimal(1000.99)))
       }
-
-      ("/sandbox/\\d+/[\\d-]+/(\\w+)/\\d+/(\\w+)[/\\w]*".r findFirstMatchIn "/sandbox/1234567/2016-17/employments/1234/summary")
-        .foreach(regexMatch => println(regexMatch.group(1), regexMatch.group(2)))
     }
   }
 

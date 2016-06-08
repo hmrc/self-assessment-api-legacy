@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 import play.api.libs.json.Json
 import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorNotImplemented, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
@@ -29,23 +30,23 @@ object NotImplementedSummariesController extends BaseController with Links {
 
   override val context: String = AppContext.apiGatewayContext
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = Action.async(parse.json) { _ =>
+  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = FeatureSwitchAction(sourceType, summaryTypeName).async(parse.json) { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def findById(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, id: String) = Action.async { _ =>
+  def findById(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, id: String) = FeatureSwitchAction(sourceType, summaryTypeName).async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def find(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = Action.async { _ =>
+  def find(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = FeatureSwitchAction(sourceType, summaryTypeName).async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, id: String) = Action.async(parse.json)  { _ =>
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, id: String) = FeatureSwitchAction(sourceType, summaryTypeName).async(parse.json)  { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, id: String) = Action.async { _ =>
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, id: String) = FeatureSwitchAction(sourceType, summaryTypeName).async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 

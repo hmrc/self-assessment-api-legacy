@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import play.api.libs.json.Json
 import play.api.mvc.{ActionBuilder, Request, Result}
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.controllers.live.NotImplementedSourcesController._
 import uk.gov.hmrc.selfassessmentapi.domain.SourceType
 
@@ -28,7 +26,7 @@ import scala.concurrent.Future
 class FeatureSwitchAction(source: SourceType, summary: String) extends ActionBuilder[Request] {
   override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
     if (FeatureSwitch(AppContext.featureSwitch).isEnabled(source, summary)) block(request)
-    else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+    else Future.successful(NotFound)
   }
 }
 

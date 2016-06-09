@@ -21,34 +21,34 @@ import java.util
 import com.typesafe.config.ConfigObject
 import uk.gov.hmrc.selfassessmentapi.domain.SourceType
 
+import scala.collection.JavaConverters._
+
 case class FeatureSwitch(value: Option[ConfigObject]) {
-  def isEnabled(sourceType: SourceType, summary: String): Boolean = value match {
-    case Some(config) =>
-      FeatureConfig(config).isSourceEnabled(sourceType.name) &&
-        (if (summary.isEmpty) true else FeatureConfig(config).isSummaryEnabled(sourceType.name, summary))
-    case None => true
+  implicit val DEFAULT_VALUE = false
+
+  def isSourceEnabled(source: SourceType): Boolean = value match {
+    case Some(config) => FeatureConfig(config).isSourceEnabled(source.name)
+    case None => DEFAULT_VALUE
+  }
+
+  def isSummaryEnabled(sourceType: SourceType, summary: String): Boolean = value match {
+    case Some(config) => FeatureConfig(config).isSummaryEnabled(sourceType.name, summary)
+    case None => DEFAULT_VALUE
   }
 }
 
-case class FeatureConfig(config: ConfigObject) {
+case class FeatureConfig(config: ConfigObject)(implicit val defaultValue: Boolean) {
   val configMap = config.unwrapped()
 
   def isSummaryEnabled(source: String, summary: String): Boolean = {
-    if (configMap.containsKey(source)) {
-      val sourceConfig = configMap.get(source).asInstanceOf[util.Map[String, Object]]
-      if (sourceConfig.containsKey("enabled")) sourceConfig.get("enabled").asInstanceOf[Boolean]
-      else if (sourceConfig.containsKey(summary)) sourceConfig.get(summary).asInstanceOf[util.Map[String, Boolean]].get("enabled")
-      else true
-    }
-    else true
+    val sourceConfig = configMap.getOrDefault(source, Map("enabled" -> defaultValue).asJava).asInstanceOf[util.Map[String, AnyRef]]
+    sourceConfig.getOrDefault("enabled", Boolean.box(defaultValue)).asInstanceOf[Boolean] ||
+      sourceConfig.getOrDefault(summary, Map("enabled" -> defaultValue).asJava).asInstanceOf[util.Map[String, Boolean]]
+        .getOrDefault("enabled", defaultValue)
   }
 
   def isSourceEnabled(source: String): Boolean = {
-    if (configMap.containsKey(source)) {
-      val sourceConfig = configMap.get(source).asInstanceOf[util.Map[String, Object]]
-      if (sourceConfig.containsKey("enabled")) sourceConfig.get("enabled").asInstanceOf[Boolean]
-      else true
-    }
-    else true
+    configMap.getOrDefault(source, Map("enabled" -> false).asJava).asInstanceOf[util.Map[String, AnyRef]]
+      .getOrDefault("enabled", Boolean.box(false)).asInstanceOf[Boolean]
   }
 }

@@ -4,7 +4,9 @@ import java.util.UUID
 
 import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes.{Expenses, Incomes}
+import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes.Expenses
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
 import uk.gov.hmrc.support.BaseFunctionalSpec
@@ -18,103 +20,131 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
     Map("Test" ->
       Map("feature-switch" ->
         Map(
-          "employments" -> Map("enabled" -> false),
+          "employments" -> Map("enabled" -> true),
           "self-employments" -> Map("enabled" -> false),
-          "uk-properties" -> Map("expenses" -> Map("enabled" -> false))
+          "furnished-holiday-lettings" -> Map("enabled" -> false),
+          "uk-properties" -> Map("enabled" -> false, "expenses" -> Map("enabled" -> true))
         )
       )
     ))
 
-  "employments and self-employments resource" should {
-    "be blocked" in {
-      Seq(Employments, SelfEmployments).foreach { source =>
-        Seq("/sandbox", "").foreach { mode =>
-          given()
-            .userIsAuthorisedForTheResource(saUtr)
-            .when()
-            .get(s"$mode/$saUtr/$taxYear/${source.name}")
-            .thenAssertThat()
-            .statusIs(404)
+  object Status extends Enumeration {
+    type Status = Value
+    val BLOCKED, VISIBLE = Value
+  }
 
-          given()
-            .userIsAuthorisedForTheResource(saUtr)
-            .when()
-            .get(s"$mode/$saUtr/$taxYear/${source.name}/$sourceId")
-            .thenAssertThat()
-            .statusIs(404)
+  trait Mode {
+    def url: String
+  }
+  case object LIVE extends Mode {
+    override def url = ""
+  }
+  case object SANDBOX extends Mode {
+    override def url = "/sandbox"
+  }
 
-          given()
-            .userIsAuthorisedForTheResource(saUtr)
-            .when()
-            .get(s"$mode/$saUtr/$taxYear/${source.name}/$sourceId/incomes/$summaryId")
-            .thenAssertThat()
-            .statusIs(404)
-
-          given()
-            .userIsAuthorisedForTheResource(saUtr)
-            .when()
-            .post(s"$mode/$saUtr/$taxYear/${source.name}/$sourceId/incomes", Some(Incomes.example))
-            .thenAssertThat()
-            .statusIs(404)
-
-          given()
-            .userIsAuthorisedForTheResource(saUtr)
-            .when()
-            .put(s"$mode/$saUtr/$taxYear/${source.name}/$sourceId/incomes/$summaryId", Some(Incomes.example))
-            .thenAssertThat()
-            .statusIs(404)
-
-          given()
-            .userIsAuthorisedForTheResource(saUtr)
-            .when()
-            .post(s"$mode/$saUtr/$taxYear/${source.name}", Some(source.example))
-            .thenAssertThat()
-            .statusIs(404)
-
-          given()
-            .userIsAuthorisedForTheResource(saUtr)
-            .when()
-            .put(s"$mode/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example))
-            .thenAssertThat()
-            .statusIs(404)
+  def statusCode(status: Status.Value, method: String)(implicit mode: Mode): Int = {
+    status match {
+      case Status.BLOCKED => 404
+      case Status.VISIBLE =>
+        mode match {
+          case LIVE => 501
+          case SANDBOX =>  if(method.equalsIgnoreCase("post")) 201 else 200
         }
+    }
+  }
+
+  "self-employments and Furnished Holiday Lettings resource" should {
+    "be blocked" in {
+      Map(SelfEmployments -> Status.BLOCKED, FurnishedHolidayLettings -> Status.BLOCKED, Employments -> Status.VISIBLE).foreach {
+        case (source, status) =>
+          Seq(LIVE, SANDBOX).foreach { implicit mode =>
+            given()
+              .userIsAuthorisedForTheResource(saUtr)
+              .when()
+              .get(s"${mode.url}/$saUtr/$taxYear/${source.name}")
+              .thenAssertThat()
+              .statusIs(statusCode(status, "GET"))
+
+            given()
+              .userIsAuthorisedForTheResource(saUtr)
+              .when()
+              .get(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId")
+              .thenAssertThat()
+              .statusIs(statusCode(status, "GET"))
+
+            given()
+              .userIsAuthorisedForTheResource(saUtr)
+              .when()
+              .get(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses/$summaryId")
+              .thenAssertThat()
+              .statusIs(statusCode(status, "GET"))
+
+            given()
+              .userIsAuthorisedForTheResource(saUtr)
+              .when()
+              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses", Some(Expenses.example))
+              .thenAssertThat()
+              .statusIs(statusCode(status, "POST"))
+
+            given()
+              .userIsAuthorisedForTheResource(saUtr)
+              .when()
+              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses/$summaryId", Some(Expenses.example))
+              .thenAssertThat()
+              .statusIs(statusCode(status, "PUT"))
+
+            given()
+              .userIsAuthorisedForTheResource(saUtr)
+              .when()
+              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}", Some(source.example))
+              .thenAssertThat()
+              .statusIs(statusCode(status, "POST"))
+
+            given()
+              .userIsAuthorisedForTheResource(saUtr)
+              .when()
+              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example))
+              .thenAssertThat()
+              .statusIs(statusCode(status, "PUT"))
+          }
       }
     }
   }
 
   "only expenses resources for uk-properties" should {
-    "be blocked" in {
+    "be visible" in {
       when()
         .get(s"/sandbox/$saUtr/$taxYear/uk-properties")
         .thenAssertThat()
-        .statusIs(200)
+        .statusIs(404)
 
       when()
         .get(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId")
         .thenAssertThat()
-        .statusIs(200)
+        .statusIs(404)
 
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .post(s"/sandbox/$saUtr/$taxYear/uk-properties", Some(UKProperties.example))
         .thenAssertThat()
-        .statusIs(201)
+        .statusIs(404)
 
       when()
         .get(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses")
         .thenAssertThat()
-        .statusIs(404)
+        .statusIs(200)
 
       when()
         .get(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses/$summaryId")
         .thenAssertThat()
-        .statusIs(404)
+        .statusIs(200)
 
       when()
-        .put(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses/$summaryId", Some(Expenses.example))
+        .put(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses/$summaryId", Some(ukproperty.SummaryTypes.Expenses.example))
         .thenAssertThat()
-        .statusIs(404)
+        .statusIs(200)
     }
   }
 

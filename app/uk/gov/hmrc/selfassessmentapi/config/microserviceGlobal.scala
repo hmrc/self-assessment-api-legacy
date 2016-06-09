@@ -33,6 +33,8 @@ import uk.gov.hmrc.play.config.{AppName, RunMode}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
+import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
+import uk.gov.hmrc.selfassessmentapi.controllers.live.NotImplementedSourcesController._
 
 import scala.concurrent.Future
 import scala.util.matching.Regex
@@ -111,7 +113,6 @@ trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLo
   override val slConnector: ServiceLocatorConnector = ServiceLocatorConnector(WSHttp)
   override implicit val hc: HeaderCarrier = HeaderCarrier()
 }
-
 
 object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceRegistration with RunMode {
   override val auditConnector = MicroserviceAuditConnector

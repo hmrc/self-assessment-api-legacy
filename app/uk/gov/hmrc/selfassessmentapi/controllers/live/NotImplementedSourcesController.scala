@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 import play.api.libs.json.Json
 import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorNotImplemented, Links}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear}
@@ -29,23 +30,23 @@ object NotImplementedSourcesController extends BaseController with Links {
 
   override val context: String = AppContext.apiGatewayContext
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = Action.async(parse.json) { _ =>
+  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async(parse.json) { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def findById(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async { _ =>
+  def findById(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def find(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = Action.async { _ =>
+  def find(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async(parse.json)  { _ =>
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async(parse.json)  { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 
-  def delete(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = Action.async { _ =>
+  def delete(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async { _ =>
     Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
   }
 }

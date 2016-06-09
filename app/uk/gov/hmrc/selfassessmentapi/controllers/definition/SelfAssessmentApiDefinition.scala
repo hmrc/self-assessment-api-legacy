@@ -70,6 +70,13 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(readScope)
+              ),Endpoint(
+                uriPattern = "/{utr}/{taxYear}",
+                endpointName = "Update Tax Year",
+                method = HttpMethod.PUT,
+                authType = AuthType.USER,
+                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                scope = Some(writeScope)
               ),
               Endpoint(
                 uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}",

@@ -29,7 +29,6 @@ package object domain {
   type SummaryId = String
   type LiabilityId = String
   type ValidationErrors = Seq[(JsPath, Seq[ValidationError])]
-  type GenericCountryCode = Either[CountryCode, UkCountryCode]
 
   def lengthValidator = Reads.of[String].filter(ValidationError("field length exceeded the max 100 chars", MAX_FIELD_LENGTH_EXCEEDED))(_.length <= 100)
 
@@ -42,21 +41,4 @@ package object domain {
   def maxAmountValidator(fieldName: String, maxAmount: BigDecimal) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be less or equal than $maxAmount",
     MAX_MONETARY_AMOUNT))(_ <= maxAmount)
 
-  implicit def eitherReads[A, B](implicit A: Reads[A], B: Reads[B]): Reads[Either[A, B]] =
-    Reads[Either[A, B]] { json =>
-      A.reads(json) match {
-        case JsSuccess(value, path) => JsSuccess(Left(value), path)
-        case JsError(e1) => B.reads(json) match {
-          case JsSuccess(value, path) => JsSuccess(Right(value), path)
-          case JsError(e2) => JsError(JsError.merge(e1, e2))
-        }
-      }
-    }
-
-  implicit def eitherWrites[A, B](implicit A: Writes[A], B: Writes[B]): Writes[Either[A, B]] =
-    Writes[Either[A, B]] { obj =>
-      if (obj.isLeft)
-        JsString(obj.left.get.toString)
-      else JsString(obj.right.get.toString)
-    }
 }

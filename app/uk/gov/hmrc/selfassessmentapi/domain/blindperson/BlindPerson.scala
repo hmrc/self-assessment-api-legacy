@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.UkCountryCodes.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
 
-case class BlindPerson(country: GenericCountryCode,
+case class BlindPerson(country: UkCountryCode,
                        registrationAuthority: Option[String] = None,
                        spouseSurplusAllowance: Option[BigDecimal] = None,
                        wantSpouseToUseSurplusAllowance: Boolean)
@@ -35,20 +35,20 @@ object BlindPerson extends BaseDomain[BlindPerson] {
   override implicit val writes = Json.writes[BlindPerson]
 
   override implicit val reads = (
-    (__ \ "country").read[GenericCountryCode] and
+    (__ \ "country").read[UkCountryCode] and
       (__ \ "registrationAuthority").readNullable[String](lengthValidator) and
       (__ \ "spouseSurplusAllowance").readNullable[BigDecimal](positiveAmountValidator("spouseSurplusAllowance") keepAnd maxAmountValidator("spouseSurplusAllowance", BigDecimal(2290.00))) and
       (__ \ "wantSpouseToUseSurplusAllowance").read[Boolean]
     ) (BlindPerson.apply _).filter(ValidationError("If the country is England or Wales, registrationAuthority is mandatory", MISSING_REGISTRATION_AUTHORITY)) {
     blindPerson =>
-      if (blindPerson.country.right.getOrElse(None) == England || blindPerson.country.right.getOrElse(None) == Wales)
+      if (blindPerson.country == England || blindPerson.country == Wales)
         blindPerson.registrationAuthority != None
       else true
   }
 
   override def example(id: Option[String] = None) =
     BlindPerson(
-      country = Right(Wales),
+      country = Wales,
       registrationAuthority = Some("Registrar"),
       spouseSurplusAllowance = Some(2000.05),
       wantSpouseToUseSurplusAllowance = true

@@ -16,8 +16,7 @@ Sandbox implementation (all CRUD operations unless specified)
 
 * Pension Contributions at tax-year level (only GET and PUT)
 * Charitable Givings at tax-year level (only GET and PUT)
-
-
+* Blind Person Allowances at tax-year level (only GET and PUT)
 
 ## [0.26.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.26.0) 02-June-2016
 
@@ -46,7 +45,6 @@ Sandbox implementation (all CRUD operations unless specified)
     * expenses
     * uk-taxes-paid
 
-
 ## [0.23.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.23.0) 25-May-2016
 
 Sandbox implementation to Collect Self Employment (includes all CRUD operations)
@@ -55,11 +53,9 @@ Sandbox implementation to Collect Self Employment (includes all CRUD operations)
 * Balancing Charges (all CRUD operations)
 * Goods and Services for own use (all CRUD operations)
 
-
 ## [0.21.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.21.0) 19-May-2016
 
 Simplified API Documentation
-
 
 ## [0.18.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.18.0) 17-May-2016
 

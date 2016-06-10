@@ -35,6 +35,7 @@ import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.controllers.live.NotImplementedSourcesController._
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.UnknownSummaryException
 
 import scala.concurrent.Future
 import scala.util.matching.Regex
@@ -127,4 +128,10 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter) ++ defaultMicroserviceFilters
 
+  override def onError(request : RequestHeader, ex: Throwable) = {
+    ex.getCause match {
+      case ex: UnknownSummaryException => Future.successful(NotFound)
+      case _ => super.onError(request, ex)
+    }
+  }
 }

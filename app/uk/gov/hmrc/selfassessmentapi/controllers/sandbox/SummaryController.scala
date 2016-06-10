@@ -23,10 +23,12 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.controllers.live.NotImplementedSourcesController._
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object SummaryController extends BaseController with Links with SourceTypeSupport {
 
@@ -35,7 +37,7 @@ object SummaryController extends BaseController with Links with SourceTypeSuppor
   def handler(sourceType: SourceType, summaryTypeName: String): SummaryHandler[_] = {
     val summaryType = sourceType.summaryTypes.find(_.name == summaryTypeName)
     val handler = summaryType.flatMap(x => sourceHandler(sourceType).summaryHandler(x))
-    handler.getOrElse(throw new IllegalArgumentException(s"""Unsupported combination of sourceType "${sourceType.name}" and "$summaryTypeName"""))
+    handler.getOrElse(throw UnknownSummaryException(sourceType, summaryTypeName))
   }
 
 
@@ -72,6 +74,7 @@ object SummaryController extends BaseController with Links with SourceTypeSuppor
       case Right(id) =>
         Ok(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
     }
+
   }
 
 
@@ -96,3 +99,5 @@ object SummaryController extends BaseController with Links with SourceTypeSuppor
   }
 
 }
+
+case class UnknownSummaryException(sourceType: SourceType, summaryTypeName: String) extends RuntimeException(s"summary: $summaryTypeName doesn't exist for source: ${sourceType.name}")

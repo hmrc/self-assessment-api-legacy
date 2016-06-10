@@ -26,13 +26,10 @@ import scala.collection.JavaConverters._
 case class FeatureSwitch(value: Option[ConfigObject]) {
   implicit val DEFAULT_VALUE = false
 
-  def isSourceEnabled(source: SourceType): Boolean = value match {
-    case Some(config) => FeatureConfig(config).isSourceEnabled(source.name)
-    case None => DEFAULT_VALUE
-  }
-
-  def isSummaryEnabled(sourceType: SourceType, summary: String): Boolean = value match {
-    case Some(config) => FeatureConfig(config).isSummaryEnabled(sourceType.name, summary)
+  def isEnabled(sourceType: SourceType, summary: String): Boolean = value match {
+    case Some(config) =>
+      if(summary.isEmpty) FeatureConfig(config).isSourceEnabled(sourceType.name)
+      else FeatureConfig(config).isSummaryEnabled(sourceType.name, summary)
     case None => DEFAULT_VALUE
   }
 }

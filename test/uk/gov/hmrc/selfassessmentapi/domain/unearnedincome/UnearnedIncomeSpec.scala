@@ -25,19 +25,11 @@ class UnearnedIncomeSpec extends JsonSpec {
 
   "format" should {
     "round trip valid UnearnedIncome json" in {
-      roundTripJson(UnearnedIncome(name = "Unearned income"))
+      roundTripJson(UnearnedIncome())
     }
   }
 
   "validate" should {
-    "reject name longer than 100 characters" in {
-
-      val income = UnearnedIncome(name = "a" * 101)
-
-      assertValidationError[UnearnedIncome](
-        income,
-        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED), "Expected invalid unearned income")
-    }
 
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>

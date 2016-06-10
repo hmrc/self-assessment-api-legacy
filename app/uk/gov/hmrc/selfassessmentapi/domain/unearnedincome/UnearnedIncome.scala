@@ -16,22 +16,17 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 
-case class UnearnedIncome(id: Option[SourceId] = None, name: String)
+case class UnearnedIncome(id: Option[SourceId] = None)
 
 object UnearnedIncome {
 
   implicit val writes = Json.writes[UnearnedIncome]
 
-  implicit val reads = (
-    Reads.pure(None) and
-      (__ \ "name").read[String](lengthValidator)
-    ) (UnearnedIncome.apply _)
+  implicit val reads = (Reads.pure(None)).map(UnearnedIncome(_))
 
-  lazy val example = UnearnedIncome(name = "Unearned Income")
+  lazy val example = UnearnedIncome()
 }

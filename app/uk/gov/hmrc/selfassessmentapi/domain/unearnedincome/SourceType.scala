@@ -32,9 +32,7 @@ object SourceType {
     override def description(action: String): String = s"$action an unearned income"
 
     override val title: String = "Sample unearned income"
-    override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "name", "String", UnearnedIncome.example.name, "Name of the unearned income")
-    )
+    override val fieldDescriptions = Seq()
   }
 
 }

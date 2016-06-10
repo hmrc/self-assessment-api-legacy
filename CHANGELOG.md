@@ -17,6 +17,7 @@ Sandbox implementation (all CRUD operations unless specified)
 * Pension Contributions at tax-year level (only GET and PUT)
 * Charitable Givings at tax-year level (only GET and PUT)
 * Blind Person Allowances at tax-year level (only GET and PUT)
+* Tax Refunded Or Set Off at tax-year level (only GET and PUT)
 
 ## [0.26.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.26.0) 02-June-2016
 

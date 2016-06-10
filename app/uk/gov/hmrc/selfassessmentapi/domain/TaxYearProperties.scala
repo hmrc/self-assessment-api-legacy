@@ -21,11 +21,13 @@ import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain.blindperson.BlindPerson
 import uk.gov.hmrc.selfassessmentapi.domain.charitablegiving.CharitableGiving
 import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
+import uk.gov.hmrc.selfassessmentapi.domain.taxrefundedorsetoff.TaxRefundedOrSetOff
 
 
 case class TaxYearProperties(id: Option[String] = None, pensionContributions: Option[PensionContribution] = None,
                              charitableGivings: Option[CharitableGiving] = None,
-                             blindPerson: Option[BlindPerson] = None)
+                             blindPerson: Option[BlindPerson] = None,
+                             taxRefundedOrSetOff: Option[TaxRefundedOrSetOff] = None)
 
 object TaxYearProperties extends BaseDomain[TaxYearProperties] {
 
@@ -35,11 +37,13 @@ object TaxYearProperties extends BaseDomain[TaxYearProperties] {
     Reads.pure(None) and
       (__ \ "pensionContributions").readNullable[PensionContribution] and
       (__ \ "charitableGivings").readNullable[CharitableGiving] and
-      (__ \ "blindPerson").readNullable[BlindPerson]
+      (__ \ "blindPerson").readNullable[BlindPerson] and
+      (__ \ "taxRefundedOrSetOff").readNullable[TaxRefundedOrSetOff]
     ) (TaxYearProperties.apply _)
 
-  override def example(id: Option[String]) = TaxYearProperties(pensionContributions = Some(PensionContribution.example()),
+  override def example(id: Option[String] = None) = TaxYearProperties(pensionContributions = Some(PensionContribution.example()),
     charitableGivings = Some(CharitableGiving.example()),
-    blindPerson = Some(BlindPerson.example()))
+    blindPerson = Some(BlindPerson.example()),
+    taxRefundedOrSetOff = Some(TaxRefundedOrSetOff.example()))
 
 }

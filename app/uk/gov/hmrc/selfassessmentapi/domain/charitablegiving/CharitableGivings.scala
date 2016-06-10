@@ -22,10 +22,10 @@ import uk.gov.hmrc.selfassessmentapi.domain.CountryCodes._
 import uk.gov.hmrc.selfassessmentapi.domain.{CountryAndAmount, ObjectFieldDescription, TaxYearPropertyType}
 
 case object CharitableGivings extends TaxYearPropertyType {
-  override val name: String = "charitable-givings"
+  override val name: String = "charitableGivings"
   override val example: JsValue = toJson(CharitableGiving.example())
 
-  override def description(action: String): String = s"$action a charitable giving"
+  override def description(action: String): String = s"$action a charitableGivings"
 
   override val title: String = "Sample charitable givings"
 

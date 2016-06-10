@@ -16,22 +16,17 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.employment
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 
-case class Employment(id: Option[SourceId]=None, name: String)
+case class Employment(id: Option[SourceId] = None)
 
 object Employment {
 
   implicit val writes = Json.writes[Employment]
 
-  implicit val reads = (
-    Reads.pure(None) and
-      (__ \ "name").read[String](lengthValidator)
-    ) (Employment.apply _)
+  implicit val reads = (Reads.pure(None)).map(Employment(_))
 
-  lazy val example = Employment(name = "Acme Corporation")
+  lazy val example = Employment()
 }

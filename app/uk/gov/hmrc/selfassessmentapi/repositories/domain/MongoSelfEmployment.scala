@@ -22,8 +22,8 @@ import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Adjustments, Allowances, Income, SelfEmployment}
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
                                             `type`: IncomeType,
@@ -44,8 +44,6 @@ case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
 
 object MongoSelfEmploymentIncomeSummary {
 
-  import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income.seIncomeTypes
-
   val arrayName = "incomes"
 
   implicit val format = Json.format[MongoSelfEmploymentIncomeSummary]
@@ -65,7 +63,6 @@ case class MongoSelfEmployment(id: BSONObjectID,
                                taxYear: TaxYear,
                                lastModifiedDateTime: DateTime,
                                createdDateTime: DateTime,
-                               name: String,
                                commencementDate: LocalDate,
                                allowances: Option[Allowances] = None,
                                adjustments: Option[Adjustments] = None,
@@ -73,7 +70,6 @@ case class MongoSelfEmployment(id: BSONObjectID,
 
   def toSelfEmployment = SelfEmployment(
     id = Some(sourceId),
-    name = name,
     commencementDate = commencementDate,
     allowances = allowances,
     adjustments = adjustments)
@@ -100,7 +96,6 @@ object MongoSelfEmployment {
       taxYear = taxYear,
       lastModifiedDateTime = now,
       createdDateTime = now,
-      name = se.name,
       commencementDate = se.commencementDate,
       allowances = se.allowances,
       adjustments = se.adjustments)

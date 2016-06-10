@@ -27,12 +27,6 @@ class UKPropertySpec extends JsonSpec {
       roundTripJson(UKProperty.example)
     }
 
-    "reject name with more than 100 characters" in {
-      assertValidationError[UKProperty](UKProperty(None, "Abcd" * 100, None, None, None),
-        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED), "Expected invalid uk-property")
-    }
-
-
     "reject annualInvestmentAllowance with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
         val value = UKProperty.example.copy(allowances = Some(Allowances(annualInvestmentAllowance = Some(amount))))

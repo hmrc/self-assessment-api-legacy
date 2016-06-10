@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
 object IncomeType extends Enumeration {
   type IncomeType = Value
   val Turnover, Other = Value
+  implicit val seIncomeTypes = EnumJson.enumFormat(IncomeType, Some("Self Employment Income type is invalid"))
 }
 
 
@@ -35,7 +36,6 @@ case class Income(id: Option[SummaryId] = None,
 
 object Income extends BaseDomain[Income] {
 
-  implicit val seIncomeTypes = EnumJson.enumFormat(IncomeType, Some("Self Employment Income type is invalid"))
   implicit val writes = Json.writes[Income]
   implicit val reads: Reads[Income] = (
     Reads.pure(None) and

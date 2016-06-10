@@ -16,17 +16,17 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.DateTimeZone
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
 import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONNull, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, SelfEmployment}
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -97,7 +97,6 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
    */
   override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, selfEmployment: SelfEmployment): Future[Boolean] = {
     val baseModifiers = Seq(
-      "$set" -> BSONDocument("name" -> selfEmployment.name),
       "$set" -> BSONDocument("commencementDate" -> BSONDateTime(selfEmployment.commencementDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).getMillis)),
       modifierStatementLastModified
     )

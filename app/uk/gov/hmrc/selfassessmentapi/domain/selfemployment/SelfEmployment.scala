@@ -25,7 +25,6 @@ import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class SelfEmployment(id: Option[SourceId] = None,
-                          name: String,
                           commencementDate: LocalDate,
                           allowances: Option[Allowances] = None,
                           adjustments: Option[Adjustments] = None)
@@ -38,7 +37,6 @@ object SelfEmployment {
 
   implicit val selfEmploymentReads: Reads[SelfEmployment] = (
     Reads.pure(None) and
-      (__ \ "name").read[String](lengthValidator) and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
       (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments]
@@ -47,7 +45,6 @@ object SelfEmployment {
 
   lazy val example: SelfEmployment = SelfEmployment(
     id = None,
-    name = "name",
     commencementDate = LocalDate.parse("2016-01-01"),
     allowances = Some(Allowances.example),
     adjustments = Some(Adjustments.example))

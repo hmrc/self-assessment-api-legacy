@@ -32,7 +32,6 @@ object SourceType {
     override def description(action: String) = s"$action a UK property"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "name", "String", "London Apartment", "Identifier for the property"),
       FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", optional = true),
       PositiveMonetaryFieldDescription(name, "businessPremisesRenovationAllowance", optional = true),

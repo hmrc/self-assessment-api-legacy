@@ -49,7 +49,6 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       val id = await(selfEmploymentRepository.create(saUtr, taxYear, source))
       val found: SelfEmployment = await(selfEmploymentRepository.findById(saUtr, taxYear, id)).get
 
-      found.name shouldBe source.name
       found.commencementDate shouldBe source.commencementDate
     }
   }
@@ -128,7 +127,6 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
         outstandingBusinessIncome = Some(BigDecimal(70.00)))
 
       val updatedSource = source.copy(
-        name = UUID.randomUUID().toString,
         commencementDate = source.commencementDate.minusMonths(1),
         allowances = Some(allowances),
         adjustments = Some(adjustments)

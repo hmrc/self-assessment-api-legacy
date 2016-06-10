@@ -25,27 +25,15 @@ class SelfEmploymentSpec extends JsonSpec {
   "format" should {
     "round trip valid SelfEmployment json" in {
       roundTripJson(SelfEmployment(
-        name = "self employment 1",
         commencementDate = new LocalDate(2016, 4, 22),
         allowances = Some(Allowances(annualInvestmentAllowance = Some(BigDecimal(10))))))
     }
   }
 
   "validate" should {
-    "reject name longer than 100 characters and commencement date after the present date" in {
-
-      val se = SelfEmployment(name = "a" * 101, commencementDate = LocalDate.now().plusDays(1))
-
-      assertValidationError[SelfEmployment](
-        se,
-        Map("/commencementDate" -> COMMENCEMENT_DATE_NOT_IN_THE_PAST, "/name" -> MAX_FIELD_LENGTH_EXCEEDED),
-        "Expected valid self-employment")
-    }
-
     "reject invalid allowances" in {
 
       val se = SelfEmployment(
-        name = "self employment 1",
         commencementDate = new LocalDate(2016, 4, 22),
         allowances = Some(Allowances(annualInvestmentAllowance = Some(BigDecimal(-10)))))
 
@@ -55,9 +43,7 @@ class SelfEmploymentSpec extends JsonSpec {
     }
 
     "reject invalid adjustments" in {
-
       val se = SelfEmployment(
-        name = "self employment 1",
         commencementDate = new LocalDate(2016, 4, 22),
         adjustments = Some(Adjustments(lossBroughtForward = Some(BigDecimal(-10)))))
 

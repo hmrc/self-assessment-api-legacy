@@ -25,15 +25,8 @@ import scala.concurrent.Future
 
 class FeatureSwitchAction(source: SourceType, summary: String) extends ActionBuilder[Request] {
   override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
-    val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
-
-    if(summary.isEmpty) {
-      if (featureSwitch.isSourceEnabled(source)) block(request)
-      else Future.successful(NotFound)
-    } else {
-      if (featureSwitch.isSummaryEnabled(source, summary)) block(request)
-      else Future.successful(NotFound)
-    }
+    if (FeatureSwitch(AppContext.featureSwitch).isEnabled(source, summary)) block(request)
+    else Future.successful(NotFound)
   }
 }
 

@@ -57,7 +57,8 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
           |   },
           |   "childBenefit": {
           |    "amount": 1234.34,
-          |    "numberOfChildren": 3
+          |    "numberOfChildren": 3,
+          |    "dateBenefitStopped": "2016-04-05"
           |  }
           | }
         """.stripMargin)
@@ -81,7 +82,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            |   "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2017-04-07"
+           |    "dateBenefitStopped": "2017-04-06"
            |  }
            | }
         """.stripMargin)

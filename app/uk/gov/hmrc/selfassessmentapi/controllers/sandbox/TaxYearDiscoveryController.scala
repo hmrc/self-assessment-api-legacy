@@ -41,7 +41,8 @@ object TaxYearDiscoveryController extends BaseController with Links {
   }
 
   private def taxYearValidationErrors(path: String, yearFromBody : LocalDate, yearFromUrl: String) = {
-    if (!yearFromBody.isBefore(new LocalDate(parseInt(yearFromUrl.split("-")(0)) + 1, 4, 6))) {
+    val endOfTaxYear = new LocalDate(parseInt(yearFromUrl.split("-")(0)) + 1, 4, 5)
+    if (yearFromBody.isAfter(endOfTaxYear)) {
       Some(addValidationError(path, Some(VALUE_BELOW_MINIMUM),
         s"The dateBenefitStopped must be before the end of the tax year: $yearFromUrl"))
     } else None

@@ -11,6 +11,13 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
   "Sandbox Self source" should {
 
+    "return a 404 error when source type is invalid" in {
+      when()
+        .get(s"/sandbox/$saUtr/$taxYear/blah")
+        .thenAssertThat()
+        .statusIs(404)
+  }
+
     "return a 201 response with links to newly created source" in {
       SourceTypes.types.foreach { sourceType =>
         when()
@@ -63,8 +70,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
     "return 204 response when an existing source is deleted" in {
       SourceTypes.types.foreach { sourceType =>
-        given()
-          .when()
+        when()
           .delete(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId")
           .thenAssertThat()
           .statusIs(204)

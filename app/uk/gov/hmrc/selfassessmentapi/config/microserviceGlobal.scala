@@ -134,4 +134,11 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
       case _ => super.onError(request, ex)
     }
   }
+
+  override def onBadRequest(request: RequestHeader, error: String) = {
+    error match {
+      case "ERROR_INVALID_SOURCE_TYPE" => Future.successful(NotFound)
+      case _ => super.onBadRequest(request, error)
+    }
+  }
 }

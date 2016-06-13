@@ -44,7 +44,8 @@ trait BaseController
     }
 
   def addValidationError(path: String, code: Option[ErrorCode], message: String) = {
-      JsObject(Seq("path" -> JsString(path),
+      JsObject(Seq(
+          "path" -> JsString(path),
           "code" -> JsString(code match {
             case Some(errorCode) => errorCode.toString
             case None => "N/A"
@@ -59,10 +60,9 @@ trait BaseController
         (path, errSeq) <- errors
         error <- errSeq
       } yield
-        addValidationError(path.toString,
-          Try(error.args.filter(_.isInstanceOf[ErrorCode]).head.asInstanceOf[ErrorCode]).toOption,
+        addValidationError(path.toString(),
+          error.args.headOption.filter(_.isInstanceOf[ErrorCode]).map(_.asInstanceOf[ErrorCode]),
           error.message)
-
     )
   }
 }

@@ -29,7 +29,7 @@ object StudentLoanPlanType extends Enumeration {
   val Plan1, Plan2 = Value
 }
 
-case class StudentLoan(planType: StudentLoanPlanType, deducedByEmployer: BigDecimal)
+case class StudentLoan(planType: StudentLoanPlanType, deductedByEmployers: BigDecimal)
 
 object StudentLoan extends BaseDomain[StudentLoan] {
 
@@ -37,7 +37,7 @@ object StudentLoan extends BaseDomain[StudentLoan] {
   override implicit val writes = Json.writes[StudentLoan]
   override implicit val reads = (
       (__ \ "planType").read[StudentLoanPlanType] and
-      (__ \ "deducedByEmployer").read[BigDecimal](positiveAmountValidator("deducedByEmployer"))
+      (__ \ "deductedByEmployers").read[BigDecimal](positiveAmountValidator("deductedByEmployers"))
     ) (StudentLoan.apply _)
 
   override def example(id: Option[String]) = StudentLoan(StudentLoanPlanType.Plan1, 2000)
@@ -50,6 +50,6 @@ case object StudentLoanType extends TaxYearPropertyType {
   override val title: String = "Sample student loan"
   override val fieldDescriptions = Seq(
     PositiveMonetaryFieldDescription(name, "planType"),
-    PositiveMonetaryFieldDescription(name, "deducedByEmployer")
+    PositiveMonetaryFieldDescription(name, "deductedByEmployers")
   )
 }

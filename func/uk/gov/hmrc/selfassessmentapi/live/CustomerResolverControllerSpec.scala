@@ -8,9 +8,9 @@ class CustomerResolverControllerSpec extends BaseFunctionalSpec {
     "return a 200 response with a link to /self-assessment/utr when the customer is enrolled in SA" in {
       given()
         .userIsEnrolledInSa(saUtr)
-        .when()
+      .when()
         .get("/")
-        .thenAssertThat()
+      .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self-assessment", s"/self-assessment/$saUtr")
@@ -19,9 +19,9 @@ class CustomerResolverControllerSpec extends BaseFunctionalSpec {
     "return a 401 response the customer is not enrolled in SA" in {
       given()
         .userIsNotEnrolledInSa
-        .when()
+      .when()
         .get("/")
-        .thenAssertThat()
+      .thenAssertThat()
         .statusIs(401)
     }
   }

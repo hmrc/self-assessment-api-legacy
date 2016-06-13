@@ -21,10 +21,10 @@ import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.domain.{PositiveMonetaryFieldDescription, TaxYearPropertyType}
 
 case object PensionContributions extends TaxYearPropertyType {
-  override val name: String = "pension-contributions"
+  override val name: String = "pensionContributions"
   override val example: JsValue = toJson(PensionContribution.example())
 
-  override def description(action: String): String = s"$action a pension-contribution"
+  override def description(action: String): String = s"$action a pensionContributions"
 
   override val title: String = "Sample pension contributions"
 

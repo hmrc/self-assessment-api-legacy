@@ -24,7 +24,6 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType
 
 case class UKProperty(id: Option[SourceId] = None,
-                      name: String,
                       allowances: Option[Allowances] = None,
                       adjustments: Option[Adjustments] = None,
                       rentARoomRelief: Option[BigDecimal] = None)
@@ -38,7 +37,6 @@ object UKProperty {
 
   implicit val reads: Reads[UKProperty] = (
     Reads.pure(None) and
-      (__ \ "name").read[String](lengthValidator) and
       (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments] and
       (__ \ "rentARoomRelief").readNullable[BigDecimal](positiveAmountValidator("rentARoomRelief"))
@@ -47,7 +45,6 @@ object UKProperty {
 
   lazy val example: UKProperty = UKProperty(
     None,
-    "London Apartment",
     Some(Allowances(Some(BigDecimal(1000.00)), Some(BigDecimal(600.00)), Some(BigDecimal(50.00)), Some(BigDecimal(3399.99)))),
     Some(Adjustments(Some(BigDecimal(250.00)))),
     Some(BigDecimal(7500.00)))

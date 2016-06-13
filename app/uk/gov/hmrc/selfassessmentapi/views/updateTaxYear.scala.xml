@@ -27,9 +27,7 @@
     </section>
     @partials.requestHeaders(true)
     @partials.authorisation(true)
-    @TaxYearPropertyTypes.types.map { taxYearPropertyType =>
-    @partials.taxYearPropertyWriteRequest("PUT", saUtr, taxYear, taxYearPropertyType)
-    }
+    @partials.taxYearPropertiesWriteRequest("PUT", saUtr, taxYear)
     <section id="sample-response">
         <title>Sample Response</title>
         <httpStatus>200 (OK)</httpStatus>

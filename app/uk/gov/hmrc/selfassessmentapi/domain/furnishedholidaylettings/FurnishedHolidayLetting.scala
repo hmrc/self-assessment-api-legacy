@@ -29,7 +29,6 @@ object PropertyLocationType extends Enumeration {
 }
 
 case class FurnishedHolidayLetting(id: Option[SourceId] = None,
-                                   name: String,
                                    propertyLocation: PropertyLocationType,
                                    allowances: Option[Allowances] = None,
                                    adjustments: Option[Adjustments] = None)
@@ -43,14 +42,14 @@ object FurnishedHolidayLetting {
 
   implicit val reads: Reads[FurnishedHolidayLetting] = (
     Reads.pure(None) and
-      (__ \ "name").read[String](lengthValidator) and
       (__ \ "propertyLocation").read[PropertyLocationType] and
       (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments]
     ) (FurnishedHolidayLetting.apply _)
 
 
-  lazy val example: FurnishedHolidayLetting = FurnishedHolidayLetting(None, "Holiday Cottage", PropertyLocationType.UK,
+  lazy val example: FurnishedHolidayLetting = FurnishedHolidayLetting(
+    None, PropertyLocationType.UK,
     Some(Allowances(Some(BigDecimal(1000.00)))),
     Some(Adjustments(Some(BigDecimal(500.00)))))
 }

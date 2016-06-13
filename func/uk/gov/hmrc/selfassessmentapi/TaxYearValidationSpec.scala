@@ -51,12 +51,14 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
           |   "studentLoan": {
           |     "planType": "Plan1",
           |     "deductedByEmployers": 2000.00
+          |   },
+          |   "taxRefundedOrSetOff": {
+          |     "amount": 2000.00
           |   }
           | }
         """.stripMargin)
 
-      given()
-      .when()
+      when()
         .get(s"/sandbox/$saUtr/$taxYear").withAcceptHeader()
       .thenAssertThat()
         .statusIs(200)
@@ -68,8 +70,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
 
   "if the tax year is invalid for a sandbox request, they" should {
     "receive 400" in {
-      given()
-      .when()
+      when()
         .get(s"/sandbox/$saUtr/not-a-tax-year").withAcceptHeader()
       .thenAssertThat()
         .statusIs(400)

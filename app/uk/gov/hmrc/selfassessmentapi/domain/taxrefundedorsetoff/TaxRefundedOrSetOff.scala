@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain.employment
+package uk.gov.hmrc.selfassessmentapi.domain.taxrefundedorsetoff
 
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
 
+case class TaxRefundedOrSetOff(amount: BigDecimal)
 
-case class Employment(id: Option[SourceId] = None)
+object TaxRefundedOrSetOff extends BaseDomain[TaxRefundedOrSetOff] {
+  implicit val writes = Json.writes[TaxRefundedOrSetOff]
 
-object Employment {
+  implicit val reads: Reads[TaxRefundedOrSetOff] = (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount")).map {
+    TaxRefundedOrSetOff(_)
+  }
 
-  implicit val writes = Json.writes[Employment]
-
-  implicit val reads = (Reads.pure(None)).map(Employment(_))
-
-  lazy val example = Employment()
+  override def example(id: Option[String] = None) = TaxRefundedOrSetOff(amount = BigDecimal(2000.00))
 }

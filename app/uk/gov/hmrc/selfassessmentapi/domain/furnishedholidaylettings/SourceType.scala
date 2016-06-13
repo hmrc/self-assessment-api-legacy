@@ -32,7 +32,6 @@ object SourceType {
     override def description(action: String) = s"$action a furnished holiday letting"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "name", "String", "Holiday Cottage", "Identifier for the property"),
       FullFieldDescription(name, "propertyLocation", "Enum", PropertyLocationType.values.mkString(", "), "The location of the property"),
       FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "capitalAllowance"),

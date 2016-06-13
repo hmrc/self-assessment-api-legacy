@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.domain.employment
+package uk.gov.hmrc.selfassessmentapi.domain.taxrefundedorsetoff
 
-import play.api.libs.json._
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.domain._
 
+case object TaxRefundedOrSetOffs extends TaxYearPropertyType {
+  override val name: String = "taxRefundedOrSetOff"
+  override val example: JsValue = toJson(TaxRefundedOrSetOff.example())
 
-case class Employment(id: Option[SourceId] = None)
+  override def description(action: String): String = s"$action a taxRefundedOrSetOff"
 
-object Employment {
+  override val title: String = "Sample tax refunded or set off"
 
-  implicit val writes = Json.writes[Employment]
-
-  implicit val reads = (Reads.pure(None)).map(Employment(_))
-
-  lazy val example = Employment()
+  override val fieldDescriptions = Seq(
+    PositiveMonetaryFieldDescription(name, "amount")
+  )
 }

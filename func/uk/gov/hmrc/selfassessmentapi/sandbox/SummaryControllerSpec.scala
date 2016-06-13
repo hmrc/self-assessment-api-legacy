@@ -36,6 +36,15 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     }
   }
 
+  "Creating summary with invalid summary type" should {
+    "return a 404" in {
+      when()
+        .post(s"/sandbox/$saUtr/$taxYear/self-employments/$sourceId/incoms", Some(toJson(Income(None, Turnover, BigDecimal(-1000.12)))))
+        .thenAssertThat()
+        .statusIs(404)
+    }
+  }
+
   "Retrieve an existent summary id" should {
     "return a HAL resource" in {
       SourceTypes.types.foreach { sourceType =>

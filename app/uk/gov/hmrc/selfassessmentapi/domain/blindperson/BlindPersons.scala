@@ -21,10 +21,10 @@ import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.domain.{FullFieldDescription, PositiveMonetaryFieldDescription, TaxYearPropertyType, UkCountryCodes}
 
 case object BlindPersons extends TaxYearPropertyType {
-  override val name: String = "blind-persons"
+  override val name: String = "blindPerson"
   override val example: JsValue = toJson(BlindPerson.example())
 
-  override def description(action: String): String = s"$action a blind-person"
+  override def description(action: String): String = s"$action a blindPerson"
 
   override val title: String = "Sample blind persons allowance"
 

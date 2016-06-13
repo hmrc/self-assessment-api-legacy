@@ -22,11 +22,14 @@ import uk.gov.hmrc.selfassessmentapi.domain.blindperson.BlindPerson
 import uk.gov.hmrc.selfassessmentapi.domain.charitablegiving.CharitableGiving
 import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
 import uk.gov.hmrc.selfassessmentapi.domain.studentsloan.StudentLoan
+import uk.gov.hmrc.selfassessmentapi.domain.taxrefundedorsetoff.TaxRefundedOrSetOff
 
 
 case class TaxYearProperties(id: Option[String] = None, pensionContributions: Option[PensionContribution] = None,
-                             charitableGivings: Option[CharitableGiving] = None, blindPerson: Option[BlindPerson] = None,
-                             studentLoan: Option[StudentLoan] = None)
+                             charitableGivings: Option[CharitableGiving] = None,
+                             blindPerson: Option[BlindPerson] = None,
+                             studentLoan: Option[StudentLoan] = None,
+                             taxRefundedOrSetOff: Option[TaxRefundedOrSetOff] = None)
 
 object TaxYearProperties extends BaseDomain[TaxYearProperties] {
 
@@ -37,7 +40,8 @@ object TaxYearProperties extends BaseDomain[TaxYearProperties] {
       (__ \ "pensionContributions").readNullable[PensionContribution] and
       (__ \ "charitableGivings").readNullable[CharitableGiving] and
       (__ \ "blindPerson").readNullable[BlindPerson] and
-      (__ \ "studentLoan").readNullable[StudentLoan]
+      (__ \ "studentLoan").readNullable[StudentLoan] and
+      (__ \ "taxRefundedOrSetOff").readNullable[TaxRefundedOrSetOff]
     ) (TaxYearProperties.apply _)
 
   override def example(id: Option[String]) =
@@ -46,6 +50,7 @@ object TaxYearProperties extends BaseDomain[TaxYearProperties] {
       pensionContributions = Some(PensionContribution.example()),
       charitableGivings = Some(CharitableGiving.example()),
       blindPerson = Some(BlindPerson.example()),
-      studentLoan = Some(StudentLoan.example())
+      studentLoan = Some(StudentLoan.example()),
+      taxRefundedOrSetOff = Some(TaxRefundedOrSetOff.example())
     )
 }

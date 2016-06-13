@@ -16,25 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.employment
 
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
 
 class EmploymentSpec extends JsonSpec {
 
   "format" should {
     "round trip valid Employment json" in {
-      roundTripJson(Employment(name = "employment 1"))
-    }
-  }
-
-  "validate" should {
-    "reject name longer than 100 characters" in {
-
-      val se = Employment(name = "a" * 101)
-
-      assertValidationError[Employment](
-        se,
-        Map("/name" -> MAX_FIELD_LENGTH_EXCEEDED), "Expected valid employment")
+      roundTripJson(Employment())
     }
   }
 }

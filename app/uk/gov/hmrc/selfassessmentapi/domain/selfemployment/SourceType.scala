@@ -32,7 +32,6 @@ object SourceType {
     override def description(action: String) = s"$action a self-employment"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "name", "String", "Painter", "Name of the self-employment"),
       FullFieldDescription(name, "commencementDate", "Date", "2016-01-01", "Date in yyyy-dd-mm format"),
       FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this self-employment", optional = true),
       PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", optional = true),

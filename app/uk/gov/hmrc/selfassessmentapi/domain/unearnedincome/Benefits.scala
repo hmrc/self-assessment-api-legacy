@@ -41,9 +41,9 @@ object Benefit extends BaseDomain[Benefit] {
       (__ \ "type").read[BenefitType] and
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount")) and
       (__ \ "taxDeduction").read[BigDecimal](positiveAmountValidator("taxDeduction"))
-    ) (Benefit.apply _).filter(ValidationError("taxDeduction must be less or equal than the amount", INVALID_TAX_DEDUCTION_AMOUNT)) {
+    ) (Benefit.apply _).filter(ValidationError("taxDeduction must be less than or equal to the amount", INVALID_TAX_DEDUCTION_AMOUNT)) {
     benefits => benefits.taxDeduction <= benefits.amount
   }
 
-  override def example(id: Option[SummaryId]) = Benefit(id, BenefitType.JobSeekersAllowance, BigDecimal(1000.00), BigDecimal(400.00))
+  override def example(id: Option[SummaryId]) = Benefit(id, BenefitType.StatePension, BigDecimal(1000.00), BigDecimal(400.00))
 }

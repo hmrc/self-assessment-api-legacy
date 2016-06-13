@@ -34,5 +34,5 @@ object ChildBenefit extends BaseDomain[ChildBenefit] {
     (__ \ "dateBenefitStopped").readNullable[LocalDate]
   )(ChildBenefit.apply _)
 
-  override def example(id: Option[String]): ChildBenefit = ChildBenefit(1234.34, 3)
+  override def example(id: Option[String]): ChildBenefit = ChildBenefit(1234.34, 3, Some(new LocalDate(2016, 4, 5)))
 }

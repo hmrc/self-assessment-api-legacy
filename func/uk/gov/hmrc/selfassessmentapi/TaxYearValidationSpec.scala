@@ -1,39 +1,78 @@
 package uk.gov.hmrc.selfassessmentapi
 
-import uk.gov.hmrc.selfassessmentapi.domain.blindperson.BlindPerson
-import uk.gov.hmrc.selfassessmentapi.domain.charitablegiving.CharitableGiving
-import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
+import play.api.libs.json.Json
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class TaxYearValidationSpec extends BaseFunctionalSpec {
 
   "if the tax year in the path is valid for a sandbox request, they" should {
-    "receive 200" in {
-      given()
-        .when()
+    "return a 200 response" in {
+      val expectedJson = Json.parse(
+        s"""
+          |{
+          | 	"pensionContributions": {
+          | 		"ukRegisteredPension": 1000.45,
+          | 		"retirementAnnuity": 1000.0,
+          | 		"employerScheme": 12000.05,
+          | 		"overseasPension": 1234.43
+          | 	},
+          | 	"charitableGivings": {
+          | 		"giftAidPayments": {
+          | 			"countryCode": "GBR",
+          | 			"amount": 100000
+          | 		},
+          | 		"oneOffGiftAidPayments": {
+          | 			"countryCode": "USA",
+          | 			"amount": 5000.0
+          | 		},
+          | 		"sharesSecurities": {
+          | 			"countryCode": "CAN",
+          | 			"amount": 53000.0
+          |	  	},
+          |	  	"landProperties": {
+          |	  		"countryCode": "RUS",
+          |	  		"amount": 1000000.0
+          |	  	},
+          |	  	"giftAidPaymentsCarriedBackToPreviousYear": {
+          | 			"countryCode": "AUS",
+          | 			"amount": 2000.0
+          | 		},
+          | 		"giftAidPaymentsCarriedForwardToNextYear": {
+          | 			"countryCode": "NZL",
+          | 			"amount": 50000.0
+          | 		}
+          | 	},
+          | 	"blindPerson": {
+          | 		"country": "Wales",
+          | 		"registrationAuthority": "Registrar",
+          | 		"spouseSurplusAllowance": 2000.05,
+          | 		"wantSpouseToUseSurplusAllowance": true
+          | 	},
+          |   "studentLoan": {
+          |     "planType": "Plan1",
+          |     "deductedByEmployers": 2000.00
+          |   },
+          |   "taxRefundedOrSetOff": {
+          |     "amount": 2000.00
+          |   }
+          | }
+        """.stripMargin)
+
+      when()
         .get(s"/sandbox/$saUtr/$taxYear").withAcceptHeader()
-        .thenAssertThat().statusIs(200)
-        .bodyHasPath("""pensionContributions \ ukRegisteredPension""", PensionContribution.example().ukRegisteredPension.get)
-        .bodyHasPath("""pensionContributions \ retirementAnnuity""", PensionContribution.example().retirementAnnuity.get)
-        .bodyHasPath("""pensionContributions \ employerScheme""", PensionContribution.example().employerScheme.get)
-        .bodyHasPath("""pensionContributions \ overseasPension""", PensionContribution.example().overseasPension.get)
-        .bodyHasPath("""charitableGivings \ giftAidPayments \ amount """, CharitableGiving.example().giftAidPayments.get.amount)
-        .bodyHasPath("""charitableGivings \ giftAidPayments \ countryCode """, CharitableGiving.example().giftAidPayments.get.countryCode)
-        .bodyHasPath("""charitableGivings \ landProperties \ amount """, CharitableGiving.example().landProperties.get.amount)
-        .bodyHasPath("""charitableGivings \ landProperties \ countryCode """, CharitableGiving.example().landProperties.get.countryCode)
-        .bodyHasPath("""blindPerson \ country""", BlindPerson.example().country)
-        .bodyHasPath("""blindPerson \ registrationAuthority""", BlindPerson.example().registrationAuthority.get)
-        .bodyHasPath("""blindPerson \ spouseSurplusAllowance""", BlindPerson.example().spouseSurplusAllowance.get)
-        .bodyHasPath("""blindPerson \ wantSpouseToUseSurplusAllowance""", BlindPerson.example().wantSpouseToUseSurplusAllowance)
+      .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
+        .bodyIs(expectedJson)
     }
   }
 
   "if the tax year is invalid for a sandbox request, they" should {
     "receive 400" in {
-      given()
-        .when()
+      when()
         .get(s"/sandbox/$saUtr/not-a-tax-year").withAcceptHeader()
-        .thenAssertThat()
+      .thenAssertThat()
         .statusIs(400)
         .body(_ \ "message").is("ERROR_TAX_YEAR_INVALID")
     }
@@ -43,9 +82,10 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     "receive 501" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
-        .when()
+      .when()
         .get(s"/$saUtr/$taxYear").withAcceptHeader()
-        .thenAssertThat().statusIs(501)
+      .thenAssertThat()
+        .statusIs(501)
     }
   }
 
@@ -53,12 +93,11 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     "receive 400" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
-        .when()
+      .when()
         .get(s"/$saUtr/not-a-tax-year").withAcceptHeader()
-        .thenAssertThat()
+      .thenAssertThat()
         .statusIs(400)
         .body(_ \ "message").is("ERROR_TAX_YEAR_INVALID")
     }
   }
-
 }

@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.Dividend
 
 object DividendType extends Enumeration {
   type DividendType = Value
-  val FromUKCompanies, OtherFromUkCompanies = Value
+  val FromUKCompanies, OtherFromUKCompanies = Value
 }
 
 case class Dividend(id: Option[String] = None, `type`: DividendType, amount: BigDecimal)

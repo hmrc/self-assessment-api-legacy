@@ -16,15 +16,20 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
+import java.lang.Integer._
+
+import org.joda.time.LocalDate
+import play.api.libs.json.JsArray
 import play.api.libs.json.Json._
 import play.api.mvc.Action
+import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, TaxYearProperties}
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties._
-import uk.gov.hmrc.selfassessmentapi.views.Helpers._
-import play.api.mvc.hal._
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.VALUE_BELOW_MINIMUM
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties._
+import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
 import scala.concurrent.Future
 
@@ -35,10 +40,29 @@ object TaxYearDiscoveryController extends BaseController with Links {
     Future.successful(Ok(halResource(toJson(TaxYearProperties.example()), discoveryLinks(utr, taxYear))))
   }
 
+  private def taxYearValidationErrors(path: String, yearFromBody : LocalDate, yearFromUrl: String) = {
+    if (!yearFromBody.isBefore(new LocalDate(parseInt(yearFromUrl.split("-")(0)) + 1, 4, 6))) {
+      Some(addValidationError(path, Some(VALUE_BELOW_MINIMUM),
+        s"The dateBenefitStopped must be before the end of the tax year: $yearFromUrl"))
+    } else None
+  }
+
+  private def validateRequest(taxYearProperties: TaxYearProperties, taxYear: String) = {
+    for {
+        childBenefit <- taxYearProperties.childBenefit
+        dateBenefitStopped <- childBenefit.dateBenefitStopped
+        taxYearValidationResult <- taxYearValidationErrors("/taxYearProperties/childBenefit/dateBenefitStopped",
+                                                           dateBenefitStopped, taxYear)
+    } yield Seq(taxYearValidationResult)
+  }
+
   final def update(utr: SaUtr, taxYear: TaxYear) = Action.async(parse.json) { implicit request =>
     withJsonBody[TaxYearProperties] {
       taxYearProperties =>
-        Future.successful(Ok(halResource(obj(), discoveryLinks(utr, taxYear))))
+        validateRequest(taxYearProperties, taxYear.taxYear) match {
+          case Some(errors) => Future.successful(BadRequest(JsArray(errors)))
+          case None => Future.successful(Ok(halResource(obj(), discoveryLinks(utr, taxYear))))
+        }
     }
   }
 }

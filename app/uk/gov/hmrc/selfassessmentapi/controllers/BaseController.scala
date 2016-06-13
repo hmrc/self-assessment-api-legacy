@@ -43,22 +43,26 @@ trait BaseController
         Future.successful(BadRequest(s"could not parse body due to ${e.getMessage}"))
     }
 
+  def addValidationError(path: String, code: Option[ErrorCode], message: String) = {
+      JsObject(Seq("path" -> JsString(path),
+          "code" -> JsString(code match {
+            case Some(errorCode) => errorCode.toString
+            case None => "N/A"
+          }),
+          "message" -> JsString(message))
+      )
+  }
+
   def failedValidationJson(errors: ValidationErrors) = {
     JsArray(
       for {
         (path, errSeq) <- errors
         error <- errSeq
-      } yield JsObject(
-        Seq(
-          "path" -> JsString(path.toString),
-          "code" -> JsString(
-            Try(error.args.filter(_.isInstanceOf[ErrorCode]).head.asInstanceOf[ErrorCode]) match {
-              case Success(code) => code.toString
-              case _ => "N/A"
-            }
-          ),
-          "message" -> JsString(error.message))
-      )
+      } yield
+        addValidationError(path.toString,
+          Try(error.args.filter(_.isInstanceOf[ErrorCode]).head.asInstanceOf[ErrorCode]).toOption,
+          error.message)
+
     )
   }
 }

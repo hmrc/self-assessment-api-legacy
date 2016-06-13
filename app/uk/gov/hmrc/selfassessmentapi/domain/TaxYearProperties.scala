@@ -20,6 +20,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain.blindperson.BlindPerson
 import uk.gov.hmrc.selfassessmentapi.domain.charitablegiving.CharitableGiving
+import uk.gov.hmrc.selfassessmentapi.domain.childbenefit.ChildBenefit
 import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
 import uk.gov.hmrc.selfassessmentapi.domain.studentsloan.StudentLoan
 import uk.gov.hmrc.selfassessmentapi.domain.taxrefundedorsetoff.TaxRefundedOrSetOff
@@ -29,7 +30,8 @@ case class TaxYearProperties(id: Option[String] = None, pensionContributions: Op
                              charitableGivings: Option[CharitableGiving] = None,
                              blindPerson: Option[BlindPerson] = None,
                              studentLoan: Option[StudentLoan] = None,
-                             taxRefundedOrSetOff: Option[TaxRefundedOrSetOff] = None)
+                             taxRefundedOrSetOff: Option[TaxRefundedOrSetOff] = None,
+                             childBenefit: Option[ChildBenefit] = None)
 
 object TaxYearProperties extends BaseDomain[TaxYearProperties] {
 
@@ -41,7 +43,8 @@ object TaxYearProperties extends BaseDomain[TaxYearProperties] {
       (__ \ "charitableGivings").readNullable[CharitableGiving] and
       (__ \ "blindPerson").readNullable[BlindPerson] and
       (__ \ "studentLoan").readNullable[StudentLoan] and
-      (__ \ "taxRefundedOrSetOff").readNullable[TaxRefundedOrSetOff]
+      (__ \ "taxRefundedOrSetOff").readNullable[TaxRefundedOrSetOff] and
+      (__ \ "childBenefit").readNullable[ChildBenefit]
     ) (TaxYearProperties.apply _)
 
   override def example(id: Option[String]) =
@@ -51,6 +54,7 @@ object TaxYearProperties extends BaseDomain[TaxYearProperties] {
       charitableGivings = Some(CharitableGiving.example()),
       blindPerson = Some(BlindPerson.example()),
       studentLoan = Some(StudentLoan.example()),
-      taxRefundedOrSetOff = Some(TaxRefundedOrSetOff.example())
+      taxRefundedOrSetOff = Some(TaxRefundedOrSetOff.example()),
+      childBenefit = Some(ChildBenefit.example())
     )
 }

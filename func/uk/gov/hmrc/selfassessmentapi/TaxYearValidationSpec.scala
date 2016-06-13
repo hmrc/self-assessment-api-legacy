@@ -54,7 +54,11 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
           |   },
           |   "taxRefundedOrSetOff": {
           |     "amount": 2000.00
-          |   }
+          |   },
+          |   "childBenefit": {
+          |    "amount": 1234.34,
+          |    "numberOfChildren": 3
+          |  }
           | }
         """.stripMargin)
 
@@ -66,6 +70,28 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
         .bodyIs(expectedJson)
     }
+  }
+
+  "the payload is invalid for a sandbox request, they" should {
+
+    "receive 400 if the dateBenefitStopped is after the end of tax year from the url " in {
+      val payload = Json.parse(
+        s"""
+           |{
+           |   "childBenefit": {
+           |    "amount": 1234.34,
+           |    "numberOfChildren": 3,
+           |    "dateBenefitStopped": "2017-04-07"
+           |  }
+           | }
+        """.stripMargin)
+      when().put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyHasPath("""(0) \ code """, "VALUE_BELOW_MINIMUM")
+        .bodyHasPath("""(0) \ path """, "/taxYearProperties/childBenefit/dateBenefitStopped")
+    }
+
   }
 
   "if the tax year is invalid for a sandbox request, they" should {

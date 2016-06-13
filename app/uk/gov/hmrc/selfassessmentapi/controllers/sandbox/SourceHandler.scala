@@ -36,19 +36,24 @@ trait SourceHandler[T] {
     Future.successful(validate[T](generateId, jsValue))
 
   def findById(sourceId: SourceId): Future[Option[JsValue]] = {
-    Future.successful(Some(toJson(example(sourceId))))
+    Future.successful(Some(exampleJson(sourceId)))
   }
 
-  def find: Future[Seq[SourceId]] =
+  private def exampleJson(sourceId: SourceId): JsValue =
+    toJson(example(sourceId))
+
+  def find: Future[Seq[(SourceId,JsValue)]] = {
+    def createTuple(sourceId: SourceId) = (sourceId, exampleJson(sourceId))
     Future.successful(
       Seq(
-        generateId,
-        generateId,
-        generateId,
-        generateId,
-        generateId
+        createTuple(generateId),
+        createTuple(generateId),
+        createTuple(generateId),
+        createTuple(generateId),
+        createTuple(generateId)
       )
     )
+  }
 
   def delete(sourceId: SourceId): Future[Boolean] =
     Future.successful(true)

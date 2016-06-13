@@ -80,9 +80,9 @@ object SourceController extends BaseController with Links with SourceTypeSupport
 
   def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async { implicit request =>
     val svc = sourceHandler(sourceType)
-      svc.find map { ids =>
-      val json = toJson(ids.map(id => halResource(obj(),
-        Seq(HalLink("self", sourceIdHref(saUtr, taxYear, sourceType, id))))))
+      svc.find map { sources =>
+      val json = toJson(sources.map(source => halResource(source._2,
+        Seq(HalLink("self", sourceIdHref(saUtr, taxYear, sourceType, source._1))))))
 
       Ok(halResourceList(svc.listName, json, sourceHref(saUtr, taxYear, sourceType)))
     }

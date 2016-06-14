@@ -26,21 +26,24 @@ import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorResult, L
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object SourceController extends BaseController with Links with SourceTypeSupport {
 
   override lazy val context: String = AppContext.apiGatewayContext
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async(parse.json) { implicit request =>
-    sourceHandler(sourceType).create(request.body) map {
+    sourceHandler(sourceType).create(saUtr, taxYear, request.body) match {
       case Left(errorResult) =>
-        errorResult match {
-          case ErrorResult(Some(message), _) => BadRequest(message)
-          case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
-          case _ => BadRequest
+        Future.successful {
+          errorResult match {
+            case ErrorResult(Some(message), _) => BadRequest(message)
+            case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
+            case _ => BadRequest
+          }
         }
       case Right(id) =>
-        Created(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, id)))
+        id.map{sourceId => Created(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId)))}
     }
   }
 

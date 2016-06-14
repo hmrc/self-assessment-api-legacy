@@ -17,12 +17,15 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
 
 import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Benefits, Dividends, SavingsIncomes}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{UnearnedIncome, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
+
+import scala.concurrent.Future
 
 object UnearnedIncomeSourceHandler extends SourceHandler[UnearnedIncome] {
   override implicit val reads: Reads[UnearnedIncome] = UnearnedIncome.reads
@@ -39,5 +42,6 @@ object UnearnedIncomeSourceHandler extends SourceHandler[UnearnedIncome] {
 
   override val repository = new SandboxSourceRepository[UnearnedIncome] {
     override def example(id: SourceId): UnearnedIncome = UnearnedIncome.example.copy(id = Some(id))
+    override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[UnearnedIncome]] = ???
   }
 }

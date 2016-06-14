@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-abstract class SourceHandler[T] {
+trait SourceHandler[T] {
 
   val repository : SourceRepository[T]
   implicit val reads: Reads[T]
@@ -37,8 +37,12 @@ abstract class SourceHandler[T] {
 
   private def generateId: String = BSONObjectID.generate.stringify
 
-  def create(jsValue: JsValue): Future[Either[ErrorResult, SourceId]] =
-    Future.successful(validate[T](generateId, jsValue))
+  def create(saUtr: SaUtr, taxYear: TaxYear, jsValue: JsValue): Either[ErrorResult, Future[SourceId]] = {
+    validate[T](jsValue) {
+        repository.create(saUtr, taxYear, _)
+    }
+  }
+
 
   def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[JsValue]] = {
     repository.findById(saUtr, taxYear, sourceId).map(_.map(toJson(_)))

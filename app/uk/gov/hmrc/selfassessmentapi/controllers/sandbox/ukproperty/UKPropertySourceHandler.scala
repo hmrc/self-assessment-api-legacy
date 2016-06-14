@@ -17,12 +17,15 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty
 
 import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
+
+import scala.concurrent.Future
 
 object UKPropertySourceHandler extends SourceHandler[UKProperty] {
   override implicit val reads: Reads[UKProperty] = UKProperty.reads
@@ -42,5 +45,6 @@ object UKPropertySourceHandler extends SourceHandler[UKProperty] {
 
   override val repository = new SandboxSourceRepository[UKProperty] {
     override def example(id: SourceId): UKProperty = UKProperty.example.copy(id = Some(id))
+    override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[UKProperty]] = ???
   }
 }

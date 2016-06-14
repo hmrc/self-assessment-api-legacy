@@ -27,6 +27,8 @@ abstract class SandboxSourceRepository[T] extends SourceRepository[T] {
 
   def example(id: SourceId): T
 
+  def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]]
+
   private def generateId: String = BSONObjectID.generate.stringify
 
   override def create(saUtr: SaUtr, taxYear: TaxYear, source: T): Future[SourceId] = Future.successful(generateId)
@@ -49,5 +51,4 @@ abstract class SandboxSourceRepository[T] extends SourceRepository[T] {
     )
   }
 
-  override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]] = ???
 }

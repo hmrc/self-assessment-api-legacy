@@ -17,12 +17,15 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.selfemployment
 
 import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
+
+import scala.concurrent.Future
 
 object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
   override implicit val reads: Reads[SelfEmployment] = SelfEmployment.selfEmploymentReads
@@ -40,5 +43,6 @@ object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
   }
   override val repository  = new SandboxSourceRepository[SelfEmployment] {
     override def example(id: SourceId): SelfEmployment = SelfEmployment.example.copy(id = Some(id))
+    override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]] = ???
   }
 }

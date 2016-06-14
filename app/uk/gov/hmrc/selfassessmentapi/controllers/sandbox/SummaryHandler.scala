@@ -26,7 +26,9 @@ import scala.util.{Failure, Success, Try}
 
 
 
-case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
+case class SummaryListItem(id: SummaryId, json: JsValue)
+
+case class SummaryHandler[T](listName: String, domain: BaseDomain[T]) {
 
   implicit val reads: Reads[T] = domain.reads
   implicit val writes: Writes[T] = domain.writes
@@ -41,16 +43,21 @@ case class SummaryHandler[T](val listName: String, domain: BaseDomain[T]) {
     Future.successful(Some(toJson(example(Some(summaryId)))))
   }
 
-  def find: Future[Seq[SummaryId]] =
+  private def exampleJson(summaryId: SummaryId): JsValue =
+    toJson(example(Some(summaryId)))
+
+  def find: Future[Seq[SummaryListItem]] = {
+    def createItem(summaryId: SummaryId) = SummaryListItem(summaryId, exampleJson(summaryId))
     Future.successful(
       Seq(
-        generateId,
-        generateId,
-        generateId,
-        generateId,
-        generateId
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId)
       )
     )
+  }
 
   def delete(summaryId: SummaryId): Future[Boolean] =
     Future.successful(true)

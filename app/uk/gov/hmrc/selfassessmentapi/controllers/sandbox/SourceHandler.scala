@@ -23,6 +23,8 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.Future
 
+case class SourceListItem(id: SourceId, json: JsValue)
+
 trait SourceHandler[T] {
 
   implicit val reads: Reads[T]
@@ -36,19 +38,24 @@ trait SourceHandler[T] {
     Future.successful(validate[T](generateId, jsValue))
 
   def findById(sourceId: SourceId): Future[Option[JsValue]] = {
-    Future.successful(Some(toJson(example(sourceId))))
+    Future.successful(Some(exampleJson(sourceId)))
   }
 
-  def find: Future[Seq[SourceId]] =
+  private def exampleJson(sourceId: SourceId): JsValue =
+    toJson(example(sourceId))
+
+  def find: Future[Seq[SourceListItem]] = {
+    def createItem(sourceId: SourceId) = SourceListItem(sourceId, exampleJson(sourceId))
     Future.successful(
       Seq(
-        generateId,
-        generateId,
-        generateId,
-        generateId,
-        generateId
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId)
       )
     )
+  }
 
   def delete(sourceId: SourceId): Future[Boolean] =
     Future.successful(true)

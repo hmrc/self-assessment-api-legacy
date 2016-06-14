@@ -49,14 +49,14 @@ object Helpers extends HalSupport with Links {
   }
 
   def sourceTypeAndSummaryTypeIdListResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
-    val json = toJson(Seq(summaryId, summaryId, summaryId).map(id => halResource(obj(),
+    val json = toJson(Seq(summaryId, summaryId, summaryId).map(id => halResource(summaryType.example,
       Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType.name, id))))))
     val hal = halResourceList(summaryType.name, json, sourceTypeAndSummaryTypeHref(utr, taxYear, sourceType, sourceId, summaryType.name))
     PCData(Json.prettyPrint(hal.json))
   }
 
   def sourceTypeIdListResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
-    val json = toJson(Seq(sourceId, sourceId, sourceId).map(id => halResource(obj(),
+    val json = toJson(Seq(sourceId, sourceId, sourceId).map(id => halResource(sourceType.example,
       Seq(HalLink("self", sourceIdHref(utr, taxYear, sourceType, id))))))
     val hal = halResourceList(sourceType.name, json, sourceHref(utr, taxYear, sourceType))
     prettyPrint(hal.json)
@@ -74,7 +74,7 @@ object Helpers extends HalSupport with Links {
 
 
   def liabilityListResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
-    val json = toJson(Seq(liabilityId, liabilityId, liabilityId).map(id => halResource(obj(),
+    val json = toJson(Seq(liabilityId, liabilityId, liabilityId).map(id => halResource(Json.toJson(Liability.example(liabilityId)),
       Seq(HalLink("self", liabilityHref(utr, taxYear, id))))))
     val hal = halResourceList("liabilities", json, liabilitiesHref(utr, taxYear))
     prettyPrint(hal.json)

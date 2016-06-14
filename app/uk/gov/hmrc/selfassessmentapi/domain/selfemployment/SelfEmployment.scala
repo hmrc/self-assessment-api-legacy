@@ -43,8 +43,8 @@ object SelfEmployment {
     ) (SelfEmployment.apply _)
 
 
-  lazy val example: SelfEmployment = SelfEmployment(
-    id = None,
+  def example(sourceId: Option[SourceId] = None): SelfEmployment = SelfEmployment(
+    id = sourceId,
     commencementDate = LocalDate.parse("2016-01-01"),
     allowances = Some(Allowances.example),
     adjustments = Some(Adjustments.example))

@@ -42,7 +42,7 @@ object BlindPerson extends BaseDomain[BlindPerson] {
     ) (BlindPerson.apply _).filter(ValidationError("If the country is England or Wales, registrationAuthority is mandatory", MISSING_REGISTRATION_AUTHORITY)) {
     blindPerson =>
       if (blindPerson.country == England || blindPerson.country == Wales)
-        blindPerson.registrationAuthority != None
+        blindPerson.registrationAuthority.isDefined
       else true
   }
 

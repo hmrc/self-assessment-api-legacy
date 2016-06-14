@@ -26,7 +26,7 @@ object Employment {
 
   implicit val writes = Json.writes[Employment]
 
-  implicit val reads = (Reads.pure(None)).map(Employment(_))
+  implicit val reads = Reads.pure(None).map(Employment(_))
 
-  lazy val example = Employment()
+  def example(sourceId: Option[SourceId] = None) = Employment(sourceId)
 }

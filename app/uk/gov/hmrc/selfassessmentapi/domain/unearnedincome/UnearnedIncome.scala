@@ -26,7 +26,7 @@ object UnearnedIncome {
 
   implicit val writes = Json.writes[UnearnedIncome]
 
-  implicit val reads = (Reads.pure(None)).map(UnearnedIncome(_))
+  implicit val reads = Reads.pure(None).map(UnearnedIncome(_))
 
-  lazy val example = UnearnedIncome()
+  def example(sourceId: Option[SourceId] = None) = UnearnedIncome(sourceId)
 }

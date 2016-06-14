@@ -27,7 +27,7 @@ object SourceType {
 
     override val name: String = "employments"
     override val summaryTypes: Seq[SummaryType] = Seq(Incomes, Benefits, Expenses, UKTaxesPaid)
-    override val example: JsValue = toJson(Employment.example)
+    override def example(sourceId: Option[SourceId] = None): JsValue = toJson(Employment.example(sourceId))
 
     override def description(action: String): String =  s"$action an employment"
     override val title: String = "Sample employment"

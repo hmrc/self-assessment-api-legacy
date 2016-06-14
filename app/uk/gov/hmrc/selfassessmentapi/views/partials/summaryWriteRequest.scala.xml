@@ -8,7 +8,7 @@
     <title>@(summaryType.title) request</title>
     <resource>@method /self-assessment/@saUtr/@taxYear/@(sourceType.name)/@(sourceId)/@(summaryType.name)@summaryId.map(x => s"/$x").getOrElse("")</resource>
     <description>@{summaryType.description(if(method=="POST") "Creates" else "Updates")}</description>
-    <json>@prettyPrint(summaryType.example)</json>
+    <json>@prettyPrint(summaryType.example())</json>
     @if(summaryType.fieldDescriptions.nonEmpty) {
     <table>
         <headings>

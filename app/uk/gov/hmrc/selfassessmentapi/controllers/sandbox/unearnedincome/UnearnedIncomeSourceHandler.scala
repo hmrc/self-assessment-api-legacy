@@ -26,7 +26,7 @@ object UnearnedIncomeSourceHandler extends SourceHandler[UnearnedIncome] {
   override implicit val reads: Reads[UnearnedIncome] = UnearnedIncome.reads
   override implicit val writes: Writes[UnearnedIncome] = UnearnedIncome.writes
 
-  override def example(id: SourceId) = UnearnedIncome.example.copy(id = Some(id))
+  override def example(id: SourceId) = UnearnedIncome.example(Some(id))
 
   override val listName = SourceTypes.UnearnedIncome.name
 

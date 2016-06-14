@@ -41,7 +41,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   val taxYear = TaxYear("2016-17")
   val saUtr = generateSaUtr()
 
-  def selfEmployment(): SelfEmployment = SelfEmployment.example
+  def selfEmployment(): SelfEmployment = SelfEmployment.example()
 
   "round trip" should {
     "create and retrieve using generated id" in {

@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.childbenefit
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.domain.employment.ExpenseType._
 
 class ChildBenefitSpec extends JsonSpec {
 
@@ -48,12 +46,29 @@ class ChildBenefitSpec extends JsonSpec {
     }
 
     "reject zero and negative number of children" in {
-      Seq(0, -2).foreach{
+      Seq(-2, -5).foreach {
         testNumber =>
           val expense = ChildBenefit(amount = BigDecimal(1000), numberOfChildren = testNumber)
           assertValidationError[ChildBenefit](
             expense,
             Map("/numberOfChildren" -> VALUE_BELOW_MINIMUM), "Expected zero or negative number of children")
+      }
+    }
+
+    "reject non zero amount and zero number of children" in {
+      Seq(BigDecimal(123.34), BigDecimal(1000.23)).foreach {
+        testAmount =>
+          val expense = ChildBenefit(amount = testAmount, numberOfChildren = 0)
+          assertValidationError[ChildBenefit](
+            expense,
+            Map("" -> VALUE_BELOW_MINIMUM), "Expected non zero amount and zero number of children")
+      }
+    }
+
+    "allow zero amount and non zero number of children" in {
+      Seq(1,2,3,4).foreach {
+        testNumberOfChildren =>
+          assertValidationPasses[ChildBenefit](ChildBenefit(amount = 0, numberOfChildren = testNumberOfChildren))
       }
     }
   }

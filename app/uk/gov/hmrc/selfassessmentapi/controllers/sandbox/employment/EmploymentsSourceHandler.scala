@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.employment.{Benefit, Employment, Exp
 object EmploymentsSourceHandler extends SourceHandler[Employment] {
   override implicit val reads = Employment.reads
   override implicit val writes = Employment.writes
-  override def example(id: SourceId) = Employment.example.copy(id = Some(id))
+  override def example(id: SourceId) = Employment.example(Some(id))
   override val listName = SourceTypes.Employments.name
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {

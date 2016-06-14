@@ -18,13 +18,13 @@ package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.domain.{FullFieldDescription, PositiveMonetaryFieldDescription, SummaryType}
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 object SummaryTypes {
 
   case object SavingsIncomes extends SummaryType {
     override val name = "savings"
-    override lazy val example: JsValue = toJson(SavingsIncome.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(SavingsIncome.example(id))
     override val title = "Sample unearned income savings incomes"
 
     override def description(action: String) = s"$action a savings income for the specified source"
@@ -37,7 +37,7 @@ object SummaryTypes {
 
   case object Dividends extends SummaryType {
     override val name = "dividends"
-    override lazy val example: JsValue = toJson(Dividend.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(Dividend.example(id))
     override val title = "Sample unearned income dividends"
 
     override def description(action: String) = s"$action a dividend for the specified source"
@@ -50,7 +50,7 @@ object SummaryTypes {
 
   case object Benefits extends SummaryType {
     override val name = "benefits"
-    override lazy val example: JsValue = toJson(Benefit.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(Benefit.example(id))
     override val title = "Sample unearned income benefits"
 
     override def description(action: String) = s"$action a benefit for the specified source"

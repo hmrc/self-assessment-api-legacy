@@ -9,7 +9,7 @@
     <resource>@method /self-assessment/@saUtr/@taxYear/@(sourceType.name)@sourceId.map(x => s"/$x").getOrElse("")</resource>
     <description>@{sourceType.description(if(method=="POST") "Creates" else "Updates")}</description>
         @if(sourceType.fieldDescriptions.nonEmpty) {
-          <json>@prettyPrint(sourceType.example)</json>
+          <json>@prettyPrint(sourceType.example())</json>
         } else {
           <json>Empty POST request</json>
         }

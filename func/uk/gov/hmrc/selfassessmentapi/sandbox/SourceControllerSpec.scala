@@ -21,7 +21,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "return a 201 response with links to newly created source" in {
       SourceTypes.types.foreach { sourceType =>
         when()
-          .post(s"/sandbox/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example))
+          .post(s"/sandbox/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
           .thenAssertThat()
           .statusIs(201)
           .contentTypeIsHalJson()
@@ -59,7 +59,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "return 200 and a valid response when an existing source is modified" in {
       SourceTypes.types.foreach { sourceType =>
         when()
-          .put(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId", Some(sourceType.example))
+          .put(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId", Some(sourceType.example()))
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsHalJson()

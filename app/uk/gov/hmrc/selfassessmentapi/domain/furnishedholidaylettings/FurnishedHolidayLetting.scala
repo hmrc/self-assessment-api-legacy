@@ -48,8 +48,9 @@ object FurnishedHolidayLetting {
     ) (FurnishedHolidayLetting.apply _)
 
 
-  lazy val example: FurnishedHolidayLetting = FurnishedHolidayLetting(
-    None, PropertyLocationType.UK,
+  def example(sourceId: Option[SourceId] = None) = FurnishedHolidayLetting(
+    sourceId,
+    PropertyLocationType.UK,
     Some(Allowances(Some(BigDecimal(1000.00)))),
     Some(Adjustments(Some(BigDecimal(500.00)))))
 }

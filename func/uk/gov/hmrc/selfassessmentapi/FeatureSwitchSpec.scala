@@ -83,28 +83,28 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
             given()
               .userIsAuthorisedForTheResource(saUtr)
               .when()
-              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses", Some(Expenses.example))
+              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses", Some(Expenses.example()))
               .thenAssertThat()
               .statusIs(statusCode(status, "POST"))
 
             given()
               .userIsAuthorisedForTheResource(saUtr)
               .when()
-              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses/$summaryId", Some(Expenses.example))
+              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses/$summaryId", Some(Expenses.example()))
               .thenAssertThat()
               .statusIs(statusCode(status, "PUT"))
 
             given()
               .userIsAuthorisedForTheResource(saUtr)
               .when()
-              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}", Some(source.example))
+              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}", Some(source.example()))
               .thenAssertThat()
               .statusIs(statusCode(status, "POST"))
 
             given()
               .userIsAuthorisedForTheResource(saUtr)
               .when()
-              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example))
+              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example()))
               .thenAssertThat()
               .statusIs(statusCode(status, "PUT"))
           }
@@ -127,7 +127,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/sandbox/$saUtr/$taxYear/uk-properties", Some(UKProperties.example))
+        .post(s"/sandbox/$saUtr/$taxYear/uk-properties", Some(UKProperties.example()))
         .thenAssertThat()
         .statusIs(404)
 
@@ -142,7 +142,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
         .statusIs(200)
 
       when()
-        .put(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses/$summaryId", Some(ukproperty.SummaryTypes.Expenses.example))
+        .put(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses/$summaryId", Some(ukproperty.SummaryTypes.Expenses.example()))
         .thenAssertThat()
         .statusIs(200)
     }

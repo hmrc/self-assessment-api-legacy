@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
 object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
   override implicit val reads: Reads[SelfEmployment] = SelfEmployment.selfEmploymentReads
   override implicit val writes: Writes[SelfEmployment] = SelfEmployment.selfEmploymentWrites
-  override def example(id: SourceId) = SelfEmployment.example.copy(id = Some(id))
+  override def example(id: SourceId) = SelfEmployment.example(Some(id))
   override val listName = SourceTypes.SelfEmployments.name
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {

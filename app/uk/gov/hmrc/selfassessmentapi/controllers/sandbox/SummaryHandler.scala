@@ -26,6 +26,8 @@ import scala.util.{Failure, Success, Try}
 
 
 
+case class SummaryListItem(id: SummaryId, json: JsValue)
+
 case class SummaryHandler[T](listName: String, domain: BaseDomain[T]) {
 
   implicit val reads: Reads[T] = domain.reads
@@ -44,15 +46,15 @@ case class SummaryHandler[T](listName: String, domain: BaseDomain[T]) {
   private def exampleJson(summaryId: SummaryId): JsValue =
     toJson(example(Some(summaryId)))
 
-  def find: Future[Seq[(SummaryId, JsValue)]] = {
-    def createTuple(summaryId: SummaryId) = (summaryId, exampleJson(summaryId))
+  def find: Future[Seq[SummaryListItem]] = {
+    def createItem(summaryId: SummaryId) = SummaryListItem(summaryId, exampleJson(summaryId))
     Future.successful(
       Seq(
-        createTuple(generateId),
-        createTuple(generateId),
-        createTuple(generateId),
-        createTuple(generateId),
-        createTuple(generateId)
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId),
+        createItem(generateId)
       )
     )
   }

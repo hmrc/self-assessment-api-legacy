@@ -44,7 +44,7 @@ object StudentLoan extends BaseDomain[StudentLoan] {
 }
 
 case object StudentLoans extends TaxYearPropertyType {
-  override val name: String = "student-loan"
+  override val name: String = "studentLoan"
   override val example: JsValue = toJson(StudentLoan.example())
   override def description(action: String): String = s"$action a student loan"
   override val title: String = "Sample student loan"

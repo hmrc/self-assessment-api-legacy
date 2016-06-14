@@ -30,7 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
 
   private val mongoRepository = new SelfEmploymentMongoRepository
-  private val selfEmploymentRepository: SelfEmploymentRepository = mongoRepository
+  private val selfEmploymentRepository: SourceRepository[SelfEmployment] = mongoRepository
   private val incomeRepository: SelfEmploymentIncomesRepository = mongoRepository
 
   override def beforeEach() {

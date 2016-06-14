@@ -18,12 +18,11 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import play.api.hal.HalLink
 import play.api.libs.json.Json._
-import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
+import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorResult, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -46,7 +45,7 @@ object SourceController extends BaseController with Links with SourceTypeSupport
   }
 
   def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async { implicit request =>
-    sourceHandler(sourceType).findById(sourceId) map {
+    sourceHandler(sourceType).findById(saUtr, taxYear, sourceId) map {
       case Some(summary) =>
         Ok(halResource(toJson(summary), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
       case None =>
@@ -69,7 +68,7 @@ object SourceController extends BaseController with Links with SourceTypeSupport
 
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async { implicit request =>
-    sourceHandler(sourceType).delete(sourceId) map {
+    sourceHandler(sourceType).delete(saUtr, taxYear, sourceId) map {
       case true =>
         NoContent
       case false =>
@@ -80,7 +79,7 @@ object SourceController extends BaseController with Links with SourceTypeSupport
 
   def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async { implicit request =>
     val svc = sourceHandler(sourceType)
-      svc.find map { ids =>
+      svc.find(saUtr, taxYear) map { ids =>
       val json = toJson(ids.map(id => halResource(obj(),
         Seq(HalLink("self", sourceIdHref(saUtr, taxYear, sourceType, id))))))
 

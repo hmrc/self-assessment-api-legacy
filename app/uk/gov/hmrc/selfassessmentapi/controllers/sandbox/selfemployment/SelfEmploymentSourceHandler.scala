@@ -17,15 +17,16 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.selfemployment
 
 import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
 
 object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
   override implicit val reads: Reads[SelfEmployment] = SelfEmployment.selfEmploymentReads
   override implicit val writes: Writes[SelfEmployment] = SelfEmployment.selfEmploymentWrites
-  override def example(id: SourceId) = SelfEmployment.example.copy(id = Some(id))
   override val listName = SourceTypes.SelfEmployments.name
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
@@ -36,5 +37,8 @@ object SelfEmploymentSourceHandler extends SourceHandler[SelfEmployment] {
       case GoodsAndServicesOwnUses => Some(SummaryHandler(GoodsAndServicesOwnUses.name, GoodsAndServicesOwnUse))
       case _ => None
     }
+  }
+  override val repository  = new SandboxSourceRepository[SelfEmployment] {
+    override def example(id: SourceId): SelfEmployment = SelfEmployment.example.copy(id = Some(id))
   }
 }

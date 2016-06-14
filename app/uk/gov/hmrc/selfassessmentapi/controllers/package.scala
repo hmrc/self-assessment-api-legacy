@@ -20,7 +20,7 @@ import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
 
 import scala.util.{Failure, Success, Try}
 
-package object sandbox {
+package object controllers {
 
   def validate[T](id: String, jsValue: JsValue)(implicit reads: Reads[T]): Either[ErrorResult, String] = {
     Try(jsValue.validate[T]) match {

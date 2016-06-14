@@ -17,15 +17,16 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty
 
 import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
 
 object UKPropertySourceHandler extends SourceHandler[UKProperty] {
   override implicit val reads: Reads[UKProperty] = UKProperty.reads
   override implicit val writes: Writes[UKProperty] = UKProperty.writes
-  override def example(id: SourceId) = UKProperty.example.copy(id = Some(id))
   override val listName = SourceTypes.UKProperty.name
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
@@ -37,5 +38,9 @@ object UKPropertySourceHandler extends SourceHandler[UKProperty] {
       case PrivateUseAdjustments => Some(SummaryHandler(PrivateUseAdjustments.name, PrivateUseAdjustment))
       case _ => None
     }
+  }
+
+  override val repository = new SandboxSourceRepository[UKProperty] {
+    override def example(id: SourceId): UKProperty = UKProperty.example.copy(id = Some(id))
   }
 }

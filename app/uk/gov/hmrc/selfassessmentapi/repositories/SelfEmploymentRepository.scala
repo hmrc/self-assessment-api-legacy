@@ -32,18 +32,6 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, M
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait SelfEmploymentRepository {
-  def create(saUtr: SaUtr, taxYear: TaxYear, selfEmployment: SelfEmployment): Future[SourceId]
-
-  def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[SelfEmployment]]
-
-  def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, selfEmployment: SelfEmployment): Future[Boolean]
-
-  def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean]
-
-  def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]]
-}
-
 trait SelfEmploymentIncomesRepository {
   def createIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: Income): Future[Option[SummaryId]]
 
@@ -69,7 +57,7 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
     mongo,
     domainFormat = MongoSelfEmployment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
-    with SelfEmploymentRepository with SelfEmploymentIncomesRepository with AtomicUpdate[MongoSelfEmployment] with TypedSourceSummaryRepository[MongoSelfEmployment, BSONObjectID]{
+    with SourceRepository[SelfEmployment] with SelfEmploymentIncomesRepository with AtomicUpdate[MongoSelfEmployment] with TypedSourceSummaryRepository[MongoSelfEmployment, BSONObjectID]{
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("se_utr_taxyear"), unique = false),
@@ -154,4 +142,6 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
 
   override def listIncomes(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]] =
     listSummaries[Income](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.incomes.map(_.toIncome))
+
+  override def listIds(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SourceId]] = ???
 }

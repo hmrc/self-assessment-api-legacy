@@ -14,8 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
+package uk.gov.hmrc.selfassessmentapi.repositories
 
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain._
 
-case class ErrorResult(message: Option[String] = None, validationErrors: Option[ValidationErrors] = None)
+import scala.concurrent.Future
+
+trait SourceRepository[T] {
+
+  def create(saUtr: SaUtr, taxYear: TaxYear, source: T): Future[SourceId]
+
+  def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[T]]
+
+  def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, source: T): Future[Boolean]
+
+  def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean]
+
+  def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]]
+
+  def listIds(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SourceId]]
+
+}

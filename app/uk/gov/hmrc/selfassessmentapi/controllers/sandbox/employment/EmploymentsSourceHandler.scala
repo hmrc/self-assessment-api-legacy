@@ -16,15 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment
 
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.{Benefit, Employment, Expense, Income, UKTaxPaid}
+import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
 
 object EmploymentsSourceHandler extends SourceHandler[Employment] {
   override implicit val reads = Employment.reads
   override implicit val writes = Employment.writes
-  override def example(id: SourceId) = Employment.example.copy(id = Some(id))
   override val listName = SourceTypes.Employments.name
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
@@ -34,5 +35,9 @@ object EmploymentsSourceHandler extends SourceHandler[Employment] {
       case UKTaxesPaid => Some(SummaryHandler(UKTaxesPaid.name, UKTaxPaid))
       case _ => None
     }
+  }
+
+  override val repository = new SandboxSourceRepository[Employment] {
+    override def example(id: SourceId): Employment = Employment.example.copy(id = Some(id))
   }
 }

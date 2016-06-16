@@ -16,14 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.config
 
-import java.util
-
-import com.typesafe.config.ConfigObject
+import play.api.Configuration
 import uk.gov.hmrc.selfassessmentapi.domain.SourceType
 
-import scala.collection.JavaConverters._
-
-case class FeatureSwitch(value: Option[ConfigObject]) {
+case class FeatureSwitch(value: Option[Configuration]) {
   implicit val DEFAULT_VALUE = false
 
   def isEnabled(sourceType: SourceType, summary: String): Boolean = value match {
@@ -34,18 +30,17 @@ case class FeatureSwitch(value: Option[ConfigObject]) {
   }
 }
 
-case class FeatureConfig(config: ConfigObject)(implicit val defaultValue: Boolean) {
-  val configMap = config.unwrapped()
+case class FeatureConfig(config: Configuration)(implicit val defaultValue: Boolean) {
 
   def isSummaryEnabled(source: String, summary: String): Boolean = {
-    val sourceConfig = configMap.getOrDefault(source, Map("enabled" -> defaultValue).asJava).asInstanceOf[util.Map[String, AnyRef]]
-    sourceConfig.getOrDefault("enabled", Boolean.box(defaultValue)).asInstanceOf[Boolean] ||
-      sourceConfig.getOrDefault(summary, Map("enabled" -> defaultValue).asJava).asInstanceOf[util.Map[String, Boolean]]
-        .getOrDefault("enabled", defaultValue)
+    val summaryEnabled = config.getBoolean(s"$source.$summary.enabled") match {
+      case Some(flag) => flag
+      case None => true
+    }
+    isSourceEnabled(source) && summaryEnabled
   }
 
   def isSourceEnabled(source: String): Boolean = {
-    configMap.getOrDefault(source, Map("enabled" -> false).asJava).asInstanceOf[util.Map[String, AnyRef]]
-      .getOrDefault("enabled", Boolean.box(false)).asInstanceOf[Boolean]
+    config.getBoolean(s"$source.enabled").getOrElse(false)
   }
 }

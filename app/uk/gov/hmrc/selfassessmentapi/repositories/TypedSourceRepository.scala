@@ -42,4 +42,8 @@ trait TypedSourceRepository[A <: Any, ID <: Any] extends Repository[A, ID] {
   def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean] = {
     for (option <- remove("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear, "sourceId" -> id)) yield option.n == 1
   }
+
+  def delete(saUtr: SaUtr, taxYear: TaxYear): Future[Boolean] = {
+    for (option <- remove("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield option.n > 0
+  }
 }

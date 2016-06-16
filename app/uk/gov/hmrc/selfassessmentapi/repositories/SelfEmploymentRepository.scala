@@ -41,6 +41,8 @@ trait SelfEmploymentRepository {
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean]
 
+  def delete(saUtr: SaUtr, taxYear: TaxYear): Future[Boolean]
+
   def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]]
 }
 

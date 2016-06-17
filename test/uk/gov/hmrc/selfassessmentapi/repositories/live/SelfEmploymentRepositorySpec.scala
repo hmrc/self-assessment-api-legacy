@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories
+package uk.gov.hmrc.selfassessmentapi.repositories.live
 
 import java.util.UUID
 
@@ -23,6 +23,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,7 +42,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   val taxYear = TaxYear("2016-17")
   val saUtr = generateSaUtr()
 
-  def selfEmployment(): SelfEmployment = SelfEmployment.example
+  def selfEmployment(): SelfEmployment = SelfEmployment.example()
 
   "round trip" should {
     "create and retrieve using generated id" in {

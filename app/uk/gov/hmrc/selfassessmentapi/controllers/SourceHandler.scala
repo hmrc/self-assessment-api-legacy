@@ -18,42 +18,41 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.Json.toJson
 import play.api.libs.json._
-import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import scala.concurrent.Future
-
-trait SourceHandler[T] {
+abstract class SourceHandler[T](domain: BaseDomain[T], val listName: String) {
 
   val repository : SourceRepository[T]
-  implicit val reads: Reads[T]
-  implicit val writes: Writes[T]
-  val listName: String
+  implicit val reads = domain.reads
+  implicit val writes = domain.writes
 
-  private def generateId: String = BSONObjectID.generate.stringify
-
-  def create(saUtr: SaUtr, taxYear: TaxYear, jsValue: JsValue): Either[ErrorResult, Future[SourceId]] = {
-    validate[T](jsValue) {
-        repository.create(saUtr, taxYear, _)
+  def create(saUtr: SaUtr, taxYear: TaxYear, jsValue: JsValue) = {
+    validate[T, String](jsValue) {
+      repository.create(saUtr, taxYear, _)
     }
   }
 
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, jsValue: JsValue) = {
+    validate[T, Boolean](jsValue) {
+      repository.update(saUtr, taxYear, sourceId, _)
+    }
+  }
 
-  def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[JsValue]] = {
+  def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = {
     repository.findById(saUtr, taxYear, sourceId).map(_.map(toJson(_)))
   }
 
-  def find(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SourceId]] = repository.listIds(saUtr, taxYear)
+  def find(saUtr: SaUtr, taxYear: TaxYear) = repository.list(saUtr, taxYear)
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Boolean] = repository.delete(saUtr, taxYear,sourceId)
+  def findIds(saUtr: SaUtr, taxYear: TaxYear) = repository.listIds(saUtr, taxYear)
 
-  def update(sourceId: SourceId, jsValue: JsValue): Future[Either[ErrorResult, SourceId]] =
-    Future.successful (validate[T](sourceId, jsValue))
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = repository.delete(saUtr, taxYear,sourceId)
 
   def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]]
 }

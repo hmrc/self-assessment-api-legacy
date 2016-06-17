@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
 
 import scala.concurrent.Future
 
-abstract class SandboxSourceRepository[T] extends SourceRepository[T] {
+trait SandboxSourceRepository[T] extends SourceRepository[T] {
 
   def example(id: SourceId): T
 
@@ -31,23 +31,17 @@ abstract class SandboxSourceRepository[T] extends SourceRepository[T] {
 
   private def generateId: String = BSONObjectID.generate.stringify
 
-  override def create(saUtr: SaUtr, taxYear: TaxYear, source: T): Future[SourceId] = Future.successful(generateId)
+  override def create(saUtr: SaUtr, taxYear: TaxYear, source: T) = Future.successful(generateId)
 
-  override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, source: T): Future[Boolean] = Future.successful(true)
+  override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, source: T) = Future.successful(true)
 
   override def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[T]] = Future.successful(Some(example(id)))
 
-  override def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean] = Future.successful(true)
+  override def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId) = Future.successful(true)
 
   override def listIds(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SourceId]] = {
     Future.successful(
-      Seq(
-        generateId,
-        generateId,
-        generateId,
-        generateId,
-        generateId
-      )
+      Seq(generateId, generateId, generateId, generateId, generateId)
     )
   }
 

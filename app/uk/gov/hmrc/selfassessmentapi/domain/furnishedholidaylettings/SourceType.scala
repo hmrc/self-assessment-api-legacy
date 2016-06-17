@@ -25,7 +25,7 @@ object SourceType {
 
   case object FurnishedHolidayLettings extends SourceType {
     override val name = "furnished-holiday-lettings"
-    override lazy val example: JsValue = toJson(FurnishedHolidayLetting.example)
+    override lazy val example: JsValue = toJson(FurnishedHolidayLetting.example())
     override val summaryTypes: Seq[SummaryType] = Seq(Incomes, Expenses, PrivateUseAdjustments, BalancingCharges)
     override val title = "Sample furnished holiday lettings"
 

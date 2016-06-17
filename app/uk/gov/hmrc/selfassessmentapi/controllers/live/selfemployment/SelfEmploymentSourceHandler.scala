@@ -14,32 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.selfemployment
+package uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment
 
-import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.domain.SummaryType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
-import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
-
-import scala.concurrent.Future
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentRepository
 
 object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmployments.name) {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Incomes => Some(SummaryHandler(Incomes.name, Income))
-      case Expenses => Some(SummaryHandler(Expenses.name, Expense))
-      case BalancingCharges => Some(SummaryHandler(BalancingCharges.name, BalancingCharge))
-      case GoodsAndServicesOwnUses => Some(SummaryHandler(GoodsAndServicesOwnUses.name, GoodsAndServicesOwnUse))
       case _ => None
     }
   }
-  override val repository  = new SandboxSourceRepository[SelfEmployment] {
-    override def example(id: SourceId): SelfEmployment = SelfEmployment.example().copy(id = Some(id))
-    override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]] = ???
-  }
+
+  override val repository = SelfEmploymentRepository()
 }

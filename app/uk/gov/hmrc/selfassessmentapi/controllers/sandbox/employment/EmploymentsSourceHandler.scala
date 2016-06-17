@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.Employments
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.{Benefit, Employment, Expense, Income, UKTaxPaid}
@@ -26,10 +27,8 @@ import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepositor
 
 import scala.concurrent.Future
 
-object EmploymentsSourceHandler extends SourceHandler[Employment] {
-  override implicit val reads = Employment.reads
-  override implicit val writes = Employment.writes
-  override val listName = SourceTypes.Employments.name
+object EmploymentsSourceHandler extends SourceHandler(Employment, Employments.name) {
+
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
       case Incomes => Some(SummaryHandler(Incomes.name, Income))
@@ -41,7 +40,7 @@ object EmploymentsSourceHandler extends SourceHandler[Employment] {
   }
 
   override val repository = new SandboxSourceRepository[Employment] {
-    override def example(id: SourceId): Employment = Employment.example.copy(id = Some(id))
+    override def example(id: SourceId): Employment = Employment.example().copy(id = Some(id))
     override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[Employment]] = ???
   }
 }

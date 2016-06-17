@@ -1,16 +1,20 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
 
   val sourceId = BSONObjectID.generate.stringify
-
+  val notImplementedTypes = Seq(FurnishedHolidayLettings, UKProperties, Employments, UnearnedIncomes)
+  
   "Create source" should {
     "return a resourceIsNotImplemented response" in {
-      SourceTypes.types.foreach { source =>
+      notImplementedTypes.foreach { source =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -23,7 +27,7 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
 
   "Find source by id" should {
     "return a resourceIsNotImplemented response" in {
-      SourceTypes.types.foreach { source =>
+      notImplementedTypes.foreach { source =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -36,7 +40,7 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
 
   "Find all source" should {
     "return a resourceIsNotImplemented response" in {
-      SourceTypes.types.foreach { source =>
+      notImplementedTypes.foreach { source =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -49,7 +53,7 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
 
   "Update source" should {
     "return a resourceIsNotImplemented response" in {
-      SourceTypes.types.foreach { source =>
+      notImplementedTypes.foreach { source =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -62,7 +66,7 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
 
   "Delete source" should {
     "return a resourceIsNotImplemented response" in {
-      SourceTypes.types.foreach { source =>
+      notImplementedTypes.foreach { source =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()

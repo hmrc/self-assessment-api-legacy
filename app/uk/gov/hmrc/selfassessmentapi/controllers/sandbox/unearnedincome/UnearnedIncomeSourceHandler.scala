@@ -16,22 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
 
-import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UnearnedIncomes
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Benefits, Dividends, SavingsIncomes}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{UnearnedIncome, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
 
 import scala.concurrent.Future
 
-object UnearnedIncomeSourceHandler extends SourceHandler[UnearnedIncome] {
-  override implicit val reads: Reads[UnearnedIncome] = UnearnedIncome.reads
-  override implicit val writes: Writes[UnearnedIncome] = UnearnedIncome.writes
-  override val listName = SourceTypes.UnearnedIncome.name
-
+object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] =
     summaryType match {
       case SavingsIncomes => Some(SummaryHandler(SavingsIncomes.name, SavingsIncome))
@@ -41,7 +37,7 @@ object UnearnedIncomeSourceHandler extends SourceHandler[UnearnedIncome] {
     }
 
   override val repository = new SandboxSourceRepository[UnearnedIncome] {
-    override def example(id: SourceId): UnearnedIncome = UnearnedIncome.example.copy(id = Some(id))
+    override def example(id: SourceId): UnearnedIncome = UnearnedIncome.example().copy(id = Some(id))
     override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[UnearnedIncome]] = ???
   }
 }

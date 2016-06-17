@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories
+package uk.gov.hmrc.selfassessmentapi.repositories.live
 
 import org.joda.time.DateTimeZone
 import play.modules.reactivemongo.MongoDbConnection
@@ -27,6 +27,7 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, SelfEmployment}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, TypedSourceSummaryRepository}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -46,14 +47,14 @@ trait SelfEmploymentIncomesRepository {
 
 
 object SelfEmploymentRepository extends MongoDbConnection {
-  private lazy val repository = new SelfEmploymentMongoRepository
+  private lazy val repository = new SelfEmploymentMongoRepository()
 
   def apply() = repository
 }
 
 class SelfEmploymentMongoRepository(implicit mongo: () => DB)
   extends ReactiveRepository[MongoSelfEmployment, BSONObjectID](
-    "self-employments",
+    "selfEmployments",
     mongo,
     domainFormat = MongoSelfEmployment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
@@ -143,5 +144,5 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
   override def listIncomes(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]] =
     listSummaries[Income](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.incomes.map(_.toIncome))
 
-  override def listIds(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SourceId]] = ???
+  override def listIds(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SourceId]] = list(saUtr, taxYear).map(aa => (aa.map(aaa => aaa.id.get)))
 }

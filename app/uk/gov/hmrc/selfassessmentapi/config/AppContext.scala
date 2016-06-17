@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.config
 
-import com.typesafe.config.ConfigObject
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.selfassessmentapi.domain.SourceType
 
 object AppContext extends ServicesConfig {
   lazy val appName = current.configuration.getString("appName").getOrElse(throw new RuntimeException("appName is not configured"))

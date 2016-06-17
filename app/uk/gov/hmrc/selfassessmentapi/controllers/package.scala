@@ -33,7 +33,7 @@ package object controllers {
     }
   }
 
-  def validate[T](jsValue: JsValue)(f: T => Future[String])(implicit reads: Reads[T]): Either[ErrorResult, Future[String]] = {
+  def validate[T, R](jsValue: JsValue)(f: T => Future[R])(implicit reads: Reads[T]): Either[ErrorResult, Future[R]] = {
     Try(jsValue.validate[T]) match {
       case Success(JsSuccess(payload, _)) => Right(f(payload))
       case Success(JsError(errors)) =>

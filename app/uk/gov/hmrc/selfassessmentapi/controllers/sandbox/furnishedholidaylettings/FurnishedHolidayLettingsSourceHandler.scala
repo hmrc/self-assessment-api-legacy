@@ -16,21 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.furnishedholidaylettings
 
-import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.FurnishedHolidayLettings
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Income, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
 
 import scala.concurrent.Future
 
-object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHolidayLetting] {
-  override implicit val reads: Reads[FurnishedHolidayLetting] = FurnishedHolidayLetting.reads
-  override implicit val writes: Writes[FurnishedHolidayLetting] = FurnishedHolidayLetting.writes
-  override val listName = SourceTypes.FurnishedHolidayLettings.name
+object FurnishedHolidayLettingsSourceHandler extends SourceHandler(FurnishedHolidayLetting, FurnishedHolidayLettings.name) {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
@@ -42,7 +39,7 @@ object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHoli
     }
   }
   override val repository = new SandboxSourceRepository[FurnishedHolidayLetting] {
-    override def example(id: SourceId): FurnishedHolidayLetting = FurnishedHolidayLetting.example.copy(id = Some(id))
+    override def example(id: SourceId): FurnishedHolidayLetting = FurnishedHolidayLetting.example().copy(id = Some(id))
     override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[FurnishedHolidayLetting]] = ???
   }
 }

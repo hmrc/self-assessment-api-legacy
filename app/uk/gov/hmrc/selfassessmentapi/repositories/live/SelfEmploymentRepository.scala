@@ -81,7 +81,8 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
     for (list <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield list.map(_.toSelfEmployment)
   }
 
-  override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]] = list(saUtr, taxYear).map(_.map(se => JsonItem(se.id.toString, toJson(se))))
+  override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]] =
+    list(saUtr, taxYear).map(_.map(se => JsonItem(se.id.get.toString, toJson(se))))
 
   /*
     We need to perform updates manually as we are using one collection per source and it includes the arrays of summaries. This

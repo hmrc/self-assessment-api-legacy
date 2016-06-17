@@ -66,7 +66,7 @@ class SourceControllerSpec extends BaseFunctionalSpec with MongoEmbeddedDatabase
       supportedSourceTypes.foreach { sourceType =>
         given().userIsAuthorisedForTheResource(saUtr)
         when()
-          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example))
+          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
           .thenAssertThat()
           .statusIs(201)
           .contentTypeIsHalJson()

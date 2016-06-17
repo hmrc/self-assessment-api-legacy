@@ -2,6 +2,7 @@ package uk.gov.hmrc.selfassessmentapi
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.support.BaseFunctionalSpec
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 
 class TaxYearValidationSpec extends BaseFunctionalSpec {
 
@@ -89,7 +90,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
       when().put(s"/sandbox/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(400)
-        .bodyHasPath("""(0) \ code """, "VALUE_BELOW_MINIMUM")
+        .bodyHasPath("""(0) \ code """, BENEFIT_STOPPED_DATE_INVALID)
         .bodyHasPath("""(0) \ path """, "/taxYearProperties/childBenefit/dateBenefitStopped")
     }
 

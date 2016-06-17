@@ -22,11 +22,11 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class Employment(id: Option[SourceId] = None)
 
-object Employment {
+object Employment extends BaseDomain[Employment]{
 
   implicit val writes = Json.writes[Employment]
 
   implicit val reads = Reads.pure(None).map(Employment(_))
 
-  def example(sourceId: Option[SourceId] = None) = Employment(sourceId)
+  override def example(id : Option[SourceId]) = Employment(id)
 }

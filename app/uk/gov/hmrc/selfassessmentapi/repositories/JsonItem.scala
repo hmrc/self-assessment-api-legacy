@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.repositories
 
-import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
+import play.api.libs.json.JsValue
+import uk.gov.hmrc.selfassessmentapi.domain.SourceId
 
-import scala.util.{Failure, Success, Try}
-
-package object sandbox {
-
-  def validate[T](id: String, jsValue: JsValue)(implicit reads: Reads[T]): Either[ErrorResult, String] = {
-    Try(jsValue.validate[T]) match {
-      case Success(JsSuccess(payload, _)) => Right(id)
-      case Success(JsError(errors)) =>
-        Left(ErrorResult(validationErrors = Some(errors)))
-      case Failure(e) =>
-        Left(ErrorResult(message = Some(s"could not parse body due to ${e.getMessage}")))
-    }
-  }
-}
+case class JsonItem(id: SourceId, json: JsValue)

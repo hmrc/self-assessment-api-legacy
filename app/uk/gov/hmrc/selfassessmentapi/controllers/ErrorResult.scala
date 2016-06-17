@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
+package uk.gov.hmrc.selfassessmentapi.controllers
 
-object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.SourceController with SourceTypeSupport
+import uk.gov.hmrc.selfassessmentapi.domain._
+
+case class ErrorResult(message: Option[String] = None, validationErrors: Option[ValidationErrors] = None)

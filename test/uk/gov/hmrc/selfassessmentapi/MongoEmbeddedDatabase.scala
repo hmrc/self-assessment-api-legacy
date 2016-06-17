@@ -37,7 +37,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
 
   implicit val mongo = new MongoConnector(mongoUri).db
 
-  protected def mongoStart() = {
+  protected def mongoBeforeAll() = {
     if (useEmbeddedMongo) {
       mongodExe = MongodStarter.getDefaultInstance.prepare(new MongodConfigBuilder()
         .version(Version.Main.PRODUCTION)
@@ -47,21 +47,23 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
     }
   }
 
-  protected def mongoStop() = {
-    if (useEmbeddedMongo) {
-      mongod.stop()
-      mongodExe.stop()
+  protected def mongoAfterAll() = {
+    Try {
+      if (useEmbeddedMongo) {
+        mongod.stop()
+        mongodExe.stop()
+      }
+    } recover {
+      case ex: Throwable => Logger.info(s"MONGO_STOP_FAILED: Couldn't kill mongod process! : $ex")
     }
   }
 
   override def beforeAll = {
-    mongoStart()
+    mongoBeforeAll()
   }
 
   override def afterAll = {
-    Try(mongoStop()) recover {
-      case ex: Throwable => Logger.info(s"MONGO_STOP_FAILED: Couldn't kill mongod process! : $ex")
-    }
+    mongoAfterAll()
   }
 
 }

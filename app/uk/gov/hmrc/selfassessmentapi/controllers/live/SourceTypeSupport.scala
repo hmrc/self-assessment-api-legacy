@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
+package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.SourceController with SourceTypeSupport
+import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment.SelfEmploymentSourceHandler
+import uk.gov.hmrc.selfassessmentapi.domain.SourceType
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.SelfEmployments
+
+trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.SourceTypeSupport {
+  def sourceHandler(sourceType: SourceType): SourceHandler[_] = sourceType match {
+    case SelfEmployments => SelfEmploymentSourceHandler
+  }
+}

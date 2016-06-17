@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+
 object ErrorCode extends Enumeration {
   type ErrorCode = Value
   val MAX_FIELD_LENGTH_EXCEEDED,
@@ -28,7 +30,10 @@ object ErrorCode extends Enumeration {
   NO_VALUE_FOUND,
   MAXIMUM_AMOUNT_EXCEEDED,
   VALUE_BELOW_MINIMUM,
+  BENEFIT_STOPPED_DATE_INVALID,
   UNDEFINED_REQUIRED_ELEMENT,
   INVALID_TYPE = Value
+
+  implicit val format = EnumJson.enumFormat(ErrorCode, Some("ErrorCode is invalid"))
 }
 

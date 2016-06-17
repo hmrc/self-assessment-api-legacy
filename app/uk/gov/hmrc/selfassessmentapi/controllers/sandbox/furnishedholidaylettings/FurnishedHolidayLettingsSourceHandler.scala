@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.furnishedholidaylettings
 
-import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.FurnishedHolidayLettings
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Income, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
 
-object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHolidayLetting] {
-  override implicit val reads: Reads[FurnishedHolidayLetting] = FurnishedHolidayLetting.reads
-  override implicit val writes: Writes[FurnishedHolidayLetting] = FurnishedHolidayLetting.writes
-  override def example(id: SourceId) = FurnishedHolidayLetting.example(Some(id))
-  override val listName = SourceTypes.FurnishedHolidayLettings.name
+object FurnishedHolidayLettingsSourceHandler extends SourceHandler(FurnishedHolidayLetting, FurnishedHolidayLettings.name) {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
@@ -36,5 +34,9 @@ object FurnishedHolidayLettingsSourceHandler extends SourceHandler[FurnishedHoli
       case BalancingCharges => Some(SummaryHandler(BalancingCharges.name, BalancingCharge))
       case _ => None
     }
+  }
+  override val repository = new SandboxSourceRepository[FurnishedHolidayLetting] {
+    override implicit val writes = FurnishedHolidayLetting.writes
+    override def example(id: SourceId) = FurnishedHolidayLetting.example().copy(id = Some(id))
   }
 }

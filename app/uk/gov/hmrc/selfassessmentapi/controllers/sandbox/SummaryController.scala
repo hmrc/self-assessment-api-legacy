@@ -18,13 +18,11 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import play.api.hal.HalLink
 import play.api.libs.json.Json._
-import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.live.NotImplementedSourcesController._
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
+import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorResult, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global

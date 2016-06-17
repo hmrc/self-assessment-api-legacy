@@ -33,7 +33,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
   protected val saUtr = generateSaUtr()
   private val wireMockServer = new WireMockServer(wireMockConfig().port(WIREMOCK_PORT))
 
-  override def beforeAll = {
+  protected def baseBeforeAll() = {
     wireMockServer.stop()
     wireMockServer.start()
     WireMock.configureFor(stubHost, WIREMOCK_PORT)
@@ -41,9 +41,11 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     stubFor(post(urlPathEqualTo("/registration")).willReturn(aResponse().withStatus(200)))
   }
 
-  override def beforeEach() = {
-    WireMock.reset()
-  }
+  override def beforeAll() = baseBeforeAll()
+
+  protected def baseBeforeEach() = WireMock.reset()
+
+  override def beforeEach() = baseBeforeEach()
 
   class Assertions(request: String, response: HttpResponse) {
     def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, saUtr: SaUtr, taxYear: String) = {
@@ -86,7 +88,8 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     }
 
     def bodyIs(expectedBody: JsValue) = {
-      response.json.as[JsObject] - "_links" - "id" shouldEqual expectedBody
+      val body = response.json.as[JsObject] - "_links" - "id"
+      body shouldEqual expectedBody
       this
     }
 

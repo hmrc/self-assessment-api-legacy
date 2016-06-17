@@ -22,11 +22,11 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class UnearnedIncome(id: Option[SourceId] = None)
 
-object UnearnedIncome {
+object UnearnedIncome extends BaseDomain[UnearnedIncome] {
 
   implicit val writes = Json.writes[UnearnedIncome]
 
   implicit val reads = Reads.pure(None).map(UnearnedIncome(_))
 
-  def example(sourceId: Option[SourceId] = None) = UnearnedIncome(sourceId)
+  override def example(id : Option[SourceId]) = UnearnedIncome(id)
 }

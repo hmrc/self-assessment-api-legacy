@@ -19,11 +19,11 @@ package uk.gov.hmrc.selfassessmentapi.domain
 object SourceTypes {
   val SelfEmployments = selfemployment.SourceType.SelfEmployments
   val FurnishedHolidayLettings = furnishedholidaylettings.SourceType.FurnishedHolidayLettings
-  val UKProperty = ukproperty.SourceType.UKProperties
+  val UKProperties = ukproperty.SourceType.UKProperties
   val Employments = employment.SourceType.Employments
-  val UnearnedIncome = unearnedincome.SourceType.UnearnedIncomes
+  val UnearnedIncomes = unearnedincome.SourceType.UnearnedIncomes
 
-  val types = Seq(SelfEmployments, FurnishedHolidayLettings, UKProperty, Employments, UnearnedIncome)
+  val types = Seq(SelfEmployments, FurnishedHolidayLettings, UKProperties, Employments, UnearnedIncomes)
   private val typesByName = types.map(x => x.name -> x).toMap
   def fromName(name: String): Option[SourceType] = typesByName.get(name)
 }

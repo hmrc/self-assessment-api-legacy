@@ -16,21 +16,23 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
+import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment.EmploymentsSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.furnishedholidaylettings.FurnishedHolidayLettingsSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.selfemployment.SelfEmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty.UKPropertySourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome.UnearnedIncomeSourceHandler
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
+import uk.gov.hmrc.selfassessmentapi.domain.SourceType
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 
-trait SourceTypeSupport {
+trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.SourceTypeSupport {
 
   def sourceHandler(sourceType: SourceType): SourceHandler[_] = sourceType match {
-    case SourceTypes.SelfEmployments => SelfEmploymentSourceHandler
-    case SourceTypes.FurnishedHolidayLettings => FurnishedHolidayLettingsSourceHandler
-    case SourceTypes.UKProperty => UKPropertySourceHandler
-    case SourceTypes.Employments => EmploymentsSourceHandler
-    case SourceTypes.UnearnedIncome => UnearnedIncomeSourceHandler
+    case SelfEmployments => SelfEmploymentSourceHandler
+    case FurnishedHolidayLettings => FurnishedHolidayLettingsSourceHandler
+    case UKProperties => UKPropertySourceHandler
+    case Employments => EmploymentsSourceHandler
+    case UnearnedIncomes => UnearnedIncomeSourceHandler
   }
 
 }

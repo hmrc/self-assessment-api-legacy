@@ -17,15 +17,4 @@ class AuthorisationSpec extends BaseFunctionalSpec {
         .statusIs(401)
     }
   }
-
-  "if the user is authorised for the resource they" should {
-    "receive a 501 response for any live resource" in {
-      given()
-        .userIsAuthorisedForTheResource(saUtr)
-        .when()
-        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
-        .thenAssertThat()
-        .resourceIsNotImplemented()
-    }
-  }
 }

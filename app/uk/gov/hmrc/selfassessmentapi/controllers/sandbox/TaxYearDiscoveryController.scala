@@ -26,7 +26,7 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.VALUE_BELOW_MINIMUM
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties._
 import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.views.Helpers._
@@ -43,7 +43,7 @@ object TaxYearDiscoveryController extends BaseController with Links {
   private def taxYearValidationErrors(path: String, yearFromBody : LocalDate, yearFromUrl: String) = {
     val endOfTaxYear = new LocalDate(parseInt(yearFromUrl.split("-")(0)) + 1, 4, 5)
     if (yearFromBody.isAfter(endOfTaxYear)) {
-      Some(addValidationError(path, Some(VALUE_BELOW_MINIMUM),
+      Some(addValidationError(path, Some(BENEFIT_STOPPED_DATE_INVALID),
         s"The dateBenefitStopped must be before the end of the tax year: $yearFromUrl"))
     } else None
   }

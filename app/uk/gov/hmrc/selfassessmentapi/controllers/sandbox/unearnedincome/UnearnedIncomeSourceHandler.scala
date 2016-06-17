@@ -16,20 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
 
-import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UnearnedIncomes
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Benefits, Dividends, SavingsIncomes}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{UnearnedIncome, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
 
-object UnearnedIncomeSourceHandler extends SourceHandler[UnearnedIncome] {
-  override implicit val reads: Reads[UnearnedIncome] = UnearnedIncome.reads
-  override implicit val writes: Writes[UnearnedIncome] = UnearnedIncome.writes
-
-  override def example(id: SourceId) = UnearnedIncome.example(Some(id))
-
-  override val listName = SourceTypes.UnearnedIncome.name
-
+object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] =
     summaryType match {
       case SavingsIncomes => Some(SummaryHandler(SavingsIncomes.name, SavingsIncome))
@@ -37,4 +32,9 @@ object UnearnedIncomeSourceHandler extends SourceHandler[UnearnedIncome] {
       case Benefits => Some(SummaryHandler(Benefits.name, Benefit))
       case _ => None
     }
+
+  override val repository = new SandboxSourceRepository[UnearnedIncome] {
+    override implicit val writes = UnearnedIncome.writes
+    override def example(id: SourceId) = UnearnedIncome.example().copy(id = Some(id))
+  }
 }

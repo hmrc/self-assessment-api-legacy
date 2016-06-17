@@ -29,13 +29,13 @@ case class SelfEmployment(id: Option[SourceId] = None,
                           allowances: Option[Allowances] = None,
                           adjustments: Option[Adjustments] = None)
 
-object SelfEmployment {
+object SelfEmployment extends BaseDomain[SelfEmployment]{
 
-  implicit val selfEmploymentWrites = Json.writes[SelfEmployment]
+  implicit val writes = Json.writes[SelfEmployment]
 
   def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past", COMMENCEMENT_DATE_NOT_IN_THE_PAST))(_.isBefore(LocalDate.now()))
 
-  implicit val selfEmploymentReads: Reads[SelfEmployment] = (
+  implicit val reads: Reads[SelfEmployment] = (
     Reads.pure(None) and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
       (__ \ "allowances").readNullable[Allowances] and
@@ -43,8 +43,8 @@ object SelfEmployment {
     ) (SelfEmployment.apply _)
 
 
-  def example(sourceId: Option[SourceId] = None): SelfEmployment = SelfEmployment(
-    id = sourceId,
+  override def example(id: Option[String]) = SelfEmployment(
+    id,
     commencementDate = LocalDate.parse("2016-01-01"),
     allowances = Some(Allowances.example),
     adjustments = Some(Adjustments.example))

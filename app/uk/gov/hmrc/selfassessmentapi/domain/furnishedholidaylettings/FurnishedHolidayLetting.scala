@@ -34,7 +34,7 @@ case class FurnishedHolidayLetting(id: Option[SourceId] = None,
                                    adjustments: Option[Adjustments] = None)
 
 
-object FurnishedHolidayLetting {
+object FurnishedHolidayLetting extends BaseDomain[FurnishedHolidayLetting]{
 
   implicit val propertyLocationTypes = EnumJson.enumFormat(PropertyLocationType, Some("Furnished holiday lettings property location type is invalid"))
 
@@ -48,9 +48,8 @@ object FurnishedHolidayLetting {
     ) (FurnishedHolidayLetting.apply _)
 
 
-  def example(sourceId: Option[SourceId] = None) = FurnishedHolidayLetting(
-    sourceId,
-    PropertyLocationType.UK,
+  override def example(id: Option[SourceId]): FurnishedHolidayLetting = FurnishedHolidayLetting(
+    id, PropertyLocationType.UK,
     Some(Allowances(Some(BigDecimal(1000.00)))),
     Some(Adjustments(Some(BigDecimal(500.00)))))
 }

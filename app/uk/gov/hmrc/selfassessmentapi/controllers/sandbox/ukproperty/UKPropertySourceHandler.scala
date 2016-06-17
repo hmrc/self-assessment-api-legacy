@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty
 
-import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UKProperties
@@ -24,8 +23,6 @@ import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
-
-import scala.concurrent.Future
 
 object UKPropertySourceHandler extends SourceHandler(UKProperty, UKProperties.name) {
 
@@ -41,7 +38,7 @@ object UKPropertySourceHandler extends SourceHandler(UKProperty, UKProperties.na
   }
 
   override val repository = new SandboxSourceRepository[UKProperty] {
-    override def example(id: SourceId): UKProperty = UKProperty.example().copy(id = Some(id))
-    override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[UKProperty]] = ???
+    override implicit val writes = UKProperty.writes
+    override def example(id: SourceId) = UKProperty.example().copy(id = Some(id))
   }
 }

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
 
-import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UnearnedIncomes
@@ -24,8 +23,6 @@ import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Benefit
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{UnearnedIncome, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
-
-import scala.concurrent.Future
 
 object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] =
@@ -37,7 +34,7 @@ object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, Unearne
     }
 
   override val repository = new SandboxSourceRepository[UnearnedIncome] {
-    override def example(id: SourceId): UnearnedIncome = UnearnedIncome.example().copy(id = Some(id))
-    override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[UnearnedIncome]] = ???
+    override implicit val writes = UnearnedIncome.writes
+    override def example(id: SourceId) = UnearnedIncome.example().copy(id = Some(id))
   }
 }

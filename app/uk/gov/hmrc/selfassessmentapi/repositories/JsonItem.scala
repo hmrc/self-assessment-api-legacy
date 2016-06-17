@@ -16,22 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain._
+import play.api.libs.json.JsValue
+import uk.gov.hmrc.selfassessmentapi.domain.SourceId
 
-import scala.concurrent.Future
-
-trait SourceRepository[T] {
-
-  def create(saUtr: SaUtr, taxYear: TaxYear, source: T): Future[SourceId]
-
-  def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[T]]
-
-  def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, source: T): Future[Boolean]
-
-  def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean]
-
-  def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]]
-
-  def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]]
-}
+case class JsonItem(id: SourceId, json: JsValue)

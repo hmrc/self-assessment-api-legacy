@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment
 
-import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.Employments
@@ -24,8 +23,6 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.{Benefit, Employment, Expense, Income, UKTaxPaid}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
-
-import scala.concurrent.Future
 
 object EmploymentsSourceHandler extends SourceHandler(Employment, Employments.name) {
 
@@ -40,7 +37,7 @@ object EmploymentsSourceHandler extends SourceHandler(Employment, Employments.na
   }
 
   override val repository = new SandboxSourceRepository[Employment] {
-    override def example(id: SourceId): Employment = Employment.example().copy(id = Some(id))
-    override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[Employment]] = ???
+    override implicit val writes = Employment.writes
+    override def example(id: SourceId) = Employment.example().copy(id = Some(id))
   }
 }

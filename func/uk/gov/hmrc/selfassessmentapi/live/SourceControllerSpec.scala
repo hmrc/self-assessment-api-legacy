@@ -1,7 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import org.joda.time.LocalDate
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.JsValue
 import play.api.libs.json.Json.{parse, toJson}
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment

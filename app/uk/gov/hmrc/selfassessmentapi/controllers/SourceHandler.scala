@@ -22,7 +22,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.{JsonItem, SourceRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -48,9 +48,7 @@ abstract class SourceHandler[T](domain: BaseDomain[T], val listName: String) {
     repository.findById(saUtr, taxYear, sourceId).map(_.map(toJson(_)))
   }
 
-  def find(saUtr: SaUtr, taxYear: TaxYear) = repository.list(saUtr, taxYear)
-
-  def findIds(saUtr: SaUtr, taxYear: TaxYear) = repository.listIds(saUtr, taxYear)
+  def find(saUtr: SaUtr, taxYear: TaxYear) = repository.listAsJsonItem(saUtr, taxYear)
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = repository.delete(saUtr, taxYear,sourceId)
 

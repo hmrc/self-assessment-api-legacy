@@ -27,8 +27,9 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, SelfEmployment}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, TypedSourceSummaryRepository}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.{JsonItem, SourceRepository, TypedSourceSummaryRepository}
+import play.api.libs.json.Json.toJson
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -79,6 +80,8 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
   override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]] = {
     for (list <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield list.map(_.toSelfEmployment)
   }
+
+  override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]] = list(saUtr, taxYear).map(_.map(se => JsonItem(se.id.toString, toJson(se))))
 
   /*
     We need to perform updates manually as we are using one collection per source and it includes the arrays of summaries. This
@@ -144,5 +147,5 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
   override def listIncomes(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]] =
     listSummaries[Income](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.incomes.map(_.toIncome))
 
-  override def listIds(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SourceId]] = list(saUtr, taxYear).map(aa => (aa.map(aaa => aaa.id.get)))
+
 }

@@ -16,18 +16,34 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.sandbox
 
+import play.api.libs.json.Json.toJson
+import play.api.libs.json.Writes
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.{JsonItem, SourceRepository}
 
 import scala.concurrent.Future
 
 trait SandboxSourceRepository[T] extends SourceRepository[T] {
 
   def example(id: SourceId): T
+  implicit val writes: Writes[T]
 
-  def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]]
+  private def exampleJson(sourceId: SourceId) = toJson(example(sourceId))
+
+  def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]] = {
+    def createJsonItem(sourceId: SourceId) = JsonItem(sourceId, exampleJson(sourceId))
+    Future.successful(
+      Seq(
+        createJsonItem(generateId),
+        createJsonItem(generateId),
+        createJsonItem(generateId),
+        createJsonItem(generateId),
+        createJsonItem(generateId)
+      )
+    )
+  }
 
   private def generateId: String = BSONObjectID.generate.stringify
 
@@ -39,10 +55,16 @@ trait SandboxSourceRepository[T] extends SourceRepository[T] {
 
   override def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId) = Future.successful(true)
 
-  override def listIds(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SourceId]] = {
-    Future.successful(
-      Seq(generateId, generateId, generateId, generateId, generateId)
-    )
+  override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]] = {
+    Future.successful{
+      Seq(
+        example(generateId),
+        example(generateId),
+        example(generateId),
+        example(generateId),
+        example(generateId)
+      )
+    }
   }
 
 }

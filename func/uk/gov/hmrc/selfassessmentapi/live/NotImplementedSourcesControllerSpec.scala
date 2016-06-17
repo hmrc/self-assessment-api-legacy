@@ -18,7 +18,7 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
-          .post(s"/$saUtr/$taxYear/${source.name}", Some(source.example))
+          .post(s"/$saUtr/$taxYear/${source.name}", Some(source.example()))
           .thenAssertThat()
           .resourceIsNotImplemented()
       }
@@ -57,7 +57,7 @@ class NotImplementedSourcesControllerSpec extends BaseFunctionalSpec {
         given()
           .userIsAuthorisedForTheResource(saUtr)
           .when()
-          .put(s"/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example))
+          .put(s"/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example()))
           .thenAssertThat()
           .resourceIsNotImplemented()
       }

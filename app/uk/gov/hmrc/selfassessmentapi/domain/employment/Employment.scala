@@ -26,7 +26,7 @@ object Employment extends BaseDomain[Employment]{
 
   implicit val writes = Json.writes[Employment]
 
-  implicit val reads = (Reads.pure(None)).map(Employment(_))
+  implicit val reads = Reads.pure(None).map(Employment(_))
 
-  override def example(id : Option[SourceId]) = Employment()
+  override def example(id : Option[SourceId]) = Employment(id)
 }

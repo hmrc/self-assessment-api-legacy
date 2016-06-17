@@ -43,8 +43,8 @@ object UKProperty extends BaseDomain[UKProperty] {
     ) (UKProperty.apply _)
 
 
-  override def example(id: Option[SourceId]) = UKProperty(
-    None,
+  def example(id: Option[SourceId]): UKProperty = UKProperty(
+    id,
     Some(Allowances(Some(BigDecimal(1000.00)), Some(BigDecimal(600.00)), Some(BigDecimal(50.00)), Some(BigDecimal(3399.99)))),
     Some(Adjustments(Some(BigDecimal(250.00)))),
     Some(BigDecimal(7500.00)))

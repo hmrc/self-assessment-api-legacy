@@ -25,7 +25,7 @@ object SourceType {
 
   case object UKProperties extends SourceType {
     override val name = "uk-properties"
-    override lazy val example: JsValue = toJson(UKProperty.example())
+    override def example(sourceId: Option[SourceId] = None): JsValue = toJson(UKProperty.example(sourceId))
     override val summaryTypes: Seq[SummaryType] = Seq(Incomes, Expenses, TaxesPaid, BalancingCharges, PrivateUseAdjustments)
     override val title = "Sample UK property"
 

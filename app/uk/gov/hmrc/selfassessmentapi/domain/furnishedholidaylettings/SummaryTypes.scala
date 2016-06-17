@@ -24,7 +24,7 @@ object SummaryTypes {
 
   case object Incomes extends SummaryType {
     override val name = "incomes"
-    override lazy val example: JsValue = toJson(Income.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(Income.example(id))
     override val title = "Sample furnished holiday lettings income"
     override def description(action: String) = s"$action a furnished holiday lettings income summary for the specified source"
     override val fieldDescriptions = Seq(
@@ -34,7 +34,7 @@ object SummaryTypes {
 
   case object Expenses extends SummaryType {
     override val name = "expenses"
-    override lazy val example: JsValue = toJson(Expense.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(Expense.example(id))
     override val title = "Sample expenses"
     override def description(action: String) = s"$action an expense for the specified source"
     override val fieldDescriptions = Seq(
@@ -45,7 +45,7 @@ object SummaryTypes {
 
   case object PrivateUseAdjustments extends SummaryType {
     override val name = "private-use-adjustments"
-    override lazy val example: JsValue = toJson(PrivateUseAdjustment.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(PrivateUseAdjustment.example(id))
     override val title = "Sample furnished holiday lettings private use adjustment"
     override def description(action: String) = s"$action a private use adjustment summary for the specified source"
     override val fieldDescriptions = Seq(
@@ -55,7 +55,7 @@ object SummaryTypes {
 
   case object BalancingCharges extends SummaryType {
     override val name = "balancing-charges"
-    override lazy val example: JsValue = toJson(BalancingCharge.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(BalancingCharge.example(id))
     override val title = "Sample furnished holiday lettings balancing charge"
     override def description(action: String) = s"$action a furnished holiday lettings balancing charge summary for the specified source"
     override val fieldDescriptions = Seq(

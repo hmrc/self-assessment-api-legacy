@@ -59,7 +59,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   override def find(saUtr: SaUtr, taxYear: TaxYear): Action[AnyContent] = Action.async { request =>
     val result= Seq(createLiability("1234"), createLiability("4321"), createLiability("7777"))
     val liabilities = toJson(
-      result.map(liability => halResource(obj(), Seq(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
+      result.map(liability => halResource(Json.toJson(liability), Seq(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
     )
     Future.successful(Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr, taxYear))))
   }

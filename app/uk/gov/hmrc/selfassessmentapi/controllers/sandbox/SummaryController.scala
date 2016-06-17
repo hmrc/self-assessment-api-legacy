@@ -88,9 +88,9 @@ object SummaryController extends BaseController with Links with SourceTypeSuppor
 
   def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = FeatureSwitchAction(sourceType, summaryTypeName).async { implicit request =>
     val svc = handler(sourceType, summaryTypeName)
-    svc.find map { summaryIds =>
-      val json = toJson(summaryIds.map(id => halResource(obj(),
-        Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id))))))
+    svc.find map { summaries =>
+      val json = toJson(summaries.map(summary => halResource(summary.json,
+        Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summary.id))))))
 
       Ok(halResourceList(svc.listName, json, sourceTypeAndSummaryTypeHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName)))
     }

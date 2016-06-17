@@ -23,7 +23,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
           "employments" -> Map("enabled" -> true),
           "self-employments" -> Map("enabled" -> false),
           "furnished-holiday-lettings" -> Map("enabled" -> false),
-          "uk-properties" -> Map("enabled" -> false, "expenses" -> Map("enabled" -> true))
+          "uk-properties" -> Map("enabled" -> true, "expenses" -> Map("enabled" -> false))
         )
       )
     ))
@@ -83,28 +83,28 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
             given()
               .userIsAuthorisedForTheResource(saUtr)
               .when()
-              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses", Some(Expenses.example))
+              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses", Some(Expenses.example()))
               .thenAssertThat()
               .statusIs(statusCode(status, "POST"))
 
             given()
               .userIsAuthorisedForTheResource(saUtr)
               .when()
-              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses/$summaryId", Some(Expenses.example))
+              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId/expenses/$summaryId", Some(Expenses.example()))
               .thenAssertThat()
               .statusIs(statusCode(status, "PUT"))
 
             given()
               .userIsAuthorisedForTheResource(saUtr)
               .when()
-              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}", Some(source.example))
+              .post(s"${mode.url}/$saUtr/$taxYear/${source.name}", Some(source.example()))
               .thenAssertThat()
               .statusIs(statusCode(status, "POST"))
 
             given()
               .userIsAuthorisedForTheResource(saUtr)
               .when()
-              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example))
+              .put(s"${mode.url}/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example()))
               .thenAssertThat()
               .statusIs(statusCode(status, "PUT"))
           }
@@ -113,38 +113,38 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
   }
 
   "only expenses resources for uk-properties" should {
-    "be visible" in {
+    "be disabled" in {
       when()
         .get(s"/sandbox/$saUtr/$taxYear/uk-properties")
         .thenAssertThat()
-        .statusIs(404)
+        .statusIs(200)
 
       when()
         .get(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId")
         .thenAssertThat()
-        .statusIs(404)
+        .statusIs(200)
 
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/sandbox/$saUtr/$taxYear/uk-properties", Some(UKProperties.example))
+        .post(s"/sandbox/$saUtr/$taxYear/uk-properties", Some(UKProperties.example()))
         .thenAssertThat()
-        .statusIs(404)
+        .statusIs(201)
 
       when()
         .get(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses")
         .thenAssertThat()
-        .statusIs(200)
+        .statusIs(404)
 
       when()
         .get(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses/$summaryId")
         .thenAssertThat()
-        .statusIs(200)
+        .statusIs(404)
 
       when()
-        .put(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses/$summaryId", Some(ukproperty.SummaryTypes.Expenses.example))
+        .put(s"/sandbox/$saUtr/$taxYear/uk-properties/$sourceId/expenses/$summaryId", Some(ukproperty.SummaryTypes.Expenses.example()))
         .thenAssertThat()
-        .statusIs(200)
+        .statusIs(404)
     }
   }
 

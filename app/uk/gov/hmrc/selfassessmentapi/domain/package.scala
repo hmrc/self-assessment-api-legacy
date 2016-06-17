@@ -38,7 +38,7 @@ package object domain {
   def amountValidator(fieldName: String) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be a number up to 2 decimal values",
     INVALID_MONETARY_AMOUNT))(x => x.scale < 3)
 
-  def maxAmountValidator(fieldName: String, maxAmount: BigDecimal) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName should be less or equal than $maxAmount",
+  def maxAmountValidator(fieldName: String, maxAmount: BigDecimal) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName cannot be greater than $maxAmount",
     MAX_MONETARY_AMOUNT))(_ <= maxAmount)
 
 }

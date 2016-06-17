@@ -17,7 +17,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       SourceTypes.types.foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
           when()
-            .post(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}", Some(summaryType.example))
+            .post(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}", Some(summaryType.example()))
             .thenAssertThat()
             .statusIs(201)
             .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/.+".r)
@@ -83,7 +83,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       SourceTypes.types.foreach { sourceType =>
         sourceType.summaryTypes.foreach { summaryType =>
           when()
-            .put(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId", Some(summaryType.example))
+            .put(s"/sandbox/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId", Some(summaryType.example()))
             .thenAssertThat()
             .statusIs(200)
             .contentTypeIsHalJson()

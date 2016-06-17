@@ -26,7 +26,7 @@ object UnearnedIncome extends BaseDomain[UnearnedIncome] {
 
   implicit val writes = Json.writes[UnearnedIncome]
 
-  implicit val reads = (Reads.pure(None)).map(UnearnedIncome(_))
+  implicit val reads = Reads.pure(None).map(UnearnedIncome(_))
 
-  override def example(id : Option[SourceId]) = UnearnedIncome()
+  override def example(id : Option[SourceId]) = UnearnedIncome(id)
 }

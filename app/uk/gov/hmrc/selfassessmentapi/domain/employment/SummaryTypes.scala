@@ -24,7 +24,7 @@ object SummaryTypes {
 
   case object Incomes extends SummaryType {
     override val name = "incomes"
-    override lazy val example: JsValue = toJson(Income.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(Income.example(id))
     override val title = "Sample Employments incomes"
     override def description(action: String) = s"$action an income for the specified source"
     override val fieldDescriptions = Seq(
@@ -35,7 +35,7 @@ object SummaryTypes {
 
   case object Benefits extends SummaryType {
     override val name = "benefits"
-    override lazy val example: JsValue = toJson(Benefit.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(Benefit.example(id))
     override val title = "Sample employment benefits"
     override def description(action: String) = s"$action a benefit for the specified source"
     override val fieldDescriptions = Seq(
@@ -46,7 +46,7 @@ object SummaryTypes {
 
   case object Expenses extends SummaryType {
     override val name = "expenses"
-    override lazy val example: JsValue = toJson(Expense.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(Expense.example(id))
     override val title = "Sample Employments expenses"
     override def description(action: String) = s"$action an expense for the specified source"
     override val fieldDescriptions = Seq(
@@ -57,7 +57,7 @@ object SummaryTypes {
 
   case object UKTaxesPaid extends SummaryType {
     override val name = "uk-taxes-paid"
-    override lazy val example: JsValue = toJson(UKTaxPaid.example())
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(UKTaxPaid.example(id))
     override val title = "Sample UK Taxes paid"
     override def description(action: String) = s"$action an UK Tax paid for the specified source"
     override val fieldDescriptions = Seq(

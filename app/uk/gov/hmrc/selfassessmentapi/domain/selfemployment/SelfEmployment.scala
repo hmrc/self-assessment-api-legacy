@@ -44,7 +44,7 @@ object SelfEmployment extends BaseDomain[SelfEmployment]{
 
 
   override def example(id: Option[String]) = SelfEmployment(
-    id = None,
+    id,
     commencementDate = LocalDate.parse("2016-01-01"),
     allowances = Some(Allowances.example),
     adjustments = Some(Adjustments.example))

@@ -49,7 +49,7 @@ object FurnishedHolidayLetting extends BaseDomain[FurnishedHolidayLetting]{
 
 
   override def example(id: Option[SourceId]): FurnishedHolidayLetting = FurnishedHolidayLetting(
-    None, PropertyLocationType.UK,
+    id, PropertyLocationType.UK,
     Some(Allowances(Some(BigDecimal(1000.00)))),
     Some(Adjustments(Some(BigDecimal(500.00)))))
 }

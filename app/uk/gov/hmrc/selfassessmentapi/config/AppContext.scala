@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.config
 
-import com.typesafe.config.ConfigObject
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.selfassessmentapi.domain.SourceType
 
 object AppContext extends ServicesConfig {
   lazy val appName = current.configuration.getString("appName").getOrElse(throw new RuntimeException("appName is not configured"))
@@ -31,6 +29,7 @@ object AppContext extends ServicesConfig {
   lazy val desUrl: String = baseUrl("des")
   lazy val registrationEnabled: Boolean = current.configuration.getBoolean(s"$env.microservice.services.service-locator.enabled").getOrElse(true)
   lazy val featureSwitch = current.configuration.getObject(s"$env.feature-switch")
+  lazy val deleteExpiredDataJob = current.configuration.getConfig(s"$env.scheduling.deleteExpiredDataJob").getOrElse(throw new RuntimeException(s"$env.scheduling.deleteExpiredDataJob is not configured"))
 
   val supportedTaxYears: Seq[String] = Seq("2016-17")
 }

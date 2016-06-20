@@ -229,8 +229,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
       val found1 = await(mongoRepository.findById(BSONObjectID(sourceId)))
 
-      found1.get.lastModifiedDateTime.isAfter(found.get.lastModifiedDateTime) shouldBe true
-
+      // Added the equals clauses as it was failing locally once, can fail if the test runs faster and has the same time for create and update
+      found1.get.lastModifiedDateTime.isEqual(found.get.lastModifiedDateTime) || found1.get.lastModifiedDateTime.isAfter(found.get.lastModifiedDateTime) shouldBe true
     }
   }
 

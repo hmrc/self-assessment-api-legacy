@@ -16,16 +16,37 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.DateTime
 import play.api.libs.json._
+import reactivemongo.bson.{BSON, BSONHandler, BSONString}
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
 
-case class MongoJobHistory(jobNumber: Int, status: String, startedAt: DateTime = DateTime.now,
+object MongoJobStatus extends Enumeration {
+  type MongoJobStatus = Value
+
+  val InProgress = Value("InProgress")
+  val Success = Value("Success")
+  val Failed = Value("Failed")
+
+  implicit val jobStatus = EnumJson.enumFormat(MongoJobStatus, Some("Job Status is invalid"))
+
+  implicit object BSONEnumHandler extends BSONHandler[BSONString, MongoJobStatus] {
+    def read(doc: BSONString) = MongoJobStatus.Value(doc.value)
+
+    def write(stats: MongoJobStatus) = BSON.write(stats.toString)
+  }
+
+}
+
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
+
+case class MongoJobHistory(jobNumber: Int, status: MongoJobStatus, startedAt: DateTime = DateTime.now,
                            finishedAt: Option[DateTime] = None, recordsDeleted: Int = 0) {
-  val hasFailed = status == "Failed"
-  val isInProgress  = status == "InProgress"
-  val hasFinished = status == "Success"
+  val isInProgress = status == InProgress
+  val hasFailed = status == Failed
+  val hasFinished = status == Success
 }
 
 object MongoJobHistory {

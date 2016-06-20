@@ -33,9 +33,10 @@ import uk.gov.hmrc.play.config.{AppName, RunMode}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
+import uk.gov.hmrc.play.scheduling._
 import uk.gov.hmrc.selfassessmentapi.controllers.live.NotImplementedSourcesController._
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.UnknownSummaryException
+import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
 
 import scala.concurrent.Future
 import scala.util.matching.Regex
@@ -115,7 +116,8 @@ trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLo
   override implicit val hc: HeaderCarrier = HeaderCarrier()
 }
 
-object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceRegistration with RunMode {
+object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceRegistration  with RunMode with RunningOfScheduledJobs {
+
   override val auditConnector = MicroserviceAuditConnector
 
   override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig(s"microservice.metrics")
@@ -127,6 +129,8 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
   override val authFilter = Some(MicroserviceAuthFilter)
 
   override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter) ++ defaultMicroserviceFilters
+
+  override val scheduledJobs: Seq[ScheduledJob] = Seq(DeleteExpiredDataJob)
 
   override def onError(request : RequestHeader, ex: Throwable) = {
     ex.getCause match {

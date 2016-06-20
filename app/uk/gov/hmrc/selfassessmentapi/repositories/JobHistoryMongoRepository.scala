@@ -17,13 +17,14 @@
 package uk.gov.hmrc.selfassessmentapi.repositories
 
 import _root_.reactivemongo.api.DB
-import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobHistory
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,7 +37,7 @@ object JobHistoryRepository extends MongoDbConnection {
 
 class JobHistoryMongoRepository(implicit mongo: () => DB)
   extends ReactiveRepository[MongoJobHistory, BSONObjectID](
-  collectionName = "jobHistory", mongo = mongo, domainFormat = MongoJobHistory.mongoFormats){
+  collectionName = "job-history", mongo = mongo, domainFormat = MongoJobHistory.mongoFormats){
 
 
   override def indexes: Seq[Index] = {
@@ -48,7 +49,7 @@ class JobHistoryMongoRepository(implicit mongo: () => DB)
       case Some(latestJob) if latestJob.isInProgress => throw JobAlreadyInProgressException()
       case latestJob =>
         val nextJobNumber = latestJob.map(_.jobNumber + 1).getOrElse(1)
-        val mongoJobHistory = MongoJobHistory(nextJobNumber, "InProgress")
+        val mongoJobHistory = MongoJobHistory(nextJobNumber, InProgress)
         insert(mongoJobHistory).map {
           case result if result.n == 0 => throw CannotStartJobException(result.getCause)
           case _ => mongoJobHistory
@@ -60,14 +61,14 @@ class JobHistoryMongoRepository(implicit mongo: () => DB)
       .update(Json.obj("jobNumber" -> jobNumber), Json.obj("$inc" -> Json.obj("recordsDeleted" -> recordsDeleted)))
       .map(writeResult => if (writeResult.n == 0) throw JobNotFoundException(jobNumber))
 
-  def completeJob(jobNumber: Int): Future[Unit] =
+  def completeJob(jobNumber: Int, recordsDeleted: Int): Future[Unit] =
     collection
-      .update(Json.obj("jobNumber" -> jobNumber), Json.obj("$set" -> Json.obj("status" -> "Success", "finishedAt" -> DateTime.now.getMillis)))
+      .update(Json.obj("jobNumber" -> jobNumber), Json.obj("$set" -> Json.obj("status" ->  Success, "finishedAt" -> DateTime.now, "recordsDeleted" -> recordsDeleted)))
       .map(writeResult => if (writeResult.n == 0) throw new JobNotFoundException(jobNumber))
 
   def abortJob(jobNumber: Int): Future[Unit] = {
     collection
-      .update(Json.obj("jobNumber" -> jobNumber), Json.obj("$set" -> Json.obj("status" -> "Failed", "finishedAt" -> DateTime.now)))
+      .update(Json.obj("jobNumber" -> jobNumber), Json.obj("$set" -> Json.obj("status" -> Failed, "finishedAt" -> DateTime.now)))
       .map(writeResult => if (writeResult.n == 0) throw new JobNotFoundException(jobNumber))
   }
 

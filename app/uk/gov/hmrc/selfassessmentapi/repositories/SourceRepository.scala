@@ -31,6 +31,8 @@ trait SourceRepository[T] {
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean]
 
+  def delete(saUtr: SaUtr, taxYear: TaxYear): Future[Boolean]
+
   def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]]
 
   def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]]

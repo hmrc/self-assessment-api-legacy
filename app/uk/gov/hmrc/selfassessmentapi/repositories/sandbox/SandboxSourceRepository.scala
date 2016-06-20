@@ -55,6 +55,8 @@ trait SandboxSourceRepository[T] extends SourceRepository[T] {
 
   override def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId) = Future.successful(true)
 
+  override def delete(saUtr: SaUtr, taxYear: TaxYear) = Future.successful(true)
+
   override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]] = {
     Future.successful{
       Seq(

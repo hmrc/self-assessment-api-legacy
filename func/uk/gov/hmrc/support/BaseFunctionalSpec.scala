@@ -10,7 +10,7 @@ import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.{JsObject, JsValue, Reads}
+import play.api.libs.json.{JsArray, JsObject, JsValue, Reads}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
@@ -88,8 +88,10 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     }
 
     def bodyIs(expectedBody: JsValue) = {
-      val body = response.json.as[JsObject] - "_links" - "id"
-      body shouldEqual expectedBody
+      (response.json match {
+        case JsArray(value) => response.json.as[JsArray]
+        case JsObject(fields) => response.json.as[JsObject]  - "_links" - "id"
+      }) shouldEqual expectedBody
       this
     }
 

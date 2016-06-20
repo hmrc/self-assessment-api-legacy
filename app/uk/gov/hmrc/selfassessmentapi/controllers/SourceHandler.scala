@@ -22,13 +22,13 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.{JsonItem, SourceRepository}
+import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class SourceHandler[T](domain: BaseDomain[T], val listName: String) {
 
-  val repository : SourceRepository[T]
+  val repository: SourceRepository[T]
   implicit val reads = domain.reads
   implicit val writes = domain.writes
 
@@ -50,7 +50,7 @@ abstract class SourceHandler[T](domain: BaseDomain[T], val listName: String) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear) = repository.listAsJsonItem(saUtr, taxYear)
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = repository.delete(saUtr, taxYear,sourceId)
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = repository.delete(saUtr, taxYear, sourceId)
 
   def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]]
 }

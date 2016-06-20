@@ -47,34 +47,33 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
 
   def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async { implicit request =>
     sourceHandler(sourceType).findById(saUtr, taxYear, sourceId) map {
-      case Some(summary) =>
-        Ok(halResource(toJson(summary), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
-      case None =>
-        NotFound
+      case Some(summary) => Ok(halResource(toJson(summary), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
+      case None => NotFound
     }
   }
 
   def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async(parse.json) { implicit request =>
-    Future.successful {
       sourceHandler(sourceType).update(saUtr, taxYear, sourceId, request.body) match {
         case Left(errorResult) =>
-          errorResult match {
-            case ErrorResult(Some(message), _) => BadRequest(message)
-            case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
-            case _ => BadRequest
-          }
-        case Right(id) => Ok(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
+          Future.successful {
+            errorResult match {
+              case ErrorResult(Some(message), _) => BadRequest(message)
+              case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
+              case _ => BadRequest
+            }
+        }
+        case Right(id) => id.map {
+          case true => Ok(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
+          case false => NotFound
+        }
       }
-    }
   }
 
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async { implicit request =>
     sourceHandler(sourceType).delete(saUtr, taxYear, sourceId) map {
-      case true =>
-        NoContent
-      case false =>
-        NotFound
+      case true => NoContent
+      case false => NotFound
     }
   }
 

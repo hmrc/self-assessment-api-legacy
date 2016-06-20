@@ -16,32 +16,18 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
           | 		"employerScheme": 12000.05,
           | 		"overseasPension": 1234.43
           | 	},
-          | 	"charitableGivings": {
-          | 		"giftAidPayments": {
-          | 			"countryCode": "GBR",
-          | 			"amount": 100000
-          | 		},
-          | 		"oneOffGiftAidPayments": {
-          | 			"countryCode": "USA",
-          | 			"amount": 5000.0
-          | 		},
-          | 		"sharesSecurities": {
-          | 			"countryCode": "CAN",
-          | 			"amount": 53000.0
-          |	  	},
-          |	  	"landProperties": {
-          |	  		"countryCode": "RUS",
-          |	  		"amount": 1000000.0
-          |	  	},
-          |	  	"giftAidPaymentsCarriedBackToPreviousYear": {
-          | 			"countryCode": "AUS",
-          | 			"amount": 2000.0
-          | 		},
-          | 		"giftAidPaymentsCarriedForwardToNextYear": {
-          | 			"countryCode": "NZL",
-          | 			"amount": 50000.0
-          | 		}
-          | 	},
+          |   "charitableGivings": {
+          |     "giftAidPayments": {
+          |       "totalInTaxYear": 10000.0,
+          |       "oneOff": 5000.0,
+          |       "toNonUkCharities": 1000.0,
+          |       "carriedBackToPreviousTaxYear": 1000.0,
+          |       "carriedFromNextTaxYear": 2000.0
+          |     },
+          |     "sharesSecurities": 5000.0,
+          |     "landProperties": 100.0,
+          |     "qualifyingInvestmentsToNonUkCharities": 200.0
+          |   },
           | 	"blindPerson": {
           | 		"country": "Wales",
           | 		"registrationAuthority": "Registrar",
@@ -86,13 +72,13 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            |  }
            | }
         """.stripMargin)
-      when().put(s"/sandbox/$saUtr/$taxYear", Some(payload))
-        .thenAssertThat()
+      when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+      .thenAssertThat()
         .statusIs(400)
         .bodyHasPath("""(0) \ code """, "VALUE_BELOW_MINIMUM")
         .bodyHasPath("""(0) \ path """, "/taxYearProperties/childBenefit/dateBenefitStopped")
     }
-
   }
 
   "if the tax year is invalid for a sandbox request, they" should {

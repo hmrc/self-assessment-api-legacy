@@ -16,25 +16,23 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.charitablegiving
 
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.domain.CountryCodes._
-import uk.gov.hmrc.selfassessmentapi.domain.{CountryAndAmount, ObjectFieldDescription, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.domain.{ObjectFieldDescription, PositiveMonetaryFieldDescription, TaxYearPropertyType}
 
 case object CharitableGivings extends TaxYearPropertyType {
-  override val name: String = "charitableGivings"
-  override val example: JsValue = toJson(CharitableGiving.example())
+
+  override val name = "charitableGivings"
+
+  override val title = "Sample charitable givings"
+
+  override val example = toJson(CharitableGiving.example())
 
   override def description(action: String): String = s"$action a charitableGivings"
 
-  override val title: String = "Sample charitable givings"
-
   override val fieldDescriptions = Seq(
-    ObjectFieldDescription(name, "giftAidPayments", toJson(CountryAndAmount(GBR, 100000)), optional = true),
-    ObjectFieldDescription(name, "oneOffGiftAidPayments", toJson(CountryAndAmount(GBR, 5000)), optional = true),
-    ObjectFieldDescription(name, "sharesSecurities", toJson(CountryAndAmount(GBR, 5000)), optional = true),
-    ObjectFieldDescription(name, "landProperties", toJson(CountryAndAmount(GBR, 1000000)), optional = true),
-    ObjectFieldDescription(name, "giftAidPaymentsCarriedBackToPreviousYear", toJson(CountryAndAmount(GBR, 1000)), optional = true),
-    ObjectFieldDescription(name, "giftAidPaymentsCarriedForwardToNextYear", toJson(CountryAndAmount(USA, 50000.00)), optional = true)
+    ObjectFieldDescription(name, "giftAidPayments", toJson(GiftAidPayments.example()), optional = true),
+    PositiveMonetaryFieldDescription(name, "sharesSecurities", optional = true),
+    PositiveMonetaryFieldDescription(name, "landProperties", optional = true),
+    PositiveMonetaryFieldDescription(name, "qualifyingInvestmentsToNonUkCharities", optional = true)
   )
 }

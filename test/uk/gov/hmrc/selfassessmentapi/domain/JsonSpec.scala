@@ -36,6 +36,10 @@ trait JsonSpec extends UnitSpec {
     )
   }
 
+  def assertValidationError[T](o: T, expectedErrors: Map[String, ErrorCode])(implicit format: Format[T]): Unit = {
+    assertValidationError(o, expectedErrors, s"Validation errors expected for fields: ${expectedErrors.toSeq}, but no validation errors were returned")
+  }
+
   def assertValidationError[T](o: T, expectedErrors: Map[String, ErrorCode], failureMessage: String)(implicit format: Format[T]): Unit = {
     val json = Json.toJson(o)(format)
     assertValidationError[T](json, expectedErrors, failureMessage)

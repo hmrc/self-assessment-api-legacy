@@ -56,10 +56,10 @@ class BlindPersonSpec extends JsonSpec {
         Map("" -> MISSING_REGISTRATION_AUTHORITY), "Expected no registration authority to be provided when the country is England or Wales")
     }
 
-    "reject blind person allowance when wantSpouseToUseSurplusAllowance is true and spouseSurplusAllowance is not provided" in {
+    "reject blind person allowance when country is England or Wales and registration authority is provided but empty" in {
       assertValidationError[BlindPerson](
-        BlindPerson(country = England, registrationAuthority = Some("Registrar"), spouseSurplusAllowance = None, wantSpouseToUseSurplusAllowance = true),
-        Map("" -> MISSING_SPOUSE_SURPLUS_ALLOWANCE), "Expected no spouseSurplusAllowance to be provided when wantSpouseToUseSurplusAllowance is true")
+        BlindPerson(country = England, registrationAuthority = Some(""), spouseSurplusAllowance = Some(2000.00), wantSpouseToUseSurplusAllowance = true),
+        Map("" -> MISSING_REGISTRATION_AUTHORITY), "Expected an empty registration authority to be provided when the country is England or Wales")
     }
   }
 

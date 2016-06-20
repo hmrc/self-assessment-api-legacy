@@ -42,15 +42,9 @@ object BlindPerson extends BaseDomain[BlindPerson] {
     ) (BlindPerson.apply _).filter(ValidationError("If the country is England or Wales, registrationAuthority is mandatory", MISSING_REGISTRATION_AUTHORITY)) {
     blindPerson =>
       if (blindPerson.country == England || blindPerson.country == Wales)
-        blindPerson.registrationAuthority.isDefined
-      else true
-  }.filter(ValidationError("If wantSpouseToUseSurplusAllowance is true then spouseSurplusAllowance is mandatory", MISSING_SPOUSE_SURPLUS_ALLOWANCE)) {
-    blindPerson =>
-      if (blindPerson.wantSpouseToUseSurplusAllowance == true)
-        blindPerson.spouseSurplusAllowance.isDefined
+        blindPerson.registrationAuthority.isDefined && !blindPerson.registrationAuthority.get.isEmpty
       else true
   }
-
 
   override def example(id: Option[String] = None) =
     BlindPerson(

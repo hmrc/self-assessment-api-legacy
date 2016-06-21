@@ -20,70 +20,78 @@ import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.domain.CountryCodes._
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, CountryAndAmount}
+import uk.gov.hmrc.selfassessmentapi.domain._
 
-case class CharitableGiving(
-                             giftAidPayments: Option[CountryAndAmount] = None,
-                             oneOffGiftAidPayments: Option[CountryAndAmount] = None,
-                             sharesSecurities: Option[CountryAndAmount] = None,
-                             landProperties: Option[CountryAndAmount] = None,
-                             giftAidPaymentsCarriedBackToPreviousYear: Option[CountryAndAmount] = None,
-                             giftAidPaymentsCarriedForwardToNextYear: Option[CountryAndAmount] = None)
+case class GiftAidPayments( totalInTaxYear: Option[BigDecimal] = None,
+                            oneOff: Option[BigDecimal] = None,
+                            toNonUkCharities: Option[BigDecimal] = None,
+                            carriedBackToPreviousTaxYear: Option[BigDecimal] = None,
+                            carriedFromNextTaxYear: Option[BigDecimal] = None)
+
+object GiftAidPayments extends BaseDomain[GiftAidPayments] {
+
+  override implicit val writes = Json.writes[GiftAidPayments]
+
+  override implicit val reads = (
+      (__ \ "totalInTaxYear").readNullable[BigDecimal](positiveAmountValidator("totalInTaxYear")) and
+      (__ \ "oneOff").readNullable[BigDecimal](positiveAmountValidator("oneOff")) and
+      (__ \ "toNonUkCharities").readNullable[BigDecimal](positiveAmountValidator("toNonUkCharities")) and
+      (__ \ "carriedBackToPreviousTaxYear").readNullable[BigDecimal](positiveAmountValidator("carriedBackToPreviousTaxYear")) and
+      (__ \ "carriedFromNextTaxYear").readNullable[BigDecimal](positiveAmountValidator("carriedFromNextTaxYear"))
+    ) (GiftAidPayments.apply _)
+    .filter(
+      ValidationError("totalInTaxYear must be defined if oneOff or toNonUkCharities or carriedBackToPreviousTaxYear is defined", UNDEFINED_REQUIRED_ELEMENT)
+    ) { p =>
+      p.totalInTaxYear.isDefined || (p.oneOff.isEmpty && p.toNonUkCharities.isEmpty && p.carriedBackToPreviousTaxYear.isEmpty)
+    }
+    .filter(
+      ValidationError("totalInTaxYear must be greater or equal to oneOff", MAXIMUM_AMOUNT_EXCEEDED)
+    ) { p =>
+      p.totalInTaxYear.getOrElse(BigDecimal(0)) >= p.oneOff.getOrElse(BigDecimal(0))
+    }
+    .filter(
+      ValidationError("totalInTaxYear must be greater or equal to toNonUkCharities", MAXIMUM_AMOUNT_EXCEEDED)
+    ) { p =>
+      p.totalInTaxYear.getOrElse(BigDecimal(0)) >= p.toNonUkCharities.getOrElse(BigDecimal(0))
+    }
+    .filter(
+      ValidationError("totalInTaxYear must be greater or equal to carriedBackToPreviousTaxYear", MAXIMUM_AMOUNT_EXCEEDED)
+    ) { p =>
+      p.totalInTaxYear.getOrElse(BigDecimal(0)) >= p.carriedBackToPreviousTaxYear.getOrElse(BigDecimal(0))
+    }
+
+  override def example(id: Option[String] = None) =
+    GiftAidPayments(
+      totalInTaxYear = Some(10000),
+      oneOff = Some(5000),
+      toNonUkCharities = Some(1000),
+      carriedBackToPreviousTaxYear = Some(1000),
+      carriedFromNextTaxYear = Some(2000)
+    )
+}
+
+case class CharitableGiving( giftAidPayments: Option[GiftAidPayments] = None,
+                             sharesSecurities: Option[BigDecimal] = None,
+                             landProperties: Option[BigDecimal] = None,
+                             qualifyingInvestmentsToNonUkCharities: Option[BigDecimal] = None)
 
 object CharitableGiving extends BaseDomain[CharitableGiving] {
-
-  private val NoCountryZeroAmount = CountryAndAmount(ZZZ, 0)
 
   override implicit val writes = Json.writes[CharitableGiving]
 
   override implicit val reads = (
-    (__ \ "giftAidPayments").readNullable[CountryAndAmount] and
-      (__ \ "oneOffGiftAidPayments").readNullable[CountryAndAmount] and
-      (__ \ "sharesSecurities").readNullable[CountryAndAmount] and
-      (__ \ "landProperties").readNullable[CountryAndAmount] and
-      (__ \ "giftAidPaymentsCarriedBackToPreviousYear")
-        .readNullable[CountryAndAmount] and
-      (__ \ "giftAidPaymentsCarriedForwardToNextYear")
-        .readNullable[CountryAndAmount]
+      (__ \ "giftAidPayments").readNullable[GiftAidPayments] and
+      (__ \ "sharesSecurities").readNullable[BigDecimal](positiveAmountValidator("sharesSecurities")) and
+      (__ \ "landProperties").readNullable[BigDecimal](positiveAmountValidator("landProperties")) and
+      (__ \ "qualifyingInvestmentsToNonUkCharities").readNullable[BigDecimal](positiveAmountValidator("qualifyingInvestmentsToNonUkCharities"))
     ) (CharitableGiving.apply _)
-    .filter(ValidationError(
-      "giftAidPayments must be defined if " +
-        "oneOffGiftAidPayments or giftAidPaymentsCarriedBackToPreviousYear or giftAidPaymentsCarriedForwardToNextYear " +
-        "is defined",
-      UNDEFINED_REQUIRED_ELEMENT)
-    ) { donations =>
-      donations.giftAidPayments.isDefined &&
-        (donations.oneOffGiftAidPayments.isDefined ||
-          donations.giftAidPaymentsCarriedBackToPreviousYear.isDefined ||
-          donations.giftAidPaymentsCarriedForwardToNextYear.isDefined)
-    }
-    .filter(ValidationError(
-      "giftAidPayments must be greater than oneOffGiftAidPayments",
-      MAXIMUM_AMOUNT_EXCEEDED)) { donations =>
-      val totalPayments = donations.giftAidPayments
-      val oneOffPayments = donations.oneOffGiftAidPayments
-      totalPayments.getOrElse(NoCountryZeroAmount).amount >= oneOffPayments
-        .getOrElse(NoCountryZeroAmount)
-        .amount
-    }
-    .filter(ValidationError(
-      "giftAidPayments must be greater than or equal to the sum of " +
-        "giftAidPaymentsCarriedBackToPreviousYear and giftAidPaymentsCarriedForwardToNextYear",
-      MAXIMUM_AMOUNT_EXCEEDED)) { donations =>
-      val totalPayments = donations.giftAidPayments
-      val carriedBack = donations.giftAidPaymentsCarriedBackToPreviousYear
-      val carriedForward = donations.giftAidPaymentsCarriedForwardToNextYear
-      totalPayments.getOrElse(NoCountryZeroAmount).amount >= carriedBack.getOrElse(NoCountryZeroAmount).amount + carriedForward.getOrElse(NoCountryZeroAmount).amount
-    }
 
   override def example(id: Option[String] = None) =
     CharitableGiving(
-      giftAidPayments = Some(CountryAndAmount(GBR, 100000)),
-      oneOffGiftAidPayments = Some(CountryAndAmount(USA, 5000.00)),
-      sharesSecurities = Some(CountryAndAmount(CAN, 53000.00)),
-      landProperties = Some(CountryAndAmount(RUS, 1000000.00)),
-      giftAidPaymentsCarriedBackToPreviousYear = Some(CountryAndAmount(AUS, 2000.00)),
-      giftAidPaymentsCarriedForwardToNextYear = Some(CountryAndAmount(NZL, 50000.00)))
+      giftAidPayments = Some(GiftAidPayments.example()),
+      sharesSecurities = Some(5000.00),
+      landProperties = Some(100.00),
+      qualifyingInvestmentsToNonUkCharities = Some(200.00)
+    )
 }

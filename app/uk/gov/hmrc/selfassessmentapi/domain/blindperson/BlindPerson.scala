@@ -25,32 +25,39 @@ import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.UkCountryCodes.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
 
-case class BlindPerson(country: UkCountryCode,
+case class BlindPerson(country: Option[UkCountryCode] = None,
                        registrationAuthority: Option[String] = None,
                        spouseSurplusAllowance: Option[BigDecimal] = None,
-                       wantSpouseToUseSurplusAllowance: Boolean)
+                       wantSpouseToUseSurplusAllowance: Option[Boolean] = None)
 
 object BlindPerson extends BaseDomain[BlindPerson] {
+
 
   override implicit val writes = Json.writes[BlindPerson]
 
   override implicit val reads = (
-    (__ \ "country").read[UkCountryCode] and
+      (__ \ "country").readNullable[UkCountryCode] and
       (__ \ "registrationAuthority").readNullable[String](lengthValidator) and
-      (__ \ "spouseSurplusAllowance").readNullable[BigDecimal](positiveAmountValidator("spouseSurplusAllowance") keepAnd maxAmountValidator("spouseSurplusAllowance", BigDecimal(2290.00))) and
-      (__ \ "wantSpouseToUseSurplusAllowance").read[Boolean]
-    ) (BlindPerson.apply _).filter(ValidationError("If the country is England or Wales, registrationAuthority is mandatory", MISSING_REGISTRATION_AUTHORITY)) {
-    blindPerson =>
-      if (blindPerson.country == England || blindPerson.country == Wales)
-        blindPerson.registrationAuthority.isDefined && !blindPerson.registrationAuthority.get.isEmpty
-      else true
-  }
+      (__ \ "spouseSurplusAllowance").readNullable[BigDecimal](positiveAmountValidator("spouseSurplusAllowance")
+        keepAnd maxAmountValidator("spouseSurplusAllowance", BigDecimal(2290.00))) and
+      (__ \ "wantSpouseToUseSurplusAllowance").readNullable[Boolean]
+    ) (BlindPerson.apply _)
+    .filter(ValidationError("If the country is England or Wales, registrationAuthority is mandatory", MISSING_REGISTRATION_AUTHORITY)) {
+      person =>
+        if (person.country.contains(England) || person.country.contains(Wales))
+          person.registrationAuthority.isDefined && !person.registrationAuthority.get.isEmpty
+        else true
+    }
+    .filter(ValidationError("A person must be registered blind in a given country to be able to supply wantSpouseToUseSurplusAllowance", MUST_BE_BLIND_TO_WANT_SPOUSE_TO_USE_SURPLUS_ALLOWANCE)) {
+      person =>
+        if (person.wantSpouseToUseSurplusAllowance.isDefined) person.country.isDefined else true
+    }
 
   override def example(id: Option[String] = None) =
     BlindPerson(
-      country = Wales,
+      country = Some(Wales),
       registrationAuthority = Some("Registrar"),
       spouseSurplusAllowance = Some(2000.05),
-      wantSpouseToUseSurplusAllowance = true
+      wantSpouseToUseSurplusAllowance = Some(true)
     )
 }

@@ -37,7 +37,7 @@ object JobHistoryRepository extends MongoDbConnection {
 
 class JobHistoryMongoRepository(implicit mongo: () => DB)
   extends ReactiveRepository[MongoJobHistory, BSONObjectID](
-  collectionName = "job-history", mongo = mongo, domainFormat = MongoJobHistory.mongoFormats){
+  collectionName = "jobHistory", mongo = mongo, domainFormat = MongoJobHistory.mongoFormats){
 
 
   override def indexes: Seq[Index] = {

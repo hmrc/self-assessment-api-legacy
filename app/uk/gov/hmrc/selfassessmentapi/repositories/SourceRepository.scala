@@ -15,7 +15,6 @@
  */
 
 package uk.gov.hmrc.selfassessmentapi.repositories
-
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain._
 
@@ -36,4 +35,19 @@ trait SourceRepository[T] {
   def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]]
 
   def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]]
+}
+
+trait SelfAssessmentAwareSourceRepository[T] extends { self: SourceRepository[T] =>
+
+  lazy val selfAssessmentRepository = SelfAssessmentRepository()
+
+  override def create(saUtr: SaUtr, taxYear: TaxYear, source: T) : Future[SourceId] = {
+    selfAssessmentRepository.touch(saUtr, taxYear)
+    self.create(saUtr, taxYear, source)
+  }
+
+  override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, source: T): Future[Boolean] = {
+    selfAssessmentRepository.touch(saUtr, taxYear)
+    self.update(saUtr, taxYear, id, source)
+  }
 }

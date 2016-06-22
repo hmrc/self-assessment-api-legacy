@@ -21,6 +21,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
 import uk.gov.hmrc.selfassessmentapi.domain.SummaryType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentSourceRepositoryWrapper
 import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentRepository
 
 object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmployments.name) {
@@ -31,5 +32,5 @@ object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmp
     }
   }
 
-  override val repository = SelfEmploymentRepository()
+  override val repository = SelfAssessmentSourceRepositoryWrapper(SelfEmploymentRepository())
 }

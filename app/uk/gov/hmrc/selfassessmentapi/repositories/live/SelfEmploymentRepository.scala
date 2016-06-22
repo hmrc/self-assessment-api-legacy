@@ -59,7 +59,7 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
     mongo,
     domainFormat = MongoSelfEmployment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
-    with SelfAssessmentAwareSourceRepository[SelfEmployment] with SourceRepository[SelfEmployment] with SelfEmploymentIncomesRepository
+    with SourceRepository[SelfEmployment] with SelfEmploymentIncomesRepository
     with AtomicUpdate[MongoSelfEmployment] with TypedSourceSummaryRepository[MongoSelfEmployment, BSONObjectID]{
 
   override def indexes: Seq[Index] = Seq(

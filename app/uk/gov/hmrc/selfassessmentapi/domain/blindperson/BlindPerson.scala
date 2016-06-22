@@ -48,7 +48,7 @@ object BlindPerson extends BaseDomain[BlindPerson] {
           person.registrationAuthority.isDefined && !person.registrationAuthority.get.isEmpty
         else true
     }
-    .filter(ValidationError("If the registrationAuthority is provided the country must be provided", MISSING_COUNTRY)) {
+    .filter(ValidationError("If the registrationAuthority is provided then country must be provided", MISSING_COUNTRY)) {
       person =>
         if (person.registrationAuthority.isDefined && !person.registrationAuthority.get.isEmpty)
           person.country.isDefined

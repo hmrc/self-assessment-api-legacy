@@ -22,11 +22,12 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
-import uk.gov.hmrc.play.http.{Upstream5xxResponse, HeaderCarrier, HttpGet}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, Upstream5xxResponse}
 import uk.gov.hmrc.selfassessmentapi.{LoggingService, WiremockSpec}
 import uk.gov.hmrc.selfassessmentapi.config.WSHttp
+import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class AuthConnectorSpec extends WiremockSpec with ScalaFutures {
+class AuthConnectorSpec extends WiremockSpec {
 
   "saUtr" should {
     val utr = generateSaUtr()

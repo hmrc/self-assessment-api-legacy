@@ -22,12 +22,16 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.client.{MappingBuilder, UrlMatchingStrategy, WireMock}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import org.scalatestplus.play.OneServerPerSuite
 
 import scala.concurrent.duration.FiniteDuration
 
-trait WiremockSpec extends UnitSpec with BeforeAndAfterAll with BeforeAndAfterEach with OneServerPerSuite {
+trait WiremockSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
+  with BeforeAndAfterEach with IntegrationPatience with MockitoSugar with BeforeAndAfterAll with MongoEmbeddedDatabase {
+
   override implicit val defaultTimeout = FiniteDuration(100, TimeUnit.SECONDS)
 
   private val WIREMOCK_PORT = 21212
@@ -37,13 +41,10 @@ trait WiremockSpec extends UnitSpec with BeforeAndAfterAll with BeforeAndAfterEa
   private val wireMockServer = new WireMockServer(wireMockConfig().port(WIREMOCK_PORT))
 
   override def beforeAll() = {
+    mongoBeforeAll()
     wireMockServer.stop()
     wireMockServer.start()
     WireMock.configureFor(stubHost, WIREMOCK_PORT)
-  }
-
-  override def afterAll() = {
-    wireMockServer.stop()
   }
 
   override def beforeEach() = {

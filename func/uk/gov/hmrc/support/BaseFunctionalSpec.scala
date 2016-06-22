@@ -13,7 +13,7 @@ import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.{JsArray, JsObject, JsValue, Reads}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, UnitSpec}
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
 
@@ -21,7 +21,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.util.matching.Regex
 
 trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
-  with BeforeAndAfterEach with IntegrationPatience with MockitoSugar with BeforeAndAfterAll {
+  with BeforeAndAfterEach with IntegrationPatience with MockitoSugar with BeforeAndAfterAll with MongoEmbeddedDatabase {
 
   override implicit val defaultTimeout = FiniteDuration(100, TimeUnit.SECONDS)
 
@@ -41,11 +41,12 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
     stubFor(post(urlPathEqualTo("/registration")).willReturn(aResponse().withStatus(200)))
   }
 
-  override def beforeAll() = baseBeforeAll()
+  override def beforeAll() = {
+    mongoBeforeAll()
+    baseBeforeAll()
+  }
 
-  protected def baseBeforeEach() = WireMock.reset()
-
-  override def beforeEach() = baseBeforeEach()
+  override def beforeEach() = WireMock.reset()
 
   class Assertions(request: String, response: HttpResponse) {
     def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, saUtr: SaUtr, taxYear: String) = {
@@ -89,7 +90,7 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
 
     def bodyIs(expectedBody: JsValue) = {
       (response.json match {
-        case JsArray(value) => response.json.as[JsArray]
+        case JsArray(_) => response.json.as[JsArray]
         case JsObject(fields) => response.json.as[JsObject]  - "_links" - "id"
       }) shouldEqual expectedBody
       this

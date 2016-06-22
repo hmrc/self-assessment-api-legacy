@@ -16,7 +16,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
   val sourceId = UUID.randomUUID().toString
   val summaryId = UUID.randomUUID().toString
 
-  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration =
+  override implicit lazy val app: FakeApplication = new FakeApplication(additionalConfiguration =
     Map("Test" ->
       Map("feature-switch" ->
         Map(

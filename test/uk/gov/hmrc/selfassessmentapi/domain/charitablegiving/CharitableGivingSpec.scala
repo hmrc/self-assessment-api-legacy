@@ -52,16 +52,20 @@ class CharitableGivingSpec extends JsonSpec {
           Map("/giftAidPayments/carriedFromNextTaxYear" -> INVALID_MONETARY_AMOUNT)
         )
         assertValidationError[CharitableGiving](
-          CharitableGiving(sharesSecurities = Some(testAmount)),
-          Map("/sharesSecurities" -> INVALID_MONETARY_AMOUNT)
+          CharitableGiving(sharesSecurities = Some(SharesAndSecurities(totalInTaxYear = testAmount))),
+          Map("/sharesSecurities/totalInTaxYear" -> INVALID_MONETARY_AMOUNT)
         )
         assertValidationError[CharitableGiving](
-          CharitableGiving(landProperties = Some(testAmount)),
-          Map("/landProperties" -> INVALID_MONETARY_AMOUNT)
+          CharitableGiving(sharesSecurities = Some(SharesAndSecurities(totalInTaxYear = 100, toNonUkCharities = Some(testAmount)))),
+          Map("/sharesSecurities/toNonUkCharities" -> INVALID_MONETARY_AMOUNT)
         )
         assertValidationError[CharitableGiving](
-          CharitableGiving(qualifyingInvestmentsToNonUkCharities = Some(testAmount)),
-          Map("/qualifyingInvestmentsToNonUkCharities" -> INVALID_MONETARY_AMOUNT)
+          CharitableGiving(landProperties = Some(LandAndProperties(totalInTaxYear = testAmount))),
+          Map("/landProperties/totalInTaxYear" -> INVALID_MONETARY_AMOUNT)
+        )
+        assertValidationError[CharitableGiving](
+          CharitableGiving(landProperties = Some(LandAndProperties(totalInTaxYear = 100, toNonUkCharities = Some(testAmount)))),
+          Map("/landProperties/toNonUkCharities" -> INVALID_MONETARY_AMOUNT)
         )
       }
     }
@@ -89,16 +93,20 @@ class CharitableGivingSpec extends JsonSpec {
           Map("/giftAidPayments/carriedFromNextTaxYear" -> INVALID_MONETARY_AMOUNT)
         )
         assertValidationError[CharitableGiving](
-          CharitableGiving(sharesSecurities = Some(testAmount)),
-          Map("/sharesSecurities" -> INVALID_MONETARY_AMOUNT)
+          CharitableGiving(sharesSecurities = Some(SharesAndSecurities(totalInTaxYear = testAmount))),
+          Map("/sharesSecurities/totalInTaxYear" -> INVALID_MONETARY_AMOUNT)
         )
         assertValidationError[CharitableGiving](
-          CharitableGiving(landProperties = Some(testAmount)),
-          Map("/landProperties" -> INVALID_MONETARY_AMOUNT)
+          CharitableGiving(sharesSecurities = Some(SharesAndSecurities(totalInTaxYear = 100, toNonUkCharities = Some(testAmount)))),
+          Map("/sharesSecurities/toNonUkCharities" -> INVALID_MONETARY_AMOUNT)
         )
         assertValidationError[CharitableGiving](
-          CharitableGiving(qualifyingInvestmentsToNonUkCharities = Some(testAmount)),
-          Map("/qualifyingInvestmentsToNonUkCharities" -> INVALID_MONETARY_AMOUNT)
+          CharitableGiving(landProperties = Some(LandAndProperties(totalInTaxYear = testAmount))),
+          Map("/landProperties/totalInTaxYear" -> INVALID_MONETARY_AMOUNT)
+        )
+        assertValidationError[CharitableGiving](
+          CharitableGiving(landProperties = Some(LandAndProperties(totalInTaxYear = 100, toNonUkCharities = Some(testAmount)))),
+          Map("/landProperties/toNonUkCharities" -> INVALID_MONETARY_AMOUNT)
         )
       }
     }
@@ -142,6 +150,20 @@ class CharitableGivingSpec extends JsonSpec {
       assertValidationError[CharitableGiving](
         CharitableGiving(giftAidPayments = Some(GiftAidPayments(totalInTaxYear = Some(100), carriedBackToPreviousTaxYear = Some(101)))),
         Map("/giftAidPayments" -> MAXIMUM_AMOUNT_EXCEEDED)
+      )
+    }
+
+    "reject if sharesAndSecurities.toNonUkCharities is bigger than sharesAndSecurities.totalInTaxYear" in {
+      assertValidationError[CharitableGiving](
+        CharitableGiving(sharesSecurities = Some(SharesAndSecurities(totalInTaxYear = 100, toNonUkCharities = Some(101)))),
+        Map("/sharesSecurities" -> MAXIMUM_AMOUNT_EXCEEDED)
+      )
+    }
+
+    "reject if landAndProperties.toNonUkCharities is bigger than landAndProperties.totalInTaxYear" in {
+      assertValidationError[CharitableGiving](
+        CharitableGiving(landProperties = Some(LandAndProperties(totalInTaxYear = 100, toNonUkCharities = Some(101)))),
+        Map("/landProperties" -> MAXIMUM_AMOUNT_EXCEEDED)
       )
     }
   }

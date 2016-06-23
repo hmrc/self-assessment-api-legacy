@@ -10,44 +10,49 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     "return a 200 response" in {
       val expectedJson = Json.parse(
         s"""
-           |{
-           | 	"pensionContributions": {
-           | 		"ukRegisteredPension": 1000.45,
-           | 		"retirementAnnuity": 1000.0,
-           | 		"employerScheme": 12000.05,
-           | 		"overseasPension": 1234.43
-           | 	},
-           |   "charitableGivings": {
-           |     "giftAidPayments": {
-           |       "totalInTaxYear": 10000.0,
-           |       "oneOff": 5000.0,
-           |       "toNonUkCharities": 1000.0,
-           |       "carriedBackToPreviousTaxYear": 1000.0,
-           |       "carriedFromNextTaxYear": 2000.0
-           |     },
-           |     "sharesSecurities": 5000.0,
-           |     "landProperties": 100.0,
-           |     "qualifyingInvestmentsToNonUkCharities": 200.0
-           |   },
-           | 	"blindPerson": {
-           | 		"country": "Wales",
-           | 		"registrationAuthority": "Registrar",
-           | 		"spouseSurplusAllowance": 2000.05,
-           | 		"wantSpouseToUseSurplusAllowance": true
-           | 	},
-           |   "studentLoan": {
-           |     "planType": "Plan1",
-           |     "deductedByEmployers": 2000.00
-           |   },
-           |   "taxRefundedOrSetOff": {
-           |     "amount": 2000.00
-           |   },
-           |   "childBenefit": {
-           |    "amount": 1234.34,
-           |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
-           |  }
-           | }
+          |{
+          | 	"pensionContributions": {
+          | 		"ukRegisteredPension": 1000.45,
+          | 		"retirementAnnuity": 1000.0,
+          | 		"employerScheme": 12000.05,
+          | 		"overseasPension": 1234.43
+          | 	},
+          |   "charitableGivings": {
+          |     "giftAidPayments": {
+          |       "totalInTaxYear": 10000.0,
+          |       "oneOff": 5000.0,
+          |       "toNonUkCharities": 1000.0,
+          |       "carriedBackToPreviousTaxYear": 1000.0,
+          |       "carriedFromNextTaxYear": 2000.0
+          |     },
+          |     "sharesSecurities": {
+          |       "totalInTaxYear": 2000.0,
+          |       "toNonUkCharities": 500.0
+          |     },
+          |     "landProperties":  {
+          |       "totalInTaxYear": 4000.0,
+          |       "toNonUkCharities": 3000.0
+          |     }
+          |   },
+          | 	"blindPerson": {
+          | 		"country": "Wales",
+          | 		"registrationAuthority": "Registrar",
+          | 		"spouseSurplusAllowance": 2000.05,
+          | 		"wantSpouseToUseSurplusAllowance": true
+          | 	},
+          |   "studentLoan": {
+          |     "planType": "Plan1",
+          |     "deductedByEmployers": 2000.00
+          |   },
+          |   "taxRefundedOrSetOff": {
+          |     "amount": 2000.00
+          |   },
+          |   "childBenefit": {
+          |    "amount": 1234.34,
+          |    "numberOfChildren": 3,
+          |    "dateBenefitStopped": "2016-04-05"
+          |  }
+          | }
         """.stripMargin)
 
       when()

@@ -71,10 +71,57 @@ object GiftAidPayments extends BaseDomain[GiftAidPayments] {
     )
 }
 
+case class SharesAndSecurities( totalInTaxYear: BigDecimal,
+                                toNonUkCharities: Option[BigDecimal] = None)
+
+object SharesAndSecurities extends BaseDomain[SharesAndSecurities] {
+
+  override implicit val writes = Json.writes[SharesAndSecurities]
+
+  override implicit val reads = (
+      (__ \ "totalInTaxYear").read[BigDecimal](positiveAmountValidator("totalInTaxYear")) and
+      (__ \ "toNonUkCharities").readNullable[BigDecimal](positiveAmountValidator("toNonUkCharities"))
+    ) (SharesAndSecurities.apply _)
+    .filter(
+      ValidationError("totalInTaxYear must be greater or equal to toNonUkCharities", MAXIMUM_AMOUNT_EXCEEDED)
+    ) { p =>
+      p.totalInTaxYear >= p.toNonUkCharities.getOrElse(BigDecimal(0))
+    }
+
+  override def example(id: Option[String] = None) =
+    SharesAndSecurities(
+      totalInTaxYear = 2000,
+      toNonUkCharities = Some(500)
+    )
+}
+
+case class LandAndProperties( totalInTaxYear: BigDecimal,
+                              toNonUkCharities: Option[BigDecimal] = None)
+
+object LandAndProperties extends BaseDomain[LandAndProperties] {
+
+  override implicit val writes = Json.writes[LandAndProperties]
+
+  override implicit val reads = (
+      (__ \ "totalInTaxYear").read[BigDecimal](positiveAmountValidator("totalInTaxYear")) and
+      (__ \ "toNonUkCharities").readNullable[BigDecimal](positiveAmountValidator("toNonUkCharities"))
+    ) (LandAndProperties.apply _)
+    .filter(
+      ValidationError("totalInTaxYear must be greater or equal to toNonUkCharities", MAXIMUM_AMOUNT_EXCEEDED)
+    ) { p =>
+      p.totalInTaxYear >= p.toNonUkCharities.getOrElse(BigDecimal(0))
+    }
+
+  override def example(id: Option[String] = None) =
+    LandAndProperties(
+      totalInTaxYear = 4000,
+      toNonUkCharities = Some(3000)
+    )
+}
+
 case class CharitableGiving( giftAidPayments: Option[GiftAidPayments] = None,
-                             sharesSecurities: Option[BigDecimal] = None,
-                             landProperties: Option[BigDecimal] = None,
-                             qualifyingInvestmentsToNonUkCharities: Option[BigDecimal] = None)
+                             sharesSecurities: Option[SharesAndSecurities] = None,
+                             landProperties: Option[LandAndProperties] = None)
 
 object CharitableGiving extends BaseDomain[CharitableGiving] {
 
@@ -82,16 +129,14 @@ object CharitableGiving extends BaseDomain[CharitableGiving] {
 
   override implicit val reads = (
       (__ \ "giftAidPayments").readNullable[GiftAidPayments] and
-      (__ \ "sharesSecurities").readNullable[BigDecimal](positiveAmountValidator("sharesSecurities")) and
-      (__ \ "landProperties").readNullable[BigDecimal](positiveAmountValidator("landProperties")) and
-      (__ \ "qualifyingInvestmentsToNonUkCharities").readNullable[BigDecimal](positiveAmountValidator("qualifyingInvestmentsToNonUkCharities"))
+      (__ \ "sharesSecurities").readNullable[SharesAndSecurities]and
+      (__ \ "landProperties").readNullable[LandAndProperties]
     ) (CharitableGiving.apply _)
 
   override def example(id: Option[String] = None) =
     CharitableGiving(
       giftAidPayments = Some(GiftAidPayments.example()),
-      sharesSecurities = Some(5000.00),
-      landProperties = Some(100.00),
-      qualifyingInvestmentsToNonUkCharities = Some(200.00)
+      sharesSecurities = Some(SharesAndSecurities.example()),
+      landProperties = Some(LandAndProperties.example())
     )
 }

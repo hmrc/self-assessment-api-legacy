@@ -10,49 +10,49 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     "return a 200 response" in {
       val expectedJson = Json.parse(
         s"""
-          |{
-          | 	"pensionContributions": {
-          | 		"ukRegisteredPension": 1000.45,
-          | 		"retirementAnnuity": 1000.0,
-          | 		"employerScheme": 12000.05,
-          | 		"overseasPension": 1234.43
-          | 	},
-          |   "charitableGivings": {
-          |     "giftAidPayments": {
-          |       "totalInTaxYear": 10000.0,
-          |       "oneOff": 5000.0,
-          |       "toNonUkCharities": 1000.0,
-          |       "carriedBackToPreviousTaxYear": 1000.0,
-          |       "carriedFromNextTaxYear": 2000.0
-          |     },
-          |     "sharesSecurities": 5000.0,
-          |     "landProperties": 100.0,
-          |     "qualifyingInvestmentsToNonUkCharities": 200.0
-          |   },
-          | 	"blindPerson": {
-          | 		"country": "Wales",
-          | 		"registrationAuthority": "Registrar",
-          | 		"spouseSurplusAllowance": 2000.05,
-          | 		"wantSpouseToUseSurplusAllowance": true
-          | 	},
-          |   "studentLoan": {
-          |     "planType": "Plan1",
-          |     "deductedByEmployers": 2000.00
-          |   },
-          |   "taxRefundedOrSetOff": {
-          |     "amount": 2000.00
-          |   },
-          |   "childBenefit": {
-          |    "amount": 1234.34,
-          |    "numberOfChildren": 3,
-          |    "dateBenefitStopped": "2016-04-05"
-          |  }
-          | }
+           |{
+           | 	"pensionContributions": {
+           | 		"ukRegisteredPension": 1000.45,
+           | 		"retirementAnnuity": 1000.0,
+           | 		"employerScheme": 12000.05,
+           | 		"overseasPension": 1234.43
+           | 	},
+           |   "charitableGivings": {
+           |     "giftAidPayments": {
+           |       "totalInTaxYear": 10000.0,
+           |       "oneOff": 5000.0,
+           |       "toNonUkCharities": 1000.0,
+           |       "carriedBackToPreviousTaxYear": 1000.0,
+           |       "carriedFromNextTaxYear": 2000.0
+           |     },
+           |     "sharesSecurities": 5000.0,
+           |     "landProperties": 100.0,
+           |     "qualifyingInvestmentsToNonUkCharities": 200.0
+           |   },
+           | 	"blindPerson": {
+           | 		"country": "Wales",
+           | 		"registrationAuthority": "Registrar",
+           | 		"spouseSurplusAllowance": 2000.05,
+           | 		"wantSpouseToUseSurplusAllowance": true
+           | 	},
+           |   "studentLoan": {
+           |     "planType": "Plan1",
+           |     "deductedByEmployers": 2000.00
+           |   },
+           |   "taxRefundedOrSetOff": {
+           |     "amount": 2000.00
+           |   },
+           |   "childBenefit": {
+           |    "amount": 1234.34,
+           |    "numberOfChildren": 3,
+           |    "dateBenefitStopped": "2016-04-05"
+           |  }
+           | }
         """.stripMargin)
 
       when()
         .get(s"/sandbox/$saUtr/$taxYear").withAcceptHeader()
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
@@ -75,7 +75,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         """.stripMargin)
       when()
         .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(400)
         .bodyHasPath("""(0) \ code """, BENEFIT_STOPPED_DATE_INVALID)
         .bodyHasPath("""(0) \ path """, "/taxYearProperties/childBenefit/dateBenefitStopped")
@@ -86,20 +86,23 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     "receive 400" in {
       when()
         .get(s"/sandbox/$saUtr/not-a-tax-year").withAcceptHeader()
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(400)
         .body(_ \ "message").is("ERROR_TAX_YEAR_INVALID")
     }
   }
 
   "if the tax year in the path is valid for a live request, they" should {
-    "receive 501" in {
+    "receive 200" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
-      .when()
+        .when()
         .get(s"/$saUtr/$taxYear").withAcceptHeader()
-      .thenAssertThat()
-        .statusIs(501)
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
+        .bodyHasLink("self-employments", s"""/self-assessment/$saUtr/$taxYear/self-employments""")
     }
   }
 
@@ -107,9 +110,9 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     "receive 400" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
-      .when()
+        .when()
         .get(s"/$saUtr/not-a-tax-year").withAcceptHeader()
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(400)
         .body(_ \ "message").is("ERROR_TAX_YEAR_INVALID")
     }

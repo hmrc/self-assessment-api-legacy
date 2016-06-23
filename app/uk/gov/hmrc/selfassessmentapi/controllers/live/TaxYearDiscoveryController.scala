@@ -16,21 +16,31 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
+import play.api.hal.HalLink
 import play.api.libs.json.Json
+import play.api.libs.json.Json._
 import play.api.mvc.Action
+import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorNotImplemented, Links}
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, TaxYear}
 
-object TaxYearDiscoveryController extends BaseController with Links{
+import scala.concurrent.Future
+
+object TaxYearDiscoveryController extends BaseController with Links {
   override val context: String = AppContext.apiGatewayContext
 
-  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action {
-    NotImplemented(Json.toJson(ErrorNotImplemented))
+  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async {
+    request =>
+      val halLinks =
+        Seq(HalLink(SourceTypes.SelfEmployments.name,
+                    sourceHref(utr, taxYear, SourceTypes.SelfEmployments)),
+            HalLink("self", discoverTaxYearHref(utr, taxYear)))
+      Future.successful(Ok(halResource(obj(), halLinks)))
   }
 
   final def update(utr: SaUtr, taxYear: TaxYear) = Action {
-   NotImplemented(Json.toJson(ErrorNotImplemented))
+    NotImplemented(Json.toJson(ErrorNotImplemented))
   }
 }

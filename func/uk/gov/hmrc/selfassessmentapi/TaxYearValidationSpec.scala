@@ -57,7 +57,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
 
       when()
         .get(s"/sandbox/$saUtr/$taxYear").withAcceptHeader()
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
         .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
@@ -80,7 +80,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         """.stripMargin)
       when()
         .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(400)
         .bodyHasPath("""(0) \ code """, BENEFIT_STOPPED_DATE_INVALID)
         .bodyHasPath("""(0) \ path """, "/taxYearProperties/childBenefit/dateBenefitStopped")
@@ -91,20 +91,23 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     "receive 400" in {
       when()
         .get(s"/sandbox/$saUtr/not-a-tax-year").withAcceptHeader()
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(400)
         .body(_ \ "message").is("ERROR_TAX_YEAR_INVALID")
     }
   }
 
   "if the tax year in the path is valid for a live request, they" should {
-    "receive 501" in {
+    "receive 200" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
-      .when()
+        .when()
         .get(s"/$saUtr/$taxYear").withAcceptHeader()
-      .thenAssertThat()
-        .statusIs(501)
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
+        .bodyHasLink("self-employments", s"""/self-assessment/$saUtr/$taxYear/self-employments""")
     }
   }
 
@@ -112,9 +115,9 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     "receive 400" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
-      .when()
+        .when()
         .get(s"/$saUtr/not-a-tax-year").withAcceptHeader()
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(400)
         .body(_ \ "message").is("ERROR_TAX_YEAR_INVALID")
     }

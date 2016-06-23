@@ -42,7 +42,7 @@ object SelfAssessmentRepository extends MongoDbConnection {
 
 class SelfAssessmentMongoRepository(implicit mongo: () => DB)
   extends ReactiveRepository[MongoSelfAssessment, BSONObjectID](
-    "self-assessments",
+    "selfAssessments",
     mongo,
     domainFormat = MongoSelfAssessment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)

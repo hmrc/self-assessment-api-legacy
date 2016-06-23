@@ -25,9 +25,14 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
           |       "carriedBackToPreviousTaxYear": 1000.0,
           |       "carriedFromNextTaxYear": 2000.0
           |     },
-          |     "sharesSecurities": 5000.0,
-          |     "landProperties": 100.0,
-          |     "qualifyingInvestmentsToNonUkCharities": 200.0
+          |     "sharesSecurities": {
+          |       "totalInTaxYear": 2000.0,
+          |       "toNonUkCharities": 500.0
+          |     },
+          |     "landProperties":  {
+          |       "totalInTaxYear": 4000.0,
+          |       "toNonUkCharities": 3000.0
+          |     }
           |   },
           | 	"blindPerson": {
           | 		"country": "Wales",

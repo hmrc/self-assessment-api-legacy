@@ -22,7 +22,7 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.Configuration
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.{TestApplication, UnitSpec, WiremockDSL}
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob.{DeleteExpiredData, DeleteExpiredDataJobConfig}
 import uk.gov.hmrc.selfassessmentapi.repositories.JobHistoryMongoRepository
 import uk.gov.hmrc.selfassessmentapi.services.DeleteExpiredDataService
@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-class DeleteExpiredDataJobSpec extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class DeleteExpiredDataJobSpec extends TestApplication {
 
   "DeleteExpiredDataJobConfig" should {
     val config = mock[Configuration]

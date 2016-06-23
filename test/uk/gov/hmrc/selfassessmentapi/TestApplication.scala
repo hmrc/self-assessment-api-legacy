@@ -19,57 +19,46 @@ package uk.gov.hmrc.selfassessmentapi
 import java.util.concurrent.TimeUnit
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.client.{MappingBuilder, UrlMatchingStrategy, WireMock}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import org.scalatestplus.play.OneServerPerSuite
 
 import scala.concurrent.duration.FiniteDuration
 
-trait WiremockSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
+trait TestApplication extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
   with BeforeAndAfterEach with IntegrationPatience with MockitoSugar with BeforeAndAfterAll with MongoEmbeddedDatabase {
 
   override implicit val defaultTimeout = FiniteDuration(100, TimeUnit.SECONDS)
 
-  private val WIREMOCK_PORT = 21212
-  private val stubHost = "localhost"
+  val WIREMOCK_PORT = 22222
+  val stubHost = "localhost"
 
-  protected val wiremockBaseUrl: String = s"http://localhost:$WIREMOCK_PORT"
+  protected val wiremockBaseUrl: String = s"http://$stubHost:$WIREMOCK_PORT"
   private val wireMockServer = new WireMockServer(wireMockConfig().port(WIREMOCK_PORT))
 
-  override def beforeAll() = {
-    mongoBeforeAll()
+  protected def baseBeforeAll() = {
     wireMockServer.stop()
     wireMockServer.start()
     WireMock.configureFor(stubHost, WIREMOCK_PORT)
+    // the below stub is here so that the application finds the registration endpoint which is called on startup
+    stubFor(post(urlPathEqualTo("/registration")).willReturn(aResponse().withStatus(200)))
   }
 
-  override def beforeEach() = {
-    WireMock.reset()
+  override def beforeAll() = {
+    super.beforeAll()
+    baseBeforeAll()
   }
 
-  def given() = new Givens()
-
-  class Givens() {
-    def get(strategy: UrlMatchingStrategy) = new Result(WireMock.get(strategy))
-
-    class Result(mappingBuilder: MappingBuilder) {
-      def returns(responseBody: String) = {
-        stubFor(mappingBuilder.willReturn(aResponse()
-          .withStatus(200)
-          .withHeader("Content-Type", "application/json")
-          .withBody(responseBody)))
-      }
-
-      def returns(statusCode: Int) = {
-        stubFor(mappingBuilder.willReturn(aResponse()
-          .withStatus(statusCode)))
-      }
-
-    }
-
+  override def afterAll() = {
+    super.afterAll()
+    wireMockServer.stop()
   }
+
+
+  override def beforeEach() = WireMock.reset()
+
 }

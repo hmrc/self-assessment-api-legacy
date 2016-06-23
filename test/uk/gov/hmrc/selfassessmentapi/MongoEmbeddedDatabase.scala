@@ -32,22 +32,23 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
   private var mongod: MongodProcess = null
 
   private val embeddedPort = 12345
-  private val mongoUri: String = sys.env.getOrElse("MONGO_TEST_URI", "mongodb://127.0.0.1:12345/self-assessment-api")
+  private val localhost: String = "127.0.0.1"
+  private val mongoUri: String = sys.env.getOrElse("MONGO_TEST_URI", s"mongodb://$localhost:$embeddedPort/self-assessment-api")
   private lazy val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
 
   implicit val mongo = new MongoConnector(mongoUri).db
 
-  protected def mongoBeforeAll() = {
+  protected def startEmbeddedMongo() = {
     if (useEmbeddedMongo) {
       mongodExe = MongodStarter.getDefaultInstance.prepare(new MongodConfigBuilder()
         .version(Version.Main.PRODUCTION)
-        .net(new Net("127.0.0.1", embeddedPort, Network.localhostIsIPv6()))
+        .net(new Net(localhost, embeddedPort, Network.localhostIsIPv6()))
         .build())
       mongod = mongodExe.start()
     }
   }
 
-  protected def mongoAfterAll() = {
+  protected def stopEmbeddedMongo() = {
     Try {
       if (useEmbeddedMongo) {
         mongod.stop()
@@ -59,11 +60,12 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
   }
 
   override def beforeAll = {
-    mongoBeforeAll()
+    if (mongod != null && mongod.isProcessRunning) stopEmbeddedMongo()
+    startEmbeddedMongo()
   }
 
   override def afterAll = {
-    mongoAfterAll()
+    stopEmbeddedMongo()
   }
 
 }

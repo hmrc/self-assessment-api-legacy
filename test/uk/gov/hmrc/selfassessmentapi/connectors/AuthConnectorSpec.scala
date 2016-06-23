@@ -23,11 +23,11 @@ import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, Upstream5xxResponse}
-import uk.gov.hmrc.selfassessmentapi.{LoggingService, WiremockSpec}
+import uk.gov.hmrc.selfassessmentapi.{LoggingService, TestApplication, WiremockDSL}
 import uk.gov.hmrc.selfassessmentapi.config.WSHttp
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class AuthConnectorSpec extends WiremockSpec {
+class AuthConnectorSpec extends TestApplication with WiremockDSL {
 
   "saUtr" should {
     val utr = generateSaUtr()
@@ -65,7 +65,7 @@ class AuthConnectorSpec extends WiremockSpec {
       await(saUtr(ConfidenceLevel.L50)) shouldBe None
 
       Mockito.verify(loggingService).error("Error in request to auth",
-        new Upstream5xxResponse("GET of 'http://localhost:21212/auth/authority' returned 500. Response body: ''", 500, 502))
+        new Upstream5xxResponse("GET of 'http://localhost:22222/auth/authority' returned 500. Response body: ''", 500, 502))
     }
 
   }

@@ -19,13 +19,16 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
   }
 
   "Live tax year discovery" should {
-    "return a 501 response status" in {
+    "return a 200 response status" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/$taxYear")
         .thenAssertThat()
-        .statusIs(501)
+        .statusIs(200)
+        .contentTypeIsHalJson()
+        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
+        .bodyHasLink("self-employments", s"""/self-assessment/$saUtr/$taxYear/self-employments""")
     }
   }
 

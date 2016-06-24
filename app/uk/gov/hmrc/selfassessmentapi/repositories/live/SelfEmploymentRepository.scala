@@ -28,7 +28,7 @@ import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, SelfEmployment}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
-import uk.gov.hmrc.selfassessmentapi.repositories.{JsonItem, SourceRepository, TypedSourceSummaryRepository}
+import uk.gov.hmrc.selfassessmentapi.repositories._
 import play.api.libs.json.Json.toJson
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -59,7 +59,8 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
     mongo,
     domainFormat = MongoSelfEmployment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
-    with SourceRepository[SelfEmployment] with SelfEmploymentIncomesRepository with AtomicUpdate[MongoSelfEmployment] with TypedSourceSummaryRepository[MongoSelfEmployment, BSONObjectID]{
+    with SourceRepository[SelfEmployment] with SelfEmploymentIncomesRepository
+    with AtomicUpdate[MongoSelfEmployment] with TypedSourceSummaryRepository[MongoSelfEmployment, BSONObjectID]{
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("se_utr_taxyear"), unique = false),
@@ -147,6 +148,4 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
 
   override def listIncomes(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]] =
     listSummaries[Income](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.incomes.map(_.toIncome))
-
-
 }

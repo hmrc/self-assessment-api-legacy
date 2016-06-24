@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain.charitablegiving
 
 import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.domain.{ObjectFieldDescription, PositiveMonetaryFieldDescription, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.domain.{ObjectFieldDescription, TaxYearPropertyType}
 
 case object CharitableGivings extends TaxYearPropertyType {
 
@@ -31,8 +31,7 @@ case object CharitableGivings extends TaxYearPropertyType {
 
   override val fieldDescriptions = Seq(
     ObjectFieldDescription(name, "giftAidPayments", toJson(GiftAidPayments.example()), optional = true),
-    PositiveMonetaryFieldDescription(name, "sharesSecurities", optional = true),
-    PositiveMonetaryFieldDescription(name, "landProperties", optional = true),
-    PositiveMonetaryFieldDescription(name, "qualifyingInvestmentsToNonUkCharities", optional = true)
+    ObjectFieldDescription(name, "sharesSecurities", toJson(SharesAndSecurities.example()), optional = true),
+    ObjectFieldDescription(name, "landProperties", toJson(LandAndProperties.example()), optional = true)
   )
 }

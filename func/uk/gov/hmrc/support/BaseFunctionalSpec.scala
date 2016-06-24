@@ -57,8 +57,8 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def bodyIs(expectedBody: JsValue) = {
       (response.json match {
-        case JsArray(_) => response.json.as[JsArray]
         case JsObject(fields) => response.json.as[JsObject]  - "_links" - "id"
+        case json => json
       }) shouldEqual expectedBody
       this
     }

@@ -16,17 +16,16 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
   val sourceId = UUID.randomUUID().toString
   val summaryId = UUID.randomUUID().toString
 
-  override implicit lazy val app: FakeApplication = new FakeApplication(additionalConfiguration =
+  private val conf: Map[String, Map[SourceId, Map[SourceId, Map[SourceId, Any]]]] =
     Map("Test" ->
       Map("feature-switch" ->
         Map(
           "employments" -> Map("enabled" -> true),
           "self-employments" -> Map("enabled" -> false),
           "furnished-holiday-lettings" -> Map("enabled" -> false),
-          "uk-properties" -> Map("enabled" -> true, "expenses" -> Map("enabled" -> false))
-        )
-      )
-    ))
+          "uk-properties" -> Map("enabled" -> true, "expenses" -> Map("enabled" -> false)))))
+
+  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
 
   object Status extends Enumeration {
     type Status = Value
@@ -36,9 +35,11 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
   trait Mode {
     def url: String
   }
+
   case object LIVE extends Mode {
     override def url = ""
   }
+
   case object SANDBOX extends Mode {
     override def url = "/sandbox"
   }
@@ -49,7 +50,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
       case Status.VISIBLE =>
         mode match {
           case LIVE => 501
-          case SANDBOX =>  if(method.equalsIgnoreCase("post")) 201 else 200
+          case SANDBOX => if (method.equalsIgnoreCase("post")) 201 else 200
         }
     }
   }

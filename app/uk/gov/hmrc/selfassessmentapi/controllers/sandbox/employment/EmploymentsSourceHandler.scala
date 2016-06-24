@@ -27,29 +27,28 @@ object EmploymentsSourceHandler extends SourceHandler(Employment, Employments.na
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Incomes => Some(SummaryHandler(Incomes.name, Income, new SandboxSummaryRepository[Income] {
+      case Incomes => Some(SummaryHandler(new SandboxSummaryRepository[Income] {
         override def example(id: Option[SummaryId]) = Income.example(id)
         override implicit val writes = Income.writes
-      }))
-      case Expenses => Some(SummaryHandler(Expenses.name, Expense, new SandboxSummaryRepository[Expense] {
+      }, Income, Incomes.name))
+      case Expenses => Some(SummaryHandler(new SandboxSummaryRepository[Expense] {
         override def example(id: Option[SummaryId]) = Expense.example(id)
         override implicit val writes = Expense.writes
-      }))
-      case Benefits => Some(SummaryHandler(Benefits.name, Benefit, new SandboxSummaryRepository[Benefit] {
+      }, Expense, Expenses.name))
+      case Benefits => Some(SummaryHandler(new SandboxSummaryRepository[Benefit] {
         override def example(id: Option[SummaryId]) = Benefit.example(id)
         override implicit val writes = Benefit.writes
-      }))
-      case UKTaxesPaid => Some(SummaryHandler(UKTaxesPaid.name, UKTaxPaid, new SandboxSummaryRepository[UKTaxPaid] {
+      }, Benefit, Benefits.name))
+      case UKTaxesPaid => Some(SummaryHandler(new SandboxSummaryRepository[UKTaxPaid] {
         override def example(id: Option[SummaryId]) = UKTaxPaid.example(id)
         override implicit val writes = UKTaxPaid.writes
-      }))
+      }, UKTaxPaid, UKTaxesPaid.name))
       case _ => None
     }
   }
 
   override val repository = new SandboxSourceRepository[Employment] {
     override implicit val writes = Employment.writes
-
     override def example(id: SourceId) = Employment.example().copy(id = Some(id))
   }
 }

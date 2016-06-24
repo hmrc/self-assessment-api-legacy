@@ -17,19 +17,21 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment
 
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.SummaryType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.Incomes
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentSourceRepositoryWrapper
+import uk.gov.hmrc.selfassessmentapi.domain.{Income => _, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
 import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentRepository
 
 object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmployments.name) {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
+      case Incomes =>  Some(SummaryHandler(SummaryRepositoryWrapper(SelfEmploymentRepository().IncomeRepository), Income, Incomes.name))
       case _ => None
     }
   }
 
-  override val repository = SelfAssessmentSourceRepositoryWrapper(SelfEmploymentRepository())
+  override val repository = SourceRepositoryWrapper(SelfEmploymentRepository())
 }

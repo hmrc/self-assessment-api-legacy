@@ -37,7 +37,8 @@ trait SourceRepository[T] {
   def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]]
 }
 
-case class SelfAssessmentSourceRepositoryWrapper[T](private val target: SourceRepository[T]) extends SourceRepository[T] {
+//todo feel free to implmeent this functionality in more scalaish way
+case class SourceRepositoryWrapper[T](private val target: SourceRepository[T]) extends SourceRepository[T] {
 
   lazy val selfAssessmentRepository = SelfAssessmentRepository()
 

@@ -35,11 +35,11 @@ trait SandboxSummaryRepository[T] extends SummaryRepository[T] {
 
   private def generateId: String = BSONObjectID.generate.stringify
 
-  override def createSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: T) = Future.successful(Some(generateId))
+  override def create(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: T) = Future.successful(Some(generateId))
 
-  override def deleteSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] = Future.successful(true)
+  override def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] = Future.successful(true)
 
-  override def findSummaryById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[T]] =
+  override def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[T]] =
     Future.successful(Some(example(Some(id))))
 
   override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Seq[JsonItem]] = {
@@ -55,7 +55,7 @@ trait SandboxSummaryRepository[T] extends SummaryRepository[T] {
     )
   }
 
-  override def updateSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, income: T) = Future.successful(true)
+  override def update(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, income: T) = Future.successful(true)
 
-  override def listSummaries(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[T]]] = ???
+  override def list(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[T]]] = ???
 }

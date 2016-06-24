@@ -28,31 +28,28 @@ object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmp
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Incomes => Some(SummaryHandler(Incomes.name, Income, new SandboxSummaryRepository[Income] {
+      case Incomes => Some(SummaryHandler(new SandboxSummaryRepository[Income] {
         override def example(id: Option[SummaryId]) = Income.example(id)
         override implicit val writes: Writes[Income] = Income.writes
-      }))
-      case Expenses => Some(SummaryHandler(Expenses.name, Expense, new SandboxSummaryRepository[Expense] {
+      }, Income, Incomes.name))
+      case Expenses => Some(SummaryHandler(new SandboxSummaryRepository[Expense] {
         override def example(id: Option[SummaryId]): Expense = Expense.example(id)
         override implicit val writes: Writes[Expense] = Expense.writes
-      }))
-      case BalancingCharges => Some(SummaryHandler(BalancingCharges.name, BalancingCharge,
-        new SandboxSummaryRepository[BalancingCharge] {
-          override def example(id: Option[SummaryId]) = BalancingCharge.example(id)
-          override implicit val writes = BalancingCharge.writes
-        }))
-      case GoodsAndServicesOwnUses => Some(SummaryHandler(GoodsAndServicesOwnUses.name, GoodsAndServicesOwnUse,
-        new SandboxSummaryRepository[GoodsAndServicesOwnUse] {
-          override def example(id: Option[SummaryId]) = GoodsAndServicesOwnUse.example(id)
-          override implicit val writes = GoodsAndServicesOwnUse.writes
-        }))
+      }, Expense, Expenses.name))
+      case BalancingCharges => Some(SummaryHandler(new SandboxSummaryRepository[BalancingCharge] {
+        override def example(id: Option[SummaryId]) = BalancingCharge.example(id)
+        override implicit val writes = BalancingCharge.writes
+      }, BalancingCharge, BalancingCharges.name))
+      case GoodsAndServicesOwnUses => Some(SummaryHandler(new SandboxSummaryRepository[GoodsAndServicesOwnUse] {
+        override def example(id: Option[SummaryId]) = GoodsAndServicesOwnUse.example(id)
+        override implicit val writes = GoodsAndServicesOwnUse.writes
+      }, GoodsAndServicesOwnUse, GoodsAndServicesOwnUses.name))
       case _ => None
     }
   }
 
   override val repository = new SandboxSourceRepository[SelfEmployment] {
     override implicit val writes = SelfEmployment.writes
-
     override def example(id: SourceId) = SelfEmployment.example().copy(id = Some(id))
 
   }

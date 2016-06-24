@@ -34,17 +34,6 @@ import play.api.libs.json.Json.toJson
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait SelfEmploymentIncomesRepository {
-  def createIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: Income): Future[Option[SummaryId]]
-
-  def findIncomeById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[Income]]
-
-  def updateIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, income: Income): Future[Boolean]
-
-  def deleteIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean]
-
-  def listIncomes(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]]
-}
 
 
 object SelfEmploymentRepository extends MongoDbConnection {
@@ -59,7 +48,7 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
     mongo,
     domainFormat = MongoSelfEmployment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
-    with SourceRepository[SelfEmployment] with SelfEmploymentIncomesRepository
+    with SourceRepository[SelfEmployment] with SummaryRepository[Income]
     with AtomicUpdate[MongoSelfEmployment] with TypedSourceSummaryRepository[MongoSelfEmployment, BSONObjectID]{
 
   override def indexes: Seq[Index] = Seq(
@@ -134,18 +123,20 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
   }
 
 
-  override def createIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: Income): Future[Option[SummaryId]] =
+  override def createSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: Income): Future[Option[SummaryId]] =
     createSummary(saUtr, taxYear, sourceId, MongoSelfEmploymentIncomeSummary.toMongoSummary(income))
 
-  override def findIncomeById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[Income]] =
+  override def findSummaryById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[Income]] =
     findSummaryById[Income](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.incomes.find(_.summaryId == id).map(_.toIncome))
 
-  override def updateIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, income: Income): Future[Boolean] =
+  override def updateSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, income: Income): Future[Boolean] =
     updateSummary(saUtr, taxYear, sourceId, MongoSelfEmploymentIncomeSummary.toMongoSummary(income, Some(id)), (se: MongoSelfEmployment) => se.incomes.exists(_.summaryId == id))
 
-  override def deleteIncome(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
+  override def deleteSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
     deleteSummary(saUtr, taxYear, sourceId, id, MongoSelfEmploymentIncomeSummary.arrayName, (se: MongoSelfEmployment) => se.incomes.exists(_.summaryId == id))
 
-  override def listIncomes(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]] =
+  override def listSummaries(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]] =
     listSummaries[Income](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.incomes.map(_.toIncome))
+
+  override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Seq[JsonItem]] = ???
 }

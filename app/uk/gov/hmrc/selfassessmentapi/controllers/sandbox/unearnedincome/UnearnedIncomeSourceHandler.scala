@@ -16,20 +16,28 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
 
-import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UnearnedIncomes
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Benefits, Dividends, SavingsIncomes}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{UnearnedIncome, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
-import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceRepository, SandboxSummaryRepository}
 
 object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] =
     summaryType match {
-      case SavingsIncomes => Some(SummaryHandler(SavingsIncomes.name, SavingsIncome))
-      case Dividends => Some(SummaryHandler(Dividends.name, Dividend))
-      case Benefits => Some(SummaryHandler(Benefits.name, Benefit))
+      case SavingsIncomes => Some(SummaryHandler(SavingsIncomes.name, SavingsIncome, new SandboxSummaryRepository[SavingsIncome] {
+        override def example(id: Option[SummaryId]) = SavingsIncome.example(id)
+        override implicit val writes = SavingsIncome.writes
+      }))
+      case Dividends => Some(SummaryHandler(Dividends.name, Dividend, new SandboxSummaryRepository[Dividend] {
+        override def example(id: Option[SummaryId]) = Dividend.example(id)
+        override implicit val writes =Dividend.writes
+      }))
+      case Benefits => Some(SummaryHandler(Benefits.name, Benefit, new SandboxSummaryRepository[Benefit] {
+        override def example(id: Option[SummaryId]) = Benefit.example(id)
+        override implicit val writes = Benefit.writes
+      }))
       case _ => None
     }
 

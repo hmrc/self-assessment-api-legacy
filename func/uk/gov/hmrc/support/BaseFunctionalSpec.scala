@@ -89,8 +89,8 @@ trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite w
 
     def bodyIs(expectedBody: JsValue) = {
       (response.json match {
-        case JsArray(value) => response.json.as[JsArray]
         case JsObject(fields) => response.json.as[JsObject]  - "_links" - "id"
+        case json => json
       }) shouldEqual expectedBody
       this
     }

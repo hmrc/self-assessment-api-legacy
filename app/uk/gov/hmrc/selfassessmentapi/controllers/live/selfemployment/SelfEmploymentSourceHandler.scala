@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment
 
-import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.SummaryType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._

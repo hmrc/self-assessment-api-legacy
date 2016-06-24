@@ -16,23 +16,39 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty
 
-import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SummaryHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UKProperties
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{Income, _}
 import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
-import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.SandboxSourceRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceRepository, SandboxSummaryRepository}
 
 object UKPropertySourceHandler extends SourceHandler(UKProperty, UKProperties.name) {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Incomes => Some(SummaryHandler(Incomes.name, Income))
-      case Expenses => Some(SummaryHandler(Expenses.name, Expense))
-      case TaxesPaid => Some(SummaryHandler(TaxesPaid.name, TaxPaid))
-      case BalancingCharges => Some(SummaryHandler(BalancingCharges.name, BalancingCharge))
-      case PrivateUseAdjustments => Some(SummaryHandler(PrivateUseAdjustments.name, PrivateUseAdjustment))
+      case Incomes => Some(SummaryHandler(Incomes.name, Income, new SandboxSummaryRepository[Income] {
+        override def example(id: Option[SummaryId]) = Income.example(id)
+        override implicit val writes = Income.writes
+      }))
+      case Expenses => Some(SummaryHandler(Expenses.name, Expense, new SandboxSummaryRepository[Expense] {
+        override def example(id: Option[SummaryId]) = Expense.example(id)
+        override implicit val writes = Expense.writes
+      }))
+      case TaxesPaid => Some(SummaryHandler(TaxesPaid.name, TaxPaid, new SandboxSummaryRepository[TaxPaid] {
+        override def example(id: Option[SummaryId]) = TaxPaid.example(id)
+        override implicit val writes = TaxPaid.writes
+      }))
+      case BalancingCharges => Some(SummaryHandler(BalancingCharges.name, BalancingCharge,
+        new SandboxSummaryRepository[BalancingCharge] {
+          override def example(id: Option[SummaryId]) = BalancingCharge.example(id)
+          override implicit val writes = BalancingCharge.writes
+      }))
+      case PrivateUseAdjustments => Some(SummaryHandler(PrivateUseAdjustments.name, PrivateUseAdjustment,
+        new SandboxSummaryRepository[PrivateUseAdjustment] {
+          override def example(id: Option[SummaryId]) = PrivateUseAdjustment.example(id)
+          override implicit val writes = PrivateUseAdjustment.writes
+      }))
       case _ => None
     }
   }

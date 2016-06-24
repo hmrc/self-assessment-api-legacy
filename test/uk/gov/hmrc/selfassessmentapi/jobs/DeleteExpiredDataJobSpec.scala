@@ -19,10 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.jobs
 import org.joda.time.{DateTime, DateTimeUtils}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import play.api.Configuration
-import uk.gov.hmrc.selfassessmentapi.{TestApplication, UnitSpec, WiremockDSL}
+import uk.gov.hmrc.selfassessmentapi.TestApplication
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob.{DeleteExpiredData, DeleteExpiredDataJobConfig}
 import uk.gov.hmrc.selfassessmentapi.repositories.JobHistoryMongoRepository
 import uk.gov.hmrc.selfassessmentapi.services.DeleteExpiredDataService

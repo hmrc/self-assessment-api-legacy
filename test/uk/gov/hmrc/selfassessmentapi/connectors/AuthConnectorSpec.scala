@@ -18,14 +18,12 @@ package uk.gov.hmrc.selfassessmentapi.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.mockito.Mockito
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, Upstream5xxResponse}
-import uk.gov.hmrc.selfassessmentapi.{LoggingService, TestApplication, WiremockDSL}
 import uk.gov.hmrc.selfassessmentapi.config.WSHttp
-import uk.gov.hmrc.support.BaseFunctionalSpec
+import uk.gov.hmrc.selfassessmentapi.{LoggingService, TestApplication, WiremockDSL}
 
 class AuthConnectorSpec extends TestApplication with WiremockDSL {
 

@@ -130,7 +130,14 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter) ++ defaultMicroserviceFilters
 
-  override val scheduledJobs: Seq[ScheduledJob] = Seq(DeleteExpiredDataJob)
+  override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
+
+  def createScheduledJobs() : Seq[DeleteExpiredDataJob.type] = {
+    if (AppContext.deleteExpiredDataJob.getBoolean("enabled").getOrElse(false))
+      Seq(DeleteExpiredDataJob)
+    else
+      Seq()
+  }
 
   override def onError(request : RequestHeader, ex: Throwable) = {
     ex.getCause match {

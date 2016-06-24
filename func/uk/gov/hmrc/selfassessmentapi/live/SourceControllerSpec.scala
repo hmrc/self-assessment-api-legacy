@@ -3,7 +3,6 @@ package uk.gov.hmrc.selfassessmentapi.live
 import org.joda.time.LocalDate
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.{parse, toJson}
-import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
@@ -17,7 +16,7 @@ case class Output(body: JsValue, code: Int)
 
 case class Scenario(input: JsValue, output: Output)
 
-class SourceControllerSpec extends BaseFunctionalSpec with MongoEmbeddedDatabase {
+class SourceControllerSpec extends BaseFunctionalSpec {
 
   private val seRepository: SourceRepository[SelfEmployment] = new SelfEmploymentMongoRepository
 
@@ -44,21 +43,6 @@ class SourceControllerSpec extends BaseFunctionalSpec with MongoEmbeddedDatabase
   lazy val createSource = Map(
     SelfEmployments -> await(seRepository.create(saUtr, TaxYear(taxYear), SelfEmployment.example()))
   )
-
-
-
-  override def beforeEach() {
-    super.baseBeforeEach()
-  }
-
-  override def beforeAll = {
-    super.mongoBeforeAll()
-    super.baseBeforeAll()
-  }
-
-  override def afterAll: Unit = {
-    super.mongoAfterAll()
-  }
 
   "Live source controller" should {
 

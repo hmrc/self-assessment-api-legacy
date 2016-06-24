@@ -1,51 +1,19 @@
 package uk.gov.hmrc.support
 
-import java.util.concurrent.TimeUnit
-
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
-import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
-import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.{JsArray, JsObject, JsValue, Reads}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.TestApplication
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
 
-import scala.concurrent.duration.FiniteDuration
 import scala.util.matching.Regex
 
-trait BaseFunctionalSpec extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
-  with BeforeAndAfterEach with IntegrationPatience with MockitoSugar with BeforeAndAfterAll {
+trait BaseFunctionalSpec extends TestApplication {
 
-  override implicit val defaultTimeout = FiniteDuration(100, TimeUnit.SECONDS)
-
-  val WIREMOCK_PORT = 22222
-  val stubHost = "localhost"
-  val taxYear = "2016-17"
-
-  protected val wiremockBaseUrl: String = s"http://$stubHost:$WIREMOCK_PORT"
   protected val saUtr = generateSaUtr()
-  private val wireMockServer = new WireMockServer(wireMockConfig().port(WIREMOCK_PORT))
-
-  protected def baseBeforeAll() = {
-    wireMockServer.stop()
-    wireMockServer.start()
-    WireMock.configureFor(stubHost, WIREMOCK_PORT)
-    // the below stub is here so that the application finds the registration endpoint which is called on startup
-    stubFor(post(urlPathEqualTo("/registration")).willReturn(aResponse().withStatus(200)))
-  }
-
-  override def beforeAll() = baseBeforeAll()
-
-  protected def baseBeforeEach() = WireMock.reset()
-
-  override def beforeEach() = baseBeforeEach()
+  val taxYear = "2016-17"
 
   class Assertions(request: String, response: HttpResponse) {
     def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, saUtr: SaUtr, taxYear: String) = {

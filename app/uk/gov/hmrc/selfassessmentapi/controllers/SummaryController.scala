@@ -59,8 +59,7 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
     handler(sourceType, summaryTypeName).findById(saUtr, taxYear, sourceId, summaryId) map {
       case Some(summary) =>
         Ok(halResource(toJson(summary), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
-      case None =>
-        NotFound
+      case None => NotFound
     }
   }
 

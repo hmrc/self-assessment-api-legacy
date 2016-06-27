@@ -31,5 +31,5 @@ class FeatureSwitchAction(source: SourceType, summary: String) extends ActionBui
 }
 
 object FeatureSwitchAction {
-  def apply(source: SourceType, summary: String = ""): FeatureSwitchAction = new FeatureSwitchAction(source, summary)
+  def apply(source: SourceType, summary: String = "") = new FeatureSwitchAction(source, summary)
 }

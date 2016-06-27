@@ -30,7 +30,7 @@ object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.Source
 
   // this whole implementation can be deleted (defaulted to the super class implementation) once all sources are supported
 
-  val supportedLiveSourceTypes: Set[SourceType] = Set(SelfEmployments)
+  private val supportedLiveSourceTypes: Set[SourceType] = Set(SelfEmployments)
 
   private def toJsValue(sourceType: SourceType)(f: => Action[JsValue]) = {
     if (supportedLiveSourceTypes.contains(sourceType)) f()

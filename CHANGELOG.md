@@ -1,6 +1,10 @@
 
 ## Changes since latest production release
 
+**No important changes**
+
+## [0.38.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.38.0) 29-June-2016
+
 Sandbox implementation (all CRUD operations unless specified)
 
 ### Source
@@ -12,13 +16,18 @@ Sandbox implementation (all CRUD operations unless specified)
     * dividends
     * Pension, Annuities and State Benefits
     
-### Other
+### Tax Year (only GET and PUT)
+* Pension Contributions
+* Charitable Givings
+* Blind Persons Allowance
+* Tax Refunded Or Set Off
+* Student Loan details
+* Child Benefit details
 
-* Pension Contributions at tax-year level (only GET and PUT)
-* Charitable Givings at tax-year level (only GET and PUT)
-* Blind Person Allowances at tax-year level (only GET and PUT)
-* Tax Refunded Or Set Off at tax-year level (only GET and PUT)
+
+### Other
 * Remove name field from all sources to avoid identifiable information being provided
+* Return full object representations in list responses
 
 ## [0.26.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.26.0) 02-June-2016
 

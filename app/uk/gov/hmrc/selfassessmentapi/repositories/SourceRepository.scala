@@ -37,7 +37,7 @@ trait SourceRepository[T] {
   def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]]
 }
 
-//todo feel free to implmeent this functionality in more scalaish way
+//todo feel free to implement this functionality in more scalaish way
 case class SourceRepositoryWrapper[T](private val target: SourceRepository[T]) extends SourceRepository[T] {
 
   lazy val selfAssessmentRepository = SelfAssessmentRepository()
@@ -54,9 +54,15 @@ case class SourceRepositoryWrapper[T](private val target: SourceRepository[T]) e
 
   override def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[T]] = target.findById(saUtr, taxYear, id)
 
-  override def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean] = target.delete(saUtr, taxYear, id)
+  override def delete(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Boolean] = {
+    selfAssessmentRepository.touch(saUtr, taxYear)
+    target.delete(saUtr, taxYear, id)
+  }
 
-  override def delete(saUtr: SaUtr, taxYear: TaxYear): Future[Boolean] = target.delete(saUtr, taxYear)
+  override def delete(saUtr: SaUtr, taxYear: TaxYear): Future[Boolean] = {
+    selfAssessmentRepository.touch(saUtr, taxYear)
+    target.delete(saUtr, taxYear)
+  }
 
   override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[T]] = target.list(saUtr, taxYear)
 

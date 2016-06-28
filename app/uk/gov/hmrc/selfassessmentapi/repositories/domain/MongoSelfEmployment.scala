@@ -21,8 +21,9 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Adjustments, Allowances, Income, SelfEmployment}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
@@ -57,6 +58,38 @@ object MongoSelfEmploymentIncomeSummary {
   }
 }
 
+case class MongoSelfEmploymentExpenseSummary(summaryId: SummaryId,
+                                             `type`: ExpenseType,
+                                             amount: BigDecimal) extends MongoSummary {
+  val arrayName = MongoSelfEmploymentExpenseSummary.arrayName
+
+  def toExpense: Expense =
+    Expense(id = Some(summaryId),
+      `type` = `type`,
+      amount = amount)
+
+  def toBsonDocument = BSONDocument(
+    "summaryId" -> summaryId,
+    "amount" -> BSONDouble(amount.doubleValue()),
+    "type" -> BSONString(`type`.toString)
+  )
+}
+
+object MongoSelfEmploymentExpenseSummary {
+
+  val arrayName = "expenses"
+
+  implicit val format = Json.format[MongoSelfEmploymentExpenseSummary]
+
+  def toMongoSummary(expense: Expense, id: Option[SummaryId] = None): MongoSelfEmploymentExpenseSummary = {
+    MongoSelfEmploymentExpenseSummary(
+      summaryId = id.getOrElse(BSONObjectID.generate.stringify),
+      `type` = expense.`type`,
+      amount = expense.amount
+    )
+  }
+}
+
 case class MongoSelfEmployment(id: BSONObjectID,
                                sourceId: SourceId,
                                saUtr: SaUtr,
@@ -66,7 +99,8 @@ case class MongoSelfEmployment(id: BSONObjectID,
                                commencementDate: LocalDate,
                                allowances: Option[Allowances] = None,
                                adjustments: Option[Adjustments] = None,
-                               incomes: Seq[MongoSelfEmploymentIncomeSummary] = Nil) extends SourceMetadata {
+                               incomes: Seq[MongoSelfEmploymentIncomeSummary] = Nil,
+                               expenses: Seq[MongoSelfEmploymentExpenseSummary] = Nil) extends SourceMetadata {
 
   def toSelfEmployment = SelfEmployment(
     id = Some(sourceId),

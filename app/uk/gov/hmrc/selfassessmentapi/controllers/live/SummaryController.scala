@@ -26,10 +26,13 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 
 import scala.concurrent.Future
+
 object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.SummaryController with SourceTypeSupport {
 
   val supportedSummaryTypes =
-    Map[SourceType, Set[String]](SelfEmployments -> Set(domain.selfemployment.SummaryTypes.Incomes.name)).withDefaultValue(Set())
+    Map[SourceType, Set[String]](SelfEmployments -> Set(
+      domain.selfemployment.SummaryTypes.Incomes.name,
+      domain.selfemployment.SummaryTypes.Expenses.name)).withDefaultValue(Set())
 
   private def withSupportedType(sourceType: SourceType, summaryTypeName: String)(f: => Future[Result]) =
     FeatureSwitchAction(sourceType).async {
@@ -49,7 +52,7 @@ object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.Summa
     }
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId,
-             summaryTypeName: String) = withSupportedTypeAndBody(sourceType , summaryTypeName) {
+             summaryTypeName: String) = withSupportedTypeAndBody(sourceType, summaryTypeName) {
     request => super.createSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName)
   }
 
@@ -59,7 +62,7 @@ object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.Summa
   }
 
   def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId,
-             summaryTypeName: String, summaryId: SummaryId) = withSupportedTypeAndBody(sourceType , summaryTypeName) {
+             summaryTypeName: String, summaryId: SummaryId) = withSupportedTypeAndBody(sourceType, summaryTypeName) {
     request => super.updateSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
   }
 

@@ -27,14 +27,14 @@ object ExpenseType extends Enumeration {
   type ExpenseType = Value
   val CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,
   AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other = Value
+  implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
 }
 
 case class Expense(id: Option[SummaryId] = None,
                    `type`: ExpenseType, amount: BigDecimal)
 
-object Expense extends BaseDomain[Expense]{
+object Expense extends BaseDomain[Expense] {
 
-  implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
   implicit val writes = Json.writes[Expense]
   implicit val reads: Reads[Expense] = (
     Reads.pure(None) and
@@ -42,5 +42,5 @@ object Expense extends BaseDomain[Expense]{
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Expense.apply _)
 
-    override def example(id: Option[SummaryId]) = Expense(id, ExpenseType.CISPayments, BigDecimal(1000))
+  override def example(id: Option[SummaryId]) = Expense(id, ExpenseType.CISPayments, BigDecimal(1000))
 }

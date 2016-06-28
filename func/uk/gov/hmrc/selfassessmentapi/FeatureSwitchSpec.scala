@@ -60,7 +60,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
 
   "self-employments and Furnished Holiday Lettings resource" should {
     "be blocked" in {
-      Map(SelfEmployments -> Status.BLOCKED/*, FurnishedHolidayLettings -> Status.BLOCKED, Employments -> Status.VISIBLE*/).foreach {
+      Map(SelfEmployments -> Status.BLOCKED, FurnishedHolidayLettings -> Status.BLOCKED, Employments -> Status.VISIBLE).foreach {
         case (source, status) =>
           Seq(SANDBOX, LIVE).foreach { implicit mode =>
             given()

@@ -29,6 +29,6 @@ case object TaxRefundedOrSetOffs extends TaxYearPropertyType {
   override val title: String = "Sample tax refunded or set off"
 
   override val fieldDescriptions = Seq(
-    PositiveMonetaryFieldDescription(name, "amount")
+    PositiveMonetaryFieldDescription(name, "amount", "Amount of Income Tax refunded or set off by HMRC or Jobcentre Plus")
   )
 }

@@ -40,7 +40,7 @@ object StudentLoan extends BaseDomain[StudentLoan] {
       (__ \ "deductedByEmployers").readNullable[BigDecimal](positiveAmountValidator("deductedByEmployers"))
     ) (StudentLoan.apply _)
 
-  override def example(id: Option[String]) = StudentLoan(StudentLoanPlanType.Plan1, Some(BigDecimal(2000)))
+  override def example(id: Option[String]) = StudentLoan(StudentLoanPlanType.Plan1, Some(2000.0))
 }
 
 case object StudentLoans extends TaxYearPropertyType {
@@ -49,7 +49,7 @@ case object StudentLoans extends TaxYearPropertyType {
   override def description(action: String): String = s"$action a student loan"
   override val title: String = "Sample student loan"
   override val fieldDescriptions = Seq(
-    PositiveMonetaryFieldDescription(name, "planType"),
-    PositiveMonetaryFieldDescription(name, "deductedByEmployers", optional = true)
+    PositiveMonetaryFieldDescription(name, "planType", "The plan type of taxpayer's Student Loan"),
+    PositiveMonetaryFieldDescription(name, "deductedByEmployers", "Amount of Student Loan repayments deducted by taxpayer's employer", optional = true)
   )
 }

@@ -63,11 +63,11 @@ object GiftAidPayments extends BaseDomain[GiftAidPayments] {
 
   override def example(id: Option[String] = None) =
     GiftAidPayments(
-      totalInTaxYear = Some(10000),
-      oneOff = Some(5000),
-      toNonUkCharities = Some(1000),
-      carriedBackToPreviousTaxYear = Some(1000),
-      carriedFromNextTaxYear = Some(2000)
+      totalInTaxYear = Some(10000.00),
+      oneOff = Some(5000.00),
+      toNonUkCharities = Some(1000.00),
+      carriedBackToPreviousTaxYear = Some(1000.00),
+      carriedFromNextTaxYear = Some(2000.00)
     )
 }
 
@@ -90,8 +90,8 @@ object SharesAndSecurities extends BaseDomain[SharesAndSecurities] {
 
   override def example(id: Option[String] = None) =
     SharesAndSecurities(
-      totalInTaxYear = 2000,
-      toNonUkCharities = Some(500)
+      totalInTaxYear = 2000.00,
+      toNonUkCharities = Some(500.00)
     )
 }
 
@@ -114,8 +114,8 @@ object LandAndProperties extends BaseDomain[LandAndProperties] {
 
   override def example(id: Option[String] = None) =
     LandAndProperties(
-      totalInTaxYear = 4000,
-      toNonUkCharities = Some(3000)
+      totalInTaxYear = 4000.00,
+      toNonUkCharities = Some(3000.00)
     )
 }
 

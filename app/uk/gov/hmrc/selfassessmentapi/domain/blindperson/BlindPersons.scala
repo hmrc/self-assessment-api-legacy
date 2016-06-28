@@ -29,9 +29,9 @@ case object BlindPersons extends TaxYearPropertyType {
   override val title: String = "Sample blind persons allowance"
 
   override val fieldDescriptions = Seq(
-    FullFieldDescription(name, "country", "String", UkCountryCodes.England.toString, "Country code: is mandatory if the person is blind", optional = true),
-    FullFieldDescription(name, "registrationAuthority", "String", "Registrar", "Registration authority: is mandatory if the country is England or Wales", optional = true),
-    PositiveMonetaryFieldDescription(name, "spouseSurplusAllowance", optional = true),
-    FullFieldDescription(name, "wantSpouseToUseSurplusAllowance", "Boolean", "true", "Wants spouse to use surplus allowance: can only be supplied if the person is registered blind in a country", optional = true)
+    FullFieldDescription(name, "country", "String", UkCountryCodes.England.toString, "Country of taxpayer's residence", optional = true),
+    FullFieldDescription(name, "registrationAuthority", "String", "Registrar", "Name of the local authority or other register: is mandatory if the country of residence is England or Wales", optional = true),
+    PositiveMonetaryFieldDescription(name, "spouseSurplusAllowance", "True if the taxpayer wants their spouse’s, or civil partner’s, surplus allowance", optional = true),
+    FullFieldDescription(name, "wantSpouseToUseSurplusAllowance", "Boolean", "true", "True if the taxpayer wants their spouse, or civil partner, to have their surplus allowance: can only be supplied if the person is registered blind in a country", optional = true)
   )
 }

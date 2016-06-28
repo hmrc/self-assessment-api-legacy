@@ -29,9 +29,9 @@ case object PensionContributions extends TaxYearPropertyType {
   override val title: String = "Sample pension contributions"
 
   override val fieldDescriptions = Seq(
-    PositiveMonetaryFieldDescription(name, "ukRegisteredPension", optional = true),
-    PositiveMonetaryFieldDescription(name, "retirementAnnuity", optional = true),
-    PositiveMonetaryFieldDescription(name, "employerScheme", optional = true),
-    PositiveMonetaryFieldDescription(name, "overseasPension", optional = true)
+    PositiveMonetaryFieldDescription(name, "ukRegisteredPension", "Payments to registered pension schemes where basic rate tax relief will be claimed by your pension provider", optional = true),
+    PositiveMonetaryFieldDescription(name, "retirementAnnuity", "Payments to a retirement annuity contract where basic rate tax relief will not be claimed by your provider", optional = true),
+    PositiveMonetaryFieldDescription(name, "employerScheme", "Payments to your employer’s scheme which were not deducted from your pay before tax", optional = true),
+    PositiveMonetaryFieldDescription(name, "overseasPension", "Payments to an overseas pension scheme, which is not UK-registered, which are eligible for tax relief and were not deducted from your pay before tax", optional = true)
   )
 }

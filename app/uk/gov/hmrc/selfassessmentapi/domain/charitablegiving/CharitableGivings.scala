@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.domain.charitablegiving
 
 import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.domain.{ObjectFieldDescription, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 case object CharitableGivings extends TaxYearPropertyType {
 
@@ -30,8 +30,14 @@ case object CharitableGivings extends TaxYearPropertyType {
   override def description(action: String): String = s"$action a charitableGivings"
 
   override val fieldDescriptions = Seq(
-    ObjectFieldDescription(name, "giftAidPayments", toJson(GiftAidPayments.example()), optional = true),
-    ObjectFieldDescription(name, "sharesSecurities", toJson(SharesAndSecurities.example()), optional = true),
-    ObjectFieldDescription(name, "landProperties", toJson(LandAndProperties.example()), optional = true)
+    PositiveMonetaryFieldDescription(name, "giftAidPayments.totalInTaxYear", "Total of Gift Aid payments made in the tax year", optional = true),
+    PositiveMonetaryFieldDescription(name, "giftAidPayments.oneOff", "Total of any ‘one-off’ payments in the tax year", optional = true),
+    PositiveMonetaryFieldDescription(name, "giftAidPayments.toNonUkCharities", "Total of Gift Aid payments to non-UK charities", optional = true),
+    PositiveMonetaryFieldDescription(name, "giftAidPayments.carriedBackToPreviousTaxYear", "Total of Gift Aid payments made in the tax year, but treated as if made in the previous tax year", optional = true),
+    PositiveMonetaryFieldDescription(name, "giftAidPayments.carriedFromNextTaxYear", "Total of Gift Aid payments made after the end of the tax year, but to be treated as if made in the tax year", optional = true),
+    PositiveMonetaryFieldDescription(name, "sharesSecurities.totalInTaxYear", "Value of qualifying shares or securities gifted to charities", optional = true),
+    PositiveMonetaryFieldDescription(name, "sharesSecurities.toNonUkCharities", "Value of qualifying shares or securities gifted to non-UK charities", optional = true),
+    PositiveMonetaryFieldDescription(name, "landProperties.totalInTaxYear", "Value of qualifying land and buildings gifted to charities", optional = true),
+    PositiveMonetaryFieldDescription(name, "landProperties.toNonUkCharities", "Value of qualifying land and buildings gifted to non-UK charities", optional = true)
   )
 }

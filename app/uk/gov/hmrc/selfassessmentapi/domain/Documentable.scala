@@ -28,10 +28,9 @@ trait FieldDescription {
   val optional: Boolean
 }
 
-case class PositiveMonetaryFieldDescription(source: String, name: String, optional: Boolean = false) extends FieldDescription {
+case class PositiveMonetaryFieldDescription(source: String, name: String, description: String = "Positive monetary amount", optional: Boolean = false) extends FieldDescription {
   val `type` = "Money"
   val example = "100.00"
-  val description = "Positive monetary amount"
 }
 
 case class MonetaryFieldDescription(source: String, name: String, optional: Boolean = false) extends FieldDescription {
@@ -40,9 +39,8 @@ case class MonetaryFieldDescription(source: String, name: String, optional: Bool
   val description = "Monetary amount"
 }
 
-case class ObjectFieldDescription(source: String, name: String, exampleJson: JsValue, optional: Boolean = false) extends FieldDescription {
+case class ObjectFieldDescription(source: String, name: String, exampleJson: JsValue, optional: Boolean = false, description: String = "Object") extends FieldDescription {
   val `type` = "Object"
-  val description = "Object"
   val example = prettyPrint(exampleJson)
 }
 

@@ -18,7 +18,7 @@ case class Scenario(input: JsValue, output: Output)
 
 class SourceControllerSpec extends BaseFunctionalSpec {
 
-  private val seRepository: SourceRepository[SelfEmployment] = new SelfEmploymentMongoRepository
+  private val selfEmploymentRepository: SourceRepository[SelfEmployment] = new SelfEmploymentMongoRepository
 
   val supportedSourceTypes = Set(SelfEmployments)
 
@@ -30,7 +30,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
                                            |[
                                            | {
                                            |   "path":"/commencementDate",
-                                           |   "code": "${COMMENCEMENT_DATE_NOT_IN_THE_PAST}",
+                                           |   "code": "$COMMENCEMENT_DATE_NOT_IN_THE_PAST",
                                            |   "message":"commencement date should be in the past"
                                            | }
                                            |]
@@ -41,7 +41,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
   )
 
   lazy val createSource = Map(
-    SelfEmployments -> await(seRepository.create(saUtr, TaxYear(taxYear), SelfEmployment.example()))
+    SelfEmployments -> await(selfEmploymentRepository.create(saUtr, TaxYear(taxYear), SelfEmployment.example()))
   )
 
   "Live source controller" should {

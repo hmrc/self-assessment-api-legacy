@@ -16,62 +16,34 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json._
-import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.{FeatureSwitchAction, domain}
+import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-
-import scala.concurrent.Future
 
 object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.SummaryController with SourceTypeSupport {
 
-  val supportedSummaryTypes =
-    Map[SourceType, Set[String]](SelfEmployments -> Set(
-      domain.selfemployment.SummaryTypes.Incomes.name,
-      domain.selfemployment.SummaryTypes.Expenses.name)).withDefaultValue(Set())
+  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) =
+    FeatureSwitchAction(sourceType, summaryTypeName).async(parse.json) {
+      request => super.createSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName)
+  }
 
-  private def withSupportedType(sourceType: SourceType, summaryTypeName: String)(f: => Future[Result]) =
-    FeatureSwitchAction(sourceType).async {
-      supportedSummaryTypes(sourceType).contains(summaryTypeName) match {
-        case true => f
-        case false => Future.successful(NotImplemented(toJson(ErrorNotImplemented)))
-      }
+  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
+    FeatureSwitchAction(sourceType, summaryTypeName).async {
+      super.readSummary(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
     }
 
-  private def withSupportedTypeAndBody(sourceType: SourceType, summaryTypeName: String)(f: Request[JsValue] => Future[Result]) =
-    FeatureSwitchAction(sourceType).async(parse.json) {
-      request =>
-        supportedSummaryTypes(sourceType).contains(summaryTypeName) match {
-          case true => f(request)
-          case false => Future.successful(NotImplemented(toJson(ErrorNotImplemented)))
-        }
-    }
-
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId,
-             summaryTypeName: String) = withSupportedTypeAndBody(sourceType, summaryTypeName) {
-    request => super.createSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName)
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
+    FeatureSwitchAction(sourceType, summaryTypeName).async(parse.json) {
+      request => super.updateSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
   }
 
-  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String,
-           summaryId: SummaryId) = withSupportedType(sourceType, summaryTypeName) {
-    super.readSummary(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
+    FeatureSwitchAction(sourceType, summaryTypeName).async {
+      super.deleteSummary(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId,
-             summaryTypeName: String, summaryId: SummaryId) = withSupportedTypeAndBody(sourceType, summaryTypeName) {
-    request => super.updateSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
-  }
-
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String,
-             summaryId: SummaryId) = withSupportedType(sourceType, summaryTypeName) {
-    super.deleteSummary(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
-  }
-
-  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = withSupportedType(sourceType, summaryTypeName) {
-    super.listSummaries(saUtr, taxYear, sourceType, sourceId, summaryTypeName)
+  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) =
+    FeatureSwitchAction(sourceType, summaryTypeName).async {
+      super.listSummaries(saUtr, taxYear, sourceType, sourceId, summaryTypeName)
   }
 }

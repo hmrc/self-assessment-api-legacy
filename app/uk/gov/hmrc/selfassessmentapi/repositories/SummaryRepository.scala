@@ -23,7 +23,7 @@ import scala.concurrent.Future
 
 trait SummaryRepository[T] {
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, income: T): Future[Option[SummaryId]]
+  def create(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summary: T): Future[Option[SummaryId]]
 
   def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[T]]
 

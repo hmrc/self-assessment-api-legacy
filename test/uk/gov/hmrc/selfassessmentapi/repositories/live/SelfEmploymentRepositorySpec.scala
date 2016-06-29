@@ -22,10 +22,10 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
+import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -33,7 +33,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
   private val mongoRepository = new SelfEmploymentMongoRepository
   private val selfEmploymentRepository: SourceRepository[SelfEmployment] = mongoRepository
-  private val incomeRepository: SummaryRepository[Income] = mongoRepository.IncomeRepository
+  private val summariesMap: Map[BaseDomain[_], SummaryRepository[_]] = Map(Income -> mongoRepository.IncomeRepository, Expense -> mongoRepository.ExpenseRepository)
+
 
   override def beforeEach() {
     await(mongoRepository.drop)
@@ -235,136 +236,172 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     }
   }
 
-  "create income" should {
-    "add an income to an empty list when source exists and return id" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val summary = Income(`type` = IncomeType.Turnover, amount = 10)
-      val summaryId = await(incomeRepository.create(saUtr, taxYear, sourceId, summary))
+  def cast[A](a: Any): A = a.asInstanceOf[A]
 
-      summaryId.isDefined shouldEqual true
-      val summaries = await(incomeRepository.list(saUtr, taxYear, sourceId))
+  "create summary" should {
+    "add a summary to an empty list when source exists and return id" in {
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val summary = summaryItem.example()
+        val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary)))
 
-      val found = summaries.get
-      found.headOption shouldEqual Some(summary.copy(id = summaryId))
+        summaryId.isDefined shouldEqual true
+        val dbSummaries = await(repo.list(saUtr, taxYear, sourceId))
+
+        val found = dbSummaries.get
+        found.headOption shouldEqual Some(summaryItem.example(id = summaryId))
+      }
     }
 
-    "add an income to the existing list when source exists and return id" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val summary = Income(`type` = IncomeType.Turnover, amount = 10)
-      val summary1 = Income(`type` = IncomeType.Other, amount = 10)
-      val summaryId = await(incomeRepository.create(saUtr, taxYear, sourceId, summary))
-      val summaryId1 = await(incomeRepository.create(saUtr, taxYear, sourceId, summary1))
+    "add a summary to the existing list when source exists and return id" in {
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val summary = summaryItem.example()
+        val summary1 = summaryItem.example()
+        val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary)))
+        val summaryId1 = await(repo.create(saUtr, taxYear, sourceId, cast(summary1)))
 
-      val summaries = await(incomeRepository.list(saUtr, taxYear, sourceId))
+        val summaries = await(repo.list(saUtr, taxYear, sourceId))
 
-      val found = summaries.get
-      found should contain theSameElementsAs Seq(summary.copy(id = summaryId), summary1.copy(id = summaryId1))
+        val found = summaries.get
+        found should contain theSameElementsAs Seq(summaryItem.example(id = summaryId), summaryItem.example(id = summaryId1))
+      }
     }
 
     "return none when source does not exist" in {
-      val summary = Income(`type` = IncomeType.Turnover, amount = 10)
-      val summaryId = await(incomeRepository.create(saUtr, taxYear, BSONObjectID.generate.stringify, summary))
-      summaryId shouldEqual None
+      for ((summaryItem, repo) <- summariesMap) {
+        val summary = summaryItem.example()
+        val summaryId = await(repo.create(saUtr, taxYear, BSONObjectID.generate.stringify, cast(summary)))
+        summaryId shouldEqual None
+      }
     }
   }
 
-  "find income by id" should {
+  "find summary by id" should {
     "return none if the source does not exist" in {
-      await(incomeRepository.findById(saUtr, taxYear, BSONObjectID.generate.stringify, BSONObjectID.generate.stringify)) shouldEqual None
+      for ((summaryItem, repo) <- summariesMap) {
+        await(repo.findById(saUtr, taxYear, BSONObjectID.generate.stringify, BSONObjectID.generate.stringify)) shouldEqual None
+      }
     }
 
-    "return none if the income does not exist" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      await(incomeRepository.findById(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify)) shouldEqual None
+    "return none if the summary does not exist" in {
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        await(repo.findById(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify)) shouldEqual None
+      }
     }
 
-    "return the income if found" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val summary = Income(`type` = IncomeType.Turnover, amount = 10)
-      val summaryId = await(incomeRepository.create(saUtr, taxYear, sourceId, summary)).get
-      val found = await(incomeRepository.findById(saUtr, taxYear, sourceId, summaryId))
+    "return the summary if found" in {
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val summary = summaryItem.example()
+        val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
+        val found = await(repo.findById(saUtr, taxYear, sourceId, summaryId))
 
-      found shouldEqual Some(summary.copy(id = Some(summaryId)))
+        found shouldEqual Some(summaryItem.example(id = Some(summaryId)))
+      }
     }
   }
 
-  "list incomes" should {
-    "return empty list when source has no incomes" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      await(incomeRepository.list(saUtr, taxYear, sourceId)) shouldEqual Some(Seq.empty)
+  "list summaries" should {
+    "return empty list when source has no summaries" in {
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        await(repo.list(saUtr, taxYear, sourceId)) shouldEqual Some(Seq.empty)
+      }
     }
 
     "return none when source does not exist" in {
-      await(incomeRepository.list(saUtr, taxYear, BSONObjectID.generate.stringify)) shouldEqual None
+      for ((summaryItem, repo) <- summariesMap) {
+        await(repo.list(saUtr, taxYear, BSONObjectID.generate.stringify)) shouldEqual None
+      }
     }
   }
 
-  "delete income" should {
-    "return true when the income has been deleted" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val summary = Income(`type` = IncomeType.Turnover, amount = 10)
-      val summaryId = await(incomeRepository.create(saUtr, taxYear, sourceId, summary)).get
-      await(incomeRepository.delete(saUtr, taxYear, sourceId, summaryId)) shouldEqual true
+  "delete summary" should {
+    "return true when the summary has been deleted" in {
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val summary = summaryItem.example()
+        val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
+        await(repo.delete(saUtr, taxYear, sourceId, summaryId)) shouldEqual true
+      }
     }
 
-    "only delete the specified income" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val summary = Income(`type` = IncomeType.Turnover, amount = 10)
-      val summaryId = await(incomeRepository.create(saUtr, taxYear, sourceId, summary)).get
-      val summaryId1 = await(incomeRepository.create(saUtr, taxYear, sourceId, summary))
-      await(incomeRepository.delete(saUtr, taxYear, sourceId, summaryId))
+    "only delete the specified summary" in {
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val summary = summaryItem.example()
+        val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
+        val summaryId1 = await(repo.create(saUtr, taxYear, sourceId, cast(summary)))
+        await(repo.delete(saUtr, taxYear, sourceId, summaryId))
 
-      val found = await(incomeRepository.list(saUtr, taxYear, sourceId)).get
-      found.size shouldEqual 1
-      found.map(_.id).head shouldEqual summaryId1
+        val found = await(repo.list(saUtr, taxYear, sourceId)).get
+        found.size shouldEqual 1
+        found.head shouldEqual summaryItem.example(id = summaryId1)
+      }
     }
 
     "return false when the source does not exist" in {
-      await(incomeRepository.delete(saUtr, taxYear, BSONObjectID.generate.stringify, BSONObjectID.generate.stringify)) shouldEqual false
+      for ((summaryItem, repo) <- summariesMap) {
+        await(repo.delete(saUtr, taxYear, BSONObjectID.generate.stringify, BSONObjectID.generate.stringify)) shouldEqual false
+      }
     }
 
-    "return false when the income does not exist" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      await(incomeRepository.delete(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify)) shouldEqual false
+    "return false when the summary does not exist" in {
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        await(repo.delete(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify)) shouldEqual false
+      }
     }
   }
 
   "update income" should {
     "return true when the income has been updated" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val summary = Income(`type` = IncomeType.Turnover, amount = 10)
-      val summaryId = await(incomeRepository.create(saUtr, taxYear, sourceId, summary)).get
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val summary = summaryItem.example()
+        val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
 
-      val summaryToUpdate = summary.copy(`type` = IncomeType.Other, amount = 20)
-      await(incomeRepository.update(saUtr, taxYear, sourceId, summaryId, summaryToUpdate)) shouldEqual true
+        val summaryToUpdate = summaryItem.example()
+        await(repo.update(saUtr, taxYear, sourceId, summaryId, cast(summaryToUpdate))) shouldEqual true
 
-      val found = await(incomeRepository.findById(saUtr, taxYear, sourceId, summaryId))
+        val found = await(repo.findById(saUtr, taxYear, sourceId, summaryId))
 
-      found shouldEqual Some(summaryToUpdate.copy(id = Some(summaryId)))
+        found shouldEqual Some(summaryItem.example(id = Some(summaryId)))
+      }
     }
 
     "only update the specified income" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val summary1 = Income(`type` = IncomeType.Turnover, amount = 10)
-      val summaryId1 = await(incomeRepository.create(saUtr, taxYear, sourceId, summary1)).get
-      val summary2 = Income(`type` = IncomeType.Turnover, amount = 50)
-      val summaryId2 = await(incomeRepository.create(saUtr, taxYear, sourceId, summary2)).get
+      for ((summaryItem, repo) <- summariesMap) {
+        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val summary1 = summaryItem.example()
+        val summaryId1 = await(repo.create(saUtr, taxYear, sourceId, cast(summary1))).get
+        val summary2 = summaryItem.example()
+        val summaryId2 = await(repo.create(saUtr, taxYear, sourceId, cast(summary2))).get
 
-      val summaryToUpdate = summary2.copy(`type` = IncomeType.Other, amount = 20)
-      await(incomeRepository.update(saUtr, taxYear, sourceId, summaryId2, summaryToUpdate)) shouldEqual true
+        val summaryToUpdate = summaryItem.example()
+        await(repo.update(saUtr, taxYear, sourceId, summaryId2, cast(summaryToUpdate))) shouldEqual true
 
-      val found = await(incomeRepository.list(saUtr, taxYear, sourceId)).get
+        val found = await(repo.list(saUtr, taxYear, sourceId)).get
 
-      found should contain theSameElementsAs Seq(summary1.copy(id = Some(summaryId1)), summaryToUpdate.copy(id = Some(summaryId2)))
+        found should contain theSameElementsAs Seq(summaryItem.example(id = Some(summaryId1)), summaryItem.example(id = Some(summaryId2)))
+      }
     }
 
     "return false when the source does not exist" in {
-      await(incomeRepository.update(saUtr, taxYear, BSONObjectID.generate.stringify, BSONObjectID.generate.stringify, Income.example())) shouldEqual false
+      for ((summaryItem, repo) <- summariesMap) {
+        await(repo.update(saUtr, taxYear, BSONObjectID.generate.stringify, BSONObjectID.generate.stringify, cast(summaryItem.example()))) shouldEqual false
+      }
     }
 
     "return false when the income does not exist" in {
       val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      await(incomeRepository.update(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify, Income.example())) shouldEqual false
+      for ((summaryItem, repo) <- summariesMap) {
+        await(repo.update(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify, cast(summaryItem.example()))) shouldEqual false
+      }
     }
   }
+
+
 }

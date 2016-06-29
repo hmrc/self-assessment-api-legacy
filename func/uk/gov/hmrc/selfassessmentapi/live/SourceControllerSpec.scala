@@ -3,8 +3,9 @@ package uk.gov.hmrc.selfassessmentapi.live
 import org.joda.time.LocalDate
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.{parse, toJson}
+import uk.gov.hmrc.selfassessmentapi.controllers.live.SourceController
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
@@ -20,9 +21,9 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
   private val seRepository: SourceRepository[SelfEmployment] = new SelfEmploymentMongoRepository
 
-  val supportedSourceTypes = Set(SelfEmployments)
+  val supportedSourceTypes: Set[SourceType] = SourceController.supportedSourceTypes
 
-  val errorScenarios = Map(
+  val errorScenarios :Map[SourceType, Scenario] = Map(
     SelfEmployments -> Scenario( input = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
                                  output = Output(
                                      body = parse(
@@ -40,7 +41,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     )
   )
 
-  lazy val createSource = Map(
+  lazy val createSource: Map[SourceType, SourceId] = Map(
     SelfEmployments -> await(seRepository.create(saUtr, TaxYear(taxYear), SelfEmployment.example()))
   )
 

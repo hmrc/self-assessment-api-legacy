@@ -26,7 +26,7 @@ object SourceType {
   case object FurnishedHolidayLettings extends SourceType {
     override val name = "furnished-holiday-lettings"
     override def example(sourceId: Option[SourceId] = None): JsValue = toJson(FurnishedHolidayLetting.example(sourceId))
-    override val summaryTypes: Seq[SummaryType] = Seq(Incomes, Expenses, PrivateUseAdjustments, BalancingCharges)
+    override val summaryTypes : Set[SummaryType] = Set(Incomes, Expenses, PrivateUseAdjustments, BalancingCharges)
     override val title = "Sample furnished holiday lettings"
 
     override def description(action: String) = s"$action a furnished holiday letting"

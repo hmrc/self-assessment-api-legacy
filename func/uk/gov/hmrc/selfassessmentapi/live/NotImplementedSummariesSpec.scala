@@ -12,7 +12,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
 
   val liveSummaryImplementedTypes = Seq(selfemployment.SummaryTypes.Incomes, selfemployment.SummaryTypes.Expenses)
 
-  private def filter(types: Seq[SummaryType]) = types.filterNot(liveSummaryImplementedTypes.contains(_))
+  private def filter(types: Set[SummaryType]) = types.filterNot(liveSummaryImplementedTypes.contains(_))
 
   "create summaries" should {
     "not be implemented" in {

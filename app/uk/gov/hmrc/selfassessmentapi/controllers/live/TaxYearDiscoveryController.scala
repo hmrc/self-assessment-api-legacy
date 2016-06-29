@@ -34,7 +34,7 @@ object TaxYearDiscoveryController extends BaseController with Links {
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async {
     request =>
       val halLinks =
-        Seq(HalLink(SourceTypes.SelfEmployments.name,
+        Set(HalLink(SourceTypes.SelfEmployments.name,
                     sourceHref(utr, taxYear, SourceTypes.SelfEmployments)),
             HalLink("self", discoverTaxYearHref(utr, taxYear)))
       Future.successful(Ok(halResource(obj(), halLinks)))

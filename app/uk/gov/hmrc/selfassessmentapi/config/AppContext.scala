@@ -31,7 +31,7 @@ object AppContext extends ServicesConfig {
   lazy val featureSwitch = current.configuration.getConfig(s"$env.feature-switch")
   def deleteExpiredDataJob = current.configuration.getConfig(s"$env.scheduling.deleteExpiredDataJob").getOrElse(throw new RuntimeException(s"$env.scheduling.deleteExpiredDataJob is not configured"))
 
-  val supportedTaxYears: Seq[String] = Seq("2016-17")
+  val supportedTaxYears: Set[String] = Set("2016-17")
 }
 
 

@@ -30,13 +30,15 @@ import scala.concurrent.Future
 object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.SummaryController with SourceTypeSupport {
 
   val supportedSummaryTypes =
-    Map[SourceType, Set[String]](SelfEmployments -> Set(
-      domain.selfemployment.SummaryTypes.Incomes.name,
-      domain.selfemployment.SummaryTypes.Expenses.name)).withDefaultValue(Set())
+    Map[SourceType, Set[SummaryType]](SelfEmployments -> Set(domain.selfemployment.SummaryTypes.Incomes,
+                                                             domain.selfemployment.SummaryTypes.Expenses)
+                                                             ).withDefaultValue(Set())
+
+  private lazy val supportedSummaryNames: SourceType => Set[String] = sourceType => supportedSummaryTypes(sourceType).map(_.name)
 
   private def withSupportedType(sourceType: SourceType, summaryTypeName: String)(f: => Future[Result]) =
     FeatureSwitchAction(sourceType).async {
-      supportedSummaryTypes(sourceType).contains(summaryTypeName) match {
+      supportedSummaryNames(sourceType).contains(summaryTypeName) match {
         case true => f
         case false => Future.successful(NotImplemented(toJson(ErrorNotImplemented)))
       }
@@ -45,7 +47,7 @@ object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.Summa
   private def withSupportedTypeAndBody(sourceType: SourceType, summaryTypeName: String)(f: Request[JsValue] => Future[Result]) =
     FeatureSwitchAction(sourceType).async(parse.json) {
       request =>
-        supportedSummaryTypes(sourceType).contains(summaryTypeName) match {
+        supportedSummaryNames(sourceType).contains(summaryTypeName) match {
           case true => f(request)
           case false => Future.successful(NotImplemented(toJson(ErrorNotImplemented)))
         }

@@ -30,13 +30,15 @@ import uk.gov.hmrc.play.auth.controllers.{AuthConfig, AuthParamsControllerConfig
 import uk.gov.hmrc.play.auth.microservice.connectors.{AccountId, HttpVerb, Regime, ResourceToAuthorise}
 import uk.gov.hmrc.play.auth.microservice.filters.AuthorisationFilter
 import uk.gov.hmrc.play.config.{AppName, RunMode}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.{HeaderCarrier, NotImplementedException}
 import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.scheduling._
-import uk.gov.hmrc.selfassessmentapi.controllers.UnknownSummaryException
+import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorNotImplemented, UnknownSummaryException}
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
 import play.api.mvc.Results._
+import uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.{NotFound => _, NotImplemented => _, _}
+
 import scala.concurrent.Future
 import scala.util.matching.Regex
 
@@ -141,6 +143,7 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
   override def onError(request : RequestHeader, ex: Throwable) = {
     ex.getCause match {
       case ex: UnknownSummaryException => Future.successful(NotFound)
+      case ex: NotImplementedException => Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
       case _ => super.onError(request, ex)
     }
   }

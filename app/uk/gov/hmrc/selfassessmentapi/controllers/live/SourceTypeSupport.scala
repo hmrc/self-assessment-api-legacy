@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
+import uk.gov.hmrc.play.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment.SelfEmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.domain.SourceType
@@ -24,5 +25,6 @@ import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.SelfEmployments
 trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.SourceTypeSupport {
   def sourceHandler(sourceType: SourceType): SourceHandler[_] = sourceType match {
     case SelfEmployments => SelfEmploymentSourceHandler
+    case _ => throw new NotImplementedException(s"${sourceType.name} is not implemented")
   }
 }

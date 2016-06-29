@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment
 
+import uk.gov.hmrc.play.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.{Expenses, Incomes}
@@ -30,7 +31,7 @@ object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmp
     summaryType match {
       case Incomes =>  Some(SummaryHandler(SummaryRepositoryWrapper(SelfEmploymentRepository().IncomeRepository), Income, Incomes.name))
       case Expenses => Some(SummaryHandler(SummaryRepositoryWrapper(SelfEmploymentRepository().ExpenseRepository), Expense, Expenses.name))
-      case _ => None
+      case _ => throw new NotImplementedException(s"${SelfEmployments.name} ${summaryType.name} is not implemented")
     }
   }
 

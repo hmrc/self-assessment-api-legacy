@@ -21,8 +21,8 @@ import play.api.libs.json.Json._
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.{FeatureSwitchAction, domain}
 import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.{FeatureSwitchAction, domain}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 
 import scala.concurrent.Future
@@ -55,7 +55,7 @@ object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.Summa
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId,
              summaryTypeName: String) = withSupportedTypeAndBody(sourceType, summaryTypeName) {
-    request => super.createSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName)
+     super.createSummary(_, saUtr, taxYear, sourceType, sourceId, summaryTypeName)
   }
 
   def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String,
@@ -65,7 +65,7 @@ object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.Summa
 
   def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId,
              summaryTypeName: String, summaryId: SummaryId) = withSupportedTypeAndBody(sourceType, summaryTypeName) {
-    request => super.updateSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
+    super.updateSummary(_, saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
   }
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String,

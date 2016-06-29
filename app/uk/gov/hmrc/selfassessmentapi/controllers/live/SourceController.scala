@@ -47,7 +47,7 @@ object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.Source
     }
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = withSupportedTypeAndBody(sourceType) {
-    implicit request => super.createSource(request, saUtr, taxYear, sourceType)
+    request => super.createSource(request, saUtr, taxYear, sourceType)
   }
 
   def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = withSupportedType(sourceType) {

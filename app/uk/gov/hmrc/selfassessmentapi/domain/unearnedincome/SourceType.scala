@@ -26,7 +26,7 @@ object SourceType {
   case object UnearnedIncomes extends SourceType {
 
     override val name: String = "unearned-incomes"
-    override val summaryTypes: Seq[SummaryType] = Seq(SavingsIncomes, Dividends, Benefits)
+    override val summaryTypes : Set[SummaryType]= Set(SavingsIncomes, Dividends, Benefits)
     override def example(sourceId: Option[SourceId] = None): JsValue = toJson(UnearnedIncome.example(sourceId))
 
     override def description(action: String): String = s"$action an unearned income"

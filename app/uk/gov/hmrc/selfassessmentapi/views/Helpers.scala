@@ -35,7 +35,7 @@ object Helpers extends HalSupport with Links {
     sourceTypeAndSummaryTypeIdResponse(obj(), utr, taxYear, SourceTypes.SelfEmployments, sourceId, selfemployment.SummaryTypes.Incomes, summaryId)
 
   def sourceTypeAndSummaryTypeIdResponse(jsValue: JsValue, utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
-    val hal = halResource(jsValue, Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType.name, summaryId))))
+    val hal = halResource(jsValue, Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType.name, summaryId))))
     prettyPrint(hal.json)
   }
 
@@ -50,43 +50,43 @@ object Helpers extends HalSupport with Links {
 
   def sourceTypeAndSummaryTypeIdListResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: SummaryId) = {
     val json = toJson(Seq(summaryId, summaryId, summaryId).map(id => halResource(summaryType.example(Some(summaryId)),
-      Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType.name, id))))))
+      Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(utr, taxYear, sourceType, sourceId, summaryType.name, id))))))
     val hal = halResourceList(summaryType.name, json, sourceTypeAndSummaryTypeHref(utr, taxYear, sourceType, sourceId, summaryType.name))
     PCData(Json.prettyPrint(hal.json))
   }
 
   def sourceTypeIdListResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     val json = toJson(Seq(sourceId, sourceId, sourceId).map(id => halResource(sourceType.example(Some(sourceId)),
-      Seq(HalLink("self", sourceIdHref(utr, taxYear, sourceType, id))))))
+      Set(HalLink("self", sourceIdHref(utr, taxYear, sourceType, id))))))
     val hal = halResourceList(sourceType.name, json, sourceHref(utr, taxYear, sourceType))
     prettyPrint(hal.json)
   }
 
   def resolveCustomerResponse(utr: SaUtr) = {
-    val hal = halResource(obj(), Seq(HalLink("self-assessment", discoverTaxYearsHref(utr))))
+    val hal = halResource(obj(), Set(HalLink("self-assessment", discoverTaxYearsHref(utr))))
     prettyPrint(hal.json)
   }
 
   def createLiabilityResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
-    val hal = halResource(obj(), Seq(HalLink("self", liabilityHref(utr, taxYear, liabilityId))))
+    val hal = halResource(obj(), Set(HalLink("self", liabilityHref(utr, taxYear, liabilityId))))
     prettyPrint(hal.json)
   }
 
 
   def liabilityListResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
     val json = toJson(Seq(liabilityId, liabilityId, liabilityId).map(id => halResource(Json.toJson(Liability.example(liabilityId)),
-      Seq(HalLink("self", liabilityHref(utr, taxYear, id))))))
+      Set(HalLink("self", liabilityHref(utr, taxYear, id))))))
     val hal = halResourceList("liabilities", json, liabilitiesHref(utr, taxYear))
     prettyPrint(hal.json)
   }
 
   def liabilityResponse(utr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId) = {
-    val hal = halResource(Json.toJson(Liability.example(liabilityId)), Seq(HalLink("self", liabilityHref(utr, taxYear, liabilityId))))
+    val hal = halResource(Json.toJson(Liability.example(liabilityId)), Set(HalLink("self", liabilityHref(utr, taxYear, liabilityId))))
     prettyPrint(hal.json)
   }
 
   def discoverTaxYearsResponse(utr: SaUtr, taxYear: TaxYear) = {
-    val hal = halResource(obj(), Seq(HalLink("self", discoverTaxYearsHref(utr)), HalLink(taxYear.taxYear, discoverTaxYearHref(utr, taxYear))))
+    val hal = halResource(obj(), Set(HalLink("self", discoverTaxYearsHref(utr)), HalLink(taxYear.taxYear, discoverTaxYearHref(utr, taxYear))))
     prettyPrint(hal.json)
   }
 
@@ -96,9 +96,9 @@ object Helpers extends HalSupport with Links {
     prettyPrint(hal.json)
   }
 
-  def discoveryLinks(utr: SaUtr, taxYear: TaxYear): Seq[HalLink] = {
+  def discoveryLinks(utr: SaUtr, taxYear: TaxYear): Set[HalLink] = {
     val sourceLinks = SourceTypes.types.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
-    val links = sourceLinks :+ HalLink("liabilities", liabilitiesHref(utr, taxYear)) :+ HalLink("self", discoverTaxYearHref(utr, taxYear))
+    val links = sourceLinks + HalLink("liabilities", liabilitiesHref(utr, taxYear)) + HalLink("self", discoverTaxYearHref(utr, taxYear))
     links
   }
 

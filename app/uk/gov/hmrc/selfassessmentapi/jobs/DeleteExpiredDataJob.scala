@@ -53,7 +53,7 @@ object DeleteExpiredDataJob extends ExclusiveScheduledJob {
 
 
   private[jobs] class DeleteExpiredDataJobConfig(config: Configuration) {
-    lazy val latestModifiedDate = DateTime.now.minusHours(config.getInt("timeToLiveInHours").getOrElse(throw new IllegalStateException("Config key not found: timeToLiveInHours")))
+    def latestModifiedDate = DateTime.now.minusHours(config.getInt("timeToLiveInHours").getOrElse(throw new IllegalStateException("Config key not found: timeToLiveInHours")))
 
     lazy val jobInterval = config.getMilliseconds("interval").getOrElse(throw new IllegalStateException("Config key not found: interval")) millisecond
 

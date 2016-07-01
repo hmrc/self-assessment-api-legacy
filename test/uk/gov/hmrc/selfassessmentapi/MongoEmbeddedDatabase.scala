@@ -16,17 +16,19 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
+import com.mongodb.BasicDBObject
+import com.mongodb.casbah.MongoClient
 import de.flapdoodle.embed.mongo.config.{MongodConfigBuilder, Net}
 import de.flapdoodle.embed.mongo.distribution.Version
 import de.flapdoodle.embed.mongo.{MongodExecutable, MongodProcess, MongodStarter}
 import de.flapdoodle.embed.process.runtime.Network
-import org.scalatest.BeforeAndAfterAll
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import play.api.Logger
 import uk.gov.hmrc.mongo.MongoConnector
 
 import scala.util.Try
 
-trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
+trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
   private var mongodExe: MongodExecutable = null
   private var mongod: MongodProcess = null
@@ -37,6 +39,8 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
   private lazy val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
 
   implicit val mongo = new MongoConnector(mongoUri).db
+
+  lazy protected val agentPayeDB = MongoClient("localhost", embeddedPort)("self-assessment-api")
 
   protected def startEmbeddedMongo() = {
     if (useEmbeddedMongo) {
@@ -68,4 +72,13 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll {
     stopEmbeddedMongo()
   }
 
+  override def beforeEach = {
+    clearMongoCollections
+  }
+
+  protected def clearMongoCollections = {
+    List("selfEmployments").foreach {
+      coll => agentPayeDB.getCollection(coll).remove(new BasicDBObject())
+    }
+  }
 }

@@ -30,7 +30,7 @@ import org.scalatestplus.play.OneServerPerSuite
 import scala.concurrent.duration.FiniteDuration
 
 trait TestApplication extends UnitSpec with Matchers with OneServerPerSuite with Eventually with ScalaFutures
-  with BeforeAndAfterEach with IntegrationPatience with MockitoSugar with BeforeAndAfterAll with MongoEmbeddedDatabase {
+  with IntegrationPatience with MockitoSugar with MongoEmbeddedDatabase {
 
   override implicit val defaultTimeout = FiniteDuration(100, TimeUnit.SECONDS)
 
@@ -48,17 +48,20 @@ trait TestApplication extends UnitSpec with Matchers with OneServerPerSuite with
     stubFor(post(urlPathEqualTo("/registration")).willReturn(aResponse().withStatus(200)))
   }
 
-  override def beforeAll() = {
-    super.beforeAll()
+  override def beforeAll = {
+    super.beforeAll
     baseBeforeAll()
   }
 
-  override def afterAll() = {
-    super.afterAll()
+  override def afterAll = {
+    super.afterAll
     wireMockServer.stop()
   }
 
 
-  override def beforeEach() = WireMock.reset()
+  override def beforeEach = {
+    clearMongoCollections
+    WireMock.reset()
+  }
 
 }

@@ -5,12 +5,13 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json.{parse, toJson}
 import uk.gov.hmrc.selfassessmentapi.controllers.live.SourceController
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
-import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentMongoRepository
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.UnearnedIncome
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.repositories.live.{SelfEmploymentRepository, UnearnedIncomeRepository}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 case class Output(body: JsValue, code: Int)
@@ -19,30 +20,30 @@ case class Scenario(input: JsValue, output: Output)
 
 class SourceControllerSpec extends BaseFunctionalSpec {
 
-  private val seRepository: SourceRepository[SelfEmployment] = new SelfEmploymentMongoRepository
 
   val supportedSourceTypes: Set[SourceType] = SourceController.supportedSourceTypes
 
-  val errorScenarios :Map[SourceType, Scenario] = Map(
-    SelfEmployments -> Scenario( input = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
-                                 output = Output(
-                                     body = parse(
-                                        s"""
-                                           |[
-                                           | {
-                                           |   "path":"/commencementDate",
-                                           |   "code": "${COMMENCEMENT_DATE_NOT_IN_THE_PAST}",
-                                           |   "message":"commencement date should be in the past"
-                                           | }
-                                           |]
+  val errorScenarios: Map[SourceType, Scenario] = Map(
+    SelfEmployments -> Scenario(input = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
+      output = Output(
+        body = parse(
+          s"""
+             |[
+             | {
+             |   "path":"/commencementDate",
+             |   "code": "${COMMENCEMENT_DATE_NOT_IN_THE_PAST}",
+             |   "message":"commencement date should be in the past"
+             | }
+             |]
                                           """.stripMargin),
-                                        code = 400
-                                  )
+        code = 400
+      )
     )
   )
 
   lazy val createSource: Map[SourceType, SourceId] = Map(
-    SelfEmployments -> await(seRepository.create(saUtr, TaxYear(taxYear), SelfEmployment.example()))
+    SelfEmployments -> await(SelfEmploymentRepository().create(saUtr, TaxYear(taxYear), SelfEmployment.example())),
+    UnearnedIncomes -> await(UnearnedIncomeRepository().create(saUtr, TaxYear(taxYear), UnearnedIncome.example()))
   )
 
   "Live source controller" should {
@@ -92,13 +93,15 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "return 400 and an error response if the data for POST is invalid" in {
-      supportedSourceTypes.foreach { sourceType =>
-        given().userIsAuthorisedForTheResource(saUtr)
-        when()
-          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).input))
-          .thenAssertThat()
-          .statusIs(errorScenarios(sourceType).output.code)
-          .bodyIs(errorScenarios(sourceType).output.body)
+      errorScenarios.foreach {
+        case (sourceType, scenario) => {
+          given().userIsAuthorisedForTheResource(saUtr)
+          when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).input))
+            .thenAssertThat()
+            .statusIs(errorScenarios(sourceType).output.code)
+            .bodyIs(errorScenarios(sourceType).output.body)
+        }
       }
     }
 
@@ -127,14 +130,16 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "return 400 and an error response if the data for PUT is invalid" in {
-      supportedSourceTypes.foreach { sourceType =>
-        val seId = createSource(sourceType)
-        given().userIsAuthorisedForTheResource(saUtr)
-        when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/$seId", Some(errorScenarios(sourceType).input))
-          .thenAssertThat()
-          .statusIs(errorScenarios(sourceType).output.code)
-          .bodyIs(errorScenarios(sourceType).output.body)
+      errorScenarios.foreach {
+        case (sourceType, scenario) => {
+          val seId = createSource(sourceType)
+          given().userIsAuthorisedForTheResource(saUtr)
+          when()
+            .put(s"/$saUtr/$taxYear/${sourceType.name}/$seId", Some(errorScenarios(sourceType).input))
+            .thenAssertThat()
+            .statusIs(errorScenarios(sourceType).output.code)
+            .bodyIs(errorScenarios(sourceType).output.body)
+        }
       }
     }
   }

@@ -21,13 +21,13 @@ import reactivemongo.bson.{BSONDocument, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.AtomicUpdate
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSummary
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSummary, SourceMetadata}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
-trait TypedSourceSummaryRepository[A <: Any, ID <: Any] extends TypedSourceRepository[A, ID] with AtomicUpdate[A] {
+trait TypedSourceSummaryRepository[A <: SourceMetadata, ID <: Any] extends TypedSourceRepository[A, ID] with AtomicUpdate[A] {
 
   implicit val domainFormatImplicit: Format[A]
 

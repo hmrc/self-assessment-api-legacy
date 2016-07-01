@@ -32,7 +32,7 @@ trait TaxYearsDiscoveryController
 
   final def discoverTaxYears(utr: SaUtr) = Action.async { request =>
       val taxYearLinks = AppContext.supportedTaxYears.map(taxYear => HalLink(taxYear, discoverTaxYearHref(utr, TaxYear(taxYear))))
-      val links = HalLink("self", discoverTaxYearsHref(utr)) +: taxYearLinks
+      val links = taxYearLinks + HalLink("self", discoverTaxYearsHref(utr))
      Future.successful(Ok(halResource(JsObject(Nil), links)))
     }
 }

@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.employment
 
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes.{UKTaxesPaid, Benefits, Expenses, Incomes}
+import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes.{Benefits, Expenses, Incomes, UKTaxesPaid}
 
 object SourceType {
 
   case object Employments extends SourceType {
 
     override val name: String = "employments"
-    override val summaryTypes: Seq[SummaryType] = Seq(Incomes, Benefits, Expenses, UKTaxesPaid)
+    override val summaryTypes : Set[SummaryType] = Set(Incomes, Benefits, Expenses, UKTaxesPaid)
     override def example(sourceId: Option[SourceId] = None) = toJson(Employment.example(sourceId))
 
     override def description(action: String): String =  s"$action an employment"

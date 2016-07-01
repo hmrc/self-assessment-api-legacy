@@ -39,7 +39,7 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
     handler.getOrElse(throw UnknownSummaryException(sourceType, summaryTypeName))
   }
 
-  def createSummary(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = {
+  protected def createSummary(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = {
     handler(sourceType, summaryTypeName).create(saUtr, taxYear, sourceId, request.body) match {
       case Left(errorResult) =>
         Future.successful {
@@ -50,21 +50,21 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
           }
         }
       case Right(futOptId) => futOptId.map {
-        case Some(id) => Created(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
+        case Some(id) => Created(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
         case _ => BadRequest
       }
     }
   }
 
-  def readSummary(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
+  protected def readSummary(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
     handler(sourceType, summaryTypeName).findById(saUtr, taxYear, sourceId, summaryId) map {
       case Some(summary) =>
-        Ok(halResource(toJson(summary), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
+        Ok(halResource(toJson(summary), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
       case None => NotFound
     }
   }
 
-  def updateSummary(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
+  protected def updateSummary(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
     handler(sourceType, summaryTypeName).update(saUtr, taxYear, sourceId, summaryId, request.body) match {
       case Left(errorResult) =>
         Future.successful {
@@ -75,26 +75,26 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
           }
         }
       case Right(optResult) => optResult.map {
-        case true => Ok(halResource(obj(), Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
-        case false => BadRequest
+        case true => Ok(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
+        case false => NotFound
       }
     }
 
   }
 
 
-  def deleteSummary(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
+  protected def deleteSummary(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
     handler(sourceType, summaryTypeName).delete(saUtr, taxYear, sourceId, summaryId) map {
       case true => NoContent
       case false => NotFound
     }
   }
 
-  def listSummaries(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = {
+  protected def listSummaries(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = {
     val svc = handler(sourceType, summaryTypeName)
     svc.find(saUtr, taxYear, sourceId) map { summaries =>
       val json = toJson(summaries.map(summary => halResource(summary.json,
-        Seq(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summary.id))))))
+        Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summary.id))))))
 
       Ok(halResourceList(svc.listName, json, sourceTypeAndSummaryTypeHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName)))
     }

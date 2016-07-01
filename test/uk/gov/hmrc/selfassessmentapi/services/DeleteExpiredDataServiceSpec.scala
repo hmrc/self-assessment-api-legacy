@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import org.joda.time.{DateTime, DateTimeUtils}
+import org.joda.time.DateTime
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -53,8 +53,6 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndA
   "deleteExpiredData" should {
 
     "delete only the expired records (older than the lastModifiedDate) and not the latest records which have not expired" in {
-      DateTimeUtils.setCurrentMillisFixed(DateTime.now.getMillis)
-
       val lastModifiedDate = DateTime.now.minusWeeks(1)
       val saUtr2 = generateSaUtr()
       val saUtr3 = generateSaUtr()

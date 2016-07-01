@@ -35,7 +35,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
 
   override def requestLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
     val liabilityId = UUID.randomUUID().toString
-      val links = Seq(
+      val links = Set(
         HalLink("self", liabilityHref(utr, taxYear, liabilityId))
       )
     Future.successful(Accepted(halResource(JsObject(Nil), links)))
@@ -43,7 +43,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
 
   override def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
     val liability = createLiability(liabilityId)
-    val links = Seq(
+    val links = Set(
       HalLink("self", liabilityHref(utr, taxYear, liabilityId))
     )
     Future.successful(Ok(halResource(Json.toJson(liability), links)))
@@ -59,7 +59,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   override def find(saUtr: SaUtr, taxYear: TaxYear): Action[AnyContent] = Action.async { request =>
     val result= Seq(createLiability("1234"), createLiability("4321"), createLiability("7777"))
     val liabilities = toJson(
-      result.map(liability => halResource(Json.toJson(liability), Seq(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
+      result.map(liability => halResource(Json.toJson(liability), Set(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
     )
     Future.successful(Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr, taxYear))))
   }

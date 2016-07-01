@@ -26,7 +26,7 @@ object SourceType {
   case object SelfEmployments extends SourceType {
     override val name = "self-employments"
     override def example(sourceId: Option[SourceId] = None): JsValue = toJson(SelfEmployment.example(sourceId))
-    override val summaryTypes = Seq(Incomes, Expenses, GoodsAndServicesOwnUses, BalancingCharges)
+    override val summaryTypes : Set[SummaryType] = Set(Incomes, Expenses, GoodsAndServicesOwnUses, BalancingCharges)
     override val title = "Sample self-employments"
 
     override def description(action: String) = s"$action a self-employment"

@@ -32,7 +32,7 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
 
   override lazy val context: String = AppContext.apiGatewayContext
 
-  def createSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = {
+  protected def createSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = {
       sourceHandler(sourceType).create(saUtr, taxYear, request.body) match {
         case Left(errorResult) =>
           Future.successful {
@@ -46,14 +46,14 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
       }
     }
 
-  def readSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
+  protected def readSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     sourceHandler(sourceType).findById(saUtr, taxYear, sourceId) map {
       case Some(summary) => Ok(halResource(toJson(summary), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
       case None => NotFound
     }
   }
 
-  def updateSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
+  protected def updateSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
       sourceHandler(sourceType).update(saUtr, taxYear, sourceId, request.body) match {
         case Left(errorResult) =>
           Future.successful {
@@ -70,18 +70,18 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
       }
   }
 
-  def deleteSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
+  protected def deleteSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     sourceHandler(sourceType).delete(saUtr, taxYear, sourceId) map {
       case true => NoContent
       case false => NotFound
     }
   }
 
-  def listSources(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = {
+  protected def listSources(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = {
     val svc = sourceHandler(sourceType)
     svc.find(saUtr, taxYear) map { sources =>
       val json = toJson(sources.map(source => halResource(source.json,
-        Seq(HalLink("self", sourceIdHref(saUtr, taxYear, sourceType, source.id))))))
+        Set(HalLink("self", sourceIdHref(saUtr, taxYear, sourceType, source.id))))))
       Ok(halResourceList(svc.listName, json, sourceHref(saUtr, taxYear, sourceType)))
     }
   }

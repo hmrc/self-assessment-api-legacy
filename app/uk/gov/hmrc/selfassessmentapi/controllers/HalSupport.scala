@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 trait HalSupport {
 
-  def halResource(jsValue: JsValue, links: Seq[HalLink]): HalResource = {
+  def halResource(jsValue: JsValue, links: Set[HalLink]): HalResource = {
     val halState = Hal.state(jsValue)
     links.foldLeft(halState)((res, link) => res ++ link)
   }
@@ -37,14 +37,13 @@ trait HalSupport {
             Seq(name -> value))
         )
       ),
-      Seq(HalLink("self", self)))
+      Set(HalLink("self", self)))
   }
 
-  def sourceLinks(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): Seq[HalLink] = {
-    HalLink("self", sourceIdHref(utr, taxYear, sourceType, seId)) +:
+  def sourceLinks(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): Set[HalLink] = {
       sourceType.summaryTypes.map { summaryType =>
         HalLink(summaryType.name, sourceTypeAndSummaryTypeHref(utr, taxYear, sourceType, seId, summaryType.name))
-      }
+      } + HalLink("self", sourceIdHref(utr, taxYear, sourceType, seId))
   }
 
 }

@@ -24,20 +24,25 @@ import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.{FeatureSwitchAction, domain}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 
 import scala.concurrent.Future
 
 object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.SummaryController with SourceTypeSupport {
 
   val supportedSummaryTypes =
-    Map[SourceType, Set[SummaryType]](SelfEmployments -> Set(domain.selfemployment.SummaryTypes.Incomes,
-                                                             domain.selfemployment.SummaryTypes.Expenses)
-                                                             ).withDefaultValue(Set())
+    Map[SourceType, Set[SummaryType]](
+      SelfEmployments -> Set(domain.selfemployment.SummaryTypes.Incomes,
+                             domain.selfemployment.SummaryTypes.Expenses),
+      UnearnedIncomes -> Set(domain.unearnedincome.SummaryTypes.Dividends,
+                             domain.unearnedincome.SummaryTypes.SavingsIncomes)
+
+    ).withDefaultValue(Set())
 
   private lazy val supportedSummaryNames: SourceType => Set[String] = sourceType => supportedSummaryTypes(sourceType).map(_.name)
 
   private def withSupportedType(sourceType: SourceType, summaryTypeName: String)(f: => Future[Result]) =
-    FeatureSwitchAction(sourceType).async {
+    FeatureSwitchAction(sourceType, summaryTypeName).async {
       supportedSummaryNames(sourceType).contains(summaryTypeName) match {
         case true => f
         case false => Future.successful(NotImplemented(toJson(ErrorNotImplemented)))
@@ -45,7 +50,7 @@ object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.Summa
     }
 
   private def withSupportedTypeAndBody(sourceType: SourceType, summaryTypeName: String)(f: Request[JsValue] => Future[Result]) =
-    FeatureSwitchAction(sourceType).async(parse.json) {
+    FeatureSwitchAction(sourceType, summaryTypeName).async(parse.json) {
       request =>
         supportedSummaryNames(sourceType).contains(summaryTypeName) match {
           case true => f(request)

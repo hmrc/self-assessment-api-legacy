@@ -21,19 +21,19 @@ import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.Repository
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, SourceMetadata}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
-trait TypedSourceRepository[A <: Any, ID <: Any] extends Repository[A, ID] {
+trait TypedSourceRepository[A <: SourceMetadata, ID <: Any] extends Repository[A, ID] {
 
   protected def modifierStatementLastModified: (String, BSONDocument) =
     "$set" -> BSONDocument("lastModifiedDateTime" -> BSONDateTime(DateTime.now(DateTimeZone.UTC).getMillis))
 
-  protected def isInsertion(suppliedId: BSONObjectID, returned: MongoSelfEmployment): Boolean =
-    suppliedId.equals(returned.id)
+  def isInsertion(suppliedId: BSONObjectID, returned: A): Boolean =
+    suppliedId.equals(BSONObjectID(returned.sourceId))
 
   def findMongoObjectById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[A]] = {
     find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear, "sourceId" -> id).map(_.headOption)

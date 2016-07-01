@@ -22,13 +22,14 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear}
 
 import scala.concurrent.Future
 
 object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.SourceController with SourceTypeSupport {
 
-  val supportedSourceTypes: Set[SourceType] = Set(SelfEmployments)
+  val supportedSourceTypes: Set[SourceType] = Set(SelfEmployments, UnearnedIncomes)
 
   private def withSupportedTypeAndBody(sourceType: SourceType)(f: Request[JsValue] => Future[Result]) =
     FeatureSwitchAction(sourceType).async(parse.json) {

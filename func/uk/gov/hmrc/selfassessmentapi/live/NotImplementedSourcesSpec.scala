@@ -1,16 +1,16 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.controllers.live.SourceController
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class NotImplementedSourcesSpec extends BaseFunctionalSpec {
 
   val sourceId = BSONObjectID.generate.stringify
-  val notImplementedTypes = Seq(FurnishedHolidayLettings, UKProperties, Employments, UnearnedIncomes)
+
+  val notImplementedTypes  = Set(SourceTypes.Employments, SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties,
+    SourceTypes.UnearnedIncomes)
   
   "Create source" should {
     "return a resourceIsNotImplemented response" in {

@@ -1,7 +1,10 @@
 package uk.gov.hmrc.support
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import play.api.libs.json.{JsObject, JsValue, Reads}
+import org.json.{JSONArray, JSONObject}
+import org.skyscreamer.jsonassert.JSONAssert.assertEquals
+import org.skyscreamer.jsonassert.JSONCompareMode.LENIENT
+import play.api.libs.json.{JsArray, JsObject, JsValue, Reads}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.TestApplication
@@ -113,6 +116,14 @@ trait BaseFunctionalSpec extends TestApplication {
         case JsObject(fields) => response.json.as[JsObject] - "_links" - "id"
         case json => json
       }) shouldEqual expectedBody
+      this
+    }
+
+    def bodyIsLike(expectedBody: String) = {
+      response.json match {
+        case JsObject(fields) => assertEquals(expectedBody, new JSONObject(response.body), LENIENT)
+        case JsArray(_) => assertEquals(expectedBody, new JSONArray(response.body), LENIENT)
+      }
       this
     }
 

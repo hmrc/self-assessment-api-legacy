@@ -18,20 +18,20 @@ package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson.enumFormat
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType.SavingsIncomeType
 
 object SavingsIncomeType extends Enumeration {
   type SavingsIncomeType = Value
   val InterestFromBanksTaxed, InterestFromBanksUntaxed = Value
+  implicit val format = enumFormat(SavingsIncomeType, Some("Unearned Income Savings Income type is invalid"))
 }
 
 case class SavingsIncome(id: Option[String] = None, `type`: SavingsIncomeType, amount: BigDecimal)
 
 object SavingsIncome extends BaseDomain[SavingsIncome] {
 
-  implicit val savingsIncomeTypes = EnumJson.enumFormat(SavingsIncomeType, Some("Unearned Income Savings Income type is invalid"))
   implicit val writes = Json.writes[SavingsIncome]
 
   implicit val reads: Reads[SavingsIncome] = (

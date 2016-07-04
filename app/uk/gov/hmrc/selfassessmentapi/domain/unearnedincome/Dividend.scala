@@ -18,20 +18,20 @@ package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson.enumFormat
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.DividendType
 
 object DividendType extends Enumeration {
   type DividendType = Value
   val FromUKCompanies, OtherFromUKCompanies = Value
+  implicit val format = enumFormat(DividendType, Some("Dividend type is invalid"))
 }
 
 case class Dividend(id: Option[String] = None, `type`: DividendType, amount: BigDecimal)
 
 object Dividend extends BaseDomain[Dividend] {
 
-  implicit val savingsIncomeTypes = EnumJson.enumFormat(DividendType, Some("Dividend type is invalid"))
   implicit val writes = Json.writes[Dividend]
 
   implicit val reads: Reads[Dividend] = (

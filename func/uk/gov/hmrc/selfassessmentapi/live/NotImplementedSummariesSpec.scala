@@ -15,7 +15,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
   private val summaryId = UUID.randomUUID()
 
   val notImplementedSummaries: Map[SourceType, Set[SummaryType]] =
-    Map(SourceTypes.SelfEmployments -> Set(SummaryTypes.GoodsAndServicesOwnUses),
+    Map(SourceTypes.SelfEmployments -> Set(),
       SourceTypes.UnearnedIncomes -> SourceTypes.UnearnedIncomes.summaryTypes,
       SourceTypes.UKProperties -> SourceTypes.UKProperties.summaryTypes,
       SourceTypes.FurnishedHolidayLettings -> SourceTypes.FurnishedHolidayLettings.summaryTypes,

@@ -1,17 +1,31 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
 
-  def exampleSummaryTypeValue(summaryType: SummaryType): String = {
-    (summaryType.example() \ "type").as[String]
+  private def exampleSummaryTypeValue(summaryType: SummaryType): String = {
+    (summaryType.example() \ "type").asOpt[String] match {
+      case Some(typeValue) => typeValue
+      case _ => ""
+    }
   }
 
-  private val selfEmploymentSummaries = Seq(SummaryTypes.Incomes, SummaryTypes.Expenses, SummaryTypes.BalancingCharges)
+  private def invalidRequestBody(summaryType: SummaryType) = {
+    if (summaryType == SummaryTypes.GoodsAndServicesOwnUses) Some(Json.parse(s"""{"amount":1000.123}"""))
+    else Some(Json.parse(s"""{"type":"InvalidType", "amount":1000.00}"""))
+  }
+
+  private def invalidErrorResponse(summaryType: SummaryType with Product with Serializable): (String, String) = {
+    if (summaryType == SummaryTypes.GoodsAndServicesOwnUses) ("/amount", "INVALID_MONETARY_AMOUNT")
+    else ("/type", "NO_VALUE_FOUND")
+  }
+
+  private val selfEmploymentSummaries = Seq(SummaryTypes.Incomes, SummaryTypes.Expenses, SummaryTypes.BalancingCharges,
+    SummaryTypes.GoodsAndServicesOwnUses)
 
   "I" should {
     "be able to create, get, update and delete all summaries for all sources" in {
@@ -75,6 +89,8 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     }
   }
 
+
+
   "I" should {
     "not be able to create summary with invalid payload" in {
       Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
@@ -89,14 +105,16 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
           .when()
             .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}",
-              Some(Json.parse(s"""{"type":"InvalidType", "amount":1000.00}""")))
+              invalidRequestBody(summaryType))
             .thenAssertThat()
             .statusIs(400)
-            .bodyContainsError(("/type", "NO_VALUE_FOUND"))
+            .bodyContainsError(invalidErrorResponse(summaryType))
         }
       }
     }
   }
+
+
 
   "I" should {
     "not be able to update summary with invalid payload" in {
@@ -118,10 +136,10 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/.+".r)
           .when()
             .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%",
-              Some(Json.parse(s"""{"type":"InvalidType", "amount":1200.00}""")))
+              invalidRequestBody(summaryType))
             .thenAssertThat()
             .statusIs(400)
-            .bodyContainsError(("/type", "NO_VALUE_FOUND"))
+            .bodyContainsError(invalidErrorResponse(summaryType))
         }
       }
     }

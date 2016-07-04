@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment
 import uk.gov.hmrc.play.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.{BalancingCharges, Expenses, Incomes}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.{BalancingCharges, Expenses, GoodsAndServicesOwnUses, Incomes}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.domain.{Income => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
@@ -32,6 +32,7 @@ object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmp
       case Incomes =>  Some(SummaryHandler(SummaryRepositoryWrapper(SelfEmploymentRepository().IncomeRepository), Income, Incomes.name))
       case Expenses => Some(SummaryHandler(SummaryRepositoryWrapper(SelfEmploymentRepository().ExpenseRepository), Expense, Expenses.name))
       case BalancingCharges => Some(SummaryHandler(SummaryRepositoryWrapper(SelfEmploymentRepository().BalancingChargeRepository), BalancingCharge, BalancingCharges.name))
+      case GoodsAndServicesOwnUses => Some(SummaryHandler(SummaryRepositoryWrapper(SelfEmploymentRepository().GoodsAndServicesOwnUseRepository), GoodsAndServicesOwnUse, GoodsAndServicesOwnUses.name))
       case _ => throw new NotImplementedException(s"${SelfEmployments.name} ${summaryType.name} is not implemented")
     }
   }

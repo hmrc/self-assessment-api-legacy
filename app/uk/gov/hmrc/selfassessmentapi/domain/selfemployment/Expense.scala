@@ -30,8 +30,7 @@ object ExpenseType extends Enumeration {
   implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
 }
 
-case class Expense(id: Option[SummaryId] = None,
-                   `type`: ExpenseType, amount: BigDecimal)
+case class Expense(id: Option[SummaryId] = None, `type`: ExpenseType, amount: BigDecimal)
 
 object Expense extends BaseDomain[Expense] {
 

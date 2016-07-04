@@ -123,6 +123,32 @@ object MongoSelfEmploymentBalancingChargeSummary {
   }
 }
 
+case class MongoSelfEmploymentGoodsAndServicesOwnUseSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary {
+
+  val arrayName = MongoSelfEmploymentGoodsAndServicesOwnUseSummary.arrayName
+
+  def toGoodsAndServicesOwnUse = GoodsAndServicesOwnUse(id = Some(summaryId), amount = amount)
+
+  def toBsonDocument = BSONDocument(
+    "summaryId" -> summaryId,
+    "amount" -> BSONDouble(amount.doubleValue())
+  )
+}
+
+object MongoSelfEmploymentGoodsAndServicesOwnUseSummary {
+
+  val arrayName = "goodsAndServicesOwnUse"
+
+  implicit val format = Json.format[MongoSelfEmploymentGoodsAndServicesOwnUseSummary]
+
+  def toMongoSummary(goodsAndServicesOwnUse: GoodsAndServicesOwnUse, id: Option[SummaryId] = None): MongoSelfEmploymentGoodsAndServicesOwnUseSummary = {
+    MongoSelfEmploymentGoodsAndServicesOwnUseSummary(
+      summaryId = id.getOrElse(BSONObjectID.generate.stringify),
+      amount = goodsAndServicesOwnUse.amount
+    )
+  }
+}
+
 case class MongoSelfEmployment(id: BSONObjectID,
                                sourceId: SourceId,
                                saUtr: SaUtr,
@@ -134,7 +160,8 @@ case class MongoSelfEmployment(id: BSONObjectID,
                                adjustments: Option[Adjustments] = None,
                                incomes: Seq[MongoSelfEmploymentIncomeSummary] = Nil,
                                expenses: Seq[MongoSelfEmploymentExpenseSummary] = Nil,
-                               balancingCharges: Seq[MongoSelfEmploymentBalancingChargeSummary] = Nil) extends SourceMetadata {
+                               balancingCharges: Seq[MongoSelfEmploymentBalancingChargeSummary] = Nil,
+                               goodsAndServicesOwnUse: Seq[MongoSelfEmploymentGoodsAndServicesOwnUseSummary] = Nil) extends SourceMetadata {
 
   def toSelfEmployment = SelfEmployment(
     id = Some(sourceId),

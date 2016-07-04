@@ -34,7 +34,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   private val mongoRepository = new SelfEmploymentMongoRepository
   private val selfEmploymentRepository: SourceRepository[SelfEmployment] = mongoRepository
   private val summariesMap: Map[BaseDomain[_], SummaryRepository[_]] = Map(Income -> mongoRepository.IncomeRepository,
-    Expense -> mongoRepository.ExpenseRepository, BalancingCharge -> mongoRepository.BalancingChargeRepository)
+    Expense -> mongoRepository.ExpenseRepository, BalancingCharge -> mongoRepository.BalancingChargeRepository,
+    GoodsAndServicesOwnUse -> mongoRepository.GoodsAndServicesOwnUseRepository)
 
 
   override def beforeEach() {

@@ -68,8 +68,8 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def bodyIsLike(expectedBody: String) = {
       response.json match {
-        case JsObject(fields) => assertEquals(expectedBody, new JSONObject(response.body), LENIENT)
         case JsArray(_) => assertEquals(expectedBody, new JSONArray(response.body), LENIENT)
+        case _ => assertEquals(expectedBody, new JSONObject(response.body), LENIENT)
       }
       this
     }

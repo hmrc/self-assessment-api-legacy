@@ -11,10 +11,12 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     (summaryType.example() \ "type").as[String]
   }
 
+  private val selfEmploymentSummaries = Seq(SummaryTypes.Incomes, SummaryTypes.Expenses, SummaryTypes.BalancingCharges)
+
   "I" should {
     "be able to create, get, update and delete all summaries for all sources" in {
       Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        Seq(SummaryTypes.Incomes, SummaryTypes.Expenses) foreach { summaryType =>
+        selfEmploymentSummaries foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -76,7 +78,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   "I" should {
     "not be able to create summary with invalid payload" in {
       Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        Seq(SummaryTypes.Incomes, SummaryTypes.Expenses) foreach { summaryType =>
+        selfEmploymentSummaries foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -99,7 +101,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   "I" should {
     "not be able to update summary with invalid payload" in {
       Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        Seq(SummaryTypes.Incomes, SummaryTypes.Expenses) foreach { summaryType =>
+        selfEmploymentSummaries foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -128,7 +130,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   "I" should {
     "not be able to get a non existent summary" in {
       Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        Seq(SummaryTypes.Incomes, SummaryTypes.Expenses) foreach { summaryType =>
+        selfEmploymentSummaries foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -149,7 +151,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   "I" should {
     "not be able to delete a non existent summary" in {
       Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        Seq(SummaryTypes.Incomes, SummaryTypes.Expenses) foreach { summaryType =>
+        selfEmploymentSummaries foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()

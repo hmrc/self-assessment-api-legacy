@@ -1,13 +1,12 @@
 package uk.gov.hmrc.support
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import play.api.libs.json.{JsObject, JsValue, Json, Reads}
+import play.api.libs.json.{JsObject, JsValue, Reads}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.TestApplication
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes, SummaryType}
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
 
 import scala.collection.mutable
 import scala.util.matching.Regex
@@ -49,7 +48,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def summaryIdFromHal() = {
       getLinkFromBody("self") flatMap { link =>
-        s"/self-assessment/\\d+/$taxYear/[\\w-]+/\\w+/\\w+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
+        s"/self-assessment/\\d+/$taxYear/[\\w-]+/\\w+/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
           firstMatch.group(1)
         }
       }

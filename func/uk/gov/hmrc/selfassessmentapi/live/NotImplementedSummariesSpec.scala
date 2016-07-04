@@ -10,7 +10,8 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
   val sourceId = UUID.randomUUID()
   val summaryId = UUID.randomUUID()
 
-  val liveSummaryImplementedTypes = Seq(selfemployment.SummaryTypes.Incomes, selfemployment.SummaryTypes.Expenses)
+  val liveSummaryImplementedTypes = Seq(selfemployment.SummaryTypes.Incomes, selfemployment.SummaryTypes.Expenses,
+    selfemployment.SummaryTypes.BalancingCharges)
 
   private def filter(types: Set[SummaryType]) = types.filterNot(liveSummaryImplementedTypes.contains(_))
 

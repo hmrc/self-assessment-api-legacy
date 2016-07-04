@@ -25,9 +25,9 @@ import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONNull, BSO
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Expense, Income, SelfEmployment}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{BalancingCharge, Expense, Income, SelfEmployment}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentExpenseSummary, MongoSelfEmploymentIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentBalancingChargeSummary, MongoSelfEmploymentExpenseSummary, MongoSelfEmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories._
 import play.api.libs.json.Json.toJson
 
@@ -161,6 +161,27 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
 
     override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Seq[JsonItem]] =
       list(saUtr, taxYear,sourceId).map(_.getOrElse(Seq()).map(expense => JsonItem(expense.id.get.toString, toJson(expense))))
+  }
+
+  object BalancingChargeRepository extends SummaryRepository[BalancingCharge] {
+    override def create(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, balancingCharge: BalancingCharge): Future[Option[SummaryId]] =
+      self.createSummary(saUtr, taxYear, sourceId, MongoSelfEmploymentBalancingChargeSummary.toMongoSummary(balancingCharge))
+
+    override def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[BalancingCharge]] =
+      self.findSummaryById[BalancingCharge](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.balancingCharges.find(_.summaryId == id).map(_.toBalancingCharge))
+
+    override def update(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, balancingCharge: BalancingCharge): Future[Boolean] =
+      self.updateSummary(saUtr, taxYear, sourceId, MongoSelfEmploymentBalancingChargeSummary.toMongoSummary(balancingCharge, Some(id)),
+        (se: MongoSelfEmployment) => se.balancingCharges.exists(_.summaryId == id))
+
+    override def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
+      self.deleteSummary(saUtr, taxYear, sourceId, id, MongoSelfEmploymentBalancingChargeSummary.arrayName, (se: MongoSelfEmployment) => se.balancingCharges.exists(_.summaryId == id))
+
+    override def list(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[BalancingCharge]]] =
+      self.listSummaries[BalancingCharge](saUtr, taxYear, sourceId, (se: MongoSelfEmployment) => se.balancingCharges.map(_.toBalancingCharge))
+
+    override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Seq[JsonItem]] =
+      list(saUtr, taxYear,sourceId).map(_.getOrElse(Seq()).map(balancingCharge => JsonItem(balancingCharge.id.get.toString, toJson(balancingCharge))))
   }
 
 

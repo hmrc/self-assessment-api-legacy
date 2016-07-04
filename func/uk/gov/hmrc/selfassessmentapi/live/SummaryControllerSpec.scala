@@ -23,106 +23,110 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   )
 
   private def createSummary(sourceType: SourceType, summaryType: SummaryType, sourceId: SourceId) =
-   Map[SourceType, Map[SummaryType, Option[String]]] (
+    Map[SourceType, Map[SummaryType, Option[String]]](
       SelfEmployments -> Map(selfemployment.SummaryTypes.Incomes -> await(seRepository.IncomeRepository.create(saUtr, TaxYear(taxYear), sourceId, selfemployment.Income.example())),
-                             selfemployment.SummaryTypes.Expenses -> await(seRepository.ExpenseRepository.create(saUtr, TaxYear(taxYear), sourceId, selfemployment.Expense.example()))
-                         ),
+        selfemployment.SummaryTypes.Expenses -> await(seRepository.ExpenseRepository.create(saUtr, TaxYear(taxYear), sourceId, selfemployment.Expense.example()))
+      ),
       UnearnedIncomes -> Map(unearnedincome.SummaryTypes.SavingsIncomes -> await(uiRepository.SavingsIncomeRepository.create(saUtr, TaxYear(taxYear), sourceId, unearnedincome.SavingsIncome.example())),
-                             unearnedincome.SummaryTypes.Dividends -> await(uiRepository.DividendRepository.create(saUtr, TaxYear(taxYear), sourceId, unearnedincome.Dividend.example()))
-                         )
-   )(sourceType)(summaryType)
+        unearnedincome.SummaryTypes.Dividends -> await(uiRepository.DividendRepository.create(saUtr, TaxYear(taxYear), sourceId, unearnedincome.Dividend.example()))
+      )
+    )(sourceType)(summaryType)
 
 
-  private def modifiedSummaryFor(sourceType: SourceType,summaryType: SummaryType) =
+  private def modifiedSummaryFor(sourceType: SourceType, summaryType: SummaryType) =
     Map[SourceType, Map[SummaryType, JsValue]](
       SelfEmployments -> Map(selfemployment.SummaryTypes.Incomes -> toJson(selfemployment.Income.example().copy(amount = 7000)),
-                             selfemployment.SummaryTypes.Expenses -> toJson(selfemployment.Expense.example().copy(amount = 7000))
-                         ),
+        selfemployment.SummaryTypes.Expenses -> toJson(selfemployment.Expense.example().copy(amount = 7000))
+      ),
       UnearnedIncomes -> Map(unearnedincome.SummaryTypes.SavingsIncomes -> toJson(unearnedincome.SavingsIncome.example().copy(amount = 7000)),
-                             unearnedincome.SummaryTypes.Dividends -> toJson(unearnedincome.Dividend.example().copy(amount = 7000))
+        unearnedincome.SummaryTypes.Dividends -> toJson(unearnedincome.Dividend.example().copy(amount = 7000))
       )
     )(sourceType)(summaryType)
 
 
   private val errorScenarios = Map[SourceType, Map[SummaryType, Set[Scenario]]](
     SelfEmployments -> Map(
-      selfemployment.SummaryTypes.Incomes -> Set(Scenario(input = parse(
-                                                  s"""
-                                                     |{
-                                                     | "type" : "TurnRover",
-                                                     | "amount" : 1234.05
-                                                     |}
-                                                   """.stripMargin),
-                                                  output = Output(parse(
-                                                    s"""
-                                                       |[
-                                                       |  {
-                                                       |    "path": "/type",
-                                                       |    "code": "NO_VALUE_FOUND",
-                                                       |    "message": "Self Employment Income type is invalid"
-                                                       |  }
-                                                       |]
-                                                     """.stripMargin),
-                                                    code = 400))
+      selfemployment.SummaryTypes.Incomes -> Set(Scenario(
+        input = parse(
+        s"""
+           |{
+           | "type" : "TurnRover",
+           | "amount" : 1234.05
+           |}
+        """.stripMargin),
+        output = Output(
+          s"""
+             |[
+             |  {
+             |    "path": "/type",
+             |    "code": "NO_VALUE_FOUND"
+             |  }
+             |]
+          """.stripMargin,
+          code = 400))
       ),
-      selfemployment.SummaryTypes.Expenses -> Set(Scenario(input = parse(
-                                                    s"""
-                                                       |{
-                                                       | "type" : "StaffCostaDrinks",
-                                                       | "amount" : 1234.05
-                                                       |}
-                                                     """.stripMargin),
-                                                    output = Output(parse(
-                                                      s"""
-                                                         |[
-                                                         |  {
-                                                         |    "path": "/type",
-                                                         |    "code": "NO_VALUE_FOUND",
-                                                         |    "message": "Self Employment Expense type is invalid"
-                                                         |  }
-                                                         |]
-                                                       """.stripMargin),
-                                                      code = 400))
+      selfemployment.SummaryTypes.Expenses -> Set(Scenario(
+        input = parse(
+        s"""
+           |{
+           | "type" : "StaffCostaDrinks",
+           | "amount" : 1234.05
+           |}
+        """.stripMargin),
+        output = Output(
+          s"""
+             |[
+             |  {
+             |    "path": "/type",
+             |    "code": "NO_VALUE_FOUND"
+             |  }
+             |]
+          """.stripMargin,
+          code = 400))
       )
     ),
     UnearnedIncomes -> Map(
-      unearnedincome.SummaryTypes.SavingsIncomes -> Set(Scenario(input = parse(
-                                                  s"""
-                                                     |{
-                                                     | "type" : "InterestFromBanksDoubleTaxed",
-                                                     | "amount" : 1234.05
-                                                     |}
-                                                   """.stripMargin),
-                                                  output = Output(parse(
-                                                    s"""
-                                                       |[
-                                                       |  {
-                                                       |    "path": "/type",
-                                                       |    "code": "NO_VALUE_FOUND",
-                                                       |    "message": "Unearned Income Savings Income type is invalid"
-                                                       |  }
-                                                       |]
-                                                     """.stripMargin),
-                                                    code = 400))
+      unearnedincome.SummaryTypes.SavingsIncomes -> Set(Scenario(
+        input = parse(
+        s"""
+           |{
+           | "type" : "InterestFromBanksDoubleTaxed",
+           | "amount" : -1234.05
+           |}
+        """.stripMargin),
+        output = Output(
+          s"""
+             |[
+             |  {
+             |    "path": "/amount",
+             |    "code": "INVALID_MONETARY_AMOUNT"
+             |  },
+             |  {
+             |    "path": "/type",
+             |    "code": "NO_VALUE_FOUND"
+             |  }
+             |]
+          """.stripMargin,
+          code = 400))
       ),
-      unearnedincome.SummaryTypes.Dividends -> Set(Scenario(input = parse(
-                                                    s"""
-                                                       |{
-                                                       | "type" : "FromEUCompanies",
-                                                       | "amount" : 1234.05
-                                                       |}
-                                                     """.stripMargin),
-                                                    output = Output(parse(
-                                                      s"""
-                                                         |[
-                                                         |  {
-                                                         |    "path": "/type",
-                                                         |    "code": "NO_VALUE_FOUND",
-                                                         |    "message": "Dividend type is invalid"
-                                                         |  }
-                                                         |]
-                                                       """.stripMargin),
-                                                      code = 400))
+      unearnedincome.SummaryTypes.Dividends -> Set(Scenario(
+        input = parse(
+        s"""
+           |{
+           | "type" : "FromEUCompanies",
+           | "amount" : 1234.05
+           |}
+        """.stripMargin),
+        output = Output(
+          s"""
+             |[
+             |  {
+             |    "path": "/type",
+             |    "code": "NO_VALUE_FOUND"
+             |  }
+             |]
+          """.stripMargin,
+          code = 400))
       )
     )
   )
@@ -177,7 +181,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
     "return 400 and an error response if the data for POST is invalid" in {
       errorScenarios.foreach {
-        case (sourceType, summaryScenarios) => {
+        case (sourceType, summaryScenarios) =>
           val sourceId = createSource(sourceType)
           summaryScenarios.foreach {
             case (summaryType, scenarios) =>
@@ -187,16 +191,15 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
                   .post(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}", Some(scenario.input))
                   .thenAssertThat()
                   .statusIs(scenario.output.code)
-                  .bodyIs(scenario.output.body)
+                  .bodyIsLike(scenario.output.body)
               }
           }
-        }
       }
     }
 
     "return 400 and an error response if the data for PUT is invalid" in {
       errorScenarios.foreach {
-        case (sourceType, summaryScenarios) => {
+        case (sourceType, summaryScenarios) =>
           val sourceId = createSource(sourceType)
           summaryScenarios.foreach {
             case (summaryType, scenarios) =>
@@ -208,12 +211,11 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
                       .put(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId", Some(scenario.input))
                       .thenAssertThat()
                       .statusIs(400)
-                      .bodyIs(scenario.output.body)
+                      .bodyIsLike(scenario.output.body)
                   case None => fail(s"Unable to create summary ${summaryType.name} for source: ${sourceType.name}")
                 }
               }
           }
-        }
       }
     }
 

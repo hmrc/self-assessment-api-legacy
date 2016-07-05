@@ -27,7 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoJobHistory, MongoSelfAssessment, MongoSelfEmployment}
-import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentMongoRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.live.{UnearnedIncomeMongoRepository, SelfEmploymentMongoRepository}
 import uk.gov.hmrc.selfassessmentapi.repositories.{JobHistoryMongoRepository, SelfAssessmentMongoRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,6 +38,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndA
 
   private val saRepo = new SelfAssessmentMongoRepository
   private val seRepo = new SelfEmploymentMongoRepository
+  private val uiRepo = new UnearnedIncomeMongoRepository
   private val jobRepo = new JobHistoryMongoRepository
 
   val taxYear = TaxYear("2016-17")
@@ -68,7 +69,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndA
       insertSelfAssessmentRecords(sa1, sa2, latestSa3)
       insertSelfEmploymentRecords(se1, se2, latestSe3)
 
-      val service = new DeleteExpiredDataService(saRepo, seRepo, jobRepo)
+      val service = new DeleteExpiredDataService(saRepo, seRepo, uiRepo, jobRepo)
 
       await(service.deleteExpiredData(lastModifiedDate))
 
@@ -88,7 +89,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndA
       when(saRepo.findOlderThan(any())).thenReturn(Future.successful(Seq(sa1)))
       when(saRepo.delete(any(), any())).thenThrow(new RuntimeException("something wrong"))
 
-      val service = new DeleteExpiredDataService(saRepo, seRepo, jobRepo)
+      val service = new DeleteExpiredDataService(saRepo, seRepo, uiRepo, jobRepo)
 
       an[RuntimeException] should be thrownBy await(service.deleteExpiredData(DateTime.now))
 
@@ -102,12 +103,26 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndA
       await(saRepo.insert(sa1))
       when(seRepo.delete(any(), any())).thenThrow(new RuntimeException("something wrong"))
 
-      val service = new DeleteExpiredDataService(saRepo, seRepo, jobRepo)
+      val service = new DeleteExpiredDataService(saRepo, seRepo, uiRepo, jobRepo)
 
       an[RuntimeException] should be thrownBy await(service.deleteExpiredData(DateTime.now))
 
       await(jobRepo.find().head).status shouldBe Failed
       verify(seRepo).delete(any(), any())
+    }
+
+    "mark job as failed if there is an exception when trying to delete records from unearned incomes" in {
+      val sa1 = MongoSelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now().minusMonths(1), DateTime.now().minusMonths(1))
+      val uiRepo = mock[UnearnedIncomeMongoRepository]
+      await(saRepo.insert(sa1))
+      when(uiRepo.delete(any(), any())).thenThrow(new RuntimeException("something wrong"))
+
+      val service = new DeleteExpiredDataService(saRepo, seRepo, uiRepo, jobRepo)
+
+      an[RuntimeException] should be thrownBy await(service.deleteExpiredData(DateTime.now))
+
+      await(jobRepo.find().head).status shouldBe Failed
+      verify(uiRepo).delete(any(), any())
     }
 
 
@@ -116,7 +131,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndA
       when(jobRepo.startJob()).thenReturn(Future(MongoJobHistory(1, InProgress)))
       when(jobRepo.completeJob(1, 0)).thenThrow(new RuntimeException("something wrong"))
 
-      val service = new DeleteExpiredDataService(saRepo, seRepo, jobRepo)
+      val service = new DeleteExpiredDataService(saRepo, seRepo, uiRepo, jobRepo)
 
       an[RuntimeException] should be thrownBy await(service.deleteExpiredData(DateTime.now))
 

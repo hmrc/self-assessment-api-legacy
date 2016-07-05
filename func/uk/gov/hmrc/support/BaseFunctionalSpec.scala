@@ -19,7 +19,7 @@ trait BaseFunctionalSpec extends TestApplication {
   protected val saUtr = generateSaUtr()
   val taxYear = "2016-17"
 
-  class Assertions(request: String, response: HttpResponse)(implicit var urlPathVariables: mutable.Map[String, String]) extends
+  class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String]) extends
     UrlInterpolation {
 
     def bodyContainsError(error: (String, String)) = {
@@ -95,9 +95,9 @@ trait BaseFunctionalSpec extends TestApplication {
       getLinkFromBody(summaryType.name) match {
         case Some(href) => hrefPattern findFirstIn href match {
           case Some(v) => fail(s"$summaryType Hal link found.")
-          case None => true
+          case None =>
         }
-        case unknown => true
+        case unknown =>
       }
       this
     }
@@ -162,7 +162,7 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     def bodyHasLink(rel: String, href: String) = {
-      getLinkFromBody(rel) shouldEqual Some(href)
+      getLinkFromBody(rel) shouldEqual Some(interpolated(href))
       this
     }
 
@@ -260,7 +260,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
   }
 
-  class HttpRequest(method: String, path: String, body: Option[JsValue])(implicit var urlPathVariables: mutable.Map[String, String]) {
+  class HttpRequest(method: String, path: String, body: Option[JsValue])(implicit urlPathVariables: mutable.Map[String, String]) extends UrlInterpolation {
 
     assert(path.startsWith("/"), "please provide only a path starting with '/'")
     var addAcceptHeader = true
@@ -275,19 +275,19 @@ trait BaseFunctionalSpec extends TestApplication {
     def thenAssertThat() = {
       if (addAcceptHeader) hc = hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
 
-      withClue(s"Request $method $url") {
+      withClue(s"Request $method ${interpolated(url)}") {
         method match {
-          case "GET" => new Assertions(s"GET@$url", Http.get(url)(hc))
-          case "DELETE" => new Assertions(s"DELETE@$url", Http.delete(url)(hc))
+          case "GET" => new Assertions(s"GET@$url", Http.get(interpolated(url))(hc))
+          case "DELETE" => new Assertions(s"DELETE@$url", Http.delete(interpolated(url))(hc))
           case "POST" => {
             body match {
-              case Some(jsonBody) => new Assertions(s"POST@$url", Http.postJson(url, jsonBody)(hc))
-              case None => new Assertions(s"POST@$url", Http.postEmpty(url)(hc))
+              case Some(jsonBody) => new Assertions(s"POST@$url", Http.postJson(interpolated(url), jsonBody)(hc))
+              case None => new Assertions(s"POST@$url", Http.postEmpty(interpolated(url))(hc))
             }
           }
           case "PUT" => {
             val jsonBody = body.getOrElse(throw new RuntimeException("Body for PUT must be provided"))
-            new Assertions(s"PUT@$url", Http.putJson(url, jsonBody)(hc))
+            new Assertions(s"PUT@$url", Http.putJson(interpolated(url), jsonBody)(hc))
           }
         }
       }
@@ -299,15 +299,15 @@ trait BaseFunctionalSpec extends TestApplication {
     }
   }
 
-  class HttpPostBodyWrapper(method: String, body: Option[JsValue])(implicit var urlPathVariables: mutable.Map[String, String]) {
+  class HttpPostBodyWrapper(method: String, body: Option[JsValue])(implicit urlPathVariables: mutable.Map[String, String]) {
     def to(url: String) = new HttpRequest(method, url, body)
   }
 
-  class HttpPutBodyWrapper(method: String, body: Option[JsValue])(implicit var urlPathVariables: mutable.Map[String, String]) {
+  class HttpPutBodyWrapper(method: String, body: Option[JsValue])(implicit urlPathVariables: mutable.Map[String, String]) {
     def at(url: String) = new HttpRequest(method, url, body)
   }
 
-  class HttpVerbs()(implicit var urlPathVariables: mutable.Map[String, String] = mutable.Map()) extends UrlInterpolation {
+  class HttpVerbs()(implicit urlPathVariables: mutable.Map[String, String] = mutable.Map()) {
 
     def post(body: Some[JsValue]) = {
       new HttpPostBodyWrapper("POST", body)
@@ -318,26 +318,26 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     def get(path: String) = {
-      new HttpRequest("GET", interpolated(path), None)
+      new HttpRequest("GET", path, None)
     }
 
     def delete(path: String) = {
-      new HttpRequest("DELETE", interpolated(path), None)
+      new HttpRequest("DELETE", path, None)
     }
 
     def post(path: String, body: Option[JsValue] = None) = {
-      new HttpRequest("POST", interpolated(path), body)
+      new HttpRequest("POST", path, body)
     }
 
     def put(path: String, body: Option[JsValue]) = {
-      new HttpRequest("PUT", interpolated(path), body)
+      new HttpRequest("PUT", path, body)
     }
 
   }
 
   class Givens {
 
-    implicit var urlPathVariables: mutable.Map[String, String] = mutable.Map()
+    implicit val urlPathVariables: mutable.Map[String, String] = mutable.Map()
 
     def when() = new HttpVerbs()
 
@@ -394,24 +394,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
   def when() = new HttpVerbs()
 
-  trait UrlInterpolation {
 
-    def interpolated(path: String)(implicit urlPathVariables: mutable.Map[String, String]): String = {
-      interpolate(interpolate(path, "sourceId"), "summaryId")
-    }
-
-    def interpolate(path: String, pathVariable: String)(implicit pathVariablesValues: mutable.Map[String, String]): String = {
-      pathVariablesValues.get(pathVariable) match {
-        case Some(variableValue) => path.replaceAll(s"%$pathVariable%", variableValue)
-        case None => path
-      }
-    }
-
-    def interpolated(path: Regex)(implicit urlPathVariables: mutable.Map[String, String]): String = {
-      interpolate(interpolate(path.regex, "sourceId"), "summaryId")
-    }
-
-  }
 
 }
 

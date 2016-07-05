@@ -1,18 +1,14 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
-import java.util.UUID
-
 import org.joda.time.LocalDate
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.{parse, toJson}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
-import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentMongoRepository
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 case class Output(body: JsValue, code: Int)
@@ -21,13 +17,9 @@ case class Scenario(input: JsValue, output: Output)
 
 class SourceControllerSpec extends BaseFunctionalSpec {
 
-  val sourceId = UUID.randomUUID().toString
-
-  private val selfEmploymentRepository: SourceRepository[SelfEmployment] = new SelfEmploymentMongoRepository
-
   val supportedSourceTypes = Set(SelfEmployments)
-  val notImplementedSourceTypes = Set(Employments, SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties, SourceTypes
-    .UnearnedIncomes)
+  val notImplementedSourceTypes = Set(Employments, SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties,
+    SourceTypes.UnearnedIncomes)
 
   val errorScenarios = Map(
     SelfEmployments -> Scenario(input = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
@@ -47,60 +39,92 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     )
   )
 
-  lazy val createSource = Map(
-    SelfEmployments -> await(selfEmploymentRepository.create(saUtr, TaxYear(taxYear), SelfEmployment.example()))
-  )
-
-  "Implemented Live source controller" should {
-
-    "return a 404 error when source type is invalid" in {
-      given().userIsAuthorisedForTheResource(saUtr)
+  "I" should {
+    "be able to create, update and delete a self assessment source" in {
+      supportedSourceTypes.foreach { sourceType =>
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .get(s"/$saUtr/$taxYear/blah")
-        .thenAssertThat()
-        .statusIs(404)
-    }
-
-    "return a 404 error when source with given id does not exist" in {
-      supportedSourceTypes.foreach { sourceType =>
-        given().userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .get(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf")
+          .get(s"/$saUtr/$taxYear/${sourceType.name}")
           .thenAssertThat()
-          .statusIs(404)
-
-        given().userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf", Some(sourceType.example()))
-          .thenAssertThat()
-          .statusIs(404)
-
-        given().userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .delete(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf")
-          .thenAssertThat()
-          .statusIs(404)
-
-      }
-    }
-
-    "return a 201 response with links if POST is successful" in {
-      supportedSourceTypes.foreach { sourceType =>
-        given().userIsAuthorisedForTheResource(saUtr)
+          .statusIs(200)
+          .butResponseHasNo(sourceType.name)
         when()
-          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+          .post(Some(sourceType.example())).to(s"/$saUtr/$taxYear/${sourceType.name}")
           .thenAssertThat()
           .statusIs(201)
           .contentTypeIsHalJson()
           .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
           .bodyHasSummaryLinks(sourceType, saUtr, taxYear)
+        .when()
+          .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .thenAssertThat()
+          .statusIs(200)
+          .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+        .when()
+          .put(Some(toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now()
+            .minusDays(1))))).at(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .thenAssertThat()
+          .statusIs(200)
+          .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+        .when()
+          .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .thenAssertThat()
+          .statusIs(200)
+          .body(_ \ "commencementDate").is(LocalDate.now().minusDays(1).toString("yyyy-MM-dd"))
+        .when()
+          .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .thenAssertThat()
+          .statusIs(204)
+        .when()
+          .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .thenAssertThat()
+          .statusIs(404)
+      }
+    }
+  }
+
+  "I" should {
+    "not be able to get a invalid source type" in {
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+      .when()
+        .get(s"/$saUtr/$taxYear/blah")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+
+    "not be able to get a non-existent source" in {
+      supportedSourceTypes.foreach { sourceType =>
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
+        .when()
+          .get(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf")
+          .thenAssertThat()
+          .statusIs(404)
+
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
+        .when()
+          .put(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf", Some(sourceType.example()))
+          .thenAssertThat()
+          .statusIs(404)
+
+        given()
+            .userIsAuthorisedForTheResource(saUtr)
+          .when()
+            .delete(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf")
+            .thenAssertThat()
+            .statusIs(404)
+
       }
     }
 
-    "return 400 and an error response if the data for POST is invalid" in {
+    "not be able to create a source with invalid data" in {
       supportedSourceTypes.foreach { sourceType =>
-        given().userIsAuthorisedForTheResource(saUtr)
-        when()
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
+        .when()
           .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).input))
           .thenAssertThat()
           .statusIs(errorScenarios(sourceType).output.code)
@@ -108,41 +132,41 @@ class SourceControllerSpec extends BaseFunctionalSpec {
       }
     }
 
-    "return 200 code with links if PUT is successful" in {
+    "not be able to update a source with invalid data" in {
       supportedSourceTypes.foreach { sourceType =>
-        val seId = createSource(sourceType)
-        given().userIsAuthorisedForTheResource(saUtr)
-        when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/$seId", Some(toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now()
-            .minusDays(1)))))
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
+        .when()
+          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
           .thenAssertThat()
-          .statusIs(200)
-          .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
-          .bodyHasSummaryLinks(sourceType, saUtr, taxYear)
-      }
-    }
-
-    //TODO: FIX THIS@Sauarbh
-    /*"return 204 code when DELETE is successful" in {
-      supportedSourceTypes.foreach { sourceType =>
-        val seId = createSource(sourceType)
-        given().userIsAuthorisedForTheResource(saUtr)
-        when()
-          .delete(s"/$saUtr/$taxYear/${sourceType.name}/$seId")
-          .thenAssertThat()
-          .statusIs(204)
-      }
-    }*/
-
-    "return 400 and an error response if the data for PUT is invalid" in {
-      supportedSourceTypes.foreach { sourceType =>
-        val seId = createSource(sourceType)
-        given().userIsAuthorisedForTheResource(saUtr)
-        when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/$seId", Some(errorScenarios(sourceType).input))
+          .statusIs(201)
+        .when()
+          .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%", Some(errorScenarios(sourceType).input))
           .thenAssertThat()
           .statusIs(errorScenarios(sourceType).output.code)
           .bodyIs(errorScenarios(sourceType).output.body)
+      }
+    }
+
+    "not be able to update a non-existent" in {
+      supportedSourceTypes.foreach { sourceType =>
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
+        .when()
+          .put(s"/$saUtr/$taxYear/${sourceType.name}/non-existent-source", Some(errorScenarios(sourceType).input))
+          .thenAssertThat()
+          .statusIs(400)
+      }
+    }
+
+    "not be able to delete a non-existent" in {
+      supportedSourceTypes.foreach { sourceType =>
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
+        .when()
+          .delete(s"/$saUtr/$taxYear/${sourceType.name}/non-existent-source")
+          .thenAssertThat()
+          .statusIs(404)
       }
     }
   }
@@ -151,8 +175,9 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
     "return a Not Implemented response on GET" in {
       notImplementedSourceTypes.foreach { sourceType =>
-        given().userIsAuthorisedForTheResource(saUtr)
-          .when()
+        given()
+          .userIsAuthorisedForTheResource(saUtr)
+        .when()
           .get(s"/$saUtr/$taxYear/${sourceType.name}")
           .thenAssertThat()
           .resourceIsNotImplemented()
@@ -163,7 +188,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
       notImplementedSourceTypes.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
-          .when()
+        .when()
           .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
           .thenAssertThat()
           .resourceIsNotImplemented()
@@ -174,9 +199,8 @@ class SourceControllerSpec extends BaseFunctionalSpec {
       notImplementedSourceTypes.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId", Some(toJson(SelfEmployment.example().copy(commencementDate = LocalDate
-            .now().minusDays(1)))))
+        .when()
+          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
           .thenAssertThat()
           .resourceIsNotImplemented()
       }

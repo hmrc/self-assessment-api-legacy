@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach with MockitoSugar {
+class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSugar {
 
   private val saRepo = new SelfAssessmentMongoRepository
   private val seRepo = new SelfEmploymentMongoRepository
@@ -43,12 +43,6 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndA
   val taxYear = TaxYear("2016-17")
   val saUtr = generateSaUtr()
   val lastModifiedDate = DateTime.now().minusWeeks(1)
-
-  override def beforeEach() {
-    dropSelfAssessment()
-    dropSelfEmployment()
-    dropJob()
-  }
 
   "deleteExpiredData" should {
 
@@ -127,30 +121,16 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with BeforeAndA
 
   }
 
-  private def insertSelfAssessmentRecords(records: MongoSelfAssessment *) = {
+  private def insertSelfAssessmentRecords(records: MongoSelfAssessment*) = {
     records.foreach { record =>
       await(saRepo.insert(record))
     }
   }
 
-  private def insertSelfEmploymentRecords(records: MongoSelfEmployment *) = {
+  private def insertSelfEmploymentRecords(records: MongoSelfEmployment*) = {
     records.foreach { record =>
       await(seRepo.insert(record))
     }
   }
 
-  private def dropSelfAssessment() = {
-    await(saRepo.drop)
-    await(saRepo.ensureIndexes)
-  }
-
-  private def dropSelfEmployment() = {
-    await(seRepo.drop)
-    await(seRepo.ensureIndexes)
-  }
-
-  private def dropJob() = {
-    await(jobRepo.drop)
-    await(jobRepo.ensureIndexes)
-  }
 }

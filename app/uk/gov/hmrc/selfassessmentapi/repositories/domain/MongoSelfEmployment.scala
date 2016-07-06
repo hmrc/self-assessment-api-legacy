@@ -21,11 +21,12 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType.BalancingChargeType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear, TaxYearProperties}
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
                                             `type`: IncomeType,
@@ -92,8 +93,8 @@ object MongoSelfEmploymentExpenseSummary {
 }
 
 case class MongoSelfEmploymentBalancingChargeSummary(summaryId: SummaryId,
-                                             `type`: BalancingChargeType,
-                                             amount: BigDecimal) extends MongoSummary {
+                                                     `type`: BalancingChargeType,
+                                                     amount: BigDecimal) extends MongoSummary {
   val arrayName = MongoSelfEmploymentBalancingChargeSummary.arrayName
 
   def toBalancingCharge =
@@ -147,6 +148,30 @@ object MongoSelfEmploymentGoodsAndServicesOwnUseSummary {
       amount = goodsAndServicesOwnUse.amount
     )
   }
+}
+
+case class MongoTaxYearProperties(id: BSONObjectID,
+                                  saUtr: SaUtr,
+                                  taxYear: TaxYear,
+                                  lastModifiedDateTime: DateTime,
+                                  createdDateTime: DateTime,
+                                  pensionContributions: Option[PensionContribution] = None)
+  extends SelfAssessmentMetadata {
+
+  def toTaxYearProperties = TaxYearProperties(
+    id = Some(id.stringify),
+    pensionContributions = pensionContributions)
+}
+
+object MongoTaxYearProperties {
+
+  implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
+
+  implicit val mongoFormats = ReactiveMongoFormats.mongoEntity({
+    implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
+    implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
+    Format(Json.reads[MongoTaxYearProperties], Json.writes[MongoTaxYearProperties])
+  })
 }
 
 case class MongoSelfEmployment(id: BSONObjectID,

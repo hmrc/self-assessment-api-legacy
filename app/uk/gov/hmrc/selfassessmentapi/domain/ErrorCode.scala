@@ -33,6 +33,7 @@ object ErrorCode extends Enumeration {
   VALUE_BELOW_MINIMUM,
   BENEFIT_STOPPED_DATE_INVALID,
   UNDEFINED_REQUIRED_ELEMENT,
+  JUST_PENSION_CONTRIBUTIONS,
   INVALID_TYPE = Value
 
   implicit val format = EnumJson.enumFormat(ErrorCode, Some("ErrorCode is invalid"))

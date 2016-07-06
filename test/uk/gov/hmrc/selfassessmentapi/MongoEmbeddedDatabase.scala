@@ -73,10 +73,10 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
   }
 
   override def beforeEach = {
-    clearMongoCollections
+    clearMongoCollections()
   }
 
-  protected def clearMongoCollections = {
+  protected def clearMongoCollections() = {
     List("selfEmployments", "selfAssessments", "jobHistory").foreach {
       coll => agentPayeDB.getCollection(coll).remove(new BasicDBObject())
     }

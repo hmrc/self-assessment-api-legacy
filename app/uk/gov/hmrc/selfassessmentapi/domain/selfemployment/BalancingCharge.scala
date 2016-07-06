@@ -25,15 +25,13 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType.B
 object BalancingChargeType extends Enumeration {
   type BalancingChargeType = Value
   val BPRA, Other = Value
+  implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeType, Some("Self Employment Balancing charge type is invalid"))
 }
 
 case class BalancingCharge(id: Option[String] = None, `type`: BalancingChargeType, amount: BigDecimal)
 
 object BalancingCharge extends BaseDomain[BalancingCharge] {
-
-  implicit val balancingChargeCategory = EnumJson.enumFormat(BalancingChargeType, Some("Self Employment Balancing charge type is invalid"))
   implicit val writes = Json.writes[BalancingCharge]
-
   implicit val reads: Reads[BalancingCharge] = (
     Reads.pure(None) and
       (__ \ "type").read[BalancingChargeType] and

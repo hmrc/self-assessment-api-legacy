@@ -17,56 +17,30 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import play.api.hal.HalLink
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json._
-import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear}
-
-import scala.concurrent.Future
 
 object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.SourceController with SourceTypeSupport {
 
-  val supportedSourceTypes: Set[SourceType] = Set(SelfEmployments, UnearnedIncomes)
-
-  private def withSupportedTypeAndBody(sourceType: SourceType)(f: Request[JsValue] => Future[Result]) =
-    FeatureSwitchAction(sourceType).async(parse.json) {
-      implicit request => supportedSourceTypes.contains(sourceType) match {
-        case true => f(request)
-        case false => Future.successful(NotImplemented(toJson(ErrorNotImplemented)))
-      }
-    }
-
-  private def withSupportedType(sourceType: SourceType)(f: => Future[Result]) =
-    FeatureSwitchAction(sourceType).async {
-      supportedSourceTypes.contains(sourceType) match {
-        case true => f
-        case false => Future.successful(NotImplemented(toJson(ErrorNotImplemented)))
-      }
-    }
-
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = withSupportedTypeAndBody(sourceType) {
-    request => super.createSource(request, saUtr, taxYear, sourceType)
+  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async(parse.json) {
+    implicit request => super.createSource(request, saUtr, taxYear, sourceType)
   }
 
-  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = withSupportedType(sourceType) {
+  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async {
     super.readSource(saUtr, taxYear, sourceType, sourceId)
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = withSupportedTypeAndBody(sourceType) {
+  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async(parse.json) {
     request => super.updateSource(request, saUtr, taxYear, sourceType, sourceId)
   }
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = withSupportedType(sourceType) {
+  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).async {
     super.deleteSource(saUtr, taxYear, sourceType, sourceId)
   }
 
-  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = withSupportedType(sourceType) {
+  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).async {
     super.listSources(saUtr, taxYear, sourceType)
   }
 

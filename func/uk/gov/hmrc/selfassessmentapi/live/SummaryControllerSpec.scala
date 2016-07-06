@@ -1,278 +1,190 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json.{parse, toJson}
-import uk.gov.hmrc.selfassessmentapi.controllers.live.SummaryController
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.UnearnedIncome
-import uk.gov.hmrc.selfassessmentapi.repositories.live.{SelfEmploymentMongoRepository, UnearnedIncomeMongoRepository}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
 
-  private val seRepository = new SelfEmploymentMongoRepository
-  private val uiRepository = new UnearnedIncomeMongoRepository
-  private val supportedSummaryTypes = SummaryController.supportedSummaryTypes
-
-  private lazy val createSource: Map[SourceType, String] = Map(
-    SelfEmployments -> await(seRepository.create(saUtr, TaxYear(taxYear), SelfEmployment.example())),
-    UnearnedIncomes -> await(uiRepository.create(saUtr, TaxYear(taxYear), UnearnedIncome.example()))
-  )
-
-  private def createSummary(sourceType: SourceType, summaryType: SummaryType, sourceId: SourceId) =
-    Map[SourceType, Map[SummaryType, Option[String]]](
-      SelfEmployments -> Map(selfemployment.SummaryTypes.Incomes -> await(seRepository.IncomeRepository.create(saUtr, TaxYear(taxYear), sourceId, selfemployment.Income.example())),
-        selfemployment.SummaryTypes.Expenses -> await(seRepository.ExpenseRepository.create(saUtr, TaxYear(taxYear), sourceId, selfemployment.Expense.example()))
-      ),
-      UnearnedIncomes -> Map(unearnedincome.SummaryTypes.SavingsIncomes -> await(uiRepository.SavingsIncomeRepository.create(saUtr, TaxYear(taxYear), sourceId, unearnedincome.SavingsIncome.example())),
-        unearnedincome.SummaryTypes.Dividends -> await(uiRepository.DividendRepository.create(saUtr, TaxYear(taxYear), sourceId, unearnedincome.Dividend.example()))
-      )
-    )(sourceType)(summaryType)
-
-
-  private def modifiedSummaryFor(sourceType: SourceType, summaryType: SummaryType) =
-    Map[SourceType, Map[SummaryType, JsValue]](
-      SelfEmployments -> Map(selfemployment.SummaryTypes.Incomes -> toJson(selfemployment.Income.example().copy(amount = 7000)),
-        selfemployment.SummaryTypes.Expenses -> toJson(selfemployment.Expense.example().copy(amount = 7000))
-      ),
-      UnearnedIncomes -> Map(unearnedincome.SummaryTypes.SavingsIncomes -> toJson(unearnedincome.SavingsIncome.example().copy(amount = 7000)),
-        unearnedincome.SummaryTypes.Dividends -> toJson(unearnedincome.Dividend.example().copy(amount = 7000))
-      )
-    )(sourceType)(summaryType)
-
-
-  private val errorScenarios = Map[SourceType, Map[SummaryType, Set[Scenario]]](
-    SelfEmployments -> Map(
-      selfemployment.SummaryTypes.Incomes -> Set(Scenario(
-        input = parse(
-        s"""
-           |{
-           | "type" : "TurnRover",
-           | "amount" : 1234.05
-           |}
-        """.stripMargin),
-        output = Output(
-          s"""
-             |[
-             |  {
-             |    "path": "/type",
-             |    "code": "NO_VALUE_FOUND"
-             |  }
-             |]
-          """.stripMargin,
-          code = 400))
-      ),
-      selfemployment.SummaryTypes.Expenses -> Set(Scenario(
-        input = parse(
-        s"""
-           |{
-           | "type" : "StaffCostaDrinks",
-           | "amount" : 1234.05
-           |}
-        """.stripMargin),
-        output = Output(
-          s"""
-             |[
-             |  {
-             |    "path": "/type",
-             |    "code": "NO_VALUE_FOUND"
-             |  }
-             |]
-          """.stripMargin,
-          code = 400))
-      )
-    ),
-    UnearnedIncomes -> Map(
-      unearnedincome.SummaryTypes.SavingsIncomes -> Set(Scenario(
-        input = parse(
-        s"""
-           |{
-           | "type" : "InterestFromBanksDoubleTaxed",
-           | "amount" : -1234.05
-           |}
-        """.stripMargin),
-        output = Output(
-          s"""
-             |[
-             |  {
-             |    "path": "/amount",
-             |    "code": "INVALID_MONETARY_AMOUNT"
-             |  },
-             |  {
-             |    "path": "/type",
-             |    "code": "NO_VALUE_FOUND"
-             |  }
-             |]
-          """.stripMargin,
-          code = 400))
-      ),
-      unearnedincome.SummaryTypes.Dividends -> Set(Scenario(
-        input = parse(
-        s"""
-           |{
-           | "type" : "FromEUCompanies",
-           | "amount" : 1234.05
-           |}
-        """.stripMargin),
-        output = Output(
-          s"""
-             |[
-             |  {
-             |    "path": "/type",
-             |    "code": "NO_VALUE_FOUND"
-             |  }
-             |]
-          """.stripMargin,
-          code = 400))
-      )
-    )
-  )
-
-
-  "Live summary controller" should {
-
-    "return 404 error when summary is not found" in {
-      supportedSummaryTypes.foreach {
-        case (sourceType, summaryTypes) =>
-
-          val sourceId = createSource(sourceType)
-
-          summaryTypes.foreach { summaryType =>
-
-            given().userIsAuthorisedForTheResource(saUtr)
-              .when()
-              .get(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/23452345")
-              .thenAssertThat()
-              .statusIs(404)
-
-            given().userIsAuthorisedForTheResource(saUtr)
-              .when()
-              .put(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/23452345", Some(summaryType.example()))
-              .thenAssertThat()
-              .statusIs(404)
-
-            given().userIsAuthorisedForTheResource(saUtr)
-              .when()
-              .delete(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/23452345")
-              .thenAssertThat()
-              .statusIs(404)
-          }
-      }
+  private def exampleSummaryTypeValue(summaryType: SummaryType): String = {
+    (summaryType.example() \ "type").asOpt[String] match {
+      case Some(typeValue) => typeValue
+      case _ => ""
     }
+  }
 
-    "return 201 response with links if POST is successful" in {
-      supportedSummaryTypes.foreach {
-        case (sourceType, summaryTypes) =>
-          val sourceId = createSource(sourceType)
-          summaryTypes.foreach { summaryType =>
-            given().userIsAuthorisedForTheResource(saUtr)
-            when()
-              .post(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}", Some(summaryType.example()))
-              .thenAssertThat()
-              .statusIs(201)
-              .contentTypeIsHalJson()
-              .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/.+".r)
-          }
-      }
-    }
+  private def invalidRequestBody(summaryType: SummaryType) = {
+    if (summaryType == SummaryTypes.GoodsAndServicesOwnUses) Some(Json.parse(s"""{"amount":1000.123}"""))
+    else Some(Json.parse(s"""{"type":"InvalidType", "amount":1000.00}"""))
+  }
 
-    "return 400 and an error response if the data for POST is invalid" in {
-      errorScenarios.foreach {
-        case (sourceType, summaryScenarios) =>
-          val sourceId = createSource(sourceType)
-          summaryScenarios.foreach {
-            case (summaryType, scenarios) =>
-              scenarios.foreach { scenario =>
-                given().userIsAuthorisedForTheResource(saUtr)
-                when()
-                  .post(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}", Some(scenario.input))
-                  .thenAssertThat()
-                  .statusIs(scenario.output.code)
-                  .bodyIsLike(scenario.output.body)
-              }
-          }
-      }
-    }
+  private def invalidErrorResponse(summaryType: SummaryType with Product with Serializable): (String, String) = {
+    if (summaryType == SummaryTypes.GoodsAndServicesOwnUses) ("/amount", "INVALID_MONETARY_AMOUNT")
+    else ("/type", "NO_VALUE_FOUND")
+  }
 
-    "return 400 and an error response if the data for PUT is invalid" in {
-      errorScenarios.foreach {
-        case (sourceType, summaryScenarios) =>
-          val sourceId = createSource(sourceType)
-          summaryScenarios.foreach {
-            case (summaryType, scenarios) =>
-              scenarios.foreach { scenario =>
-                createSummary(sourceType, summaryType, sourceId) match {
-                  case Some(summaryId) =>
-                    given().userIsAuthorisedForTheResource(saUtr)
-                      .when()
-                      .put(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId", Some(scenario.input))
-                      .thenAssertThat()
-                      .statusIs(400)
-                      .bodyIsLike(scenario.output.body)
-                  case None => fail(s"Unable to create summary ${summaryType.name} for source: ${sourceType.name}")
-                }
-              }
-          }
-      }
-    }
+  private val selfEmploymentSummaries = Seq(SummaryTypes.Incomes, SummaryTypes.Expenses, SummaryTypes.BalancingCharges,
+    SummaryTypes.GoodsAndServicesOwnUses)
 
-    "return 200 a response with summary details for GET " in {
-      supportedSummaryTypes.foreach {
-        case (sourceType, summaryTypes) =>
-          val sourceId = createSource(sourceType)
-          summaryTypes.foreach { summaryType =>
-            createSummary(sourceType, summaryType, sourceId) match {
-              case Some(summaryId) =>
-                given().userIsAuthorisedForTheResource(saUtr)
-                  .when()
-                  .get(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId")
-                  .thenAssertThat()
-                  .statusIs(200)
-              case None => fail(s"Unable to create summary ${summaryType.name} for source: ${sourceType.name}")
-            }
-          }
-      }
-    }
-
-    "return 200 code with links if PUT is successful" in {
-      supportedSummaryTypes.foreach {
-        case (sourceType, summaryTypes) =>
-          val sourceId = createSource(sourceType)
-          summaryTypes.foreach { summaryType =>
-            createSummary(sourceType, summaryType, sourceId) match {
-              case Some(summaryId) =>
-                given().userIsAuthorisedForTheResource(saUtr)
-                  .when()
-                  .put(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId", Some(modifiedSummaryFor(sourceType, summaryType)))
-                  .thenAssertThat()
-                  .statusIs(200)
-                  .contentTypeIsHalJson()
-                  .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId")
-              case None => fail(s"Unable to create summary ${summaryType.name} for source: ${sourceType.name}")
-            }
-          }
-      }
-    }
-
-    "return 204 code when DELETE is successful" in {
-      supportedSummaryTypes.foreach {
-        case (sourceType, summaryTypes) =>
-          val sourceId = createSource(sourceType)
-          summaryTypes.foreach { summaryType =>
-            createSummary(sourceType, summaryType, sourceId) match {
-              case Some(summaryId) =>
-                given().userIsAuthorisedForTheResource(saUtr)
-                  .when()
-                  .delete(s"/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}/$summaryId")
-                  .thenAssertThat()
-                  .statusIs(204)
-              case None => fail(s"Unable to create summary ${summaryType.name} for source: ${sourceType.name}")
-            }
-          }
+  "I" should {
+    "be able to create, get, update and delete all summaries for all sources" in {
+      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
+        selfEmploymentSummaries foreach { summaryType =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+          .when()
+            .get(s"/$saUtr/$taxYear/${sourceType.name}")
+            .thenAssertThat()
+            .statusIs(200)
+            .butResponseHasNo(sourceType.name)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .thenAssertThat()
+            .statusIs(201)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+          .when()
+            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+            .thenAssertThat()
+            .statusIs(200)
+          .when()
+            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}")
+            .thenAssertThat()
+            .statusIs(200)
+            .butResponseHasNo(sourceType.name, summaryType.name)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(summaryType.example()))
+            .thenAssertThat()
+            .statusIs(201)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+          .when()
+            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .thenAssertThat()
+            .statusIs(200)
+            .body(_ \ "type").is(exampleSummaryTypeValue(summaryType)).body(_ \ "amount").is((summaryType.example() \ "amount").as[BigDecimal])
+          .when()
+            .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%",
+              Some(Json.parse(s"""{"type":"${exampleSummaryTypeValue(summaryType)}", "amount":1200.00}""")))
+            .thenAssertThat()
+            .statusIs(200)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+          .when()
+            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .thenAssertThat()
+            .statusIs(200)
+            .body(_ \ "type").is(exampleSummaryTypeValue(summaryType)).body(_ \ "amount").is(1200.00)
+          .when()
+            .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .thenAssertThat()
+            .statusIs(204)
+          .when()
+            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .thenAssertThat()
+            .statusIs(404)
+        }
       }
     }
   }
+
+
+
+  "I" should {
+    "not be able to create summary with invalid payload" in {
+      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
+        selfEmploymentSummaries foreach { summaryType =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .thenAssertThat()
+            .statusIs(201)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}",
+              invalidRequestBody(summaryType))
+            .thenAssertThat()
+            .statusIs(400)
+            .bodyContainsError(invalidErrorResponse(summaryType))
+        }
+      }
+    }
+  }
+
+
+
+  "I" should {
+    "not be able to update summary with invalid payload" in {
+      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
+        selfEmploymentSummaries foreach { summaryType =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .thenAssertThat()
+            .statusIs(201)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(summaryType.example()))
+            .thenAssertThat()
+            .statusIs(201)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+          .when()
+            .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%",
+              invalidRequestBody(summaryType))
+            .thenAssertThat()
+            .statusIs(400)
+            .bodyContainsError(invalidErrorResponse(summaryType))
+        }
+      }
+    }
+  }
+
+  "I" should {
+    "not be able to get a non existent summary" in {
+      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
+        selfEmploymentSummaries foreach { summaryType =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .thenAssertThat()
+            .statusIs(201)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+          .when()
+            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567")
+            .thenAssertThat()
+            .statusIs(404)
+        }
+      }
+    }
+  }
+
+  "I" should {
+    "not be able to delete a non existent summary" in {
+      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
+        selfEmploymentSummaries foreach { summaryType =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .thenAssertThat()
+            .statusIs(201)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+          .when()
+            .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567")
+            .thenAssertThat()
+            .statusIs(404)
+        }
+      }
+    }
+  }
+
 }

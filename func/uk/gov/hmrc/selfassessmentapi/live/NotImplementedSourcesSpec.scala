@@ -9,12 +9,8 @@ class NotImplementedSourcesSpec extends BaseFunctionalSpec {
 
   val sourceId = BSONObjectID.generate.stringify
 
-  val notImplementedTypes  = {
-    val sourceTypes = SourceTypes.types -- SourceController.supportedSourceTypes
-    if (sourceTypes.isEmpty)
-      throw new Exception("All source types have been implemented in live, this test can now be deleted")
-    else sourceTypes
-  }
+  val notImplementedTypes  = Set(SourceTypes.Employments, SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties,
+    SourceTypes.UnearnedIncomes)
   
   "Create source" should {
     "return a resourceIsNotImplemented response" in {

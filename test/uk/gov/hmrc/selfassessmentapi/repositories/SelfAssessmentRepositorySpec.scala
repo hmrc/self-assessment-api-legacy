@@ -21,6 +21,8 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
+import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfAssessment
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -116,6 +118,33 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
       records.size shouldBe 1
       records.head.saUtr shouldEqual sa2.saUtr
+    }
+  }
+
+  "findTaxYearProperties" should {
+    "return tax year properties matching utr and tax year" in {
+      val taxYearProps = TaxYearProperties(pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(10000.00))))
+      val sa = MongoSelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now(), DateTime.now(), Some(taxYearProps))
+      await(mongoRepository.insert(sa))
+      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
+      records.size shouldBe 1
+      records shouldEqual Some(taxYearProps)
+    }
+  }
+
+  "updateTaxYearProperties" should {
+    "update tax year properties matching utr and tax year" in {
+      val taxYearProps1 = TaxYearProperties(pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(10000.00))))
+      val sa = MongoSelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now(), DateTime.now(), Some(taxYearProps1))
+      await(mongoRepository.insert(sa))
+      val taxYearProps2 = TaxYearProperties(pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(50000.00))))
+      val result = await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, taxYearProps2))
+
+      result shouldBe true
+
+      val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
+      records.size shouldBe 1
+      records shouldEqual Some(taxYearProps2)
     }
   }
 

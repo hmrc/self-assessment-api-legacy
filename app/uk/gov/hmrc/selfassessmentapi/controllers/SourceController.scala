@@ -33,41 +33,41 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
   override lazy val context: String = AppContext.apiGatewayContext
 
   protected def createSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = {
-      sourceHandler(sourceType).create(saUtr, taxYear, request.body) match {
-        case Left(errorResult) =>
-          Future.successful {
-            errorResult match {
-              case ErrorResult(Some(message), _) => BadRequest(message)
-              case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
-              case _ => BadRequest
-            }
+    sourceHandler(sourceType).create(saUtr, taxYear, request.body) match {
+      case Left(errorResult) =>
+        Future.successful {
+          errorResult match {
+            case ErrorResult(Some(message), _) => BadRequest(message)
+            case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
+            case _ => BadRequest
           }
-        case Right(id) => id.map { sourceId => Created(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId))) }
-      }
+        }
+      case Right(id) => id.map { sourceId => Created(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId))) }
     }
+  }
 
   protected def readSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     sourceHandler(sourceType).findById(saUtr, taxYear, sourceId) map {
-      case Some(summary) => Ok(halResource(toJson(summary), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
+      case Some(summary) => Ok(halResource(summary, sourceLinks(saUtr, taxYear, sourceType, sourceId)))
       case None => NotFound
     }
   }
 
   protected def updateSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
-      sourceHandler(sourceType).update(saUtr, taxYear, sourceId, request.body) match {
-        case Left(errorResult) =>
-          Future.successful {
-            errorResult match {
-              case ErrorResult(Some(message), _) => BadRequest(message)
-              case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
-              case _ => BadRequest
-            }
+    sourceHandler(sourceType).update(saUtr, taxYear, sourceId, request.body) match {
+      case Left(errorResult) =>
+        Future.successful {
+          errorResult match {
+            case ErrorResult(Some(message), _) => BadRequest(message)
+            case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
+            case _ => BadRequest
+          }
         }
-        case Right(id) => id.map {
-          case true => Ok(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
-          case false => NotFound
-        }
+      case Right(result) => result.map {
+        case true => Ok(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
+        case false => NotFound
       }
+    }
   }
 
   protected def deleteSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {

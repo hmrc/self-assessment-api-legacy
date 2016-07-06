@@ -33,6 +33,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
   private var mongodExe: MongodExecutable = null
   private var mongod: MongodProcess = null
 
+  private val diskPort = 27017
   private val embeddedPort = 12345
   private val localhost: String = "127.0.0.1"
   private val mongoUri: String = sys.env.getOrElse("MONGO_TEST_URI", s"mongodb://$localhost:$embeddedPort/self-assessment-api")
@@ -40,7 +41,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
 
   implicit val mongo = new MongoConnector(mongoUri).db
 
-  lazy protected val agentPayeDB = MongoClient("localhost", embeddedPort)("self-assessment-api")
+  lazy protected val mongoClient = MongoClient("localhost", if (useEmbeddedMongo) embeddedPort else diskPort)("self-assessment-api")
 
   protected def startEmbeddedMongo() = {
     if (useEmbeddedMongo) {
@@ -78,7 +79,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
 
   protected def clearMongoCollections() = {
     List("selfEmployments", "selfAssessments", "jobHistory").foreach {
-      coll => agentPayeDB.getCollection(coll).remove(new BasicDBObject())
+      coll => mongoClient.getCollection(coll).remove(new BasicDBObject())
     }
   }
 }

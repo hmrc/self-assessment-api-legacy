@@ -11,7 +11,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-case class Output(body: JsValue, code: Int)
+case class Output(body: String, code: Int)
 
 case class Scenario(input: JsValue, output: Output)
 
@@ -24,16 +24,15 @@ class SourceControllerSpec extends BaseFunctionalSpec {
   val errorScenarios = Map(
     SelfEmployments -> Scenario(input = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
       output = Output(
-        body = parse(
+        body =
           s"""
              |[
              | {
              |   "path":"/commencementDate",
-             |   "code": "$COMMENCEMENT_DATE_NOT_IN_THE_PAST",
-             |   "message":"commencement date should be in the past"
+             |   "code": "$COMMENCEMENT_DATE_NOT_IN_THE_PAST"
              | }
              |]
-                                          """.stripMargin),
+                                          """.stripMargin,
         code = 400
       )
     )
@@ -128,7 +127,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).input))
           .thenAssertThat()
           .statusIs(errorScenarios(sourceType).output.code)
-          .bodyIs(errorScenarios(sourceType).output.body)
+          .bodyIsLike(errorScenarios(sourceType).output.body)
       }
     }
 
@@ -144,7 +143,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%", Some(errorScenarios(sourceType).input))
           .thenAssertThat()
           .statusIs(errorScenarios(sourceType).output.code)
-          .bodyIs(errorScenarios(sourceType).output.body)
+          .bodyIsLike(errorScenarios(sourceType).output.body)
       }
     }
 

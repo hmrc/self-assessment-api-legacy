@@ -27,11 +27,6 @@ trait BaseFunctionalSpec extends TestApplication {
       (response.json \\ "code").map(_.as[String]) should contain only error._2
     }
 
-    def printBody() = {
-      println(response.body)
-      this
-    }
-
     if(request.startsWith("POST") || request.startsWith("PUT")) {
       Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal()) foreach {
         case (name, fn) =>
@@ -279,16 +274,14 @@ trait BaseFunctionalSpec extends TestApplication {
         method match {
           case "GET" => new Assertions(s"GET@$url", Http.get(interpolated(url))(hc))
           case "DELETE" => new Assertions(s"DELETE@$url", Http.delete(interpolated(url))(hc))
-          case "POST" => {
+          case "POST" =>
             body match {
               case Some(jsonBody) => new Assertions(s"POST@$url", Http.postJson(interpolated(url), jsonBody)(hc))
               case None => new Assertions(s"POST@$url", Http.postEmpty(interpolated(url))(hc))
             }
-          }
-          case "PUT" => {
+          case "PUT" =>
             val jsonBody = body.getOrElse(throw new RuntimeException("Body for PUT must be provided"))
             new Assertions(s"PUT@$url", Http.putJson(interpolated(url), jsonBody)(hc))
-          }
         }
       }
     }

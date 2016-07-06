@@ -25,12 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LiabilityService(selfEmploymentRepository: SelfEmploymentMongoRepository, liabilityRepository: LiabilityMongoRepository) {
-
-  private val calculationSteps = Seq(
-    SelfEmploymentProfitCalculation,
-    TotalIncomeCalculation
-  )
+class LiabilityService(selfEmploymentRepository: SelfEmploymentMongoRepository, liabilityRepository: LiabilityMongoRepository, liabilityCalculator: LiabilityCalculator) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Liability]] = {
     liabilityRepository.findBy(saUtr, taxYear).map(_.map(_.toLiability))
@@ -38,25 +33,20 @@ class LiabilityService(selfEmploymentRepository: SelfEmploymentMongoRepository, 
 
   def calculate(saUtr: SaUtr, taxYear: TaxYear): Future[LiabilityId] = {
     for {
-      liability <- liabilityRepository.save(MongoLiability.create(saUtr, taxYear))
+      emptyLiability <- liabilityRepository.save(MongoLiability.create(saUtr, taxYear))
       selfEmployments <- selfEmploymentRepository.findAll(saUtr, taxYear)
-      _ <- calculateLiability(liability, selfEmployments)
+      liability <- liabilityRepository.save(calculateLiability(emptyLiability, selfEmployments))
     } yield liability.liabilityId
   }
 
-  private def calculateLiability(liability: MongoLiability, selfEmployments: Seq[MongoSelfEmployment]) = {
-
-    val selfAssessment = SelfAssessment(selfEmployments = selfEmployments)
-
-    val updatedLiability = calculationSteps.foldLeft(liability)((liability, step) => step.run(selfAssessment, liability))
-
-    liabilityRepository.save(updatedLiability)
+  private def calculateLiability(liability: MongoLiability, selfEmployments: Seq[MongoSelfEmployment]): MongoLiability = {
+    liabilityCalculator.calculate(SelfAssessment(selfEmployments = selfEmployments), liability)
   }
 }
 
 object LiabilityService {
 
-  private lazy val service = new LiabilityService(SelfEmploymentRepository(), LiabilityRepository())
+  private lazy val service = new LiabilityService(SelfEmploymentRepository(), LiabilityRepository(), LiabilityCalculator())
 
   def apply() = service
 }

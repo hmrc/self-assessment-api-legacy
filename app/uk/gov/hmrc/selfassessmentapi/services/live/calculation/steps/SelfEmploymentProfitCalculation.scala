@@ -39,8 +39,8 @@ object SelfEmploymentProfitCalculation extends CalculationStep {
 
   private def profitIncreases(selfEmployment: MongoSelfEmployment): BigDecimal = {
     val income = Some(selfEmployment.incomes.map(_.amount).sum)
-    val balancingCharges = None //TODO
-    val goodsAndServices = None //TODO
+    val balancingCharges = Some(selfEmployment.balancingCharges.map(_.amount).sum)
+    val goodsAndServices = Some(selfEmployment.goodsAndServicesOwnUse.map(_.amount).sum)
     val adjustments = selfEmployment.adjustments.map { a =>
       sum(a.basisAdjustment, a.accountingAdjustment, a.averagingAdjustment)
     }

@@ -23,7 +23,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoJobHistory, MongoSelfAssessment, MongoSelfEmployment}
@@ -41,7 +40,6 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   private val uiRepo = new UnearnedIncomeMongoRepository
   private val jobRepo = new JobHistoryMongoRepository
 
-  val taxYear = TaxYear("2016-17")
   val saUtr = generateSaUtr()
   val lastModifiedDate = DateTime.now().minusWeeks(1)
 

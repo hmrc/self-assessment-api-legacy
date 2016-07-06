@@ -21,8 +21,8 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfAssessment
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
@@ -34,7 +34,6 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     await(mongoRepository.ensureIndexes)
   }
 
-  val taxYear = TaxYear("2016-17")
   val saUtr = generateSaUtr()
 
   "touch" should {

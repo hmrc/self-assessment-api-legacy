@@ -16,25 +16,44 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import play.api.libs.json.Json
+import play.api.hal.HalLink
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.LiabilityService
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
   override val context: String = AppContext.apiGatewayContext
 
+  private val liabilityService = LiabilityService()
+
   override def requestLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+    liabilityService.calculate(utr, taxYear) map { liabilityId =>
+      val links = Set(
+        HalLink("self", liabilityHref(utr, taxYear, liabilityId))
+      )
+      Accepted(halResource(JsObject(Nil), links))
+    }
   }
 
   override def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
-    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+    liabilityService.find(utr, taxYear) map {
+      case Some(liability) =>
+        val links = Set(
+          HalLink("self", liabilityHref(utr, taxYear, liabilityId))
+        )
+        Ok(halResource(Json.toJson(liability), links))
+
+      case _ => NotFound
+    }
   }
 
   override def deleteLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>

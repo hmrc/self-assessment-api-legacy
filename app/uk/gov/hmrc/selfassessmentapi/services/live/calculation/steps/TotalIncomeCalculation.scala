@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
-trait UnitSpec extends uk.gov.hmrc.play.test.UnitSpec {
+object TotalIncomeCalculation extends CalculationStep {
 
-  implicit def taxYearToString(taxYear: TaxYear): String = taxYear.value
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-  private val saUtrGenerator = new SaUtrGenerator()
+    val totalIncomeReceived = liability.profitFromSelfEmployments.map(_.profit).sum
 
-  def generateSaUtr(): SaUtr = saUtrGenerator.nextSaUtr
-
-  val taxYear = TaxYear("2016-17")
-
+    liability.copy(totalIncomeReceived = Some(totalIncomeReceived))
+  }
 }

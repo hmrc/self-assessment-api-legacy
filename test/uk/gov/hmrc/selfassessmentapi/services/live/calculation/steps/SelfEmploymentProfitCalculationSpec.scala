@@ -16,16 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import org.joda.time.DateTime
-import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Adjustments, Allowances, ExpenseType, IncomeType}
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
-class SelfEmploymentProfitCalculationSpec extends UnitSpec {
+class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSugar {
 
   private val liability = MongoLiability.create(generateSaUtr(), taxYear)
 
@@ -38,29 +33,37 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
       SelfEmploymentProfitCalculation.run(SelfAssessment(), liability) shouldBe liability
     }
 
-    "add all incomes and adjustments to profit" in {
+    "add all incomes, balancingCharges, goodsAndServices and adjustments to profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 1200.01),
             income(IncomeType.Other, 799.99)
           ),
+          balancingCharges = Seq(
+            balancingCharge(BalancingChargeType.BPRA, 10),
+            balancingCharge(BalancingChargeType.Other, 20)
+          ),
+          goodsAndServicesOwnUse = Seq(
+            goodsAndServices(50)
+          ),
           adjustments = Some(Adjustments(
             basisAdjustment = Some(200),
             accountingAdjustment = Some(100),
-            averagingAdjustment = Some(50)))
+            averagingAdjustment = Some(50)
+          ))
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 2350, profit = 2350)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 2430, profit = 2430)
       ))
     }
 
     "add outstandingBusinessIncome to profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 2000)
           ),
@@ -77,7 +80,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
     "subtract all expenses from profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 2000)
           ),
@@ -96,7 +99,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
     "subtract all allowances from profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 2000)
           ),
@@ -119,7 +122,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
     "round down profit to the nearest pound" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 1299.01)
           ),
@@ -136,7 +139,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
     "subtract certain adjustments from profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 2000)
           ),
@@ -156,7 +159,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
     "cap annualInvestmentAllowance at 200000" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 230000)
           ),
@@ -173,7 +176,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
     "subtract lossBroughtForward from taxable profit, but not the profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 2000)
           ),
@@ -190,7 +193,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
     "return zero as taxable profit if lossBroughtForward is greater than adjusted profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        selfEmployment(selfEmploymentId,
+        aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
             income(IncomeType.Turnover, 2000)
           ),
@@ -203,13 +206,24 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
         SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 2000)
       ))
     }
+
+    "calculate profit for multiple self employments" in {
+
+      val selfAssessment = SelfAssessment(selfEmployments = Seq(
+        aSelfEmployment("se1").copy(
+          incomes = Seq(
+            income(IncomeType.Turnover, 1200)
+          )),
+        aSelfEmployment("se2").copy(
+          incomes = Seq(
+            income(IncomeType.Turnover, 800)
+          ))
+      ))
+
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
+        SelfEmploymentIncome("se1", taxableProfit = 1200, profit = 1200),
+        SelfEmploymentIncome("se2", taxableProfit = 800, profit = 800)
+      ))
+    }
   }
-
-  private def selfEmployment(id: SourceId, incomes: Seq[MongoSelfEmploymentIncomeSummary] = Nil, expenses: Seq[MongoSelfEmploymentExpenseSummary] = Nil, allowances: Option[Allowances] = None, adjustments: Option[Adjustments] = None) = {
-    MongoSelfEmployment(BSONObjectID.generate, id, generateSaUtr(), TaxYear("2016-17"), DateTime.now, DateTime.now, DateTime.now.toLocalDate, expenses = expenses, incomes = incomes, allowances = allowances, adjustments = adjustments)
-  }
-
-  private def income(`type`: IncomeType, amount: BigDecimal) = MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
-
-  private def expense(`type`: ExpenseType, amount: BigDecimal) = MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 }

@@ -16,13 +16,70 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
+import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentMongoRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.live.{LiabilityMongoRepository, SelfEmploymentMongoRepository}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, SelfEmploymentSugar}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class LiabilityServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach with MockitoSugar {
+class LiabilityServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach with MockitoSugar with SelfEmploymentSugar {
 
-  private val seRepo = new SelfEmploymentMongoRepository
+  private val saUtr = generateSaUtr()
+  private val liabilityRepo = new LiabilityMongoRepository()
+  private val selfEmploymentRepo = new SelfEmploymentMongoRepository()
+  private val liabilityCalculator = mock[LiabilityCalculator]
+  private val service = new LiabilityService(selfEmploymentRepo, liabilityRepo, liabilityCalculator)
+
+  "find" should {
+
+    "return liability for given utr and tax year" in {
+      val mongoLiability = aLiability(saUtr, taxYear)
+      await(liabilityRepo.save(mongoLiability))
+
+      await(service.find(saUtr, taxYear)) shouldBe Some(mongoLiability.toLiability)
+    }
+
+    "return None if there is no liability for given utr and tax year" in {
+
+      await(service.find(saUtr, taxYear)) shouldBe None
+    }
+  }
+
+  "calculate" should {
+
+    "create liability and trigger the calculation if liability for given utr and tax year does not exist" in {
+
+      val selfEmployment = aSelfEmployment(saUtr = saUtr, taxYear = taxYear)
+
+      await(selfEmploymentRepo.insert(selfEmployment))
+
+      val liabilityAfterCalculation = aLiability(saUtr, taxYear)
+
+      when(liabilityCalculator.calculate(eqTo(SelfAssessment(Seq(selfEmployment))), any[MongoLiability])).thenReturn(liabilityAfterCalculation)
+
+      await(service.calculate(saUtr, taxYear))
+
+      await(liabilityRepo.findBy(saUtr, taxYear)) shouldBe Some(liabilityAfterCalculation)
+
+      verify(liabilityCalculator).calculate(any[SelfAssessment], any[MongoLiability])
+    }
+
+    "replace existing liability and trigger the calculation if liability for given utr and tax year does exist" in {
+
+      await(liabilityRepo.save(aLiability(saUtr, taxYear)))
+
+      val liabilityAfterCalculation = aLiability(saUtr, taxYear).copy(totalIncomeReceived = Some(1000))
+
+      when(liabilityCalculator.calculate(any[SelfAssessment], any[MongoLiability])).thenReturn(liabilityAfterCalculation)
+
+      await(service.calculate(saUtr, taxYear))
+
+      await(liabilityRepo.findBy(saUtr, taxYear)) shouldBe Some(liabilityAfterCalculation)
+    }
+  }
 }

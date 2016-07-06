@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import org.joda.time.DateTime
-import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, SelfEmploymentIncome}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome
+import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
-class TotalIncomeCalculationSpec extends UnitSpec {
+class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
 
   "run" should {
 
@@ -37,13 +35,9 @@ class TotalIncomeCalculationSpec extends UnitSpec {
 
     "calculate total income if there is no income from self employments" in {
 
-      val liability = aLiability(profitFromSelfEmployments = Nil)
+      val liability = aLiability()
 
       TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(0))
     }
-  }
-
-  private def aLiability(profitFromSelfEmployments: Seq[SelfEmploymentIncome]): MongoLiability = {
-    MongoLiability(BSONObjectID.generate, "l1", generateSaUtr(), taxYear, DateTime.now, profitFromSelfEmployments = profitFromSelfEmployments.toSeq)
   }
 }

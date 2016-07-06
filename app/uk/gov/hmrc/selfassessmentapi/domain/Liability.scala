@@ -30,10 +30,22 @@ object Calculation {
   implicit val format = Json.format[Calculation]
 }
 
-case class Income(incomes: Seq[Amount], totalIncomeReceived: BigDecimal, personalAllowance: BigDecimal, totalTaxableIncome: BigDecimal)
+case class Income(sourceId: String, taxableProfit: BigDecimal, profit: BigDecimal)
 
 object Income {
   implicit val format = Json.format[Income]
+}
+
+case class IncomeFromSources(selfEmployment: Seq[Income], employment: Seq[Income])
+
+object IncomeFromSources {
+  implicit val format = Json.format[IncomeFromSources]
+}
+
+case class IncomeSummary(incomes: IncomeFromSources, totalIncomeReceived: BigDecimal, personalAllowance: BigDecimal, totalTaxableIncome: BigDecimal)
+
+object IncomeSummary {
+  implicit val format = Json.format[IncomeSummary]
 }
 
 case class CalculatedAmount(calculations: Seq[Calculation], total: BigDecimal)
@@ -42,7 +54,7 @@ object CalculatedAmount {
   implicit val format = Json.format[CalculatedAmount]
 }
 
-case class Liability(id: Option[LiabilityId] = None, income: Income, incomeTax: CalculatedAmount, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal)
+case class Liability(id: Option[LiabilityId] = None, income: IncomeSummary, incomeTax: CalculatedAmount, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal)
 
 object Liability {
   implicit val format = Json.format[Liability]
@@ -50,11 +62,15 @@ object Liability {
   def example(id: LiabilityId): Liability =
     Liability(
       id = Some(id),
-      income = Income(
-        incomes = Seq(
-          Amount("self-employment-profit", BigDecimal(92480)),
-          Amount("uk-interest-received", BigDecimal(93)),
-          Amount("uk-dividends", BigDecimal(466))
+      income = IncomeSummary(
+        incomes = IncomeFromSources(
+          selfEmployment = Seq(
+            Income("self-employment-1", 8200, 10000),
+            Income("self-employment-2", 25000, 28000)
+          ),
+          employment = Seq(
+            Income("employment-1", 5000, 5000)
+          )
         ),
         totalIncomeReceived = BigDecimal(93039),
         personalAllowance = BigDecimal(9440),

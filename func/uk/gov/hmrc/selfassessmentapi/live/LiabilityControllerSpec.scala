@@ -26,10 +26,13 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         s"""
            |{
            |  "income": {
-           |    "incomes": [],
-           |     "totalIncomeReceived": 0,
-           |     "personalAllowance": 0,
-           |     "totalTaxableIncome": 0
+           |    "incomes": {
+           |      "selfEmployment": [],
+           |      "employment": []
+           |    },
+           |    "totalIncomeReceived": 0,
+           |    "personalAllowance": 0,
+           |    "totalTaxableIncome": 0
            |  },
            |  "incomeTax": {
            |    "calculations": [],

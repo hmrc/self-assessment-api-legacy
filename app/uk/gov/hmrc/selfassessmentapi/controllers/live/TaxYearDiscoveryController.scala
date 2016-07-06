@@ -24,9 +24,7 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorNotImplemented, Links}
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, TaxYear}
 
 import scala.concurrent.Future
 
@@ -40,9 +38,10 @@ object TaxYearDiscoveryController extends BaseController with Links {
   }
 
   private def buildSourceHalLinks(utr: SaUtr, taxYear: TaxYear) = {
-    Set(SelfEmployments, UnearnedIncomes).filter { source =>
-      if (AppContext.featureSwitch.isDefined) FeatureConfig(AppContext.featureSwitch.get).isSourceEnabled(source.name)
-      else false
+    SourceTypes.types.filter { source =>
+      AppContext.featureSwitch.exists { config =>
+        FeatureConfig(config).isSourceEnabled(source.name)
+      }
     } map { source =>
       HalLink(source.name, sourceHref(utr, taxYear, source))
     }

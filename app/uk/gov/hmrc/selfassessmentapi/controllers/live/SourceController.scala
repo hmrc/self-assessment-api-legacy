@@ -44,10 +44,11 @@ object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.Source
     super.listSources(saUtr, taxYear, sourceType)
   }
 
-  override def buildSourceHalLinks(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId): Set[HalLink] = {
-    sourceLinks(saUtr, taxYear, sourceType, sourceId).filter { halLink =>
-      if (AppContext.featureSwitch.isDefined) FeatureConfig(AppContext.featureSwitch.get).isSummaryEnabled(sourceType.name, halLink.rel)
-      else false
+  override def sourceLinks(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId): Set[HalLink] = {
+    super.sourceLinks(saUtr, taxYear, sourceType, sourceId).filter { halLink =>
+      AppContext.featureSwitch.exists { config =>
+        FeatureConfig(config).isSummaryEnabled(sourceType.name, halLink.rel)
+      }
     }
   }
 }

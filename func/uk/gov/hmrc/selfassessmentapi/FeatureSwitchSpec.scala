@@ -24,7 +24,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
 
   override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
 
-  "self-employments and self employment incomes" should {
+  "self-employments and only self-employment incomes" should {
     "be visible" in {
 
       given()
@@ -46,18 +46,25 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
         .thenAssertThat()
-        .statusIs(501)
+        .resourceIsNotImplemented()
+
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
+        .thenAssertThat()
+        .resourceIsNotImplemented()
     }
   }
 
-  "employments source" should {
+  "employments source and all its summaries" should {
     "not be visible" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/$taxYear/${Employments.name}")
         .thenAssertThat()
-        .statusIs(501)
+        .resourceIsNotImplemented()
     }
   }
 

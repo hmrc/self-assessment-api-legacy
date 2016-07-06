@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live.unearnedincome
 
+import uk.gov.hmrc.play.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Dividends, SavingsIncomes}
@@ -28,9 +29,9 @@ object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, Unearne
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case SavingsIncomes =>  Some(SummaryHandler(SummaryRepositoryWrapper(UnearnedIncomeRepository().SavingsIncomeRepository), SavingsIncome, SavingsIncomes.name))
+      case SavingsIncomes => Some(SummaryHandler(SummaryRepositoryWrapper(UnearnedIncomeRepository().SavingsIncomeRepository), SavingsIncome, SavingsIncomes.name))
       case Dividends => Some(SummaryHandler(SummaryRepositoryWrapper(UnearnedIncomeRepository().DividendRepository), Dividend, Dividends.name))
-      case _ => None
+      case _ => throw new NotImplementedException(s"${UnearnedIncomes.name} ${summaryType.name} is not implemented")
     }
   }
 

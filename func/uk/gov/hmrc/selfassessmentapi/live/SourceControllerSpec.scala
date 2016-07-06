@@ -2,45 +2,46 @@ package uk.gov.hmrc.selfassessmentapi.live
 
 import org.joda.time.LocalDate
 import play.api.libs.json.JsValue
-import play.api.libs.json.Json.{parse, toJson}
+import play.api.libs.json.Json.toJson
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.UnearnedIncome
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-case class Output(body: String, code: Int)
+import scala.util.matching.Regex
 
-case class Scenario(input: JsValue, output: Output)
+case class ExpectedError(path: String, code: String, httpStatusCode: Regex = "400".r)
+case class ExpectedUpdate(path: JsValue => JsValue, value: String = "")
+
+case class ErrorScenario(invalidInput: JsValue, error: ExpectedError)
+case class UpdateScenario(updatedValue: JsValue, expectedUpdate: ExpectedUpdate)
 
 class SourceControllerSpec extends BaseFunctionalSpec {
 
-  val supportedSourceTypes = Set(SelfEmployments)
-  val notImplementedSourceTypes = Set(Employments, SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties,
-    SourceTypes.UnearnedIncomes)
+  val implementedSourceTypes = Set(SourceTypes.SelfEmployments, SourceTypes.UnearnedIncomes)
 
-  val errorScenarios = Map(
-    SelfEmployments -> Scenario(input = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
-      output = Output(
-        body =
-          s"""
-             |[
-             | {
-             |   "path":"/commencementDate",
-             |   "code": "$COMMENCEMENT_DATE_NOT_IN_THE_PAST"
-             | }
-             |]
-                                          """.stripMargin,
-        code = 400
-      )
-    )
+  val notImplementedSourceTypes = Set(SourceTypes.Employments, SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties)
+
+  val errorScenarios: Map[SourceType, ErrorScenario] = Map(
+    SelfEmployments -> ErrorScenario(invalidInput = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
+      error = ExpectedError(path = "/commencementDate", code = s"$COMMENCEMENT_DATE_NOT_IN_THE_PAST")),
+    UnearnedIncomes -> ErrorScenario(invalidInput = toJson(UnearnedIncome.example()), error = ExpectedError(path = "", code = "", httpStatusCode = "20.".r))
+  )
+
+  val updateScenarios: Map[SourceType, UpdateScenario] = Map(
+    SelfEmployments -> UpdateScenario(updatedValue = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().minusDays(1))),
+      expectedUpdate = ExpectedUpdate(path = _ \ "commencementDate", value = LocalDate.now().minusDays(1).toString("yyyy-MM-dd"))),
+    UnearnedIncomes -> UpdateScenario(updatedValue = toJson(UnearnedIncome.example()),
+      expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = ""))
   )
 
   "I" should {
     "be able to create, update and delete a self assessment source" in {
-      supportedSourceTypes.foreach { sourceType =>
+      implementedSourceTypes.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -61,8 +62,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .statusIs(200)
           .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
         .when()
-          .put(Some(toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now()
-            .minusDays(1))))).at(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .put(Some(updateScenarios(sourceType).updatedValue)).at(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
           .thenAssertThat()
           .statusIs(200)
           .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
@@ -70,7 +70,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
           .thenAssertThat()
           .statusIs(200)
-          .body(_ \ "commencementDate").is(LocalDate.now().minusDays(1).toString("yyyy-MM-dd"))
+          .body(updateScenarios(sourceType).expectedUpdate.path).is(updateScenarios(sourceType).expectedUpdate.value)
         .when()
           .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
           .thenAssertThat()
@@ -94,7 +94,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "not be able to get a non-existent source" in {
-      supportedSourceTypes.foreach { sourceType =>
+      implementedSourceTypes.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -120,19 +120,19 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "not be able to create a source with invalid data" in {
-      supportedSourceTypes.foreach { sourceType =>
+      implementedSourceTypes.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
-          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).input))
+          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).invalidInput))
           .thenAssertThat()
-          .statusIs(errorScenarios(sourceType).output.code)
-          .bodyIsLike(errorScenarios(sourceType).output.body)
+          .statusIs(errorScenarios(sourceType).error.httpStatusCode)
+          .bodyContainsError((errorScenarios(sourceType).error.path, errorScenarios(sourceType).error.code))
       }
     }
 
     "not be able to update a source with invalid data" in {
-      supportedSourceTypes.foreach { sourceType =>
+      implementedSourceTypes.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -140,26 +140,26 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .thenAssertThat()
           .statusIs(201)
         .when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%", Some(errorScenarios(sourceType).input))
+          .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%", Some(errorScenarios(sourceType).invalidInput))
           .thenAssertThat()
-          .statusIs(errorScenarios(sourceType).output.code)
-          .bodyIsLike(errorScenarios(sourceType).output.body)
+          .statusIs(errorScenarios(sourceType).error.httpStatusCode)
+          .bodyContainsError((errorScenarios(sourceType).error.path, errorScenarios(sourceType).error.code))
       }
     }
 
     "not be able to update a non-existent" in {
-      supportedSourceTypes.foreach { sourceType =>
+      implementedSourceTypes.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/non-existent-source", Some(errorScenarios(sourceType).input))
+          .put(s"/$saUtr/$taxYear/${sourceType.name}/non-existent-source", Some(updateScenarios(sourceType).updatedValue))
           .thenAssertThat()
-          .statusIs(400)
+          .statusIs(404)
       }
     }
 
     "not be able to delete a non-existent" in {
-      supportedSourceTypes.foreach { sourceType =>
+      implementedSourceTypes.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()

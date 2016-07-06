@@ -22,8 +22,10 @@ trait BaseFunctionalSpec extends TestApplication {
     UrlInterpolation {
 
     def bodyContainsError(error: (String, String)) = {
-      (response.json \\ "path").map(_.as[String]) should contain only error._1
-      (response.json \\ "code").map(_.as[String]) should contain only error._2
+      val paths = (response.json \\ "path").map(_.as[String])
+      val codes = (response.json \\ "code").map(_.as[String])
+      if(paths.nonEmpty) paths.head shouldBe error._1
+      if(codes.nonEmpty) codes.head shouldBe error._2
     }
 
     if(request.startsWith("POST") || request.startsWith("PUT")) {
@@ -121,9 +123,9 @@ trait BaseFunctionalSpec extends TestApplication {
       getLinkFromBody(sourceType.name) match {
         case Some(href) => hrefPattern findFirstIn href match {
           case Some(v) => fail(s"$sourceType Hal link found.")
-          case None => true
+          case None =>
         }
-        case unknown => true
+        case unknown =>
       }
       this
     }
@@ -218,6 +220,13 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
+    def statusIs(statusCode: Regex) = {
+      withClue(s"expected $request to return $statusCode; but got ${response.body}\n") {
+        response.status.toString should fullyMatch regex statusCode
+      }
+      this
+    }
+
     def statusIs(statusCode: Int) = {
       withClue(s"expected $request to return $statusCode; but got ${response.body}\n") {
         response.status shouldBe statusCode
@@ -239,6 +248,14 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     class BodyAssertions(content: JsValue, assertions: Assertions) {
+      private def is(re: Regex) = {
+        content.asOpt[String] match {
+          case Some(actualValue) => actualValue should fullyMatch regex re
+          case _ => "" shouldBe value
+        }
+        assertions
+      }
+
       def is(value: String) = {
         content.asOpt[String] match {
           case Some(actualValue) => actualValue shouldBe value

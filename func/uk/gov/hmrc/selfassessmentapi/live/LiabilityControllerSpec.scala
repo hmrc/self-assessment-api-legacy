@@ -65,7 +65,8 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
 
   "delete liability" should {
     "return a resourceIsNotImplemented response" in {
-      given().userIsAuthorisedForTheResource(saUtr)
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
         .when()
         .delete(s"/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()

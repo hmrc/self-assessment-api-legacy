@@ -1,8 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
@@ -15,22 +14,24 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   }
 
   private def invalidRequestBody(summaryType: SummaryType) = {
-    if (summaryType == SummaryTypes.GoodsAndServicesOwnUses) Some(Json.parse(s"""{"amount":1000.123}"""))
+    if (summaryType == selfemployment.SummaryTypes.GoodsAndServicesOwnUses) Some(Json.parse(s"""{"amount":1000.123}"""))
     else Some(Json.parse(s"""{"type":"InvalidType", "amount":1000.00}"""))
   }
 
-  private def invalidErrorResponse(summaryType: SummaryType with Product with Serializable): (String, String) = {
-    if (summaryType == SummaryTypes.GoodsAndServicesOwnUses) ("/amount", "INVALID_MONETARY_AMOUNT")
+  private def invalidErrorResponse(summaryType: SummaryType): (String, String) = {
+    if (summaryType == selfemployment.SummaryTypes.GoodsAndServicesOwnUses) ("/amount", "INVALID_MONETARY_AMOUNT")
     else ("/type", "NO_VALUE_FOUND")
   }
 
-  private val selfEmploymentSummaries = Seq(SummaryTypes.Incomes, SummaryTypes.Expenses, SummaryTypes.BalancingCharges,
-    SummaryTypes.GoodsAndServicesOwnUses)
+  private val implementedSources = Seq(SourceTypes.SelfEmployments, SourceTypes.UnearnedIncomes)
+
+  private val implementedSummaries = Map(SourceTypes.SelfEmployments -> SourceTypes.SelfEmployments.summaryTypes,
+    SourceTypes.UnearnedIncomes -> Set(unearnedincome.SummaryTypes.SavingsIncomes, unearnedincome.SummaryTypes.Dividends))
 
   "I" should {
     "be able to create, get, update and delete all summaries for all sources" in {
-      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        selfEmploymentSummaries foreach { summaryType =>
+      implementedSources foreach { sourceType =>
+        implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -93,8 +94,8 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to create summary with invalid payload" in {
-      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        selfEmploymentSummaries foreach { summaryType =>
+      implementedSources foreach { sourceType =>
+        implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -118,8 +119,8 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to update summary with invalid payload" in {
-      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        selfEmploymentSummaries foreach { summaryType =>
+      implementedSources foreach { sourceType =>
+        implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -147,8 +148,8 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to get a non existent summary" in {
-      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        selfEmploymentSummaries foreach { summaryType =>
+      implementedSources foreach { sourceType =>
+        implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
@@ -168,8 +169,8 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to delete a non existent summary" in {
-      Seq(SourceTypes.SelfEmployments) foreach { sourceType =>
-        selfEmploymentSummaries foreach { summaryType =>
+      implementedSources foreach { sourceType =>
+        implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()

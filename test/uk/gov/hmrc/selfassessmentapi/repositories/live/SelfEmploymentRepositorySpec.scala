@@ -22,8 +22,8 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.domain.BaseDomain
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
@@ -43,7 +43,6 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     await(mongoRepository.ensureIndexes)
   }
 
-  val taxYear = TaxYear("2016-17")
   val saUtr = generateSaUtr()
 
   def selfEmployment(): SelfEmployment = SelfEmployment.example()

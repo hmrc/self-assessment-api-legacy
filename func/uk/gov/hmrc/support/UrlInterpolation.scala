@@ -5,8 +5,12 @@ import scala.util.matching.Regex
 
 trait UrlInterpolation {
 
+  def interpolated(path: Regex)(implicit urlPathVariables: mutable.Map[String, String]): String = {
+    interpolated(path.regex)
+  }
+
   def interpolated(path: String)(implicit urlPathVariables: mutable.Map[String, String]): String = {
-    interpolate(interpolate(path, "sourceId"), "summaryId")
+    interpolate(interpolate(interpolate(path, "sourceId"), "summaryId"), "liabilityId")
   }
 
   private def interpolate(path: String, pathVariable: String)(implicit pathVariablesValues: mutable.Map[String, String]): String = {
@@ -15,9 +19,4 @@ trait UrlInterpolation {
       case None => path
     }
   }
-
-  def interpolated(path: Regex)(implicit urlPathVariables: mutable.Map[String, String]): String = {
-    interpolate(interpolate(path.regex, "sourceId"), "summaryId")
-  }
-
 }

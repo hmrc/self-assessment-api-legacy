@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.live
 
 import org.joda.time.DateTimeZone
+import play.api.libs.json.Json.toJson
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
@@ -29,12 +30,10 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories._
-import play.api.libs.json.Json.toJson
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentExpenseSummary, MongoSelfEmploymentIncomeSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
-
 
 object SelfEmploymentRepository extends MongoDbConnection {
   private lazy val repository = new SelfEmploymentMongoRepository()
@@ -70,11 +69,16 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
   }
 
   override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[SelfEmployment]] = {
-    for (list <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield list.map(_.toSelfEmployment)
+    findAll(saUtr, taxYear).map(_.map(_.toSelfEmployment))
   }
 
-  override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]] =
+  override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]] = {
     list(saUtr, taxYear).map(_.map(se => JsonItem(se.id.get.toString, toJson(se))))
+  }
+
+  def findAll(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[MongoSelfEmployment]] = {
+    find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)
+  }
 
   /*
     We need to perform updates manually as we are using one collection per source and it includes the arrays of summaries. This

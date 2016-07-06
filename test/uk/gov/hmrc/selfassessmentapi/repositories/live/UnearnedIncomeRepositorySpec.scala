@@ -40,7 +40,6 @@ class UnearnedIncomeRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     await(mongoRepository.ensureIndexes)
   }
 
-  val taxYear = TaxYear("2016-17")
   val saUtr = generateSaUtr()
 
   def unearnedIncome(): UnearnedIncome = UnearnedIncome.example()

@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
-import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentMongoRepository
 
-trait UnitSpec extends uk.gov.hmrc.play.test.UnitSpec {
 
-  implicit def taxYearToString(taxYear: TaxYear): String = taxYear.value
+class LiabilityServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach with MockitoSugar {
 
-  private val saUtrGenerator = new SaUtrGenerator()
-
-  def generateSaUtr(): SaUtr = saUtrGenerator.nextSaUtr
-
-  val taxYear = TaxYear("2016-17")
-
+  private val seRepo = new SelfEmploymentMongoRepository
 }

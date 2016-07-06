@@ -17,7 +17,6 @@ import scala.util.matching.Regex
 trait BaseFunctionalSpec extends TestApplication {
 
   protected val saUtr = generateSaUtr()
-  val taxYear = "2016-17"
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String]) extends
     UrlInterpolation {
@@ -28,7 +27,7 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     if(request.startsWith("POST") || request.startsWith("PUT")) {
-      Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal()) foreach {
+      Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal(), "liabilityId" -> liabilityIdFromHal()) foreach {
         case (name, fn) =>
           fn map { evaluatedValue =>
             urlPathVariables += (name -> evaluatedValue)
@@ -47,6 +46,14 @@ trait BaseFunctionalSpec extends TestApplication {
     def summaryIdFromHal() = {
       getLinkFromBody("self") flatMap { link =>
         s"/self-assessment/\\d+/$taxYear/[\\w-]+/\\w+/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
+          firstMatch.group(1)
+        }
+      }
+    }
+
+    def liabilityIdFromHal() = {
+      getLinkFromBody("self") flatMap { link =>
+        s"/self-assessment/\\d+/$taxYear/liabilities/(\\w+)".r findFirstMatchIn link map { firstMatch =>
           firstMatch.group(1)
         }
       }
@@ -386,8 +393,6 @@ trait BaseFunctionalSpec extends TestApplication {
   def given() = new Givens()
 
   def when() = new HttpVerbs()
-
-
 
 }
 

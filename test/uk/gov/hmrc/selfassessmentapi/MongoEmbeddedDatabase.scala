@@ -63,16 +63,16 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
     }
   }
 
-  override def beforeAll = {
+  override def beforeAll() = {
     if (mongod != null && mongod.isProcessRunning) stopEmbeddedMongo()
     startEmbeddedMongo()
   }
 
-  override def afterAll = {
+  override def afterAll() = {
     stopEmbeddedMongo()
   }
 
-  override def beforeEach = {
+  override def beforeEach() = {
     clearMongoCollections()
   }
 

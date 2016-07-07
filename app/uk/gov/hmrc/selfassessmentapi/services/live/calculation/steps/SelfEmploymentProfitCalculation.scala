@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.Depreciation
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, MongoSelfEmployment, SelfEmploymentIncome}
 
 object SelfEmploymentProfitCalculation extends CalculationStep {
@@ -25,13 +26,13 @@ object SelfEmploymentProfitCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
     val profitFromSelfEmployments = selfAssessment.selfEmployments.map { selfEmployment =>
-      val adjustedProfit = profitIncreases(selfEmployment) - profitReductions(selfEmployment)
+      val adjustedProfit = positiveOrZero(profitIncreases(selfEmployment) - profitReductions(selfEmployment))
       val lossBroughtForward = valueOrZero(capAt(selfEmployment.adjustments.flatMap(_.lossBroughtForward), adjustedProfit))
       val outstandingBusinessIncome = valueOrZero(selfEmployment.adjustments.flatMap(_.outstandingBusinessIncome))
       val taxableProfit = adjustedProfit - lossBroughtForward + outstandingBusinessIncome
       val profit = roundDown(taxableProfit + lossBroughtForward)
 
-      SelfEmploymentIncome(selfEmployment.sourceId, taxableProfit, profit)
+      SelfEmploymentIncome(sourceId = selfEmployment.sourceId, taxableProfit = roundDown(taxableProfit), profit = profit)
     }
 
     liability.copy(profitFromSelfEmployments = profitFromSelfEmployments)
@@ -49,7 +50,7 @@ object SelfEmploymentProfitCalculation extends CalculationStep {
   }
 
   private def profitReductions(selfEmployment: MongoSelfEmployment): BigDecimal = {
-    val expenses = Some(selfEmployment.expenses.map(_.amount).sum)
+    val expenses = Some(selfEmployment.expenses.filterNot(_.`type` == Depreciation).map(_.amount).sum)
     val allowances = selfEmployment.allowances.map { a =>
       sum(capAt(a.annualInvestmentAllowance, annualInvestmentAllowance), a.capitalAllowanceMainPool, a.capitalAllowanceSpecialRatePool, a.restrictedCapitalAllowance, a.businessPremisesRenovationAllowance, a.enhancedCapitalAllowance, a.allowancesOnSales)
     }

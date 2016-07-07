@@ -18,12 +18,23 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
-object TotalIncomeCalculation extends CalculationStep {
+object PersonalAllowanceCalculation extends CalculationStep {
+
+  private val standardAllowance = BigDecimal(11000)
+
+  private val noAllowanceThreshold = BigDecimal(100000)
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val (profits, taxableProfits) = liability.profitFromSelfEmployments.map(aa => (aa.profit, aa.taxableProfit)).unzip
+    val personalAllowance = liability.totalTaxableIncome.map { income =>
+      val roundedIncome = roundDown(income)
+      roundedIncome - roundedIncome % 2
+    } match {
+      case Some(income) if income <= noAllowanceThreshold => Some(standardAllowance)
+      case Some(income) if income > noAllowanceThreshold => Some(positiveOrZero(standardAllowance - ((income - noAllowanceThreshold) / 2).min(noAllowanceThreshold)))
+      case _ => None
+    }
 
-    liability.copy(totalIncomeReceived = Some(profits.sum), totalTaxableIncome = Some(taxableProfits.sum))
+    liability.copy(personalAllowance = personalAllowance)
   }
 }

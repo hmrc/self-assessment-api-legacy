@@ -28,8 +28,8 @@ class PersonalAllowanceCalculationSpec extends UnitSpec with SelfEmploymentSugar
       result.personalAllowance shouldBe Some(BigDecimal(11000))
     }
 
-    "calculate personal allowance for total income equal to 100001.99" in {
-      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(100001.99)))
+    "calculate personal allowance for total income equal to 100001" in {
+      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(100001)))
       val result = PersonalAllowanceCalculation.run(SelfAssessment(), liability)
       result.personalAllowance shouldBe Some(BigDecimal(11000))
     }
@@ -40,8 +40,8 @@ class PersonalAllowanceCalculationSpec extends UnitSpec with SelfEmploymentSugar
       result.personalAllowance shouldBe Some(BigDecimal(6000))
     }
 
-    "calculate personal allowance for total income equal to 121998.99" in {
-      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(121998.99)))
+    "calculate personal allowance for total income equal to 121999" in {
+      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(121999)))
       val result = PersonalAllowanceCalculation.run(SelfAssessment(), liability)
       result.personalAllowance shouldBe Some(BigDecimal(1))
     }

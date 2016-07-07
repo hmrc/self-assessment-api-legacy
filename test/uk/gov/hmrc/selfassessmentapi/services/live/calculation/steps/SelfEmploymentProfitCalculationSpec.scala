@@ -187,7 +187,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 999.51, profit = 2000)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 999, profit = 2000)
       ))
     }
 

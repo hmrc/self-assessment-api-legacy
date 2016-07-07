@@ -42,17 +42,17 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |            "selfEmployment": [
            |                {
            |                    "profit": 58529,
-           |                    "taxableProfit": 48529.12
+           |                    "taxableProfit": 48529
            |                },
            |                {
            |                    "profit": 74529,
-           |                    "taxableProfit": 64529.12
+           |                    "taxableProfit": 64529
            |                }
            |            ]
            |        },
            |        "personalAllowance": 4471,
            |        "totalIncomeReceived": 133058,
-           |        "totalTaxableIncome": 113058.24
+           |        "totalTaxableIncome": 113058
            |    },
            |    "incomeTax": {
            |        "calculations": [],

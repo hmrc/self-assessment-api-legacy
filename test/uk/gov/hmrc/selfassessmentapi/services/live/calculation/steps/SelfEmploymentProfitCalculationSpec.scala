@@ -120,7 +120,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
       ))
     }
 
-    "round down profit to the nearest pound" in {
+    "round down profit and taxableProfit to the nearest pound" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
         aSelfEmployment(selfEmploymentId).copy(
@@ -133,7 +133,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1298.99, profit = 1298)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1298, profit = 1298)
       ))
     }
 

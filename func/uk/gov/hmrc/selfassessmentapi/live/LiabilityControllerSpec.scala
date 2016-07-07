@@ -111,4 +111,14 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     }
   }
 
+  "find liability" should {
+    "return a resourceIsNotImplemented response" in {
+      given().userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/$saUtr/$taxYear/liabilities")
+        .thenAssertThat()
+        .resourceIsNotImplemented()
+    }
+  }
+
 }

@@ -32,14 +32,15 @@ import scala.concurrent.Future
 
 object LiabilityRepository extends MongoDbConnection {
   private lazy val repository = new LiabilityMongoRepository()
+
   def apply() = repository
 }
 
 class LiabilityMongoRepository(implicit mongo: () => DB) extends ReactiveRepository[MongoLiability, BSONObjectID](
-    "liabilities",
-    mongo,
-    domainFormat = MongoLiability.mongoFormats,
-    idFormat = ReactiveMongoFormats.objectIdFormats) {
+  "liabilities",
+  mongo,
+  domainFormat = MongoLiability.mongoFormats,
+  idFormat = ReactiveMongoFormats.objectIdFormats) {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("ui_utr_taxyear"), unique = true))
@@ -52,7 +53,7 @@ class LiabilityMongoRepository(implicit mongo: () => DB) extends ReactiveReposit
   }
 
   def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[MongoLiability]] = {
-    find ("saUtr" -> saUtr.value, "taxYear" -> taxYear.value)
+    find("saUtr" -> saUtr.value, "taxYear" -> taxYear.value)
       .map(_.headOption)
   }
 }

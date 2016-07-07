@@ -31,7 +31,9 @@ case class MongoLiability(id: BSONObjectID,
                           profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
                           totalIncomeReceived: Option[BigDecimal] = None,
                           totalTaxableIncome: Option[BigDecimal] = None,
-                          personalAllowance: Option[BigDecimal] = None) {
+                          personalAllowance: Option[BigDecimal] = None,
+                          totalAllowancesAndReliefs: Option[BigDecimal] = None,
+                          totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None) {
 
   def toLiability =
     Liability(

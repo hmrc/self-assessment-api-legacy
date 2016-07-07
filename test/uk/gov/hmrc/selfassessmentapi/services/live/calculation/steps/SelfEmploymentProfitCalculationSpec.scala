@@ -77,7 +77,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
       ))
     }
 
-    "subtract all expenses from profit" in {
+    "subtract all expenses apart from depreciation from profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
         aSelfEmployment(selfEmploymentId).copy(
@@ -87,7 +87,8 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
           expenses = Seq(
             expense(ExpenseType.AdminCosts, 100),
             expense(ExpenseType.BadDebt, 50.01),
-            expense(ExpenseType.CISPayments, 49.99)
+            expense(ExpenseType.CISPayments, 49.99),
+            expense(ExpenseType.Depreciation, 1000000)
           )
         )))
 
@@ -136,7 +137,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
       ))
     }
 
-    "subtract certain adjustments from profit" in {
+    "subtract adjustments from profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(
         aSelfEmployment(selfEmploymentId).copy(
@@ -204,6 +205,26 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
         SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 2000)
+      ))
+    }
+
+    "return zero as profit and ignore lossBroughtForward if expenses are bigger than incomes (loss)" in {
+
+      val selfAssessment = SelfAssessment(selfEmployments = Seq(
+        aSelfEmployment(selfEmploymentId).copy(
+          incomes = Seq(
+            income(IncomeType.Turnover, 2000)
+          ),
+          expenses = Seq(
+            expense(ExpenseType.AdminCosts, 4000)
+          ),
+          adjustments = Some(Adjustments(
+            lossBroughtForward = Some(1000)
+          ))
+        )))
+
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 0)
       ))
     }
 

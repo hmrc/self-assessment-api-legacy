@@ -30,14 +30,14 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
         SelfEmploymentIncome("se2", 0, 200.50)
       ))
 
-      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(500.50))
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(500.50), totalTaxableIncome = Some(0))
     }
 
     "calculate total income if there is no income from self employments" in {
 
       val liability = aLiability()
 
-      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(0))
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(0), totalTaxableIncome = Some(0))
     }
   }
 }

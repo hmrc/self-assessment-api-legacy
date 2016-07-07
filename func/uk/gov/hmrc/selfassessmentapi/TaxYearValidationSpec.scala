@@ -62,7 +62,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear")
         .bodyIs(expectedJson)
     }
   }
@@ -84,8 +84,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(400)
-        .bodyHasPath("""(0) \ code """, BENEFIT_STOPPED_DATE_INVALID)
-        .bodyHasPath("""(0) \ path """, "/taxYearProperties/childBenefit/dateBenefitStopped")
+        .bodyContainsError(("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID"))
     }
   }
 
@@ -108,7 +107,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
+        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear")
         .bodyHasLink("self-employments", s"""/self-assessment/$saUtr/$taxYear/self-employments""")
     }
   }

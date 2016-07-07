@@ -23,7 +23,6 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(406)
         .body(_ \ "code").is("ACCEPT_HEADER_INVALID")
-        .body(_ \ "message").is("The accept header is missing or invalid")
     }
   }
 

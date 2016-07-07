@@ -16,7 +16,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
 
   val notImplementedSummaries: Map[SourceType, Set[SummaryType]] =
     Map(SourceTypes.SelfEmployments -> Set(),
-      SourceTypes.UnearnedIncomes -> SourceTypes.UnearnedIncomes.summaryTypes,
+      SourceTypes.UnearnedIncomes -> Set(unearnedincome.SummaryTypes.Benefits),
       SourceTypes.UKProperties -> SourceTypes.UKProperties.summaryTypes,
       SourceTypes.FurnishedHolidayLettings -> SourceTypes.FurnishedHolidayLettings.summaryTypes,
       SourceTypes.Employments -> SourceTypes.Employments.summaryTypes

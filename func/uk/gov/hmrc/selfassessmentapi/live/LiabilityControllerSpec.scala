@@ -1,6 +1,8 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
-import play.api.libs.json.Json
+import play.api.libs.json.Json.toJson
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, SummaryTypes}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
@@ -22,50 +24,86 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
   "retrieve liability" should {
 
     "return a 200 response with liability details" in {
-      val expectedJson = Json.parse(
+
+      val sourceType = SelfEmployments
+      val summaryType = SummaryTypes.Incomes
+
+      val expectedJson =
         s"""
            |{
-           |  "income": {
-           |    "incomes": {
-           |      "selfEmployment": [],
-           |      "employment": []
+           |    "class4Nic": {
+           |        "calculations": [],
+           |        "total": 0
            |    },
-           |    "totalIncomeReceived": 0,
-           |    "personalAllowance": 0,
-           |    "totalTaxableIncome": 0
-           |  },
-           |  "incomeTax": {
-           |    "calculations": [],
-           |    "total": 0
-           |  },
-           |  "credits": [],
-           |  "class4Nic": {
-           |      "calculations": [],
-           |      "total": 0
-           |  },
-           |  "totalTaxDue": 0
+           |    "credits": [],
+           |    "income": {
+           |        "incomes": {
+           |            "employment": [],
+           |            "selfEmployment": [
+           |                {
+           |                    "profit": 58529,
+           |                    "taxableProfit": 48529.12
+           |                },
+           |                {
+           |                    "profit": 74529,
+           |                    "taxableProfit": 64529.12
+           |                }
+           |            ]
+           |        },
+           |        "personalAllowance": 4471,
+           |        "totalIncomeReceived": 133058,
+           |        "totalTaxableIncome": 113058.24
+           |    },
+           |    "incomeTax": {
+           |        "calculations": [],
+           |        "total": 0
+           |    },
+           |    "totalTaxDue": 0
            |}
-        """.stripMargin)
+        """.stripMargin
 
       given()
         .userIsAuthorisedForTheResource(saUtr)
-      .when()
+        .when()
+        .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(toJson(Income.example().copy(amount = 60000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(toJson(Income.example().copy(amount = 10000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(toJson(Income.example().copy(amount = 80000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(toJson(Income.example().copy(amount = 6000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
         .post(s"/$saUtr/$taxYear/liabilities")
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(202)
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/liabilities/.+".r)
-      .when()
+        .when()
         .get(s"/$saUtr/$taxYear/liabilities/%liabilityId%")
-      .thenAssertThat()
+        .thenAssertThat()
         .statusIs(200)
-        .contentTypeIsHalJson()
-        .bodyIs(expectedJson)
+        .bodyIsLike(expectedJson)
     }
   }
 
   "delete liability" should {
     "return a resourceIsNotImplemented response" in {
-      given().userIsAuthorisedForTheResource(saUtr)
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
         .when()
         .delete(s"/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()

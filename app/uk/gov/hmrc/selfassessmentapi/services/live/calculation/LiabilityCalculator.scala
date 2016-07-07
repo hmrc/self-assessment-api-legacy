@@ -17,14 +17,15 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.{PersonalAllowanceCalculation, SelfAssessment, SelfEmploymentProfitCalculation, TotalIncomeCalculation}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
 class LiabilityCalculator {
 
   private val calculationSteps = Seq(
     SelfEmploymentProfitCalculation,
     TotalIncomeCalculation,
-    PersonalAllowanceCalculation
+    PersonalAllowanceCalculation,
+    TotalIncomeOnWhichTaxIsDueCalculation
   )
 
   def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {

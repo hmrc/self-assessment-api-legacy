@@ -58,7 +58,8 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        "calculations": [],
            |        "total": 0
            |    },
-           |    "totalTaxDue": 0
+           |    "totalTaxDue": 0,
+           |    "totalAllowancesAndReliefs": 0
            |}
         """.stripMargin
 

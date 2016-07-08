@@ -42,6 +42,13 @@ object IncomeFromSources {
   implicit val format = Json.format[IncomeFromSources]
 }
 
+
+case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, unTaxedInterest: BigDecimal)
+
+object InterestFromUKBanksAndBuildingSocieties {
+  implicit val format = Json.format[InterestFromUKBanksAndBuildingSocieties]
+}
+
 case class IncomeSummary(incomes: IncomeFromSources, totalIncomeReceived: BigDecimal, personalAllowance: BigDecimal, totalTaxableIncome: BigDecimal)
 
 object IncomeSummary {

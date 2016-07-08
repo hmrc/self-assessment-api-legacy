@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, MongoSelfEmployment}
-
-import scala.math.BigDecimal.RoundingMode
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, MongoSelfEmployment, MongoUnearnedIncome}
 
 trait CalculationStep extends Math {
 
@@ -26,4 +24,4 @@ trait CalculationStep extends Math {
 
 }
 
-case class SelfAssessment(selfEmployments: Seq[MongoSelfEmployment] = Seq())
+case class SelfAssessment(selfEmployments: Seq[MongoSelfEmployment] = Seq(), unearnedIncomes: Seq[MongoUnearnedIncome] = Seq())

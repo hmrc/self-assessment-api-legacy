@@ -28,7 +28,7 @@ import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome, UnearnedIncome}
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoUnearnedIncome, MongoUnearnedIncomesDividendSummary, MongoUnearnedIncomesSavingsIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoUnearnedIncome, MongoUnearnedIncomesDividendSummary, MongoUnearnedIncomesSavingsIncomeSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -70,6 +70,11 @@ class UnearnedIncomeMongoRepository(implicit mongo: () => DB)
   override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[UnearnedIncome]] = {
     for (list <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield list.map(_.toUnearnedIncome)
   }
+
+  def findAll(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[MongoUnearnedIncome]] = {
+    find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)
+  }
+
 
   override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[JsonItem]] =
     list(saUtr, taxYear).map(_.map(se => JsonItem(se.id.get.toString, toJson(se))))

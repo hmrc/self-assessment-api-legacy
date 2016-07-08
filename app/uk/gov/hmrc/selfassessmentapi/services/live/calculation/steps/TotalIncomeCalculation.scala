@@ -24,6 +24,9 @@ object TotalIncomeCalculation extends CalculationStep {
 
     val (profits, taxableProfits) = liability.profitFromSelfEmployments.map(aa => (aa.profit, aa.taxableProfit)).unzip
 
-    liability.copy(totalIncomeReceived = Some(profits.sum), totalTaxableIncome = Some(taxableProfits.sum))
+    val interestFromUKBanksAndBuildingSocieties = liability.interestFromUKBanksAndBuildingSocieties.map(_.unTaxedInterest).sum
+    val totalIncomeReceived = profits.sum + interestFromUKBanksAndBuildingSocieties
+
+    liability.copy(totalIncomeReceived = Some(totalIncomeReceived), totalTaxableIncome = Some(taxableProfits.sum))
   }
 }

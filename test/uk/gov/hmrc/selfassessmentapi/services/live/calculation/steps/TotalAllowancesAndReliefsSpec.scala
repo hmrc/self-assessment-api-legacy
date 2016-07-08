@@ -30,18 +30,17 @@ class TotalAllowancesAndReliefsSpec extends UnitSpec with SelfEmploymentSugar {
       val personalAllowance = BigDecimal(10000.00)
       val lossBroughtForward1 = BigDecimal(550.00)
       val lossBroughtForward2 = BigDecimal(450.00)
-      val liability = aLiability()
-        .copy(personalAllowance = Some(personalAllowance))
-        .copy(
-            profitFromSelfEmployments =
-              Seq(SelfEmploymentIncome(sourceId = selfEmploymentId1,
-                                       taxableProfit = 2430,
-                                       profit = 2430,
-                                       lossBroughtForward = lossBroughtForward1),
-                  SelfEmploymentIncome(sourceId = selfEmploymentId2,
-                                       taxableProfit = 2430,
-                                       profit = 2430,
-                                       lossBroughtForward = lossBroughtForward2)))
+      val liability =
+        aLiability().copy(personalAllowance = Some(personalAllowance),
+                          profitFromSelfEmployments =
+                            Seq(SelfEmploymentIncome(sourceId = selfEmploymentId1,
+                                                     taxableProfit = 2430,
+                                                     profit = 2430,
+                                                     lossBroughtForward = lossBroughtForward1),
+                                SelfEmploymentIncome(sourceId = selfEmploymentId2,
+                                                     taxableProfit = 2430,
+                                                     profit = 2430,
+                                                     lossBroughtForward = lossBroughtForward2)))
       TotalAllowancesAndReliefs
         .run(SelfAssessment(), liability)
         .totalAllowancesAndReliefs shouldBe Some(

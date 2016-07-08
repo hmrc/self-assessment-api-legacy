@@ -21,7 +21,7 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, MongoS
 
 object SelfEmploymentProfitCalculation extends CalculationStep {
 
-  private val annualInvestmentAllowance = BigDecimal(200000)
+  private val annualInvestmentAllowance = 200000
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 

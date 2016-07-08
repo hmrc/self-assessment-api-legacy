@@ -25,6 +25,7 @@ class LiabilityCalculator {
     SelfEmploymentProfitCalculation,
     TotalIncomeCalculation,
     PersonalAllowanceCalculation,
+    TotalAllowancesAndReliefs,
     TotalIncomeOnWhichTaxIsDueCalculation
   )
 

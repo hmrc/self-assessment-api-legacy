@@ -32,7 +32,7 @@ object SelfEmploymentProfitCalculation extends CalculationStep {
       val taxableProfit = adjustedProfit - lossBroughtForward + outstandingBusinessIncome
       val profit = roundDown(taxableProfit + lossBroughtForward)
 
-      SelfEmploymentIncome(sourceId = selfEmployment.sourceId, taxableProfit = roundDown(taxableProfit), profit = profit)
+      SelfEmploymentIncome(sourceId = selfEmployment.sourceId, taxableProfit = roundDown(taxableProfit), profit = profit, lossBroughtForward = lossBroughtForward)
     }
 
     liability.copy(profitFromSelfEmployments = profitFromSelfEmployments)

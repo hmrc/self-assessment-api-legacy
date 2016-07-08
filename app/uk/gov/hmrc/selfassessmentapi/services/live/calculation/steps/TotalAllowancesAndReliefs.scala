@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, MongoSelfEmployment}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
-import scala.math.BigDecimal.RoundingMode
-
-trait CalculationStep extends Math {
-
-  def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability
-
+object TotalAllowancesAndReliefs extends CalculationStep {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+    val lossesBroughtForward = liability.profitFromSelfEmployments.map(_.lossBroughtForward)
+    val incomeTaxRelief = roundUp(lossesBroughtForward.sum)
+    val totalAllowancesAndReliefs = incomeTaxRelief + valueOrZero(liability.personalAllowance)
+    liability.copy(totalAllowancesAndReliefs = Some(totalAllowancesAndReliefs))
+  }
 }
-
-case class SelfAssessment(selfEmployments: Seq[MongoSelfEmployment] = Seq())

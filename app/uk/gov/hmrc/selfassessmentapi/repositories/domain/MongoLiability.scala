@@ -50,7 +50,7 @@ case class MongoLiability(id: BSONObjectID,
       credits = Nil,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),
       totalTaxDue = 0,
-      totalAllowancesAndReliefs = 0
+      totalAllowancesAndReliefs = totalAllowancesAndReliefs.getOrElse(0)
     )
 }
 

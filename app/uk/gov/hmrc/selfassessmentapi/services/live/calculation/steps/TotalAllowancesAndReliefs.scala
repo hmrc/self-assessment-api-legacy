@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.services.live.calculation
+package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
-class LiabilityCalculator {
-
-  private val calculationSteps = Seq(
-    SelfEmploymentProfitCalculation,
-    TotalIncomeCalculation,
-    PersonalAllowanceCalculation,
-    TotalAllowancesAndReliefs
-  )
-
-  def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    calculationSteps.foldLeft(liability)((liability, step) => step.run(selfAssessment, liability))
+object TotalAllowancesAndReliefs extends CalculationStep {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+    val lossesBroughtForward = liability.profitFromSelfEmployments.map(_.lossBroughtForward)
+    val incomeTaxRelief = roundUp(lossesBroughtForward.sum)
+    val totalAllowancesAndReliefs = incomeTaxRelief + valueOrZero(liability.personalAllowance)
+    liability.copy(totalAllowancesAndReliefs = Some(totalAllowancesAndReliefs))
   }
-}
-
-object LiabilityCalculator {
-
-  def apply() = new LiabilityCalculator()
 }

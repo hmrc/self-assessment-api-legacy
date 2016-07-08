@@ -54,7 +54,7 @@ object CalculatedAmount {
   implicit val format = Json.format[CalculatedAmount]
 }
 
-case class Liability(id: Option[LiabilityId] = None, income: IncomeSummary, incomeTax: CalculatedAmount, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal)
+case class Liability(id: Option[LiabilityId] = None, income: IncomeSummary, incomeTax: CalculatedAmount, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal, totalAllowancesAndReliefs: BigDecimal)
 
 object Liability {
   implicit val format = Json.format[Liability]
@@ -99,6 +99,7 @@ object Liability {
         ),
         total = BigDecimal(3853.15)
       ),
-      totalTaxDue = BigDecimal(25796.95)
+      totalTaxDue = BigDecimal(25796.95),
+      totalAllowancesAndReliefs = BigDecimal(10000.00)
     )
 }

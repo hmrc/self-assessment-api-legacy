@@ -58,7 +58,8 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        "calculations": [],
            |        "total": 0
            |    },
-           |    "totalTaxDue": 0
+           |    "totalTaxDue": 0,
+           |    "totalAllowancesAndReliefs": 0
            |}
         """.stripMargin
 
@@ -106,6 +107,16 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .delete(s"/$saUtr/$taxYear/liabilities/1234")
+        .thenAssertThat()
+        .resourceIsNotImplemented()
+    }
+  }
+
+  "find liability" should {
+    "return a resourceIsNotImplemented response" in {
+      given().userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/$saUtr/$taxYear/liabilities")
         .thenAssertThat()
         .resourceIsNotImplemented()
     }

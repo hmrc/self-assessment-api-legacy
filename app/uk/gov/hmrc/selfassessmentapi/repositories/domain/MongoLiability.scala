@@ -47,11 +47,12 @@ case class MongoLiability(id: BSONObjectID,
       incomeTax = CalculatedAmount(calculations = Nil, total = 0),
       credits = Nil,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),
-      totalTaxDue = 0
+      totalTaxDue = 0,
+      totalAllowancesAndReliefs = 0
     )
 }
 
-case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal) {
+case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal, lossBroughtForward: BigDecimal) {
 
   def toIncome = Income(sourceId, taxableProfit, profit)
 }

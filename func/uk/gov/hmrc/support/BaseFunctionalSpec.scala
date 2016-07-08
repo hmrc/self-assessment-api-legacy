@@ -8,8 +8,9 @@ import play.api.libs.json.{JsArray, JsObject, JsValue, Reads}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.TestApplication
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, SourceType, SourceTypes}
+import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes, SummaryType}
 
 import scala.collection.mutable
 import scala.util.matching.Regex
@@ -24,11 +25,11 @@ trait BaseFunctionalSpec extends TestApplication {
     def bodyContainsError(error: (String, String)) = {
       val paths = (response.json \\ "path").map(_.as[String])
       val codes = (response.json \\ "code").map(_.as[String])
-      if(paths.nonEmpty) paths.head shouldBe error._1
-      if(codes.nonEmpty) codes.head shouldBe error._2
+      if (paths.nonEmpty) paths.head shouldBe error._1
+      if (codes.nonEmpty) codes.head shouldBe error._2
     }
 
-    if(request.startsWith("POST") || request.startsWith("PUT")) {
+    if (request.startsWith("POST") || request.startsWith("PUT")) {
       Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal(), "liabilityId" -> liabilityIdFromHal()) foreach {
         case (name, fn) =>
           fn map { evaluatedValue =>
@@ -127,6 +128,15 @@ trait BaseFunctionalSpec extends TestApplication {
         }
         case unknown =>
       }
+      this
+    }
+
+    def bodyHasLinksForEnabledSourceTypes(saUtr: SaUtr, taxYear: String) = {
+      SourceTypes.types.filter { source =>
+        AppContext.featureSwitch.exists { config =>
+          FeatureConfig(config).isSourceEnabled(source.name)
+        }
+      } foreach { sourceType => bodyHasLinksForSourceType(sourceType, saUtr, taxYear) }
       this
     }
 

@@ -149,7 +149,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(400)
-        .bodyHasPath("""(0) \ code """, JUST_PENSION_CONTRIBUTIONS)
+        .bodyHasPath("""(0) \ code """, ONLY_PENSION_CONTRIBUTIONS_SUPPORTED)
         .bodyHasPath("""(0) \ path """, "/taxYearProperties")
     }
   }

@@ -27,7 +27,6 @@ import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentRepository
-import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -65,21 +64,22 @@ object TaxYearDiscoveryController extends BaseController with Links {
       Some(
           Seq(
               addValidationError("/taxYearProperties",
-                                 Some(JUST_PENSION_CONTRIBUTIONS),
-                                 s"Payload should contain only pension contributions")))
+                                 Some(ONLY_PENSION_CONTRIBUTIONS_SUPPORTED),
+                                 s"Only update of Pension Contributions is supported")))
     } else None
   }
 
-  final def update(utr: SaUtr, taxYear: TaxYear) = Action.async(parse.json) { implicit request =>
-    withJsonBody[TaxYearProperties] { taxYearProperties =>
-      validateRequest(taxYearProperties, taxYear.taxYear) match {
-        case Some(errors) => Future.successful(BadRequest(JsArray(errors)))
-        case None =>
-          repository.updateTaxYearProperties(utr, taxYear, taxYearProperties).map {
-            case true => Ok(halResource(obj(), discoveryLinks(utr, taxYear)))
-            case false => NotFound
-          }
+  final def updateTaxYearProperties(utr: SaUtr, taxYear: TaxYear) = Action.async(parse.json) {
+    implicit request =>
+      withJsonBody[TaxYearProperties] { taxYearProperties =>
+        validateRequest(taxYearProperties, taxYear.taxYear) match {
+          case Some(errors) => Future.successful(BadRequest(JsArray(errors)))
+          case None =>
+            repository.updateTaxYearProperties(utr, taxYear, taxYearProperties).map {
+              case true => Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
+              case false => NotFound
+            }
+        }
       }
-    }
   }
 }

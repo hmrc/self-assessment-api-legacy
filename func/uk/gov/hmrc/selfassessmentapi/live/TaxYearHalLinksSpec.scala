@@ -11,7 +11,7 @@ class TaxYearHalLinksSpec extends BaseFunctionalSpec {
   override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
 
   "Request to discover tax year" should {
-    "have Hal links for self-employments" in {
+    "only have Hal links for enabled sources" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -19,7 +19,7 @@ class TaxYearHalLinksSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyDoesNotHaveLinksForSourceType(SelfEmployments, saUtr, taxYear)
+        .bodyHasLinksForEnabledSourceTypes(saUtr, taxYear)
     }
   }
 

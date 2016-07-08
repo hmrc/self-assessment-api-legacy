@@ -25,7 +25,8 @@ class LiabilityCalculator {
     SelfEmploymentProfitCalculation,
     TotalIncomeCalculation,
     PersonalAllowanceCalculation,
-    TotalAllowancesAndReliefs
+    TotalAllowancesAndReliefs,
+    TotalIncomeOnWhichTaxIsDueCalculation
   )
 
   def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {

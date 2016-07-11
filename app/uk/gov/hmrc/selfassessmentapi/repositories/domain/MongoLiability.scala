@@ -40,7 +40,7 @@ case class MongoLiability(id: BSONObjectID,
     Liability(
       id = Some(liabilityId),
       income = IncomeSummary(
-        incomes = IncomeFromSources(selfEmployment = profitFromSelfEmployments.map(_.toIncome), employment = Nil),
+        incomes = IncomeFromSources(selfEmployment = profitFromSelfEmployments.map(_.toIncome), interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties, employment = Nil),
         totalIncomeReceived = totalIncomeReceived.getOrElse(0),
         personalAllowance = personalAllowance.getOrElse(0),
         totalTaxableIncome = totalTaxableIncome.getOrElse(0),

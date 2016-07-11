@@ -22,6 +22,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 import uk.gov.hmrc.selfassessmentapi.repositories.live.{LiabilityMongoRepository, SelfEmploymentMongoRepository}
+import uk.gov.hmrc.selfassessmentapi.repositories.live.{UnearnedIncomeMongoRepository, LiabilityMongoRepository, SelfEmploymentMongoRepository}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, SelfEmploymentSugar}
 
@@ -32,8 +33,9 @@ class LiabilityServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach
   private val saUtr = generateSaUtr()
   private val liabilityRepo = new LiabilityMongoRepository()
   private val selfEmploymentRepo = new SelfEmploymentMongoRepository()
+  private val unearnedIncomeRepo = new UnearnedIncomeMongoRepository()
   private val liabilityCalculator = mock[LiabilityCalculator]
-  private val service = new LiabilityService(selfEmploymentRepo, liabilityRepo, liabilityCalculator)
+  private val service = new LiabilityService(selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator)
 
   "find" should {
 
@@ -55,12 +57,14 @@ class LiabilityServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach
     "create liability and trigger the calculation if liability for given utr and tax year does not exist" in {
 
       val selfEmployment = aSelfEmployment(saUtr = saUtr, taxYear = taxYear)
+      val anUnearnedIncome = anUnearnedIncomes(saUtr = saUtr, taxYear = taxYear)
 
       await(selfEmploymentRepo.insert(selfEmployment))
+      await(unearnedIncomeRepo.insert(anUnearnedIncome))
 
       val liabilityAfterCalculation = aLiability(saUtr, taxYear)
 
-      when(liabilityCalculator.calculate(eqTo(SelfAssessment(Seq(selfEmployment))), any[MongoLiability])).thenReturn(liabilityAfterCalculation)
+      when(liabilityCalculator.calculate(eqTo(SelfAssessment(Seq(selfEmployment), Seq(anUnearnedIncome))), any[MongoLiability])).thenReturn(liabilityAfterCalculation)
 
       await(service.calculate(saUtr, taxYear))
 

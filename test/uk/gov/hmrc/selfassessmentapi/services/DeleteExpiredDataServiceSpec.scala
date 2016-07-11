@@ -19,21 +19,22 @@ package uk.gov.hmrc.selfassessmentapi.services
 import org.joda.time.DateTime
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
+import org.scalatest.time.{Millis, Seconds, Span}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoJobHistory, MongoSelfAssessment, MongoSelfEmployment}
-import uk.gov.hmrc.selfassessmentapi.repositories.live.{UnearnedIncomeMongoRepository, SelfEmploymentMongoRepository}
+import uk.gov.hmrc.selfassessmentapi.repositories.live.{SelfEmploymentMongoRepository, UnearnedIncomeMongoRepository}
 import uk.gov.hmrc.selfassessmentapi.repositories.{JobHistoryMongoRepository, SelfAssessmentMongoRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSugar {
+class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSugar with ScalaFutures {
 
   private val saRepo = new SelfAssessmentMongoRepository
   private val seRepo = new SelfEmploymentMongoRepository
@@ -42,6 +43,8 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
   val saUtr = generateSaUtr()
   val lastModifiedDate = DateTime.now().minusWeeks(1)
+
+  implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds), interval = Span(300, Millis))
 
   "deleteExpiredData" should {
 
@@ -63,17 +66,27 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
       val service = new DeleteExpiredDataService(saRepo, seRepo, uiRepo, jobRepo)
 
-      await(service.deleteExpiredData(lastModifiedDate))
+      val nrDeleted = service.deleteExpiredData(lastModifiedDate)
 
-      val saRecords = await(saRepo.findAll())
-      val seRecords = await(seRepo.findAll())
+      whenReady(nrDeleted) { _ =>
 
-      saRecords.size shouldBe 1
-      saRecords.head.saUtr == latestSa3.saUtr && saRecords.head.taxYear == latestSa3.taxYear shouldBe true
+        val saRecords = saRepo.findAll()
 
-      seRecords.size shouldBe 1
-      seRecords.head.saUtr == latestSe3.saUtr && seRecords.head.taxYear == latestSe3.taxYear shouldBe true
+        whenReady(saRecords) { _ =>
+          val seRecords = seRepo.findAll()
+
+          whenReady(seRecords) { _ =>
+
+            saRecords.size shouldBe 1
+            saRecords.head.saUtr == latestSa3.saUtr && saRecords.head.taxYear == latestSa3.taxYear shouldBe true
+
+            seRecords.size shouldBe 1
+            seRecords.head.saUtr == latestSe3.saUtr && seRecords.head.taxYear == latestSe3.taxYear shouldBe true
+          }
+        }
+      }
     }
+
 
     "mark job as failed if there is an exception when trying to delete records from self assessment" in {
       val sa1 = MongoSelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now().minusMonths(1), DateTime.now().minusMonths(1))
@@ -135,14 +148,18 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   }
 
   private def insertSelfAssessmentRecords(records: MongoSelfAssessment*) = {
-    records.foreach { record =>
-      await(saRepo.insert(record))
+    records.foreach {
+      record =>
+        val futureWrite = saRepo.insert(record)
+        whenReady(futureWrite)(identity)
     }
   }
 
   private def insertSelfEmploymentRecords(records: MongoSelfEmployment*) = {
-    records.foreach { record =>
-      await(seRepo.insert(record))
+    records.foreach {
+      record =>
+        val futureWrite = seRepo.insert(record)
+        whenReady(futureWrite)(identity)
     }
   }
 

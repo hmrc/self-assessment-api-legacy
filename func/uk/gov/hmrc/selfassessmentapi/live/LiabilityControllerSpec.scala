@@ -25,6 +25,10 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
 
     "return a 200 response with liability details" in {
 
+      /*
+          totalAllowancesAndReliefs = 24471 - 2 * 10000 (lossesBroughtForward from 2 self employments) + 4471 (personalAllowance)
+       */
+
       val sourceType = SelfEmployments
       val summaryType = SummaryTypes.Incomes
 
@@ -52,14 +56,15 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        },
            |        "personalAllowance": 4471,
            |        "totalIncomeReceived": 133058,
-           |        "totalTaxableIncome": 113058
+           |        "totalTaxableIncome": 113058,
+           |        "totalIncomeOnWhichTaxIsDue": 108587
            |    },
            |    "incomeTax": {
            |        "calculations": [],
            |        "total": 0
            |    },
            |    "totalTaxDue": 0,
-           |    "totalAllowancesAndReliefs": 0
+           |    "totalAllowancesAndReliefs": 24471
            |}
         """.stripMargin
 

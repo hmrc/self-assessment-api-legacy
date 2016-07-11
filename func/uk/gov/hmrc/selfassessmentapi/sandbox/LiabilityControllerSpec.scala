@@ -33,7 +33,8 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |      },
           |     "totalIncomeReceived": 93039,
           |     "personalAllowance": 9440,
-          |     "totalTaxableIncome": 83599
+          |     "totalTaxableIncome": 83599,
+          |     "totalIncomeOnWhichTaxIsDue": 80000
           |  },
           |  "incomeTax": {
           |    "calculations": [

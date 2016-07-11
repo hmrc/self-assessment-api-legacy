@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
@@ -41,10 +42,10 @@ class TotalAllowancesAndReliefsSpec extends UnitSpec with SelfEmploymentSugar {
                                                      taxableProfit = 2430,
                                                      profit = 2430,
                                                      lossBroughtForward = lossBroughtForward2)))
-      TotalAllowancesAndReliefs
-        .run(SelfAssessment(), liability)
-        .totalAllowancesAndReliefs shouldBe Some(
-          personalAllowance + lossBroughtForward1 + lossBroughtForward2)
+      TotalAllowancesAndReliefs.run(SelfAssessment(), liability).deductions shouldBe Some(
+          Deductions(
+              incomeTaxRelief = lossBroughtForward1 + lossBroughtForward2,
+              totalDeductions = personalAllowance + lossBroughtForward1 + lossBroughtForward2))
     }
   }
 }

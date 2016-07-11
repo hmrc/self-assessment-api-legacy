@@ -33,7 +33,7 @@ case class MongoLiability(id: BSONObjectID,
                           totalIncomeReceived: Option[BigDecimal] = None,
                           totalTaxableIncome: Option[BigDecimal] = None,
                           personalAllowance: Option[BigDecimal] = None,
-                          totalAllowancesAndReliefs: Option[BigDecimal] = None,
+                          deductions: Option[Deductions] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None) {
 
   def toLiability =
@@ -41,6 +41,7 @@ case class MongoLiability(id: BSONObjectID,
       id = Some(liabilityId),
       income = IncomeSummary(
         incomes = IncomeFromSources(selfEmployment = profitFromSelfEmployments.map(_.toIncome), employment = Nil),
+        deductions = deductions,
         totalIncomeReceived = totalIncomeReceived.getOrElse(0),
         personalAllowance = personalAllowance.getOrElse(0),
         totalTaxableIncome = totalTaxableIncome.getOrElse(0),
@@ -49,8 +50,7 @@ case class MongoLiability(id: BSONObjectID,
       incomeTax = CalculatedAmount(calculations = Nil, total = 0),
       credits = Nil,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),
-      totalTaxDue = 0,
-      totalAllowancesAndReliefs = totalAllowancesAndReliefs.getOrElse(0)
+      totalTaxDue = 0
     )
 }
 

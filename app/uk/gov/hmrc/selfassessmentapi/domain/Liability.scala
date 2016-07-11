@@ -49,7 +49,13 @@ object InterestFromUKBanksAndBuildingSocieties {
   implicit val format = Json.format[InterestFromUKBanksAndBuildingSocieties]
 }
 
-case class IncomeSummary(incomes: IncomeFromSources, totalIncomeReceived: BigDecimal, personalAllowance: BigDecimal, totalTaxableIncome: BigDecimal, totalIncomeOnWhichTaxIsDue: BigDecimal)
+case class Deductions(incomeTaxRelief: BigDecimal, totalDeductions: BigDecimal)
+
+object Deductions {
+  implicit val format = Json.format[Deductions]
+}
+
+case class IncomeSummary(incomes: IncomeFromSources, deductions: Option[Deductions], totalIncomeReceived: BigDecimal, personalAllowance: BigDecimal, totalTaxableIncome: BigDecimal, totalIncomeOnWhichTaxIsDue: BigDecimal)
 
 object IncomeSummary {
   implicit val format = Json.format[IncomeSummary]
@@ -61,7 +67,7 @@ object CalculatedAmount {
   implicit val format = Json.format[CalculatedAmount]
 }
 
-case class Liability(id: Option[LiabilityId] = None, income: IncomeSummary, incomeTax: CalculatedAmount, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal, totalAllowancesAndReliefs: BigDecimal)
+case class Liability(id: Option[LiabilityId] = None, income: IncomeSummary, incomeTax: CalculatedAmount, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal)
 
 object Liability {
   implicit val format = Json.format[Liability]
@@ -79,6 +85,7 @@ object Liability {
             Income("employment-1", 5000, 5000)
           )
         ),
+        deductions = Some(Deductions(BigDecimal(5000), BigDecimal(14440))),
         totalIncomeReceived = BigDecimal(93039),
         personalAllowance = BigDecimal(9440),
         totalTaxableIncome = BigDecimal(83599),
@@ -107,7 +114,6 @@ object Liability {
         ),
         total = BigDecimal(3853.15)
       ),
-      totalTaxDue = BigDecimal(25796.95),
-      totalAllowancesAndReliefs = BigDecimal(10000.00)
+      totalTaxDue = BigDecimal(25796.95)
     )
 }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.InterestFromUKBanksAndBuildingSocieties
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
@@ -28,9 +29,12 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
       val liability = aLiability(profitFromSelfEmployments = Seq(
         SelfEmploymentIncome("se1", 0, 300, 0),
         SelfEmploymentIncome("se2", 0, 200.50, 0)
+      ), interestFromUKBanksAndBuildingSocieties = Seq(
+        InterestFromUKBanksAndBuildingSocieties("ue1", 100),
+        InterestFromUKBanksAndBuildingSocieties("ue2", 150)
       ))
 
-      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(500.50), totalTaxableIncome = Some(0))
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(750.50), totalTaxableIncome = Some(0))
     }
 
     "calculate total income if there is no income from self employments" in {
@@ -38,6 +42,16 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
       val liability = aLiability()
 
       TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(0), totalTaxableIncome = Some(0))
+    }
+
+    "calculate total income if there is no income from self employments but has interest from UK banks and building societies" in {
+
+      val liability =  aLiability(interestFromUKBanksAndBuildingSocieties = Seq(
+        InterestFromUKBanksAndBuildingSocieties("ue1", 150),
+        InterestFromUKBanksAndBuildingSocieties("ue2", 250)
+      ))
+
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeReceived = Some(400), totalTaxableIncome = Some(0))
     }
   }
 }

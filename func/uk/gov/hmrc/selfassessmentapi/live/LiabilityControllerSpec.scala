@@ -1,8 +1,10 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json.toJson
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Income, SummaryTypes}
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncome
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
@@ -29,9 +31,6 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           totalAllowancesAndReliefs = 24471 - 2 * 10000 (lossesBroughtForward from 2 self employments) + 4471 (personalAllowance)
        */
 
-      val sourceType = SelfEmployments
-      val summaryType = SummaryTypes.Incomes
-
       val expectedJson =
         s"""
            |{
@@ -44,14 +43,19 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        "incomes": {
            |            "employment": [],
            |            "selfEmployment": [
-           |                {
-           |                    "profit": 58529,
-           |                    "taxableProfit": 48529
-           |                },
-           |                {
-           |                    "profit": 74529,
-           |                    "taxableProfit": 64529
-           |                }
+           |              {
+           |                  "profit": 58529,
+           |                  "taxableProfit": 48529
+           |              },
+           |              {
+           |                  "profit": 74529,
+           |                  "taxableProfit": 64529
+           |              }
+           |            ],
+           |            "interestFromUKBanksAndBuildingSocieties": [
+           |              {
+           |                "totalInterest": 3000
+           |              }
            |            ]
            |        },
            |        "deductions": {
@@ -59,9 +63,9 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |            "totalDeductions": 24471
            |        },
            |        "personalAllowance": 4471,
-           |        "totalIncomeReceived": 133058,
+           |        "totalIncomeReceived": 136058,
            |        "totalTaxableIncome": 113058,
-           |        "totalIncomeOnWhichTaxIsDue": 108587
+           |        "totalIncomeOnWhichTaxIsDue": 111587
            |    },
            |    "incomeTax": {
            |        "calculations": [],
@@ -74,27 +78,39 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
-        .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+        .post(s"/$saUtr/$taxYear/self-employments", Some(SelfEmployments.example()))
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(toJson(Income.example().copy(amount = 60000))))
+        .post(s"/$saUtr/$taxYear/self-employments/%sourceId%/incomes", Some(toJson(Income.example().copy(amount = 60000))))
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(toJson(Income.example().copy(amount = 10000))))
+        .post(s"/$saUtr/$taxYear/self-employments/%sourceId%/incomes", Some(toJson(Income.example().copy(amount = 10000))))
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+        .post(s"/$saUtr/$taxYear/self-employments", Some(SelfEmployments.example()))
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(toJson(Income.example().copy(amount = 80000))))
+        .post(s"/$saUtr/$taxYear/self-employments/%sourceId%/incomes", Some(toJson(Income.example().copy(amount = 80000))))
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(toJson(Income.example().copy(amount = 6000))))
+        .post(s"/$saUtr/$taxYear/self-employments/%sourceId%/incomes", Some(toJson(Income.example().copy(amount = 6000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/unearned-incomes", Some(UnearnedIncomes.example()))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/unearned-incomes/%sourceId%/savings", Some(toJson(SavingsIncome.example().copy(amount = 800))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/unearned-incomes/%sourceId%/savings", Some(toJson(SavingsIncome.example().copy(amount = 1600))))
         .thenAssertThat()
         .statusIs(201)
         .when()

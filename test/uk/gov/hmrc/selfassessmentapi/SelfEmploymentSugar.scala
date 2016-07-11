@@ -23,6 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 trait SelfEmploymentSugar {
@@ -32,6 +33,8 @@ trait SelfEmploymentSugar {
   def aSelfEmployment(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear) = MongoSelfEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now, now.toLocalDate)
 
   def anUnearnedIncomes(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear) = MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
+
+  def anUnearnedIncomeSummary(summaryId: SummaryId, `type`: SavingsIncomeType, amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
 
   def income(`type`: IncomeType, amount: BigDecimal) = MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 

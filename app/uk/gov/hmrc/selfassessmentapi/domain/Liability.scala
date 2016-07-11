@@ -36,18 +36,19 @@ object Income {
   implicit val format = Json.format[Income]
 }
 
-case class IncomeFromSources(selfEmployment: Seq[Income], employment: Seq[Income])
-
-object IncomeFromSources {
-  implicit val format = Json.format[IncomeFromSources]
-}
-
-
 case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, unTaxedInterest: BigDecimal)
 
 object InterestFromUKBanksAndBuildingSocieties {
   implicit val format = Json.format[InterestFromUKBanksAndBuildingSocieties]
 }
+
+case class IncomeFromSources(selfEmployment: Seq[Income], interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties],
+                             employment: Seq[Income])
+
+object IncomeFromSources {
+  implicit val format = Json.format[IncomeFromSources]
+}
+
 
 case class IncomeSummary(incomes: IncomeFromSources, totalIncomeReceived: BigDecimal, personalAllowance: BigDecimal, totalTaxableIncome: BigDecimal)
 
@@ -74,6 +75,11 @@ object Liability {
           selfEmployment = Seq(
             Income("self-employment-1", 8200, 10000),
             Income("self-employment-2", 25000, 28000)
+          ),
+          interestFromUKBanksAndBuildingSocieties = Seq(
+            InterestFromUKBanksAndBuildingSocieties("unearned-income-1", 100),
+            InterestFromUKBanksAndBuildingSocieties("unearned-income-2", 200)
+
           ),
           employment = Seq(
             Income("employment-1", 5000, 5000)

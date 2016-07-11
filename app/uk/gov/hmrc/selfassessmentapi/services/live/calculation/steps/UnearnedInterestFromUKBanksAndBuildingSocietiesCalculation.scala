@@ -29,13 +29,13 @@ object UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation extends Calcul
 
   private def calculateUnTaxedInterest(selfAssessment: SelfAssessment) = {
     selfAssessment.unearnedIncomes.map { unearnedIncome =>
-      val unTaxedInterest = unearnedIncome.savings.map { saving =>
+      val totalUnTaxedInterest = unearnedIncome.savings.map { saving =>
         saving.`type` match {
-          case InterestFromBanksTaxed => roundDown(saving.amount) * 100 / 80
-          case InterestFromBanksUntaxed => roundDown(saving.amount)
+          case InterestFromBanksTaxed => saving.amount * 100 / 80
+          case InterestFromBanksUntaxed => saving.amount
         }
       }.sum
-      InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, unTaxedInterest)
+      InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, roundDown(totalUnTaxedInterest))
     }
   }
 

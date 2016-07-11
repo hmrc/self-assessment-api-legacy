@@ -22,10 +22,9 @@ object TotalIncomeCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val (profits, taxableProfits) = liability.profitFromSelfEmployments.map(aa => (aa.profit, aa.taxableProfit)).unzip
-
+    val (profitsFromSelfEmployment, taxableProfits) = liability.profitFromSelfEmployments.map(aa => (aa.profit, aa.taxableProfit)).unzip
     val interestFromUKBanksAndBuildingSocieties = liability.interestFromUKBanksAndBuildingSocieties.map(_.unTaxedInterest).sum
-    val totalIncomeReceived = profits.sum + interestFromUKBanksAndBuildingSocieties
+    val totalIncomeReceived = profitsFromSelfEmployment.sum + interestFromUKBanksAndBuildingSocieties
 
     liability.copy(totalIncomeReceived = Some(totalIncomeReceived), totalTaxableIncome = Some(taxableProfits.sum))
   }

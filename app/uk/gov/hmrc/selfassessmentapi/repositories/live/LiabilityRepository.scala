@@ -39,7 +39,7 @@ object LiabilityRepository extends MongoDbConnection {
 class LiabilityMongoRepository(implicit mongo: () => DB) extends ReactiveRepository[MongoLiability, BSONObjectID](
   "liabilities",
   mongo,
-  domainFormat = MongoLiability.mongoFormats,
+  domainFormat = MongoLiability.liabilityFormats,
   idFormat = ReactiveMongoFormats.objectIdFormats) {
 
   override def indexes: Seq[Index] = Seq(

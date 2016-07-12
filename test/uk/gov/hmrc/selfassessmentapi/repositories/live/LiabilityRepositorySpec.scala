@@ -18,7 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.repositories.live
 
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{HigherTaxBand, BasicTaxBand}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{TaxBand, TaxBandSummary, MongoLiability}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -35,7 +36,7 @@ class LiabilityRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
   "save" should {
 
     "create new liability if there is no liability for given utr and tax year" in {
-      val liability = MongoLiability.create(saUtr, taxYear)
+      val liability = MongoLiability.create(saUtr, taxYear).copy(savingsInterest = Seq(TaxBandSummary(1000, BasicTaxBand), TaxBandSummary(2000, HigherTaxBand)))
       await(repository.save(liability))
 
       await(repository.findAll()) shouldBe List(liability)

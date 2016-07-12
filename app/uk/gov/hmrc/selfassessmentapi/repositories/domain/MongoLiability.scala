@@ -22,6 +22,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math
 
 case class MongoLiability(id: BSONObjectID,
                           liabilityId: LiabilityId,
@@ -34,7 +35,10 @@ case class MongoLiability(id: BSONObjectID,
                           totalTaxableIncome: Option[BigDecimal] = None,
                           personalAllowance: Option[BigDecimal] = None,
                           deductions: Option[Deductions] = None,
-                          totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None) {
+                          totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
+                          payPensionsProfits: Seq[TaxBandSummary] = Nil,
+                          savingsInterest: Seq[TaxBandSummary] = Nil,
+                          dividends: Seq[TaxBandSummary] = Nil) {
 
   def toLiability =
     Liability(
@@ -47,7 +51,12 @@ case class MongoLiability(id: BSONObjectID,
         totalTaxableIncome = totalTaxableIncome.getOrElse(0),
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
-      incomeTaxCalculations = IncomeTaxCalculations(payPensionsProfits = Nil, savingsInterest = Nil, dividends = Nil, 0),
+      incomeTaxCalculations = IncomeTaxCalculations(
+        payPensionsProfits = payPensionsProfits.map(_.toTaxBandSummary),
+        savingsInterest = savingsInterest.map(_.toTaxBandSummary),
+        dividends = dividends.map(_.toTaxBandSummary),
+        incomeTaxCharged = (payPensionsProfits ++ savingsInterest ++ dividends).map(_.tax).sum
+      ),
       credits = Nil,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),
       totalTaxDue = 0
@@ -59,12 +68,20 @@ case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, p
   def toIncome = Income(sourceId, taxableProfit, profit)
 }
 
+case class TaxBandSummary(taxableAmount: BigDecimal, taxBand: TaxBand) extends Math {
+
+  def toTaxBandSummary = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, taxableAmount, s"${taxBand.chargedAt}%", tax)
+
+  def tax: BigDecimal = roundDown(taxableAmount * taxBand.chargedAt / 100)
+}
+
 object MongoLiability {
 
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
-  implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
-  implicit val incomeFormats: Format[SelfEmploymentIncome] = Json.format[SelfEmploymentIncome]
-  implicit val mongoFormats = Json.format[MongoLiability]
+  implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
+  implicit val incomeFormats = Json.format[SelfEmploymentIncome]
+  implicit val taxBandSummaryFormats = Json.format[TaxBandSummary]
+  implicit val liabilityFormats = Json.format[MongoLiability]
 
   def create(saUtr: SaUtr, taxYear: TaxYear): MongoLiability = {
     val id = BSONObjectID.generate

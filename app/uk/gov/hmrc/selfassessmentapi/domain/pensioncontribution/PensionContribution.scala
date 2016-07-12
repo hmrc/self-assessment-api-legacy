@@ -18,14 +18,14 @@ package uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{JsMarshaller, _}
 
 case class PensionContribution(ukRegisteredPension: Option[BigDecimal] = None,
                                retirementAnnuity: Option[BigDecimal] = None,
                                employerScheme: Option[BigDecimal] = None,
                                overseasPension: Option[BigDecimal] = None)
 
-object PensionContribution extends BaseDomain[PensionContribution] {
+object PensionContribution extends JsMarshaller[PensionContribution] {
 
   override implicit val writes = Json.writes[PensionContribution]
 

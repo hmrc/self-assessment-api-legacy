@@ -30,7 +30,7 @@ object BalancingChargeType extends Enumeration {
 
 case class BalancingCharge(id: Option[String] = None, `type`: BalancingChargeType, amount: BigDecimal)
 
-object BalancingCharge extends BaseDomain[BalancingCharge] {
+object BalancingCharge extends JsMarshaller[BalancingCharge] {
   implicit val writes = Json.writes[BalancingCharge]
   implicit val reads: Reads[BalancingCharge] = (
     Reads.pure(None) and

@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 case class Income(id: Option[SummaryId] = None,
                   amount: BigDecimal)
 
-object Income extends BaseDomain[Income] {
+object Income extends JsMarshaller[Income] {
 
   implicit val writes = Json.writes[Income]
   implicit val reads: Reads[Income] = (

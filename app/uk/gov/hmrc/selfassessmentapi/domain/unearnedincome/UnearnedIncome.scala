@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class UnearnedIncome(id: Option[SourceId] = None)
 
-object UnearnedIncome extends BaseDomain[UnearnedIncome] {
+object UnearnedIncome extends JsMarshaller[UnearnedIncome] {
 
   implicit val writes = Json.writes[UnearnedIncome]
 

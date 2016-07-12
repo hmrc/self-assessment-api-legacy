@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class BalancingCharge(id: Option[SummaryId]=None, amount: BigDecimal)
 
-object BalancingCharge extends BaseDomain[BalancingCharge] {
+object BalancingCharge extends JsMarshaller[BalancingCharge] {
 
   implicit val writes = Json.writes[BalancingCharge]
 

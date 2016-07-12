@@ -29,7 +29,7 @@ case class SelfEmployment(id: Option[SourceId] = None,
                           allowances: Option[Allowances] = None,
                           adjustments: Option[Adjustments] = None)
 
-object SelfEmployment extends BaseDomain[SelfEmployment]{
+object SelfEmployment extends JsMarshaller[SelfEmployment]{
 
   implicit val writes = Json.writes[SelfEmployment]
 

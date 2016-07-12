@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class SourceHandler[T](domain: BaseDomain[T], val listName: String) {
+abstract class SourceHandler[T](domain: JsMarshaller[T], val listName: String) {
 
   val repository: SourceRepository[T]
   implicit val reads = domain.reads

@@ -34,7 +34,7 @@ case class FurnishedHolidayLetting(id: Option[SourceId] = None,
                                    adjustments: Option[Adjustments] = None)
 
 
-object FurnishedHolidayLetting extends BaseDomain[FurnishedHolidayLetting]{
+object FurnishedHolidayLetting extends JsMarshaller[FurnishedHolidayLetting]{
 
   implicit val propertyLocationTypes = EnumJson.enumFormat(PropertyLocationType, Some("Furnished holiday lettings property location type is invalid"))
 

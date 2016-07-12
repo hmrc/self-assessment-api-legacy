@@ -31,7 +31,7 @@ object ExpenseType extends Enumeration {
 case class Expense(id: Option[SummaryId] = None,
                    `type`: ExpenseType, amount: BigDecimal)
 
-object Expense extends BaseDomain[Expense]{
+object Expense extends JsMarshaller[Expense]{
 
   implicit val types = EnumJson.enumFormat(ExpenseType, Some("Employments expense type is invalid"))
   implicit val writes = Json.writes[Expense]

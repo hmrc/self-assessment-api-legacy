@@ -33,7 +33,7 @@ case class TaxYearProperties(id: Option[String] = None, pensionContributions: Op
                              taxRefundedOrSetOff: Option[TaxRefundedOrSetOff] = None,
                              childBenefit: Option[ChildBenefit] = None)
 
-object TaxYearProperties extends BaseDomain[TaxYearProperties] {
+object TaxYearProperties extends JsMarshaller[TaxYearProperties] {
 
   override implicit val writes = Json.writes[TaxYearProperties]
 

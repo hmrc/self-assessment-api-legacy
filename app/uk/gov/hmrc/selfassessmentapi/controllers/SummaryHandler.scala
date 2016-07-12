@@ -20,12 +20,12 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.controllers._
-import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{JsMarshaller, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.SummaryRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class SummaryHandler[T](repository: SummaryRepository[T], domain: BaseDomain[T], listName: String) {
+case class SummaryHandler[T](repository: SummaryRepository[T], domain: JsMarshaller[T], listName: String) {
 
   implicit val reads: Reads[T] = domain.reads
   implicit val writes: Writes[T] = domain.writes

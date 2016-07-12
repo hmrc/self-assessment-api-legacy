@@ -17,11 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi.domain.taxrefundedorsetoff
 
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{JsMarshaller, _}
 
 case class TaxRefundedOrSetOff(amount: BigDecimal)
 
-object TaxRefundedOrSetOff extends BaseDomain[TaxRefundedOrSetOff] {
+object TaxRefundedOrSetOff extends JsMarshaller[TaxRefundedOrSetOff] {
   implicit val writes = Json.writes[TaxRefundedOrSetOff]
 
   implicit val reads: Reads[TaxRefundedOrSetOff] = (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount")).map {

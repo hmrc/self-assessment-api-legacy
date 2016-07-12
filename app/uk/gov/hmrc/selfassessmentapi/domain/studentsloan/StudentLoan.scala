@@ -21,7 +21,7 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
-import uk.gov.hmrc.selfassessmentapi.domain.{BaseDomain, PositiveMonetaryFieldDescription, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.domain.{JsMarshaller, PositiveMonetaryFieldDescription, TaxYearPropertyType}
 import uk.gov.hmrc.selfassessmentapi.domain.studentsloan.StudentLoanPlanType.StudentLoanPlanType
 
 object StudentLoanPlanType extends Enumeration {
@@ -31,7 +31,7 @@ object StudentLoanPlanType extends Enumeration {
 
 case class StudentLoan(planType: StudentLoanPlanType, deductedByEmployers: Option[BigDecimal])
 
-object StudentLoan extends BaseDomain[StudentLoan] {
+object StudentLoan extends JsMarshaller[StudentLoan] {
 
   implicit val format = EnumJson.enumFormat(StudentLoanPlanType, Some("Student Loan Plan type is invalid"))
   override implicit val writes = Json.writes[StudentLoan]

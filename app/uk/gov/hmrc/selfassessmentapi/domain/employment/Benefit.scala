@@ -32,7 +32,7 @@ object BenefitType extends Enumeration {
 case class Benefit(id: Option[SummaryId] = None,
                    `type`: BenefitType, amount: BigDecimal)
 
-object Benefit extends BaseDomain[Benefit] {
+object Benefit extends JsMarshaller[Benefit] {
 
   implicit val seExpenseTypes = EnumJson.enumFormat(BenefitType, Some("Employment Benefit type is invalid"))
   implicit val writes = Json.writes[Benefit]

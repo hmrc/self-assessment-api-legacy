@@ -32,7 +32,7 @@ object ExpenseType extends Enumeration {
 
 case class Expense(id: Option[SummaryId] = None, `type`: ExpenseType, amount: BigDecimal)
 
-object Expense extends JsMarshaller[Expense] {
+object Expense extends JsonMarshaller[Expense] {
 
   implicit val writes = Json.writes[Expense]
   implicit val reads: Reads[Expense] = (

@@ -26,7 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 case class ChildBenefit(amount: BigDecimal, numberOfChildren: Int, dateBenefitStopped: Option[LocalDate] = None)
 
 
-object ChildBenefit extends JsMarshaller[ChildBenefit] {
+object ChildBenefit extends JsonMarshaller[ChildBenefit] {
   override implicit val writes = Json.writes[ChildBenefit]
   override implicit val reads = (
     (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount")) and

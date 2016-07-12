@@ -23,14 +23,14 @@ import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain.CountryCodes.{apply => _}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.UkCountryCodes.{apply => _, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{JsMarshaller, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{JsonMarshaller, _}
 
 case class BlindPerson(country: Option[UkCountryCode] = None,
                        registrationAuthority: Option[String] = None,
                        spouseSurplusAllowance: Option[BigDecimal] = None,
                        wantSpouseToUseSurplusAllowance: Option[Boolean] = None)
 
-object BlindPerson extends JsMarshaller[BlindPerson] {
+object BlindPerson extends JsonMarshaller[BlindPerson] {
 
 
   override implicit val writes = Json.writes[BlindPerson]

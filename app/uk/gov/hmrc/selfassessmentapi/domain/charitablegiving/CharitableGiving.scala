@@ -29,7 +29,7 @@ case class GiftAidPayments( totalInTaxYear: Option[BigDecimal] = None,
                             carriedBackToPreviousTaxYear: Option[BigDecimal] = None,
                             carriedFromNextTaxYear: Option[BigDecimal] = None)
 
-object GiftAidPayments extends JsMarshaller[GiftAidPayments] {
+object GiftAidPayments extends JsonMarshaller[GiftAidPayments] {
 
   override implicit val writes = Json.writes[GiftAidPayments]
 
@@ -74,7 +74,7 @@ object GiftAidPayments extends JsMarshaller[GiftAidPayments] {
 case class SharesAndSecurities( totalInTaxYear: BigDecimal,
                                 toNonUkCharities: Option[BigDecimal] = None)
 
-object SharesAndSecurities extends JsMarshaller[SharesAndSecurities] {
+object SharesAndSecurities extends JsonMarshaller[SharesAndSecurities] {
 
   override implicit val writes = Json.writes[SharesAndSecurities]
 
@@ -98,7 +98,7 @@ object SharesAndSecurities extends JsMarshaller[SharesAndSecurities] {
 case class LandAndProperties( totalInTaxYear: BigDecimal,
                               toNonUkCharities: Option[BigDecimal] = None)
 
-object LandAndProperties extends JsMarshaller[LandAndProperties] {
+object LandAndProperties extends JsonMarshaller[LandAndProperties] {
 
   override implicit val writes = Json.writes[LandAndProperties]
 
@@ -123,7 +123,7 @@ case class CharitableGiving( giftAidPayments: Option[GiftAidPayments] = None,
                              sharesSecurities: Option[SharesAndSecurities] = None,
                              landProperties: Option[LandAndProperties] = None)
 
-object CharitableGiving extends JsMarshaller[CharitableGiving] {
+object CharitableGiving extends JsonMarshaller[CharitableGiving] {
 
   override implicit val writes = Json.writes[CharitableGiving]
 

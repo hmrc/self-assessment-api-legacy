@@ -34,7 +34,7 @@ case class Income(id: Option[SummaryId] = None,
                   `type`: IncomeType,
                   amount: BigDecimal)
 
-object Income extends JsMarshaller[Income] {
+object Income extends JsonMarshaller[Income] {
 
   implicit val writes = Json.writes[Income]
   implicit val reads: Reads[Income] = (

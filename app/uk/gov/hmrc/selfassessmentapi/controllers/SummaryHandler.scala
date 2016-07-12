@@ -20,15 +20,15 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.controllers._
-import uk.gov.hmrc.selfassessmentapi.domain.{JsMarshaller, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{JsonMarshaller, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.SummaryRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class SummaryHandler[T](repository: SummaryRepository[T], jsMarshaller: JsMarshaller[T], listName: String) {
+case class SummaryHandler[T](repository: SummaryRepository[T], jsonMarshaller: JsonMarshaller[T], listName: String) {
 
-  implicit val reads: Reads[T] = jsMarshaller.reads
-  implicit val writes: Writes[T] = jsMarshaller.writes
+  implicit val reads: Reads[T] = jsonMarshaller.reads
+  implicit val writes: Writes[T] = jsonMarshaller.writes
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, jsValue: JsValue) =
     validate[T, Option[String]](jsValue) {

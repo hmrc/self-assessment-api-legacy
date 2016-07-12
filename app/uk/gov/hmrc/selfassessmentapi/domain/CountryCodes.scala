@@ -42,7 +42,7 @@ object CountryCodes extends Enumeration {
 
 case class CountryAndAmount(countryCode: CountryCode, amount: BigDecimal)
 
-object CountryAndAmount extends JsMarshaller[CountryAndAmount] {
+object CountryAndAmount extends JsonMarshaller[CountryAndAmount] {
   override implicit val writes = Json.writes[CountryAndAmount]
   override implicit val reads = (
     (__ \ "countryCode").read[CountryCode] and

@@ -30,7 +30,7 @@ object DividendType extends Enumeration {
 
 case class Dividend(id: Option[String] = None, `type`: DividendType, amount: BigDecimal)
 
-object Dividend extends JsMarshaller[Dividend] {
+object Dividend extends JsonMarshaller[Dividend] {
 
   implicit val writes = Json.writes[Dividend]
 

@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class PrivateUseAdjustment(id: Option[SummaryId]=None, amount: BigDecimal)
 
-object PrivateUseAdjustment extends JsMarshaller[PrivateUseAdjustment] {
+object PrivateUseAdjustment extends JsonMarshaller[PrivateUseAdjustment] {
 
   implicit val writes = Json.writes[PrivateUseAdjustment]
 

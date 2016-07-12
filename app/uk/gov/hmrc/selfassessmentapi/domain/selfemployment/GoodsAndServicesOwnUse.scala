@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class GoodsAndServicesOwnUse(id: Option[String] = None, amount: BigDecimal)
 
-object GoodsAndServicesOwnUse extends JsMarshaller[GoodsAndServicesOwnUse]{
+object GoodsAndServicesOwnUse extends JsonMarshaller[GoodsAndServicesOwnUse]{
   implicit val writes = Json.writes[GoodsAndServicesOwnUse]
 
   implicit val reads = (

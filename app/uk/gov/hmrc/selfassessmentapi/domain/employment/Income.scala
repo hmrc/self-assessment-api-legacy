@@ -31,7 +31,7 @@ object IncomeType extends Enumeration {
 case class Income(id: Option[SummaryId] = None,
                   `type`: IncomeType, amount: BigDecimal)
 
-object Income extends JsMarshaller[Income] {
+object Income extends JsonMarshaller[Income] {
 
   implicit val types = EnumJson.enumFormat(IncomeType, Some("Employments income type is invalid"))
   implicit val writes = Json.writes[Income]

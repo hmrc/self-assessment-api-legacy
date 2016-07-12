@@ -34,27 +34,36 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |       "employment": [
           |         {"sourceId": "employment-1", "taxableProfit": 5000, "profit": 5000}
           |       ]
-          |      },
-          |      "deductions": {
-          |          "incomeTaxRelief": 5000,
-          |          "totalDeductions": 14440
-          |      },
+          |     },
+          |     "deductions": {
+        |         "incomeTaxRelief": 5000,
+          |       "totalDeductions": 14440
+          |     },
           |     "totalIncomeReceived": 93039,
           |     "personalAllowance": 9440,
           |     "totalTaxableIncome": 83599,
           |     "totalIncomeOnWhichTaxIsDue": 80000
           |  },
-          |  "incomeTax": {
-          |    "calculations": [
-          |     {"type": "pay-pensions-profits", "amount": 32010, "percentage": 20, "total": 6402},
-          |     {"type": "pay-pensions-profits", "amount": 41030, "percentage": 40, "total": 16412},
-          |     {"type": "interest-received", "amount": 0, "percentage": 10, "total": 0},
-          |     {"type": "interest-received", "amount": 0, "percentage": 20, "total": 0},
-          |     {"type": "interest-received", "amount": 93, "percentage": 40, "total": 37.2},
-          |     {"type": "dividends", "amount": 0, "percentage": 10, "total": 0},
-          |     {"type": "dividends", "amount": 466, "percentage": 32.5, "total": 151.45}
-          |    ],
-          |    "total": 23002.65
+          |  "incomeTaxCalculations": {
+          |     "payPensionsProfits": [
+          |       {"taxBand": "basicRate", "taxableAmount": 10000, "chargedAt": "20%", "tax": 2000},
+          |       {"taxBand": "higherRate", "taxableAmount": 10000, "chargedAt": "40%", "tax": 4000},
+          |       {"taxBand": "additionalHigherRate", "taxableAmount": 10000, "chargedAt": "45%", "tax": 4500}
+          |     ],
+          |     "savingsInterest": [
+          |       {"taxBand": "startingRate", "taxableAmount": 10000, "chargedAt": "0%", "tax": 0},
+          |       {"taxBand": "nilRate", "taxableAmount": 10000, "chargedAt": "0%", "tax": 0},
+          |       {"taxBand": "basicRate", "taxableAmount": 10000, "chargedAt": "20%", "tax": 2000},
+          |       {"taxBand": "higherRate", "taxableAmount": 10000, "chargedAt": "40%", "tax": 4000},
+          |       {"taxBand": "additionalHigherRate", "taxableAmount": 10000, "chargedAt": "45%", "tax": 4500}
+          |     ],
+          |     "dividends": [
+          |       {"taxBand": "nilRate", "taxableAmount": 10000, "chargedAt": "0%", "tax": 0},
+          |       {"taxBand": "basicRate", "taxableAmount": 10000, "chargedAt": "20%", "tax": 2000},
+          |       {"taxBand": "higherRate", "taxableAmount": 10000, "chargedAt": "40%", "tax": 4000},
+          |       {"taxBand": "additionalHigherRate", "taxableAmount": 10000, "chargedAt": "45%", "tax": 4500}
+          |     ],
+          |     "incomeTaxCharged": 31500
           |  },
           |  "credits": [
           |        {"type": "dividend", "amount": 46.6},

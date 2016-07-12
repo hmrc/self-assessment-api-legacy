@@ -47,7 +47,7 @@ case class MongoLiability(id: BSONObjectID,
         totalTaxableIncome = totalTaxableIncome.getOrElse(0),
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
-      incomeTax = CalculatedAmount(calculations = Nil, total = 0),
+      incomeTaxCalculations = IncomeTaxCalculations(payPensionsProfits = Nil, savingsInterest = Nil, dividends = Nil, 0),
       credits = Nil,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),
       totalTaxDue = 0

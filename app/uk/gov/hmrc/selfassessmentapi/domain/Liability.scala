@@ -42,7 +42,14 @@ object InterestFromUKBanksAndBuildingSocieties {
   implicit val format = Json.format[InterestFromUKBanksAndBuildingSocieties]
 }
 
-case class IncomeFromSources(selfEmployment: Seq[Income], interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties], employment: Seq[Income])
+case class DividendsFromUKSources(sourceId: String, totalDividend: BigDecimal)
+
+object DividendsFromUKSources {
+  implicit val format = Json.format[DividendsFromUKSources]
+}
+
+case class IncomeFromSources(selfEmployment: Seq[Income], employment: Seq[Income], interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties],
+                             dividendsFromUKSources: Seq[DividendsFromUKSources])
 
 object IncomeFromSources {
   implicit val format = Json.format[IncomeFromSources]
@@ -93,8 +100,12 @@ object Liability {
             Income("self-employment-2", 25000, 28000)
           ),
           interestFromUKBanksAndBuildingSocieties = Seq(
-            InterestFromUKBanksAndBuildingSocieties("unearned-income-1", 100),
-            InterestFromUKBanksAndBuildingSocieties("unearned-income-2", 200)
+            InterestFromUKBanksAndBuildingSocieties("interest-income-1", 100),
+            InterestFromUKBanksAndBuildingSocieties("interest-income-2", 200)
+          ),
+          dividendsFromUKSources = Seq(
+            DividendsFromUKSources("dividend-income-1", 1000),
+            DividendsFromUKSources("dividend-income-2", 2000)
           ),
           employment = Seq(
             Income("employment-1", 5000, 5000)

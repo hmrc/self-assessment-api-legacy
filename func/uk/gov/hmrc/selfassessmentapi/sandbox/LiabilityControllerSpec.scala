@@ -28,8 +28,12 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |         {"sourceId": "self-employment-2", "taxableProfit": 25000, "profit": 28000}
           |       ],
           |       "interestFromUKBanksAndBuildingSocieties": [
-          |         {"sourceId": "unearned-income-1", "totalInterest": 100},
-          |         {"sourceId": "unearned-income-2", "totalInterest": 200}
+          |         {"sourceId": "interest-income-1", "totalInterest": 100},
+          |         {"sourceId": "interest-income-2", "totalInterest": 200}
+          |       ],
+          |       "dividendsFromUKSources": [
+          |         {"sourceId": "dividend-income-1", "totalDividend": 1000},
+          |         {"sourceId": "dividend-income-2", "totalDividend": 2000}
           |       ],
           |       "employment": [
           |         {"sourceId": "employment-1", "taxableProfit": 5000, "profit": 5000}

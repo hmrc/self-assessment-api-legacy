@@ -3,7 +3,7 @@ package uk.gov.hmrc.selfassessmentapi.live
 import play.api.libs.json.Json.toJson
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncome
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -56,6 +56,11 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |              {
            |                "totalInterest": 3000
            |              }
+           |            ],
+           |            "dividendsFromUKSources": [
+           |              {
+           |                "totalDividend": 3000
+           |              }
            |            ]
            |        },
            |        "deductions": {
@@ -63,9 +68,9 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |            "totalDeductions": 24471
            |        },
            |        "personalAllowance": 4471,
-           |        "totalIncomeReceived": 136058,
+           |        "totalIncomeReceived": 139058,
            |        "totalTaxableIncome": 113058,
-           |        "totalIncomeOnWhichTaxIsDue": 111587
+           |        "totalIncomeOnWhichTaxIsDue": 114587
            |    },
            |    "incomeTaxCalculations": {
            |    "payPensionsProfits": [],
@@ -113,6 +118,14 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .when()
         .post(s"/$saUtr/$taxYear/unearned-incomes/%sourceId%/savings", Some(toJson(SavingsIncome.example().copy(amount = 1600))))
+        .thenAssertThat()
+        .statusIs(201)
+       .when()
+        .post(s"/$saUtr/$taxYear/unearned-incomes/%sourceId%/dividends", Some(toJson(Dividend.example().copy(amount = 1000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/unearned-incomes/%sourceId%/dividends", Some(toJson(Dividend.example().copy(amount = 2000))))
         .thenAssertThat()
         .statusIs(201)
         .when()

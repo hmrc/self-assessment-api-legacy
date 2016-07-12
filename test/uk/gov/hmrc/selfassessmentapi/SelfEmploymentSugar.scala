@@ -23,6 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.DividendType
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
@@ -34,7 +35,9 @@ trait SelfEmploymentSugar {
 
   def anUnearnedIncomes(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear) = MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
-  def anUnearnedIncomeSummary(summaryId: SummaryId, `type`: SavingsIncomeType, amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
+  def anUnearnedInterestIncomeSummary(summaryId: SummaryId, `type`: SavingsIncomeType, amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
+
+  def anUnearnedDividendIncomeSummary(summaryId: SummaryId, `type`: DividendType, amount: BigDecimal) = MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
 
   def income(`type`: IncomeType, amount: BigDecimal) = MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
@@ -45,8 +48,11 @@ trait SelfEmploymentSugar {
   def goodsAndServices(amount: BigDecimal) = MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
   def aLiability(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
-                 interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil): MongoLiability = {
-    MongoLiability.create(saUtr, taxYear).copy(profitFromSelfEmployments = profitFromSelfEmployments.toSeq, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties)
+                 interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil,
+                 dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil): MongoLiability = {
+
+    MongoLiability.create(saUtr, taxYear).copy(profitFromSelfEmployments = profitFromSelfEmployments.toSeq, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
+                                                dividendsFromUKSources = dividendsFromUKSources)
   }
 
   private def now = DateTime.now(DateTimeZone.UTC)

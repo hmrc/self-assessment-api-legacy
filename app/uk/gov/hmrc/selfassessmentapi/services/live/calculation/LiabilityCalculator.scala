@@ -24,6 +24,7 @@ class LiabilityCalculator {
   private val calculationSteps = Seq(
     SelfEmploymentProfitCalculation,
     UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
+    DividendsFromUKSourcesCalculation,
     TotalIncomeCalculation,
     PersonalAllowanceCalculation,
     TotalAllowancesAndReliefs,

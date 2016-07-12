@@ -16,17 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.DividendsFromUKSources
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
-object TotalIncomeCalculation extends CalculationStep {
+object DividendsFromUKSourcesCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-
-    val (profitsFromSelfEmployment, taxableProfits) = liability.profitFromSelfEmployments.map(aa => (aa.profit, aa.taxableProfit)).unzip
-    val interestFromUKBanksAndBuildingSocieties = liability.interestFromUKBanksAndBuildingSocieties.map(_.totalInterest).sum
-    val dividendsFromUKSources = liability.dividendsFromUKSources.map(_.totalDividend).sum
-    val totalIncomeReceived = profitsFromSelfEmployment.sum + interestFromUKBanksAndBuildingSocieties + dividendsFromUKSources
-
-    liability.copy(totalIncomeReceived = Some(totalIncomeReceived), totalTaxableIncome = Some(taxableProfits.sum))
+    val dividendsFromUKSources = calculateDividendsFromUKSources(selfAssessment)
+    liability.copy(dividendsFromUKSources = dividendsFromUKSources)
   }
+
+  private def calculateDividendsFromUKSources(selfAssessment: SelfAssessment) = {
+    selfAssessment.unearnedIncomes.map { unearnedIncome =>
+      val totalDividends = unearnedIncome.dividends.map(_.amount).sum
+      DividendsFromUKSources(unearnedIncome.sourceId, roundDown(totalDividends))
+    }
+  }
+
 }

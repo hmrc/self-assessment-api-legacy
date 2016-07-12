@@ -42,8 +42,7 @@ object InterestFromUKBanksAndBuildingSocieties {
   implicit val format = Json.format[InterestFromUKBanksAndBuildingSocieties]
 }
 
-case class IncomeFromSources(selfEmployment: Seq[Income], interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties],
-                             employment: Seq[Income])
+case class IncomeFromSources(selfEmployment: Seq[Income], interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties], employment: Seq[Income])
 
 object IncomeFromSources {
   implicit val format = Json.format[IncomeFromSources]
@@ -53,6 +52,18 @@ case class Deductions(incomeTaxRelief: BigDecimal, totalDeductions: BigDecimal)
 
 object Deductions {
   implicit val format = Json.format[Deductions]
+}
+
+case class TaxBandSummary(taxBand: String, taxableAmount: BigDecimal, chargedAt: String, tax: BigDecimal)
+
+object TaxBandSummary {
+  implicit val format = Json.format[TaxBandSummary]
+}
+
+case class IncomeTaxCalculations(payPensionsProfits: Seq[TaxBandSummary], savingsInterest: Seq[TaxBandSummary], dividends: Seq[TaxBandSummary], incomeTaxCharged: BigDecimal)
+
+object IncomeTaxCalculations {
+  implicit val format = Json.format[IncomeTaxCalculations]
 }
 
 case class IncomeSummary(incomes: IncomeFromSources, deductions: Option[Deductions], totalIncomeReceived: BigDecimal, personalAllowance: BigDecimal, totalTaxableIncome: BigDecimal, totalIncomeOnWhichTaxIsDue: BigDecimal)
@@ -67,7 +78,7 @@ object CalculatedAmount {
   implicit val format = Json.format[CalculatedAmount]
 }
 
-case class Liability(id: Option[LiabilityId] = None, income: IncomeSummary, incomeTax: CalculatedAmount, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal)
+case class Liability(id: Option[LiabilityId] = None, income: IncomeSummary, incomeTaxCalculations: IncomeTaxCalculations, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal)
 
 object Liability {
   implicit val format = Json.format[Liability]
@@ -84,29 +95,40 @@ object Liability {
           interestFromUKBanksAndBuildingSocieties = Seq(
             InterestFromUKBanksAndBuildingSocieties("unearned-income-1", 100),
             InterestFromUKBanksAndBuildingSocieties("unearned-income-2", 200)
-
           ),
           employment = Seq(
             Income("employment-1", 5000, 5000)
           )
         ),
-        deductions = Some(Deductions(BigDecimal(5000), BigDecimal(14440))),
+        deductions = Some(Deductions(
+          incomeTaxRelief = BigDecimal(5000),
+          totalDeductions = BigDecimal(14440)
+        )),
         totalIncomeReceived = BigDecimal(93039),
         personalAllowance = BigDecimal(9440),
         totalTaxableIncome = BigDecimal(83599),
         totalIncomeOnWhichTaxIsDue = BigDecimal(80000)
       ),
-      incomeTax = CalculatedAmount(
-        calculations = Seq(
-          Calculation("pay-pensions-profits", BigDecimal(32010), BigDecimal(20), BigDecimal(6402)),
-          Calculation("pay-pensions-profits", BigDecimal(41030), BigDecimal(40), BigDecimal(16412)),
-          Calculation("interest-received", BigDecimal(0), BigDecimal(10), BigDecimal(0)),
-          Calculation("interest-received", BigDecimal(0), BigDecimal(20), BigDecimal(0)),
-          Calculation("interest-received", BigDecimal(93), BigDecimal(40), BigDecimal(37.2)),
-          Calculation("dividends", BigDecimal(0), BigDecimal(10), BigDecimal(0)),
-          Calculation("dividends", BigDecimal(466), BigDecimal(32.5), BigDecimal(151.45))
+      incomeTaxCalculations = IncomeTaxCalculations(
+        payPensionsProfits = Seq(
+          TaxBandSummary(taxBand = "basicRate", taxableAmount = 10000, chargedAt = "20%", tax = 2000),
+          TaxBandSummary("higherRate", 10000, "40%", 4000),
+          TaxBandSummary("additionalHigherRate", 10000, "45%", 4500)
         ),
-        total = BigDecimal(23002.65)
+        savingsInterest = Seq(
+          TaxBandSummary("startingRate", 10000, "0%", 0),
+          TaxBandSummary("nilRate", 10000, "0%", 0),
+          TaxBandSummary("basicRate", 10000, "20%", 2000),
+          TaxBandSummary("higherRate", 10000, "40%", 4000),
+          TaxBandSummary("additionalHigherRate", 10000, "45%", 4500)
+        ),
+        dividends = Seq(
+          TaxBandSummary("nilRate", 10000, "0%", 0),
+          TaxBandSummary("basicRate", 10000, "20%", 2000),
+          TaxBandSummary("higherRate", 10000, "40%", 4000),
+          TaxBandSummary("additionalHigherRate", 10000, "45%", 4500)
+        ),
+        incomeTaxCharged = 31500
       ),
       credits = Seq(
         Amount("dividend", BigDecimal(46.6)),

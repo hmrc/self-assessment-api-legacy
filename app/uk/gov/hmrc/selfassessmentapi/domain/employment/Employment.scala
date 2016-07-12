@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class Employment(id: Option[SourceId] = None)
 
-object Employment extends BaseDomain[Employment]{
+object Employment extends JsonMarshaller[Employment]{
 
   implicit val writes = Json.writes[Employment]
 

@@ -33,7 +33,7 @@ case class Expense(id: Option[SummaryId] = None,
                    `type`: ExpenseType,
                    amount: BigDecimal)
 
-object Expense extends BaseDomain[Expense] {
+object Expense extends JsonMarshaller[Expense] {
 
   implicit val types = EnumJson.enumFormat(ExpenseType, Some("UK Property Expense type is invalid"))
   implicit val writes = Json.writes[Expense]

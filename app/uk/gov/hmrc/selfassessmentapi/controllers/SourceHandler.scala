@@ -25,11 +25,11 @@ import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class SourceHandler[T](domain: BaseDomain[T], val listName: String) {
+abstract class SourceHandler[T](jsonMarshaller: JsonMarshaller[T], val listName: String) {
 
   val repository: SourceRepository[T]
-  implicit val reads = domain.reads
-  implicit val writes = domain.writes
+  implicit val reads = jsonMarshaller.reads
+  implicit val writes = jsonMarshaller.writes
 
   def create(saUtr: SaUtr, taxYear: TaxYear, jsValue: JsValue) = {
     validate[T, String](jsValue) {

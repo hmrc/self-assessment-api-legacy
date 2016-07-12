@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Reads, Writes}
 
-trait BaseDomain[T] {
+trait JsonMarshaller[T] {
   val writes : Writes[T]
   val reads : Reads[T]
   def example(id: Option[String] = None) : T

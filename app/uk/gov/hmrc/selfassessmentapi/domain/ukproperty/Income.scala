@@ -33,7 +33,7 @@ case class Income(id: Option[SummaryId] = None,
                   `type`: IncomeType,
                   amount: BigDecimal)
 
-object Income extends BaseDomain[Income] {
+object Income extends JsonMarshaller[Income] {
 
   implicit val types = EnumJson.enumFormat(IncomeType, Some("UK Property Income type is invalid"))
   override implicit val writes = Json.writes[Income]

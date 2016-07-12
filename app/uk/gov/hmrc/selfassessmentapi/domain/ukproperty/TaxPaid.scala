@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 case class TaxPaid(id: Option[SummaryId] = None,
                    amount: BigDecimal)
 
-object TaxPaid extends BaseDomain[TaxPaid] {
+object TaxPaid extends JsonMarshaller[TaxPaid] {
 
   implicit val writes = Json.writes[TaxPaid]
   implicit val reads: Reads[TaxPaid] = (

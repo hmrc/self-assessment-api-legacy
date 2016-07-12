@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
 object TotalAllowancesAndReliefs extends CalculationStep {
@@ -23,6 +24,6 @@ object TotalAllowancesAndReliefs extends CalculationStep {
     val lossesBroughtForward = liability.profitFromSelfEmployments.map(_.lossBroughtForward).sum
     val incomeTaxRelief = roundUp(lossesBroughtForward)
     val totalAllowancesAndReliefs = incomeTaxRelief + valueOrZero(liability.personalAllowance)
-    liability.copy(totalAllowancesAndReliefs = Some(totalAllowancesAndReliefs))
+    liability.copy(deductions = Some(Deductions(incomeTaxRelief = incomeTaxRelief, totalDeductions = totalAllowancesAndReliefs)))
   }
 }

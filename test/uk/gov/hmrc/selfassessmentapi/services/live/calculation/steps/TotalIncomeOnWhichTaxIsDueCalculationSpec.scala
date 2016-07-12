@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
 class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploymentSugar {
@@ -26,18 +27,16 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploy
 
       val liability = aLiability().copy(
         totalIncomeReceived = Some(100),
-        totalAllowancesAndReliefs = Some(50)
-      )
+        deductions = Some(Deductions(incomeTaxRelief = 50, totalDeductions = 50)))
 
       TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeOnWhichTaxIsDue = Some(50))
     }
 
-    "return zero if totalIncomeReceived is less than totalAllowancesAndReliefs" in {
+    "return zero if totalIncomeReceived is less than totalDeductions" in {
 
       val liability = aLiability().copy(
         totalIncomeReceived = Some(100),
-        totalAllowancesAndReliefs = Some(200)
-      )
+        deductions = Some(Deductions(incomeTaxRelief = 200, totalDeductions = 200)))
 
       TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeOnWhichTaxIsDue = Some(0))
     }
@@ -46,20 +45,18 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploy
 
       val liability = aLiability().copy(
         totalIncomeReceived = None,
-        totalAllowancesAndReliefs = Some(200)
-      )
+        deductions = Some(Deductions(incomeTaxRelief = 200, totalDeductions = 200)))
 
       intercept[IllegalStateException]{
         TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability)
       }
     }
 
-    "throw exception if totalAllowancesAndReliefs is None" in {
+    "throw exception if deductions is None" in {
 
       val liability = aLiability().copy(
         totalIncomeReceived = Some(100),
-        totalAllowancesAndReliefs = None
-      )
+        deductions = None)
 
       intercept[IllegalStateException]{
         TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability)

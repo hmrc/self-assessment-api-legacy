@@ -17,8 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.HalLink
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
@@ -43,13 +43,16 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
+            // TODO untested
             case GenericErrorResult(message) => BadRequest(message)
-            case ValidationErrorResult(errors) => BadRequest(failedValidationJson(errors))
+            case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
+            // TODO untested
             case _ => BadRequest
           }
         }
       case Right(futOptId) => futOptId.map {
         case Some(id) => Created(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
+        // TODO untested
         case _ => BadRequest
       }
     }
@@ -59,7 +62,7 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
     handler(sourceType, summaryTypeName).findById(saUtr, taxYear, sourceId, summaryId) map {
       case Some(summary) =>
         Ok(halResource(summary, Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
-      case None => NotFound
+      case None => notFound
     }
   }
 
@@ -68,14 +71,17 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
+            // TODO untested
             case GenericErrorResult(message) => BadRequest(message)
-            case ValidationErrorResult(errors) => BadRequest(failedValidationJson(errors))
+            case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
+            // TODO untested
             case _ => BadRequest
           }
         }
       case Right(optResult) => optResult.map {
         case true => Ok(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
-        case false => NotFound
+        // TODO untested???
+        case false => notFound
       }
     }
 
@@ -85,7 +91,8 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
   protected def deleteSummary(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
     handler(sourceType, summaryTypeName).delete(saUtr, taxYear, sourceId, summaryId) map {
       case true => NoContent
-      case false => NotFound
+      // TODO untested???
+      case false => notFound
     }
   }
 

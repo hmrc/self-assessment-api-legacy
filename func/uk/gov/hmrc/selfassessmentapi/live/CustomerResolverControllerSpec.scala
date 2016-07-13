@@ -22,7 +22,9 @@ class CustomerResolverControllerSpec extends BaseFunctionalSpec {
       .when()
         .get("/")
       .thenAssertThat()
+        // TODO this error is incorrect against W3C spec, it should be 403
         .statusIs(401)
+        // TODO check body for correct format
     }
   }
 

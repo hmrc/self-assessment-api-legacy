@@ -16,7 +16,26 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.api.controllers.ErrorResponse
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.ErrorCode
+
 
 case object ErrorSaUtrInvalid extends ErrorResponse(400, "SA_UTR_INVALID", "The provided SA UTR is invalid")
+
 case object ErrorNotImplemented extends ErrorResponse(501, "NOT_IMPLEMENTED", "The resource is not implemented")
+
+case class ErrorBadRequest(code: ErrorCode, override val message: String)
+  extends ErrorResponse(400, code.toString, message)
+
+case class InvalidPart(code: ErrorCode, message: String, path : String)
+
+object InvalidPart {
+  implicit val writes = Json.writes[InvalidPart]
+}
+
+case class InvalidRequest(code: ErrorCode, message: String, errors: Seq[InvalidPart])
+
+object InvalidRequest {
+  implicit val writes = Json.writes[InvalidRequest]
+}

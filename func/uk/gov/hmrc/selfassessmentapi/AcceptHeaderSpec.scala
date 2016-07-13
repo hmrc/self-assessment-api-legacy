@@ -22,7 +22,7 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
         .get(s"/sandbox/$saUtr/$taxYear/self-employments/$selfEmploymentId").withoutAcceptHeader()
         .thenAssertThat()
         .statusIs(406)
-        .body(_ \ "code").is("ACCEPT_HEADER_INVALID")
+        .bodyIsError("ACCEPT_HEADER_INVALID")
     }
   }
 

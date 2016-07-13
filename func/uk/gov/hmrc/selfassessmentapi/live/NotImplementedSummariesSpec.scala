@@ -2,10 +2,6 @@ package uk.gov.hmrc.selfassessmentapi.live
 
 import java.util.UUID
 
-import uk.gov.hmrc.selfassessmentapi.controllers.live.SummaryController
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.GoodsAndServicesOwnUses
 import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -32,7 +28,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
            .post(Some(summary.example()))
            .to(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}")
            .thenAssertThat()
-           .resourceIsNotImplemented()
+           .isNotImplemented
        }
      }
     }
@@ -47,7 +43,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
             .when()
             .get(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}/$summaryId")
             .thenAssertThat()
-            .resourceIsNotImplemented()
+            .isNotImplemented
         }
       }
     }
@@ -62,7 +58,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
             .when()
             .delete(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}/$summaryId")
             .thenAssertThat()
-            .resourceIsNotImplemented()
+            .isNotImplemented
         }
       }
     }
@@ -78,7 +74,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
             .put(Some(summary.example()))
             .at(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}/$summaryId")
             .thenAssertThat()
-            .resourceIsNotImplemented()
+            .isNotImplemented
         }
       }
     }
@@ -93,7 +89,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
             .when()
             .get(s"/$saUtr/$taxYear/${source.name}/$sourceId/${summary.name}")
             .thenAssertThat()
-            .resourceIsNotImplemented()
+            .isNotImplemented
         }
       }
     }

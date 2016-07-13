@@ -202,7 +202,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .when()
         .delete(s"/$saUtr/$taxYear/liabilities/1234")
         .thenAssertThat()
-        .resourceIsNotImplemented()
+        .isNotImplemented
     }
   }
 
@@ -212,7 +212,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/$taxYear/liabilities")
         .thenAssertThat()
-        .resourceIsNotImplemented()
+        .isNotImplemented
     }
   }
 

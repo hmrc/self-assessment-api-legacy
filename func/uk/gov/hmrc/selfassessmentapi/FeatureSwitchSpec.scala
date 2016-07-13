@@ -46,14 +46,14 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
         .thenAssertThat()
-        .resourceIsNotImplemented()
+        .isNotImplemented
 
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
         .thenAssertThat()
-        .resourceIsNotImplemented()
+        .isNotImplemented
     }
   }
 
@@ -64,7 +64,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/$taxYear/${Employments.name}")
         .thenAssertThat()
-        .resourceIsNotImplemented()
+        .isNotImplemented
     }
   }
 

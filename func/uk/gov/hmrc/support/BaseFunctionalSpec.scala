@@ -4,7 +4,8 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.json.{JSONArray, JSONObject}
 import org.skyscreamer.jsonassert.JSONAssert.assertEquals
 import org.skyscreamer.jsonassert.JSONCompareMode.LENIENT
-import play.api.libs.json.{JsArray, JsObject, JsValue, Reads}
+import play.api.libs.json._
+import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.TestApplication
@@ -21,13 +22,6 @@ trait BaseFunctionalSpec extends TestApplication {
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String]) extends
     UrlInterpolation {
-
-    def bodyContainsError(error: (String, String)) = {
-      val paths = (response.json \\ "path").map(_.as[String])
-      val codes = (response.json \\ "code").map(_.as[String])
-      if (paths.nonEmpty) paths.head shouldBe error._1
-      if (codes.nonEmpty) codes.head shouldBe error._2
-    }
 
     if (request.startsWith("POST") || request.startsWith("PUT")) {
       Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal(), "liabilityId" -> liabilityIdFromHal()) foreach {
@@ -140,11 +134,47 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
-    def resourceIsNotImplemented() = {
+    def bodyIsError(code: String) = body(_ \ "code").is(code)
+
+    def isValidationError(error:(String,String)) : Assertions = isValidationError(error._1, error._2)
+
+    def isValidationError(path: String, code: String) = {
+      statusIs(400)
+        .contentTypeIsJson()
+        .body(_ \ "code").is("INVALID_REQUEST")
+
+      val errors = response.json \ "errors"
+      errors(0) \ "path" shouldBe JsString(path)
+      errors(0) \ "code" shouldBe JsString(code)
+      this
+    }
+
+    def isBadRequest(path: String, code: String) = {
+      statusIs(400)
+        .contentTypeIsJson()
+        .body(_ \ "path").is(path)
+        .body(_ \ "code").is(code)
+      this
+    }
+
+    def isBadRequest(code: String) = {
+      statusIs(400)
+        .contentTypeIsJson()
+        .body(_ \ "code").is(code)
+      this
+    }
+
+    def isNotFound = {
+      statusIs(404)
+        .contentTypeIsJson()
+        .bodyIsError(ErrorNotFound.errorCode)
+      this
+    }
+
+    def isNotImplemented = {
       statusIs(501)
         .contentTypeIsJson()
-        .body(_ \ "code").is(ErrorNotImplemented.errorCode)
-        .body(_ \ "message").is(ErrorNotImplemented.message)
+        .bodyIsError(ErrorNotImplemented.errorCode)
       this
     }
 

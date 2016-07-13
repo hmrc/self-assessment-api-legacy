@@ -23,17 +23,17 @@ import uk.gov.hmrc.selfassessmentapi.Generators._
 
 class TaxBandSpec extends UnitSpec with GeneratorDrivenPropertyChecks {
 
-  "contains should return true for every valid value in the Basic Tax Band" in forAll(
+  "isWithin should return true for every valid value in the Basic Tax Band" in forAll(
       basicTaxBandAmountGen) { amount =>
     amount isWithin BasicTaxBand shouldBe true
   }
 
-  "contains should return true for every valid value in the Higher Tax Band" in forAll(
+  "isWithin should return true for every valid value in the Higher Tax Band" in forAll(
       higherTaxBandAmountGen) { amount =>
     amount isWithin HigherTaxBand shouldBe true
   }
 
-  "contains should return true for every valid value in the Additional Higher Tax Band" in forAll(
+  "isWithin should return true for every valid value in the Additional Higher Tax Band" in forAll(
       additionalHigherTaxBandAmountGen) { amount =>
     amount isWithin AdditionalHigherTaxBand shouldBe true
   }

@@ -27,9 +27,30 @@ sealed trait TaxBand {
 
 object TaxBand {
 
-  case object BasicTaxBand extends TaxBand { val name = "basicRate"; val chargedAt = BigDecimal(20); val lowerBound = BigDecimal(0); val upperBound = Some(BigDecimal(32000)) }
-  case object HigherTaxBand extends TaxBand { val name = "higherRate"; val chargedAt = BigDecimal(40); val lowerBound = BigDecimal(32000); val upperBound = Some(BigDecimal(150000)) }
-  case object AdditionalHigherTaxBand extends TaxBand { val name = "additionalHigherRate"; val chargedAt = BigDecimal(45); val lowerBound = BigDecimal(150000); val upperBound = None }
+  implicit class TaxBandRangeCheck(val amount: BigDecimal) {
+
+    def isWithin(taxBand: TaxBand): Boolean =
+      amount >= taxBand.lowerBound && taxBand.upperBound.map(u => amount <= u).getOrElse(true)
+  }
+
+  case object BasicTaxBand extends TaxBand {
+    val name = "basicRate"
+    val chargedAt = BigDecimal(20)
+    val lowerBound = BigDecimal(1)
+    val upperBound = Some(BigDecimal(32000))
+  }
+  case object HigherTaxBand extends TaxBand {
+    val name = "higherRate"
+    val chargedAt = BigDecimal(40)
+    val lowerBound = BigDecimal(32001)
+    val upperBound = Some(BigDecimal(150000))
+  }
+  case object AdditionalHigherTaxBand extends TaxBand {
+    val name = "additionalHigherRate"
+    val chargedAt = BigDecimal(45)
+    val lowerBound = BigDecimal(150001)
+    val upperBound = None
+  }
 
   implicit val format: Format[TaxBand] = new Format[TaxBand] {
 

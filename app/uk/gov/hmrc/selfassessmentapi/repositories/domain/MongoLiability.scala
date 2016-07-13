@@ -39,7 +39,8 @@ case class MongoLiability(id: BSONObjectID,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
                           payPensionsProfits: Seq[TaxBandSummary] = Nil,
                           savingsInterest: Seq[TaxBandSummary] = Nil,
-                          dividends: Seq[TaxBandSummary] = Nil) {
+                          dividends: Seq[TaxBandSummary] = Nil,
+                          personalSavingsAllowance: Option[BigDecimal] = None) {
 
   def toLiability =
     Liability(

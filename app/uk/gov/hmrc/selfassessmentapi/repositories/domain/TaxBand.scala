@@ -30,7 +30,7 @@ object TaxBand {
   implicit class TaxBandRangeCheck(val amount: BigDecimal) extends AnyVal {
 
     def isWithin(taxBand: TaxBand): Boolean =
-      amount >= taxBand.lowerBound && taxBand.upperBound.map(u => amount <= u).getOrElse(true)
+      amount >= taxBand.lowerBound && taxBand.upperBound.forall(amount <= _)
   }
 
   case object BasicTaxBand extends TaxBand {

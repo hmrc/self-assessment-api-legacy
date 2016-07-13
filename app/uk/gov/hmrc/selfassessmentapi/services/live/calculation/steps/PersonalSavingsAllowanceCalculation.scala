@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{BasicTaxBand, HigherTaxBand, TaxBandRangeCheck}
 
-object PersonalSavingsAllowance extends CalculationStep {
+object PersonalSavingsAllowanceCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
     val personalSavingsAllowance = liability.totalIncomeOnWhichTaxIsDue.map {

@@ -93,7 +93,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |                "taxableAmount": 0
            |            }
            |       ],
-           |    "savingsInterest": [],
+           |    "savingsIncome": [],
            |    "dividends": [],
            |    "incomeTaxCharged": 37034
            |    },

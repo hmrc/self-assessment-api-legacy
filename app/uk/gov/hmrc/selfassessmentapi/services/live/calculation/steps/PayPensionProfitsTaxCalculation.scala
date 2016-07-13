@@ -22,8 +22,8 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, TaxBan
 
 object PayPensionProfitsTaxCalculation extends CalculationStep {
 
-  private val basicRate = HigherTaxBand.lowerBound
-  private val extendedRate = AdditionalHigherTaxBand.lowerBound
+  private val basicRate = BasicTaxBand.upperBound.getOrElse(throw new IllegalStateException("Cannot perform PayPensionProfitsTaxCalculation because basic rate upper bound is undefined"))
+  private val higherRate = HigherTaxBand.upperBound.getOrElse(throw new IllegalStateException("Cannot perform PayPensionProfitsTaxCalculation because higher rate upper bound is undefined"))
 
   private def applyDeductions(taxableAmount: BigDecimal, deductions: Deductions): (BigDecimal, Deductions) ={
       ((taxableAmount - deductions.totalDeductions).max(0),
@@ -44,8 +44,8 @@ object PayPensionProfitsTaxCalculation extends CalculationStep {
 
     val taxCalculationResults = Map[TaxBand, BigDecimal](
         BasicTaxBand -> (if (taxableAmount > basicRate) basicRate else taxableAmount),
-        HigherTaxBand -> (if (taxableAmount > basicRate) taxableAmount.min(extendedRate) - basicRate else 0),
-        AdditionalHigherTaxBand -> (if (taxableAmount > extendedRate) taxableAmount - extendedRate else 0)
+        HigherTaxBand -> (if (taxableAmount > basicRate) taxableAmount.min(higherRate) - basicRate else 0),
+        AdditionalHigherTaxBand -> (if (taxableAmount > higherRate) taxableAmount - higherRate else 0)
       ) map {
         case (band, amount) => TaxBandSummary(amount, band)
       }

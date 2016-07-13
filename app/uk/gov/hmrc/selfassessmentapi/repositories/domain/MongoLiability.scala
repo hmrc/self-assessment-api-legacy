@@ -41,7 +41,8 @@ case class MongoLiability(id: BSONObjectID,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
                           payPensionsProfits: Seq[TaxBandSummary] = Nil,
                           savingsInterest: Seq[TaxBandSummary] = Nil,
-                          dividends: Seq[TaxBandSummary] = Nil) {
+                          dividends: Seq[TaxBandSummary] = Nil,
+                          personalSavingsAllowance: Option[BigDecimal] = None) {
 
   require(if (deductionsRemaining.isDefined) deductions.isDefined else true, "deductions must be defined if deductionsRemaining are")
   require((for {

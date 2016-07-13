@@ -36,7 +36,7 @@ class LiabilityRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
   "save" should {
 
     "create new liability if there is no liability for given utr and tax year" in {
-      val liability = MongoLiability.create(saUtr, taxYear).copy(savingsInterest = Seq(TaxBandSummary(1000, BasicTaxBand), TaxBandSummary(2000, HigherTaxBand)))
+      val liability = MongoLiability.create(saUtr, taxYear).copy(savingsIncome = Seq(TaxBandSummary(1000, BasicTaxBand), TaxBandSummary(2000, HigherTaxBand)))
       await(repository.save(liability))
 
       await(repository.findAll()) shouldBe List(liability)

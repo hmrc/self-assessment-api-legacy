@@ -83,7 +83,7 @@ class MongoLiabilitySpec extends UnitSpec {
           aTaxBandSummary(2000, HigherTaxBand),
           aTaxBandSummary(2000, AdditionalHigherTaxBand)
         ),
-        savingsInterest = Seq(
+        savingsIncome = Seq(
           aTaxBandSummary(1000, BasicTaxBand)
         ),
         dividends = Seq(
@@ -97,7 +97,7 @@ class MongoLiabilitySpec extends UnitSpec {
           aTaxBandSummary(HigherTaxBand.name, 2000, "40%", 800),
           aTaxBandSummary(AdditionalHigherTaxBand.name, 2000, "45%", 900)
         ),
-        savingsInterest = Seq(
+        savingsIncome = Seq(
           aTaxBandSummary(BasicTaxBand.name, 1000, "20%", 200)
         ),
         dividends = Seq(

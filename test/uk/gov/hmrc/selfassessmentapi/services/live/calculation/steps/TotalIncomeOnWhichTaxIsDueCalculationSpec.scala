@@ -56,7 +56,8 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploy
 
       val liability = aLiability().copy(
         totalIncomeReceived = Some(100),
-        deductions = None)
+        deductions = None,
+        deductionsRemaining = None)
 
       intercept[IllegalStateException]{
         TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability)

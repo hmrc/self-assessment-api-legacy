@@ -37,10 +37,18 @@ case class MongoLiability(id: BSONObjectID,
                           totalTaxableIncome: Option[BigDecimal] = None,
                           personalAllowance: Option[BigDecimal] = None,
                           deductions: Option[Deductions] = None,
+                          deductionsRemaining: Option[Deductions] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
                           payPensionsProfits: Seq[TaxBandSummary] = Nil,
                           savingsInterest: Seq[TaxBandSummary] = Nil,
                           dividends: Seq[TaxBandSummary] = Nil) {
+
+  require(if (deductionsRemaining.isDefined) deductions.isDefined else true, "deductions must be defined if deductionsRemaining are")
+  require((for {
+    ded <- deductions
+    remDed <- deductionsRemaining
+  } yield ded.incomeTaxRelief >= remDed.incomeTaxRelief && ded.totalDeductions >= remDed.totalDeductions).getOrElse(true),
+    "Values on deductions must be greater than or equal to the corresponding values on deductionsRemaining")
 
   def toLiability =
     Liability(

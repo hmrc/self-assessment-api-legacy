@@ -16,19 +16,31 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandSummary
+import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, TaxBand}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, TaxBand, TaxBandSummary}
 
 object PayPensionProfitsTaxCalculation extends CalculationStep {
 
   private val basicRate = HigherTaxBand.lowerBound
   private val extendedRate = AdditionalHigherTaxBand.lowerBound
 
+  private def applyDeductions(taxableAmount: BigDecimal, deductions: Deductions): (BigDecimal, Deductions) ={
+      ((taxableAmount - deductions.totalDeductions).max(0),
+        Deductions(incomeTaxRelief = (deductions.incomeTaxRelief - taxableAmount).max(0),
+                   totalDeductions = (deductions.totalDeductions - taxableAmount).max(0)))
+
+  }
+
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val taxableAmount = liability.payPensionProfitsReceived.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed " +
+    val payPensionProfitsReceived = liability.payPensionProfitsReceived.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed " +
       "because the payPensionProfitsReceived value has not been computed"))
+
+    val deductions = liability.deductionsRemaining.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed " +
+      "because the deductions value has not been computed"))
+
+    val (taxableAmount, deductionsRemaining) = applyDeductions(payPensionProfitsReceived, deductions)
 
     val taxCalculationResults = Map[TaxBand, BigDecimal](
         BasicTaxBand -> (if (taxableAmount > basicRate) basicRate else taxableAmount),
@@ -38,6 +50,6 @@ object PayPensionProfitsTaxCalculation extends CalculationStep {
         case (band, amount) => TaxBandSummary(amount, band)
       }
 
-    liability.copy(payPensionsProfits = taxCalculationResults.toSeq)
+    liability.copy(deductionsRemaining = Some(deductionsRemaining), payPensionsProfits = taxCalculationResults.toSeq)
   }
 }

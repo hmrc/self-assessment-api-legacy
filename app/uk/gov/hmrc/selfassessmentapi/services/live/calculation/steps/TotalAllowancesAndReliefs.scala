@@ -24,6 +24,7 @@ object TotalAllowancesAndReliefs extends CalculationStep {
     val lossesBroughtForward = liability.profitFromSelfEmployments.map(_.lossBroughtForward).sum
     val incomeTaxRelief = roundUp(lossesBroughtForward)
     val totalAllowancesAndReliefs = incomeTaxRelief + valueOrZero(liability.personalAllowance)
-    liability.copy(deductions = Some(Deductions(incomeTaxRelief = incomeTaxRelief, totalDeductions = totalAllowancesAndReliefs)))
+    val deductions = Some(Deductions(incomeTaxRelief = incomeTaxRelief, totalDeductions = totalAllowancesAndReliefs))
+    liability.copy(deductions = deductions, deductionsRemaining = deductions)
   }
 }

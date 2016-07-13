@@ -73,10 +73,29 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        "totalIncomeOnWhichTaxIsDue": 114587
            |    },
            |    "incomeTaxCalculations": {
-           |    "payPensionsProfits": [],
+           |       "payPensionsProfits": [
+           |            {
+           |                "chargedAt": "20%",
+           |                "tax": 6400,
+           |                "taxBand": "basicRate",
+           |                "taxableAmount": 32000
+           |            },
+           |            {
+           |                "chargedAt": "40%",
+           |                "tax": 30634,
+           |                "taxBand": "higherRate",
+           |                "taxableAmount": 76587
+           |            },
+           |            {
+           |                "chargedAt": "45%",
+           |                "tax": 0,
+           |                "taxBand": "additionalHigherRate",
+           |                "taxableAmount": 0
+           |            }
+           |       ],
            |    "savingsInterest": [],
            |    "dividends": [],
-           |    "incomeTaxCharged": 0
+           |    "incomeTaxCharged": 37034
            |    },
            |    "totalTaxDue": 0
            |}

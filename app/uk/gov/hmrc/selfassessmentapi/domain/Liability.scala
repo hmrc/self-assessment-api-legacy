@@ -55,7 +55,9 @@ object IncomeFromSources {
   implicit val format = Json.format[IncomeFromSources]
 }
 
-case class Deductions(incomeTaxRelief: BigDecimal, totalDeductions: BigDecimal)
+case class Deductions(incomeTaxRelief: BigDecimal, totalDeductions: BigDecimal) {
+  require(totalDeductions >= incomeTaxRelief, "totalDeductions must be greater than or equal to incomeTaxRelief at all times")
+}
 
 object Deductions {
   implicit val format = Json.format[Deductions]

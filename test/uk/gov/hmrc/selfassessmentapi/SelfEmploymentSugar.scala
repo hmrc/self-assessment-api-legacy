@@ -49,10 +49,11 @@ trait SelfEmploymentSugar {
 
   def aLiability(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
                  interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil,
-                 dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil): MongoLiability = {
+                 dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil, deductions: Option[Deductions] = Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0)),
+                 deductionsRemaining: Option[Deductions] = Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))): MongoLiability = {
 
     MongoLiability.create(saUtr, taxYear).copy(profitFromSelfEmployments = profitFromSelfEmployments.toSeq, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
-                                                dividendsFromUKSources = dividendsFromUKSources)
+                                                dividendsFromUKSources = dividendsFromUKSources, deductions = deductions, deductionsRemaining = deductionsRemaining)
   }
 
   private def now = DateTime.now(DateTimeZone.UTC)

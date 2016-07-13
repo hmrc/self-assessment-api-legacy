@@ -69,7 +69,7 @@ object TaxBandSummary {
   implicit val format = Json.format[TaxBandSummary]
 }
 
-case class IncomeTaxCalculations(payPensionsProfits: Seq[TaxBandSummary], savingsInterest: Seq[TaxBandSummary], dividends: Seq[TaxBandSummary], incomeTaxCharged: BigDecimal)
+case class IncomeTaxCalculations(payPensionsProfits: Seq[TaxBandSummary], savingsIncome: Seq[TaxBandSummary], dividends: Seq[TaxBandSummary], incomeTaxCharged: BigDecimal)
 
 object IncomeTaxCalculations {
   implicit val format = Json.format[IncomeTaxCalculations]
@@ -128,7 +128,7 @@ object Liability {
           TaxBandSummary("higherRate", 10000, "40%", 4000),
           TaxBandSummary("additionalHigherRate", 10000, "45%", 4500)
         ),
-        savingsInterest = Seq(
+        savingsIncome = Seq(
           TaxBandSummary("startingRate", 10000, "0%", 0),
           TaxBandSummary("nilRate", 10000, "0%", 0),
           TaxBandSummary("basicRate", 10000, "20%", 2000),

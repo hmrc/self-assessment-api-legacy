@@ -40,7 +40,7 @@ case class MongoLiability(id: BSONObjectID,
                           deductionsRemaining: Option[Deductions] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
                           payPensionsProfits: Seq[TaxBandSummary] = Nil,
-                          savingsInterest: Seq[TaxBandSummary] = Nil,
+                          savingsIncome: Seq[TaxBandSummary] = Nil,
                           dividends: Seq[TaxBandSummary] = Nil,
                           personalSavingsAllowance: Option[BigDecimal] = None) {
 
@@ -69,9 +69,9 @@ case class MongoLiability(id: BSONObjectID,
       ),
       incomeTaxCalculations = IncomeTaxCalculations(
         payPensionsProfits = payPensionsProfits.map(_.toTaxBandSummary),
-        savingsInterest = savingsInterest.map(_.toTaxBandSummary),
+        savingsIncome = savingsIncome.map(_.toTaxBandSummary),
         dividends = dividends.map(_.toTaxBandSummary),
-        incomeTaxCharged = (payPensionsProfits ++ savingsInterest ++ dividends).map(_.tax).sum
+        incomeTaxCharged = (payPensionsProfits ++ savingsIncome ++ dividends).map(_.tax).sum
       ),
       credits = Nil,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),

@@ -56,7 +56,7 @@ object IncomeFromSources {
 }
 
 case class Deductions(incomeTaxRelief: BigDecimal, totalDeductions: BigDecimal) {
-  require(totalDeductions >= incomeTaxRelief, "totalDeductions must be greater than incomeTaxRelief at all times")
+  require(totalDeductions >= incomeTaxRelief, "totalDeductions must be greater than or equal to incomeTaxRelief at all times")
 }
 
 object Deductions {

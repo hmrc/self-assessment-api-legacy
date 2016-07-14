@@ -33,6 +33,10 @@ trait Math {
     case x => x
   }
 
+  protected def capAt(n: BigDecimal, cap: BigDecimal): BigDecimal = {
+    capAt(Some(n), cap).get
+  }
+
   protected def roundDown(n: BigDecimal): BigDecimal = n.setScale(0, RoundingMode.DOWN)
 
   protected def roundDownToNearest(n: BigDecimal, v: Int): BigDecimal = roundDown(n / v) * v

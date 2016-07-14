@@ -69,6 +69,13 @@ object TaxBand {
     val upperBound = None 
   }
 
+  case object DividendsNilTaxBand extends TaxBand {
+    val name = "nilRate"
+    val chargedAt = BigDecimal(0)
+    val lowerBound = BigDecimal(0)
+    val upperBound = None
+  }
+
   implicit val format: Format[TaxBand] = new Format[TaxBand] {
 
     def reads(json: JsValue): JsResult[TaxBand] = {
@@ -78,6 +85,7 @@ object TaxBand {
         case AdditionalHigherTaxBand.name => JsSuccess(AdditionalHigherTaxBand)
         case SavingsStartingTaxBand.name => JsSuccess(SavingsStartingTaxBand)
         case SavingsNilTaxBand.name => JsSuccess(SavingsNilTaxBand)
+        case DividendsNilTaxBand.name => JsSuccess(DividendsNilTaxBand)
         case unknown => throw new IllegalStateException(s"Unknown tax band '$unknown'")
       }
     }
@@ -89,6 +97,7 @@ object TaxBand {
         case AdditionalHigherTaxBand => JsString(AdditionalHigherTaxBand.name)
         case SavingsStartingTaxBand => JsString(SavingsStartingTaxBand.name)
         case SavingsNilTaxBand => JsString(SavingsNilTaxBand.name)
+        case DividendsNilTaxBand => JsString(DividendsNilTaxBand.name)
         case _ => throw new IllegalStateException(s"Unknown tax band '${band.name}'")
       }
     }

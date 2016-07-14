@@ -1,8 +1,9 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.support.BaseFunctionalSpec
+import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
+import uk.gov.hmrc.support.BaseFunctionalSpec
 
 // FIXME: Refactor into live and sandbox tests
 
@@ -125,7 +126,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
   }
 
   "update tax year properties" should {
-    "return 400 and validation error if payload does not contain only Pension Contributions for a live request" in {
+    "return 400 and validation error if payload does not contain only Pension Contributions for a live request" ignore {
       val payload = Json.parse(
         s"""
            |
@@ -156,7 +157,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
 
 
   "if the live request is valid it" should {
-    "update and retrieve the pension contributions tax year properties" in {
+    "update and retrieve the pension contributions tax year properties" ignore {
 
       val payload, expectedJson = Json.parse(
         s"""
@@ -186,3 +187,60 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
     }
   }
 }
+
+class TaxYearFeatureSwitchOnSpec extends BaseFunctionalSpec {
+  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = Map("update-tax-year-properties.enabled" -> false))
+
+  "if update-tax-year-properties switch is disabled for live mode it" should {
+    "return 501 not implemented" in {
+
+      val payload = Json.parse(
+        s"""
+           |{
+           | 	"pensionContributions": {
+           | 		"ukRegisteredPension": 1000.45,
+           | 		"retirementAnnuity": 1000.0,
+           | 		"employerScheme": 12000.05,
+           | 		"overseasPension": 1234.43
+           | 	}
+           |}
+        """.stripMargin)
+
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .put(s"/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .resourceIsNotImplemented()
+    }
+  }
+}
+
+class TaxYearFeatureSwitchOffSpec extends BaseFunctionalSpec {
+  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = Map("update-tax-year-properties.enabled" -> true))
+
+  "if update-tax-year-properties switch is enabled for live mode it" should {
+    "return 200" in {
+
+      val payload = Json.parse(
+        s"""
+           |{
+           | 	"pensionContributions": {
+           | 		"ukRegisteredPension": 1000.45,
+           | 		"retirementAnnuity": 1000.0,
+           | 		"employerScheme": 12000.05,
+           | 		"overseasPension": 1234.43
+           | 	}
+           |}
+        """.stripMargin)
+
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .put(s"/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .statusIs(200)
+    }
+  }
+}
+

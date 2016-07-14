@@ -16,40 +16,25 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Deductions
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, TaxBand, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 
 object PayPensionProfitsTaxCalculation extends CalculationStep {
 
-  private val basicRate = BasicTaxBand.upperBound.getOrElse(throw new IllegalStateException("Cannot perform PayPensionProfitsTaxCalculation because basic rate upper bound is undefined"))
-  private val higherRate = HigherTaxBand.upperBound.getOrElse(throw new IllegalStateException("Cannot perform PayPensionProfitsTaxCalculation because higher rate upper bound is undefined"))
-
-  private def applyDeductions(taxableAmount: BigDecimal, deductions: Deductions): (BigDecimal, Deductions) ={
-      ((taxableAmount - deductions.totalDeductions).max(0),
-        Deductions(incomeTaxRelief = (deductions.incomeTaxRelief - taxableAmount).max(0),
-                   totalDeductions = (deductions.totalDeductions - taxableAmount).max(0)))
-
-  }
-
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val payPensionProfitsReceived = liability.payPensionProfitsReceived.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed " +
-      "because the payPensionProfitsReceived value has not been computed"))
+    val payPensionProfitsReceived = liability.payPensionProfitsReceived.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed because the payPensionProfitsReceived value has not been computed"))
 
-    val deductions = liability.deductionsRemaining.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed " +
-      "because the deductions value has not been computed"))
+    val deductions = liability.deductionsRemaining.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed because the deductions value has not been computed"))
 
-    val (taxableAmount, deductionsRemaining) = applyDeductions(payPensionProfitsReceived, deductions)
+    val (taxableProfit, deductionsRemaining) = applyDeductions(payPensionProfitsReceived, deductions)
 
-    val taxCalculationResults = Map[TaxBand, BigDecimal](
-        BasicTaxBand -> (if (taxableAmount > basicRate) basicRate else taxableAmount),
-        HigherTaxBand -> (if (taxableAmount > basicRate) taxableAmount.min(higherRate) - basicRate else 0),
-        AdditionalHigherTaxBand -> (if (taxableAmount > higherRate) taxableAmount - higherRate else 0)
-      ) map {
-        case (band, amount) => TaxBandSummary(amount, band)
-      }
+    val taxBands = Seq(
+      TaxBandState(taxBand = BasicTaxBand, available = BasicTaxBand.width),
+      TaxBandState(taxBand = HigherTaxBand, available = HigherTaxBand.width),
+      TaxBandState(taxBand = AdditionalHigherTaxBand, available = AdditionalHigherTaxBand.width)
+    )
 
-    liability.copy(deductionsRemaining = Some(deductionsRemaining), payPensionsProfits = taxCalculationResults.toSeq)
+    liability.copy(deductionsRemaining = Some(deductionsRemaining), payPensionsProfits = allocateToTaxBands(taxableProfit, taxBands))
   }
 }

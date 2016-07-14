@@ -17,12 +17,15 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math
 
-sealed trait TaxBand {
+sealed trait TaxBand extends Math {
   def name: String
   def chargedAt: BigDecimal
   def lowerBound: BigDecimal
   def upperBound: Option[BigDecimal]
+
+  def width = upperBound.map(_ - lowerBound + 1).getOrElse(BigDecimal(Long.MaxValue))
 }
 
 object TaxBand {
@@ -52,6 +55,20 @@ object TaxBand {
     val upperBound = None
   }
 
+  case object SavingsStartingTaxBand extends TaxBand { 
+    val name = "startingRate" 
+    val chargedAt = BigDecimal(0)
+    val lowerBound = BigDecimal(0)
+    val upperBound = None 
+  }
+  
+  case object SavingsNilTaxBand extends TaxBand { 
+    val name = "nilRate" 
+    val chargedAt = BigDecimal(0)
+    val lowerBound = BigDecimal(0)
+    val upperBound = None 
+  }
+
   implicit val format: Format[TaxBand] = new Format[TaxBand] {
 
     def reads(json: JsValue): JsResult[TaxBand] = {
@@ -59,6 +76,8 @@ object TaxBand {
         case BasicTaxBand.name => JsSuccess(BasicTaxBand)
         case HigherTaxBand.name => JsSuccess(HigherTaxBand)
         case AdditionalHigherTaxBand.name => JsSuccess(AdditionalHigherTaxBand)
+        case SavingsStartingTaxBand.name => JsSuccess(SavingsStartingTaxBand)
+        case SavingsNilTaxBand.name => JsSuccess(SavingsNilTaxBand)
         case unknown => throw new IllegalStateException(s"Unknown tax band '$unknown'")
       }
     }
@@ -68,6 +87,8 @@ object TaxBand {
         case BasicTaxBand => JsString(BasicTaxBand.name)
         case HigherTaxBand => JsString(HigherTaxBand.name)
         case AdditionalHigherTaxBand => JsString(AdditionalHigherTaxBand.name)
+        case SavingsStartingTaxBand => JsString(SavingsStartingTaxBand.name)
+        case SavingsNilTaxBand => JsString(SavingsNilTaxBand.name)
         case _ => throw new IllegalStateException(s"Unknown tax band '${band.name}'")
       }
     }

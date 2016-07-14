@@ -25,19 +25,27 @@ class TaxBandSpec extends UnitSpec with GeneratorDrivenPropertyChecks {
 
   "isWithin" should {
 
-    "return true for every valid value in the Basic Tax Band" in forAll(
-      basicTaxBandAmountGen) { amount =>
-      amount isWithin BasicTaxBand shouldBe true
+    "return true for every valid value in the Basic Tax Band" in {
+      val basicTaxBandLower = 1
+      val basicTaxBandUpper = 32000
+      forAll(amountGen(basicTaxBandLower, basicTaxBandUpper)) { amount =>
+        amount isWithin BasicTaxBand shouldBe true
+      }
     }
 
-    "return true for every valid value in the Higher Tax Band" in forAll(
-      higherTaxBandAmountGen) { amount =>
-      amount isWithin HigherTaxBand shouldBe true
+    "return true for every valid value in the Higher Tax Band" in {
+      val higherTaxBandLower = 32001
+      val higherTaxBandUpper = 150000
+      forAll(amountGen(higherTaxBandLower, higherTaxBandUpper)) { amount =>
+        amount isWithin HigherTaxBand shouldBe true
+      }
     }
 
-    "return true for every valid value in the Additional Higher Tax Band" in forAll(
-      additionalHigherTaxBandAmountGen) { amount =>
-      amount isWithin AdditionalHigherTaxBand shouldBe true
+    "return true for every valid value in the Additional Higher Tax Band" in {
+      val additionalHigherTaxBandLower = 150001
+      forAll(amountGen(additionalHigherTaxBandLower, Int.MaxValue)) { amount =>
+        amount isWithin AdditionalHigherTaxBand shouldBe true
+      }
     }
   }
 

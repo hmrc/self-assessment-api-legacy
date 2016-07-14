@@ -26,6 +26,7 @@ class LiabilityCalculator {
     UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
     DividendsFromUKSourcesCalculation,
     TotalIncomeCalculation,
+    IncomeTaxReliefCalculation,
     PersonalAllowanceCalculation,
     TotalAllowancesAndReliefs,
     TotalIncomeOnWhichTaxIsDueCalculation,

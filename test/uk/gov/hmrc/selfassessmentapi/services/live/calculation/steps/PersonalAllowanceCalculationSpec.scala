@@ -22,41 +22,67 @@ class PersonalAllowanceCalculationSpec extends UnitSpec with SelfEmploymentSugar
 
   "run" should {
 
-    "calculate personal allowance for total income lesser than 100000" in {
-      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(23400)))
-      val result = PersonalAllowanceCalculation.run(SelfAssessment(), liability)
-      result.personalAllowance shouldBe Some(BigDecimal(11000))
+    "calculate personal allowance for (totalIncomeReceived < 100000)" in {
+
+      personalAllowanceFor(totalIncomeReceived = 23400, incomeTaxRelief = 0) shouldBe 11000
     }
 
-    "calculate personal allowance for total income equal to 100001" in {
-      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(100001)))
-      val result = PersonalAllowanceCalculation.run(SelfAssessment(), liability)
-      result.personalAllowance shouldBe Some(BigDecimal(11000))
+    "calculate personal allowance for (totalIncomeReceived = 100001)" in {
+
+      personalAllowanceFor(totalIncomeReceived = 100001, incomeTaxRelief = 0) shouldBe 11000
     }
 
-    "calculate personal allowance for total income equal to 110000" in {
-      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(110000)))
-      val result = PersonalAllowanceCalculation.run(SelfAssessment(), liability)
-      result.personalAllowance shouldBe Some(BigDecimal(6000))
+    "calculate personal allowance for (totalIncomeReceived = 110000)" in {
+
+      personalAllowanceFor(totalIncomeReceived = 110000, incomeTaxRelief = 0) shouldBe 6000
     }
 
-    "calculate personal allowance for total income equal to 121999" in {
-      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(121999)))
-      val result = PersonalAllowanceCalculation.run(SelfAssessment(), liability)
-      result.personalAllowance shouldBe Some(BigDecimal(1))
+    "calculate personal allowance for (totalIncomeReceived = 121999)" in {
+
+      personalAllowanceFor(totalIncomeReceived = 121999, incomeTaxRelief = 0) shouldBe 1
     }
 
-    "calculate personal allowance for total income equal to 122000" in {
-      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(122000)))
-      val result = PersonalAllowanceCalculation.run(SelfAssessment(), liability)
-      result.personalAllowance shouldBe Some(BigDecimal(0))
+    "calculate personal allowance for total (totalIncomeReceived = 122000)" in {
+
+      personalAllowanceFor(totalIncomeReceived = 122000, incomeTaxRelief = 0) shouldBe 0
     }
 
-    "calculate personal allowance for total income equal to 322000" in {
-      val liability = aLiability().copy(totalTaxableIncome = Some(BigDecimal(322000)))
-      val result = PersonalAllowanceCalculation.run(SelfAssessment(), liability)
-      result.personalAllowance shouldBe Some(BigDecimal(0))
+    "calculate personal allowance for total (totalIncomeReceived = 322000)" in {
+
+      personalAllowanceFor(totalIncomeReceived = 322000, incomeTaxRelief = 0) shouldBe 0
     }
 
+    "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief) < 0" in {
+
+      personalAllowanceFor(totalIncomeReceived = 0, incomeTaxRelief = 210000) shouldBe 11000
+    }
+
+    "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief) < 100000" in {
+
+      personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 110000) shouldBe 11000
+    }
+
+    "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief) = 100001" in {
+
+      personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 99999) shouldBe 11000
+    }
+
+    "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief) = 110000" in {
+
+      personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 90000) shouldBe 6000
+    }
+
+    "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief) > 120000" in {
+
+      personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 70000) shouldBe 0
+    }
+  }
+
+  private def personalAllowanceFor(totalIncomeReceived: BigDecimal, incomeTaxRelief: BigDecimal = 0) = {
+    val liability = aLiability().copy(
+      totalIncomeReceived = Some(totalIncomeReceived),
+      incomeTaxRelief = Some(incomeTaxRelief)
+    )
+    PersonalAllowanceCalculation.run(SelfAssessment(), liability).personalAllowance.get
   }
 }

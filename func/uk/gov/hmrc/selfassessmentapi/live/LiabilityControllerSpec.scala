@@ -28,7 +28,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     "return a 200 response with liability details" in {
 
       /*
-          totalAllowancesAndReliefs = 24471 - 2 * 10000 (lossesBroughtForward from 2 self employments) + 4471 (personalAllowance)
+          totalAllowancesAndReliefs = 2 * 10000 (lossesBroughtForward from 2 self employments) + 4471 (personalAllowance)
        */
 
       val expectedJson =
@@ -65,12 +65,12 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        },
            |        "deductions": {
            |            "incomeTaxRelief": 20000,
-           |            "totalDeductions": 24471
+           |            "totalDeductions": 21471
            |        },
-           |        "personalAllowance": 4471,
+           |        "personalAllowance": 1471,
            |        "totalIncomeReceived": 139058,
            |        "totalTaxableIncome": 113058,
-           |        "totalIncomeOnWhichTaxIsDue": 114587
+           |        "totalIncomeOnWhichTaxIsDue": 117587
            |    },
            |    "incomeTaxCalculations": {
            |       "payPensionsProfits": [
@@ -82,9 +82,9 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |            },
            |            {
            |                "chargedAt": "40%",
-           |                "tax": 30634,
+           |                "tax": 31834,
            |                "taxBand": "higherRate",
-           |                "taxableAmount": 76587
+           |                "taxableAmount": 79587
            |            },
            |            {
            |                "chargedAt": "45%",
@@ -126,7 +126,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |            }
            |    ],
            |    "dividends": [],
-           |    "incomeTaxCharged": 38034
+           |    "incomeTaxCharged": 39234
            |    },
            |    "totalTaxDue": 0
            |}

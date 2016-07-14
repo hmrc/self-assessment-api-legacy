@@ -16,20 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Deductions
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
-class TotalAllowancesAndReliefsSpec extends UnitSpec with SelfEmploymentSugar {
+object IncomeTaxReliefCalculation extends CalculationStep {
 
-  "run" should {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    "calculate total allowances and reliefs by summing income tax relief and the personal allowance" in {
+    val incomeTaxRelief = roundUp(liability.profitFromSelfEmployments.map(_.lossBroughtForward).sum)
 
-      val liability = aLiability().copy(personalAllowance = Some(5000), incomeTaxRelief = Some(1400))
-
-      TotalAllowancesAndReliefs.run(SelfAssessment(), liability).deductions shouldBe Some(
-        Deductions(incomeTaxRelief = 1400, totalDeductions = 6400)
-      )
-    }
+    liability.copy(incomeTaxRelief = Some(incomeTaxRelief))
   }
 }

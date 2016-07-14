@@ -20,11 +20,15 @@ import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
 object TotalAllowancesAndReliefs extends CalculationStep {
+
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    val lossesBroughtForward = liability.profitFromSelfEmployments.map(_.lossBroughtForward).sum
-    val incomeTaxRelief = roundUp(lossesBroughtForward)
-    val totalAllowancesAndReliefs = incomeTaxRelief + valueOrZero(liability.personalAllowance)
-    val deductions = Some(Deductions(incomeTaxRelief = incomeTaxRelief, totalDeductions = totalAllowancesAndReliefs))
+
+    val incomeTaxRelief = liability.incomeTaxRelief.getOrElse(throw new IllegalStateException("Cannot perform TotalAllowancesAndReliefs as incomeTaxRelief has not been computed"))
+
+    val personalAllowance = liability.personalAllowance.getOrElse(throw new IllegalStateException("Cannot perform TotalAllowancesAndReliefs as personalAllowance has not been computed"))
+
+    val deductions = Some(Deductions(incomeTaxRelief = incomeTaxRelief, totalDeductions = incomeTaxRelief + personalAllowance))
+
     liability.copy(deductions = deductions, deductionsRemaining = deductions)
   }
 }

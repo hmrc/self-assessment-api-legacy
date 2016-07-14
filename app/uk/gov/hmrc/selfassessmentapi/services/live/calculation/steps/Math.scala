@@ -35,5 +35,7 @@ trait Math {
 
   protected def roundDown(n: BigDecimal): BigDecimal = n.setScale(0, RoundingMode.DOWN)
 
+  protected def roundDownToNearest(n: BigDecimal, v: Int): BigDecimal = roundDown(n / v) * v
+
   protected def roundUp(n: BigDecimal): BigDecimal = n.setScale(0, RoundingMode.UP)
 }

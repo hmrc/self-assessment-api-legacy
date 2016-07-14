@@ -60,6 +60,8 @@ trait SelfEmploymentSugar {
                                                 savingsStartingRate = savingsStartingRate)
   }
 
+  def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0, lossBroughtForward: BigDecimal = 0) = SelfEmploymentIncome(sourceId = BSONObjectID.generate.stringify, taxableProfit = taxableProfit, profit = profit, lossBroughtForward = lossBroughtForward)
+
   def aTaxBandAllocation(taxableAmount: BigDecimal, taxBand: TaxBand) = TaxBandAllocation(amount = taxableAmount, taxBand = taxBand)
 
   private def now = DateTime.now(DateTimeZone.UTC)

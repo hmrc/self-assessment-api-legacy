@@ -26,13 +26,15 @@ object PersonalAllowanceCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val personalAllowance = liability.totalTaxableIncome.map { income =>
-      income - income % 2
-    } map {
+    val totalIncomeReceived = liability.totalIncomeReceived.getOrElse(throw new IllegalStateException("Cannot perform PersonalAllowanceCalculation as totalIncomeReceived has not been computed"))
+
+    val incomeTaxRelief = liability.incomeTaxRelief.getOrElse(throw new IllegalStateException("Cannot perform PersonalAllowanceCalculation as incomeTaxRelief has not been computed"))
+
+    val personalAllowance = roundDownToNearest(totalIncomeReceived - incomeTaxRelief, 2) match {
       case income if income <= taperingThreshold => standardAllowance
       case income if income > taperingThreshold => positiveOrZero(standardAllowance - ((income - taperingThreshold) / 2))
     }
 
-    liability.copy(personalAllowance = personalAllowance)
+    liability.copy(personalAllowance = Some(personalAllowance))
   }
 }

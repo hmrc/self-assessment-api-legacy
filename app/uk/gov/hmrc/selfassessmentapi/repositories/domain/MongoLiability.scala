@@ -39,10 +39,11 @@ case class MongoLiability(id: BSONObjectID,
                           deductions: Option[Deductions] = None,
                           deductionsRemaining: Option[Deductions] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
-                          payPensionsProfits: Seq[TaxBandSummary] = Nil,
-                          savingsIncome: Seq[TaxBandSummary] = Nil,
-                          dividends: Seq[TaxBandSummary] = Nil,
-                          personalSavingsAllowance: Option[BigDecimal] = None) {
+                          payPensionsProfits: Seq[TaxBandAllocation] = Nil,
+                          savingsIncome: Seq[TaxBandAllocation] = Nil,
+                          dividends: Seq[TaxBandAllocation] = Nil,
+                          personalSavingsAllowance: Option[BigDecimal] = None,
+                          savingsStartingRate: Option[BigDecimal] = None) {
 
   require(if (deductionsRemaining.isDefined) deductions.isDefined else true, "deductions must be defined if deductionsRemaining are")
   require((for {
@@ -77,6 +78,8 @@ case class MongoLiability(id: BSONObjectID,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),
       totalTaxDue = 0
     )
+
+  def totalSavingsIncome = interestFromUKBanksAndBuildingSocieties.map(_.totalInterest).sum
 }
 
 case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal, lossBroughtForward: BigDecimal) {
@@ -84,11 +87,13 @@ case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, p
   def toIncome = Income(sourceId, taxableProfit, profit)
 }
 
-case class TaxBandSummary(taxableAmount: BigDecimal, taxBand: TaxBand) extends Math {
+case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math {
 
-  def toTaxBandSummary = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, taxableAmount, s"${taxBand.chargedAt}%", tax)
+  def toTaxBandSummary = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"${taxBand.chargedAt}%", tax)
 
-  def tax: BigDecimal = roundDown(taxableAmount * taxBand.chargedAt / 100)
+  def tax: BigDecimal = roundDown(amount * taxBand.chargedAt / 100)
+
+  def available: BigDecimal = positiveOrZero(taxBand.width - amount)
 }
 
 object MongoLiability {
@@ -96,7 +101,7 @@ object MongoLiability {
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val incomeFormats = Json.format[SelfEmploymentIncome]
-  implicit val taxBandSummaryFormats = Json.format[TaxBandSummary]
+  implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
   implicit val liabilityFormats = Json.format[MongoLiability]
 
   def create(saUtr: SaUtr, taxYear: TaxYear): MongoLiability = {

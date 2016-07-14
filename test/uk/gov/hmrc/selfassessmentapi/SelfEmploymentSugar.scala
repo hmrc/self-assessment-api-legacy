@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.DividendType
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
 
 trait SelfEmploymentSugar {
 
@@ -35,7 +36,7 @@ trait SelfEmploymentSugar {
 
   def anUnearnedIncomes(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear) = MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
-  def anUnearnedInterestIncomeSummary(summaryId: SummaryId, `type`: SavingsIncomeType, amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
+  def anUnearnedInterestIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, `type`: SavingsIncomeType = InterestFromBanksUntaxed, amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
 
   def anUnearnedDividendIncomeSummary(summaryId: SummaryId, `type`: DividendType, amount: BigDecimal) = MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
 
@@ -50,11 +51,16 @@ trait SelfEmploymentSugar {
   def aLiability(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
                  interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil,
                  dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil, deductions: Option[Deductions] = Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0)),
-                 deductionsRemaining: Option[Deductions] = Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))): MongoLiability = {
+                 deductionsRemaining: Option[Deductions] = Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0)),
+                 personalSavingsAllowance: Option[BigDecimal] = None,
+                 savingsStartingRate: Option[BigDecimal] = None): MongoLiability = {
 
-    MongoLiability.create(saUtr, taxYear).copy(profitFromSelfEmployments = profitFromSelfEmployments.toSeq, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
-                                                dividendsFromUKSources = dividendsFromUKSources, deductions = deductions, deductionsRemaining = deductionsRemaining)
+    MongoLiability.create(saUtr, taxYear).copy( profitFromSelfEmployments = profitFromSelfEmployments.toSeq, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
+                                                dividendsFromUKSources = dividendsFromUKSources, deductions = deductions, deductionsRemaining = deductionsRemaining, personalSavingsAllowance = personalSavingsAllowance,
+                                                savingsStartingRate = savingsStartingRate)
   }
+
+  def aTaxBandAllocation(taxableAmount: BigDecimal, taxBand: TaxBand) = TaxBandAllocation(amount = taxableAmount, taxBand = taxBand)
 
   private def now = DateTime.now(DateTimeZone.UTC)
 }

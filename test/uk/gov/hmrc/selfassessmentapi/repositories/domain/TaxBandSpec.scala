@@ -17,24 +17,40 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import uk.gov.hmrc.selfassessmentapi.Generators._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, TaxBandRangeCheck}
-import uk.gov.hmrc.selfassessmentapi.Generators._
 
 class TaxBandSpec extends UnitSpec with GeneratorDrivenPropertyChecks {
 
-  "isWithin should return true for every valid value in the Basic Tax Band" in forAll(
+  "isWithin" should {
+
+    "return true for every valid value in the Basic Tax Band" in forAll(
       basicTaxBandAmountGen) { amount =>
-    amount isWithin BasicTaxBand shouldBe true
-  }
+      amount isWithin BasicTaxBand shouldBe true
+    }
 
-  "isWithin should return true for every valid value in the Higher Tax Band" in forAll(
+    "return true for every valid value in the Higher Tax Band" in forAll(
       higherTaxBandAmountGen) { amount =>
-    amount isWithin HigherTaxBand shouldBe true
+      amount isWithin HigherTaxBand shouldBe true
+    }
+
+    "return true for every valid value in the Additional Higher Tax Band" in forAll(
+      additionalHigherTaxBandAmountGen) { amount =>
+      amount isWithin AdditionalHigherTaxBand shouldBe true
+    }
   }
 
-  "isWithin should return true for every valid value in the Additional Higher Tax Band" in forAll(
-      additionalHigherTaxBandAmountGen) { amount =>
-    amount isWithin AdditionalHigherTaxBand shouldBe true
+  "width" should {
+
+    "return the difference between upper and lower bound" in {
+
+      HigherTaxBand.width shouldBe 118000
+    }
+
+    "return the max value if upper bound is None" in {
+
+      AdditionalHigherTaxBand.width shouldBe Long.MaxValue
+    }
   }
 }

@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand}
+import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
-class MongoLiabilitySpec extends UnitSpec {
+class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
 
   "MongoLiability.toLiability" should {
 
@@ -79,15 +79,15 @@ class MongoLiabilitySpec extends UnitSpec {
 
       val liability = MongoLiability.create(generateSaUtr(), taxYear).copy(
         payPensionsProfits = Seq(
-          aTaxBandSummary(1000, BasicTaxBand),
-          aTaxBandSummary(2000, HigherTaxBand),
-          aTaxBandSummary(2000, AdditionalHigherTaxBand)
+          aTaxBandAllocation(1000, BasicTaxBand),
+          aTaxBandAllocation(2000, HigherTaxBand),
+          aTaxBandAllocation(2000, AdditionalHigherTaxBand)
         ),
         savingsIncome = Seq(
-          aTaxBandSummary(1000, BasicTaxBand)
+          aTaxBandAllocation(1000, BasicTaxBand)
         ),
         dividends = Seq(
-          aTaxBandSummary(1000, BasicTaxBand)
+          aTaxBandAllocation(1000, BasicTaxBand)
         )
       )
 
@@ -111,18 +111,16 @@ class MongoLiabilitySpec extends UnitSpec {
   "TaxBandSummary.tax" should {
 
     "return correct tax for all tax bands" in {
-      aTaxBandSummary(1000, BasicTaxBand).tax shouldBe 200
-      aTaxBandSummary(1000, HigherTaxBand).tax shouldBe 400
-      aTaxBandSummary(1000, AdditionalHigherTaxBand).tax shouldBe 450
+      aTaxBandAllocation(1000, BasicTaxBand).tax shouldBe 200
+      aTaxBandAllocation(1000, HigherTaxBand).tax shouldBe 400
+      aTaxBandAllocation(1000, AdditionalHigherTaxBand).tax shouldBe 450
     }
 
     "return tax for given tax band and round down to the nearest pound" in {
-      aTaxBandSummary(999, BasicTaxBand).tax shouldBe 199
-      aTaxBandSummary(4, BasicTaxBand).tax shouldBe 0
+      aTaxBandAllocation(999, BasicTaxBand).tax shouldBe 199
+      aTaxBandAllocation(4, BasicTaxBand).tax shouldBe 0
     }
   }
 
-  private def aTaxBandSummary(taxableAmount: BigDecimal, taxBand: TaxBand) = uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandSummary(taxableAmount, taxBand)
-
-  private def aTaxBandSummary(taxBand: String, taxableAmount: BigDecimal, chargedAt: String, tax: BigDecimal) = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand, taxableAmount, chargedAt, tax)
+  private def aTaxBandSummary(taxBand: String, taxableAmount: BigDecimal, chargedAt: String, tax: BigDecimal) = TaxBandSummary(taxBand, taxableAmount, chargedAt, tax)
 }

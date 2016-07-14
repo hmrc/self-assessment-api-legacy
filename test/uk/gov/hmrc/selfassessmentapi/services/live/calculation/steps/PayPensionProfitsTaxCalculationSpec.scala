@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandSummary
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
 class PayPensionProfitsTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar {
@@ -31,45 +31,45 @@ class PayPensionProfitsTaxCalculationSpec extends UnitSpec with SelfEmploymentSu
       val liability = aLiability().copy(payPensionProfitsReceived = Some(31999))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(31999, BasicTaxBand),
-          TaxBandSummary(0, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(31999, BasicTaxBand),
+          TaxBandAllocation(0, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
     }
 
     "calculate tax for total pay pension and profit received equal to 32000" in {
       val liability = aLiability().copy(payPensionProfitsReceived = Some(32000))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(32000, BasicTaxBand),
-          TaxBandSummary(0, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(0, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
     }
 
     "calculate tax for total pay pension and profit received greater than 32000 but lesser than 150000" in {
       val liability = aLiability().copy(payPensionProfitsReceived = Some(60000))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(32000, BasicTaxBand),
-          TaxBandSummary(28000, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(28000, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
     }
 
     "calculate tax for total pay pension and profit received equal to 150000" in {
       val liability = aLiability().copy(payPensionProfitsReceived = Some(150000))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(32000, BasicTaxBand),
-          TaxBandSummary(118000, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(118000, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
     }
 
     "calculate tax for total pay pension and profit received  greater than 150000" in {
       val liability = aLiability().copy(payPensionProfitsReceived = Some(300000))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(32000, BasicTaxBand),
-          TaxBandSummary(118000, HigherTaxBand),
-          TaxBandSummary(150000, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(118000, HigherTaxBand),
+          TaxBandAllocation(150000, AdditionalHigherTaxBand))
     }
   }
   "run with deductions" should {
@@ -79,9 +79,9 @@ class PayPensionProfitsTaxCalculationSpec extends UnitSpec with SelfEmploymentSu
         .copy(payPensionProfitsReceived = Some(31999 + deductions.totalDeductions))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(31999, BasicTaxBand),
-          TaxBandSummary(0, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(31999, BasicTaxBand),
+          TaxBandAllocation(0, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
       result.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))
     }
 
@@ -90,9 +90,9 @@ class PayPensionProfitsTaxCalculationSpec extends UnitSpec with SelfEmploymentSu
         .copy(payPensionProfitsReceived = Some(32000 + deductions.totalDeductions))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(32000, BasicTaxBand),
-          TaxBandSummary(0, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(0, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
       result.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))
     }
 
@@ -101,9 +101,9 @@ class PayPensionProfitsTaxCalculationSpec extends UnitSpec with SelfEmploymentSu
         .copy(payPensionProfitsReceived = Some(60000 + deductions.totalDeductions))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(32000, BasicTaxBand),
-          TaxBandSummary(28000, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(28000, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
       result.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))
     }
 
@@ -112,9 +112,9 @@ class PayPensionProfitsTaxCalculationSpec extends UnitSpec with SelfEmploymentSu
         .copy(payPensionProfitsReceived = Some(150000 + deductions.totalDeductions))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(32000, BasicTaxBand),
-          TaxBandSummary(118000, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(118000, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
       result.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))
     }
 
@@ -123,9 +123,9 @@ class PayPensionProfitsTaxCalculationSpec extends UnitSpec with SelfEmploymentSu
         .copy(payPensionProfitsReceived = Some(300000 + deductions.totalDeductions))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(32000, BasicTaxBand),
-          TaxBandSummary(118000, HigherTaxBand),
-          TaxBandSummary(150000, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(118000, HigherTaxBand),
+          TaxBandAllocation(150000, AdditionalHigherTaxBand))
       result.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))
     }
 
@@ -134,9 +134,9 @@ class PayPensionProfitsTaxCalculationSpec extends UnitSpec with SelfEmploymentSu
         .copy(payPensionProfitsReceived = Some(1500))
       val result = PayPensionProfitsTaxCalculation.run(SelfAssessment(), liability)
       result.payPensionsProfits shouldBe
-        Seq(TaxBandSummary(0, BasicTaxBand),
-          TaxBandSummary(0, HigherTaxBand),
-          TaxBandSummary(0, AdditionalHigherTaxBand))
+        Seq(TaxBandAllocation(0, BasicTaxBand),
+          TaxBandAllocation(0, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand))
       result.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 500))
     }
 

@@ -32,7 +32,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       when()
         .post(s"/sandbox/$saUtr/$taxYear/self-employments/$sourceId/incomes", Some(toJson(Income(None, Turnover, BigDecimal(-1000.12)))))
         .thenAssertThat()
-        .statusIs(400)
+        .isValidationError("/amount", "INVALID_MONETARY_AMOUNT")
     }
   }
 
@@ -41,7 +41,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       when()
         .post(s"/sandbox/$saUtr/$taxYear/self-employments/$sourceId/incoms", Some(toJson(Income(None, Turnover, BigDecimal(-1000.12)))))
         .thenAssertThat()
-        .statusIs(404)
+        .isNotFound
     }
   }
 

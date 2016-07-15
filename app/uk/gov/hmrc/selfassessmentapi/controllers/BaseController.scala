@@ -16,19 +16,22 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import play.api.libs.json.{JsString, _}
+import play.api.libs.json._
 import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.domain.ValidationErrors
-import scala.concurrent.Future
+import uk.gov.hmrc.selfassessmentapi.domain.{ErrorCode, ValidationErrors}
 
-import scala.util.{Success, Try, Failure}
+import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
 trait BaseController
   extends uk.gov.hmrc.play.microservice.controller.BaseController with HalSupport {
 
   val context: String
+
+  val notFound = NotFound(Json.toJson(ErrorNotFound))
 
   def hc(request: Request[Any]): HeaderCarrier =
     HeaderCarrier.fromHeadersAndSession(request.headers, None)
@@ -38,31 +41,22 @@ trait BaseController
     Try(request.body.validate[T]) match {
       case Success(JsSuccess(payload, _)) => f(payload)
       case Success(JsError(errors)) =>
-        Future.successful(BadRequest(failedValidationJson(errors)))
+        // TODO untested
+        Future.successful(BadRequest(Json.toJson(invalidRequest(errors))))
       case Failure(e) =>
+        // TODO untested
         Future.successful(BadRequest(s"could not parse body due to ${e.getMessage}"))
     }
 
-  def addValidationError(path: String, code: Option[ErrorCode], message: String) = {
-      JsObject(Seq(
-          "path" -> JsString(path),
-          "code" -> JsString(code match {
-            case Some(errorCode) => errorCode.toString
-            case None => "N/A"
-          }),
-          "message" -> JsString(message))
-      )
-  }
+  def invalidRequest(errors: ValidationErrors) =
+    InvalidRequest(ErrorCode.INVALID_REQUEST, "Validation failed", invalidPartsSeq(errors))
 
-  def failedValidationJson(errors: ValidationErrors) = {
-    JsArray(
-      for {
-        (path, errSeq) <- errors
-        error <- errSeq
-      } yield
-        addValidationError(path.toString(),
-          error.args.headOption.filter(_.isInstanceOf[ErrorCode]).map(_.asInstanceOf[ErrorCode]),
-          error.message)
-    )
+  private def invalidPartsSeq(errors: ValidationErrors): Seq[InvalidPart] = {
+    for {
+      (path, errSeq) <- errors
+      error <- errSeq
+      code <- error.args.headOption.filter(_.isInstanceOf[ErrorCode]).map(_.asInstanceOf[ErrorCode])
+    } yield
+      InvalidPart(code, error.message, path.toString())
   }
 }

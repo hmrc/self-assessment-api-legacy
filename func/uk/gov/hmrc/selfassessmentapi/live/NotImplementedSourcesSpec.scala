@@ -1,7 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.controllers.live.SourceController
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -19,7 +18,7 @@ class NotImplementedSourcesSpec extends BaseFunctionalSpec {
           .when()
           .post(s"/$saUtr/$taxYear/${source.name}", Some(source.example()))
           .thenAssertThat()
-          .resourceIsNotImplemented()
+          .isNotImplemented
       }
     }
   }
@@ -32,7 +31,7 @@ class NotImplementedSourcesSpec extends BaseFunctionalSpec {
           .when()
           .get(s"/$saUtr/$taxYear/${source.name}/$sourceId")
           .thenAssertThat()
-          .resourceIsNotImplemented()
+          .isNotImplemented
       }
     }
   }
@@ -45,7 +44,7 @@ class NotImplementedSourcesSpec extends BaseFunctionalSpec {
           .when()
           .get(s"/$saUtr/$taxYear/${source.name}")
           .thenAssertThat()
-          .resourceIsNotImplemented()
+          .isNotImplemented
       }
     }
   }
@@ -58,7 +57,7 @@ class NotImplementedSourcesSpec extends BaseFunctionalSpec {
           .when()
           .put(s"/$saUtr/$taxYear/${source.name}/$sourceId", Some(source.example()))
           .thenAssertThat()
-          .resourceIsNotImplemented()
+          .isNotImplemented
       }
     }
   }
@@ -71,7 +70,7 @@ class NotImplementedSourcesSpec extends BaseFunctionalSpec {
           .when()
           .delete(s"/$saUtr/$taxYear/${source.name}/$sourceId")
           .thenAssertThat()
-          .resourceIsNotImplemented()
+          .isNotImplemented
       }
     }
   }

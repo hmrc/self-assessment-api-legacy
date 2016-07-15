@@ -87,7 +87,9 @@ private object AppDependencies {
         "org.scalatestplus" %% "play" % "1.2.0" % scope,
         "com.github.tomakehurst" % "wiremock" % "1.54" % scope,
         "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.50.3" % scope,
-        "org.mongodb" %% "casbah" % "3.1.0" % scope
+        "org.mongodb" %% "casbah" % "3.1.0" % scope,
+        // this line is only needed for coverage
+        "org.scoverage" %% "scalac-scoverage-runtime" % "1.1.1" % scope
       )
     }.test
   }

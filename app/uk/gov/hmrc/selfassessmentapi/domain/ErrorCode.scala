@@ -20,7 +20,11 @@ import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
 object ErrorCode extends Enumeration {
   type ErrorCode = Value
-  val MAX_FIELD_LENGTH_EXCEEDED,
+  val
+    // TODO check name is OK
+  INVALID_REQUEST,
+  TAX_YEAR_INVALID,
+  MAX_FIELD_LENGTH_EXCEEDED,
   INVALID_MONETARY_AMOUNT,
   INVALID_TAX_DEDUCTION_AMOUNT,
   COMMENCEMENT_DATE_NOT_IN_THE_PAST,

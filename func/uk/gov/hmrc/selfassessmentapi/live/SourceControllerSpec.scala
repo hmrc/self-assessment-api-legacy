@@ -26,10 +26,11 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
   val notImplementedSourceTypes = Set(SourceTypes.Employments, SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties)
 
+  val ok: Regex = "20.".r
   val errorScenarios: Map[SourceType, ErrorScenario] = Map(
     SelfEmployments -> ErrorScenario(invalidInput = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
       error = ExpectedError(path = "/commencementDate", code = s"$COMMENCEMENT_DATE_NOT_IN_THE_PAST")),
-    UnearnedIncomes -> ErrorScenario(invalidInput = toJson(UnearnedIncome.example()), error = ExpectedError(path = "", code = "", httpStatusCode = "20.".r))
+    UnearnedIncomes -> ErrorScenario(invalidInput = toJson(UnearnedIncome.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok))
   )
 
   val updateScenarios: Map[SourceType, UpdateScenario] = Map(
@@ -46,11 +47,13 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .userIsAuthorisedForTheResource(saUtr)
         .when()
           .get(s"/$saUtr/$taxYear/${sourceType.name}")
+          .withAcceptHeader()
           .thenAssertThat()
           .statusIs(200)
           .butResponseHasNo(sourceType.name)
         when()
           .post(Some(sourceType.example())).to(s"/$saUtr/$taxYear/${sourceType.name}")
+          .withAcceptHeader()
           .thenAssertThat()
           .statusIs(201)
           .contentTypeIsHalJson()
@@ -58,16 +61,19 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .bodyHasSummaryLinks(sourceType, saUtr, taxYear)
         .when()
           .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .withAcceptHeader()
           .thenAssertThat()
           .statusIs(200)
           .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
         .when()
           .put(Some(updateScenarios(sourceType).updatedValue)).at(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .withAcceptHeader()
           .thenAssertThat()
           .statusIs(200)
           .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
         .when()
           .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .withAcceptHeader()
           .thenAssertThat()
           .statusIs(200)
           .body(updateScenarios(sourceType).expectedUpdate.path).is(updateScenarios(sourceType).expectedUpdate.value)
@@ -77,8 +83,9 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .statusIs(204)
         .when()
           .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .withAcceptHeader()
           .thenAssertThat()
-          .statusIs(404)
+          .isNotFound
       }
     }
   }
@@ -89,8 +96,9 @@ class SourceControllerSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
       .when()
         .get(s"/$saUtr/$taxYear/blah")
+        .withAcceptHeader()
         .thenAssertThat()
-        .statusIs(404)
+        .isNotFound
     }
 
     "not be able to get a non-existent source" in {
@@ -99,40 +107,43 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .userIsAuthorisedForTheResource(saUtr)
         .when()
           .get(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf")
+          .withAcceptHeader()
           .thenAssertThat()
-          .statusIs(404)
+          .isNotFound
 
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
           .put(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf", Some(sourceType.example()))
+          .withAcceptHeader()
           .thenAssertThat()
-          .statusIs(404)
+          .isNotFound
 
         given()
             .userIsAuthorisedForTheResource(saUtr)
           .when()
             .delete(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf")
+            .withAcceptHeader()
             .thenAssertThat()
-            .statusIs(404)
+            .isNotFound
 
       }
     }
 
     "not be able to create a source with invalid data" in {
-      implementedSourceTypes.foreach { sourceType =>
+      implementedSourceTypes.filter(errorScenarios(_).error.httpStatusCode != ok).foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
           .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).invalidInput))
+          .withAcceptHeader()
           .thenAssertThat()
-          .statusIs(errorScenarios(sourceType).error.httpStatusCode)
-          .bodyContainsError((errorScenarios(sourceType).error.path, errorScenarios(sourceType).error.code))
+          .isValidationError(errorScenarios(sourceType).error.path, errorScenarios(sourceType).error.code)
       }
     }
 
     "not be able to update a source with invalid data" in {
-      implementedSourceTypes.foreach { sourceType =>
+      implementedSourceTypes.filter(errorScenarios(_).error.httpStatusCode != ok).foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -142,8 +153,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
         .when()
           .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%", Some(errorScenarios(sourceType).invalidInput))
           .thenAssertThat()
-          .statusIs(errorScenarios(sourceType).error.httpStatusCode)
-          .bodyContainsError((errorScenarios(sourceType).error.path, errorScenarios(sourceType).error.code))
+          .isValidationError(errorScenarios(sourceType).error.path, errorScenarios(sourceType).error.code)
       }
     }
 
@@ -154,7 +164,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
         .when()
           .put(s"/$saUtr/$taxYear/${sourceType.name}/non-existent-source", Some(updateScenarios(sourceType).updatedValue))
           .thenAssertThat()
-          .statusIs(404)
+          .isNotFound
       }
     }
 
@@ -165,7 +175,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
         .when()
           .delete(s"/$saUtr/$taxYear/${sourceType.name}/non-existent-source")
           .thenAssertThat()
-          .statusIs(404)
+          .isNotFound
       }
     }
   }
@@ -179,7 +189,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
         .when()
           .get(s"/$saUtr/$taxYear/${sourceType.name}")
           .thenAssertThat()
-          .resourceIsNotImplemented()
+          .isNotImplemented
       }
     }
 
@@ -190,7 +200,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
         .when()
           .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
           .thenAssertThat()
-          .resourceIsNotImplemented()
+          .isNotImplemented
       }
     }
 
@@ -201,7 +211,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
         .when()
           .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
           .thenAssertThat()
-          .resourceIsNotImplemented()
+          .isNotImplemented
       }
     }
 

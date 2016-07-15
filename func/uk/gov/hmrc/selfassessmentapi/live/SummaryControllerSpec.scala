@@ -83,8 +83,9 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .statusIs(204)
           .when()
             .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .withAcceptHeader()
             .thenAssertThat()
-            .statusIs(404)
+            .isNotFound
         }
       }
     }
@@ -107,9 +108,9 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
           .when()
             .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}",
               invalidRequestBody(summaryType))
+            .withAcceptHeader()
             .thenAssertThat()
-            .statusIs(400)
-            .bodyContainsError(invalidErrorResponse(summaryType))
+            .isValidationError(invalidErrorResponse(summaryType))
         }
       }
     }
@@ -138,9 +139,9 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
           .when()
             .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%",
               invalidRequestBody(summaryType))
+            .withAcceptHeader()
             .thenAssertThat()
-            .statusIs(400)
-            .bodyContainsError(invalidErrorResponse(summaryType))
+            .isValidationError(invalidErrorResponse(summaryType))
         }
       }
     }
@@ -160,8 +161,9 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
           .when()
             .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567")
+            .withAcceptHeader()
             .thenAssertThat()
-            .statusIs(404)
+            .isNotFound
         }
       }
     }
@@ -181,8 +183,9 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
           .when()
             .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567")
+            .withAcceptHeader()
             .thenAssertThat()
-            .statusIs(404)
+            .isNotFound
         }
       }
     }

@@ -15,7 +15,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
       when()
         .get(s"/sandbox/$saUtr/$taxYear/blah")
         .thenAssertThat()
-        .statusIs(404)
+        .isNotFound
   }
 
     "return a 201 response with links to newly created source" in {

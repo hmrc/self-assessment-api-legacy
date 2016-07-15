@@ -17,8 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.HalLink
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
@@ -37,8 +37,10 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
-            case ErrorResult(Some(message), _) => BadRequest(message)
-            case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
+            // TODO untested
+            case GenericErrorResult(message) => BadRequest(message)
+            case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
+            // TODO untested
             case _ => BadRequest
           }
         }
@@ -49,7 +51,7 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
   protected def readSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     sourceHandler(sourceType).findById(saUtr, taxYear, sourceId) map {
       case Some(summary) => Ok(halResource(summary, sourceLinks(saUtr, taxYear, sourceType, sourceId)))
-      case None => NotFound
+      case None => notFound
     }
   }
 
@@ -58,14 +60,16 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
-            case ErrorResult(Some(message), _) => BadRequest(message)
-            case ErrorResult(_, Some(errors)) => BadRequest(failedValidationJson(errors))
+            // TODO untested
+            case GenericErrorResult(message) => BadRequest(message)
+            case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
+            // TODO untested
             case _ => BadRequest
           }
         }
       case Right(result) => result.map {
         case true => Ok(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
-        case false => NotFound
+        case false => notFound
       }
     }
   }
@@ -73,7 +77,8 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
   protected def deleteSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     sourceHandler(sourceType).delete(saUtr, taxYear, sourceId) map {
       case true => NoContent
-      case false => NotFound
+      // TODO untested??
+      case false => notFound
     }
   }
 

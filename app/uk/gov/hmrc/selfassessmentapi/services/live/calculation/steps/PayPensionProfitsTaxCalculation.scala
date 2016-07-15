@@ -23,9 +23,9 @@ object PayPensionProfitsTaxCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val payPensionProfitsReceived = liability.payPensionProfitsReceived.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed because the payPensionProfitsReceived value has not been computed"))
+    val payPensionProfitsReceived = liability.payPensionProfitsReceived.getOrElse(throw PropertyNotComputedException("payPensionProfitsReceived"))
 
-    val deductions = liability.deductionsRemaining.getOrElse(throw new IllegalStateException("PayPensionProfitsTaxCalculation cannot be performed because the deductions value has not been computed"))
+    val deductions = liability.deductionsRemaining.getOrElse(throw PropertyNotComputedException("deductionsRemaining"))
 
     val (taxableProfit, deductionsRemaining) = applyDeductions(payPensionProfitsReceived, deductions)
 

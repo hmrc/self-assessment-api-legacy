@@ -49,3 +49,5 @@ case class TaxBandState(taxBand: TaxBand, available: BigDecimal) {
 }
 
 case class SelfAssessment(selfEmployments: Seq[MongoSelfEmployment] = Seq(), unearnedIncomes: Seq[MongoUnearnedIncome] = Seq())
+
+case class PropertyNotComputedException(property: String) extends IllegalStateException(s"Cannot run calculation step as required property $property has not been computed yet")

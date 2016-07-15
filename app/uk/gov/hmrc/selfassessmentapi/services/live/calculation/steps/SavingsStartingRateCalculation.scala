@@ -24,9 +24,9 @@ object SavingsStartingRateCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val payPensionProfitsReceived = liability.payPensionProfitsReceived.getOrElse(throw new IllegalStateException("SavingsStartingRateCalculation cannot be performed because the payPensionProfitsReceived value has not been computed"))
+    val payPensionProfitsReceived = liability.payPensionProfitsReceived.getOrElse(throw PropertyNotComputedException("payPensionProfitsReceived"))
 
-    val deductions = liability.deductions.getOrElse(throw new IllegalStateException("SavingsStartingRateCalculation cannot be performed because the deductions value has not been computed"))
+    val deductions = liability.deductions.getOrElse(throw PropertyNotComputedException("deductions"))
 
     val (profitAfterDeductions, _) = applyDeductions(payPensionProfitsReceived, deductions)
 

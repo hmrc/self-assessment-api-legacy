@@ -22,17 +22,11 @@ object TotalIncomeOnWhichTaxIsDueCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val totalIncomeReceived = liability.totalIncomeReceived.getOrElse(
-        throw new IllegalStateException(
-            "TotalIncomeOnWhichTaxIsDueCalculation cannot be performed because totalIncomeReceived has not been calculated"))
+    val totalIncomeReceived = liability.totalIncomeReceived.getOrElse(throw PropertyNotComputedException("totalIncomeReceived"))
 
-    val totalAllowancesAndReliefs = liability.deductions
-      .map(_.totalDeductions)
-      .getOrElse(throw new IllegalStateException(
-              "TotalIncomeOnWhichTaxIsDueCalculation cannot be performed because totalAllowancesAndReliefs has not been calculated"))
+    val totalAllowancesAndReliefs = liability.deductions.map(_.totalDeductions).getOrElse(throw PropertyNotComputedException("totalAllowancesAndReliefs"))
 
-    val totalIncomeOnWhichTaxIsDue = positiveOrZero(
-        totalIncomeReceived - totalAllowancesAndReliefs)
+    val totalIncomeOnWhichTaxIsDue = positiveOrZero(totalIncomeReceived - totalAllowancesAndReliefs)
 
     liability.copy(totalIncomeOnWhichTaxIsDue = Some(totalIncomeOnWhichTaxIsDue))
   }

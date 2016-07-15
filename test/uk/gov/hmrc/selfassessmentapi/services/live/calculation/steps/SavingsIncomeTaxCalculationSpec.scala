@@ -27,7 +27,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "not allocate tax to any of the tax bands if remaining deductions are bigger than savings income" in {
 
-      savingsIncomeTaxFor(interest = 6000, remainingDeductions = Deductions(0, 7000), savingsStartingRate = 5000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 6000, remainingDeductions = Deductions(0, 7000), savingsStartingRate = 5000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
@@ -38,7 +38,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to SavingsStartingTaxBand (savingsIncome < savingsStartingRate)" in {
 
-      savingsIncomeTaxFor(interest = 4500, savingsStartingRate = 5000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 4500, savingsStartingRate = 5000) shouldBe Seq(
         aTaxBandAllocation(4500, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
@@ -49,7 +49,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to SavingsStartingTaxBand and SavingsNilTaxBand (savingsIncome < savingsStartingRate + personalSavingsAllowance)" in {
 
-      savingsIncomeTaxFor(interest = 5500, savingsStartingRate = 5000, personalSavingsAllowance = 1000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 5500, savingsStartingRate = 5000, personalSavingsAllowance = 1000) shouldBe Seq(
         aTaxBandAllocation(5000, SavingsStartingTaxBand),
         aTaxBandAllocation(500, SavingsNilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
@@ -60,7 +60,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to SavingsStartingTaxBand, SavingsNilTaxBand and BasicTaxBand" in {
 
-      savingsIncomeTaxFor(interest = 30000, savingsStartingRate = 5000, personalSavingsAllowance = 1000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 30000, savingsStartingRate = 5000, personalSavingsAllowance = 1000) shouldBe Seq(
         aTaxBandAllocation(5000, SavingsStartingTaxBand),
         aTaxBandAllocation(1000, SavingsNilTaxBand),
         aTaxBandAllocation(24000, BasicTaxBand),
@@ -71,7 +71,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax only to BasicTaxBand" in {
 
-      savingsIncomeTaxFor(interest = 32000, savingsStartingRate = 0, personalSavingsAllowance = 0) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 32000, savingsStartingRate = 0, personalSavingsAllowance = 0) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(32000, BasicTaxBand),
@@ -82,7 +82,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to BasicTaxBand and HigherTaxBand (savingsStartingRate = 0, personalSavingsAllowance = 0)" in {
 
-      savingsIncomeTaxFor(interest = 70000, savingsStartingRate = 0, personalSavingsAllowance = 0) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 70000, savingsStartingRate = 0, personalSavingsAllowance = 0) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(32000, BasicTaxBand),
@@ -93,7 +93,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to BasicTaxBand, HigherTaxBand and AdditionalHigherTaxBand" in {
 
-      savingsIncomeTaxFor(interest = 155000, savingsStartingRate = 0, personalSavingsAllowance = 0) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 155000, savingsStartingRate = 0, personalSavingsAllowance = 0) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(32000, BasicTaxBand),
@@ -102,20 +102,31 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
       )
     }
 
-    "allocate tax to SavingsStartingTaxBand, SavingsNilTaxBand, BasicTaxBand, HigherTaxBand and AdditionalHigherTaxBand" in {
+    "allocate tax to SavingsStartingTaxBand, SavingsNilTaxBand, BasicTaxBand and HigherTaxBand" in {
 
-      savingsIncomeTaxFor(interest = 170000, savingsStartingRate = 1000, personalSavingsAllowance = 1000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 60000, savingsStartingRate = 1000, personalSavingsAllowance = 1000) shouldBe Seq(
         aTaxBandAllocation(1000, SavingsStartingTaxBand),
         aTaxBandAllocation(1000, SavingsNilTaxBand),
-        aTaxBandAllocation(32000, BasicTaxBand),
+        aTaxBandAllocation(30000, BasicTaxBand),
+        aTaxBandAllocation(28000, HigherTaxBand),
+        aTaxBandAllocation(0, AdditionalHigherTaxBand)
+      )
+    }
+
+    "allocate tax to SavingsStartingTaxBand, SavingsNilTaxBand, BasicTaxBand, HigherTaxBand and AdditionalHigherTaxBand" in {
+
+      savingsIncomeTaxFor(interestFromUKBanks = 170000, savingsStartingRate = 1000, personalSavingsAllowance = 1000) shouldBe Seq(
+        aTaxBandAllocation(1000, SavingsStartingTaxBand),
+        aTaxBandAllocation(1000, SavingsNilTaxBand),
+        aTaxBandAllocation(30000, BasicTaxBand),
         aTaxBandAllocation(118000, HigherTaxBand),
-        aTaxBandAllocation(18000, AdditionalHigherTaxBand)
+        aTaxBandAllocation(20000, AdditionalHigherTaxBand)
       )
     }
 
     "allocate tax to SavingsStartingTaxBand, SavingsNilTaxBand and HigherTaxBand if BasicTaxBand is already fully allocated" in {
 
-      savingsIncomeTaxFor(interest = 50000, savingsStartingRate = 1000, personalSavingsAllowance = 1000, basicTaxBandAllocation = 32000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 50000, savingsStartingRate = 1000, personalSavingsAllowance = 1000, basicTaxBandAllocated = 32000) shouldBe Seq(
         aTaxBandAllocation(1000, SavingsStartingTaxBand),
         aTaxBandAllocation(1000, SavingsNilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
@@ -126,7 +137,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to BasicTaxBand and HigherTaxBand if BasicTaxBand is partially allocated by payPensionProfit" in {
 
-      savingsIncomeTaxFor(interest = 50000, basicTaxBandAllocation = 20000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 50000, basicTaxBandAllocated = 20000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(12000, BasicTaxBand),
@@ -137,7 +148,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to BasicTaxBand, HigherTaxBand and AdditionalHigherTaxBand if BasicTaxBand is partially allocated by payPensionProfit" in {
 
-      savingsIncomeTaxFor(interest = 150000, basicTaxBandAllocation = 20000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 150000, basicTaxBandAllocated = 20000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(12000, BasicTaxBand),
@@ -148,7 +159,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to HigherTaxBand and AdditionalHigherTaxBand if BasicTaxBand is already fully allocated by payPensionProfit" in {
 
-      savingsIncomeTaxFor(interest = 150000, basicTaxBandAllocation = 32000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 150000, basicTaxBandAllocated = 32000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
@@ -159,7 +170,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to AdditionalHigherTaxBand if both BasicTaxBand and HigherTaxBand are already fully allocated by payPensionProfit" in {
 
-      savingsIncomeTaxFor(interest = 10000, basicTaxBandAllocation = 32000, higherTaxBandAllocation = 118000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 10000, basicTaxBandAllocated = 32000, higherTaxBandAllocated = 118000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
@@ -170,7 +181,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "allocate tax to AdditionalHigherTaxBand if AdditionalHigherTaxBand is partially, BasicTaxBand and HigherTaxBand are already fully allocated by payPensionProfit" in {
 
-      savingsIncomeTaxFor(interest = 10000, basicTaxBandAllocation = 32000, higherTaxBandAllocation = 118000, additionalHigherTaxBandAllocation = 100000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 10000, basicTaxBandAllocated = 32000, higherTaxBandAllocated = 118000, additionalHigherTaxBandAllocated = 100000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
@@ -180,33 +191,33 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
     }
   }
 
-  "reduce total remaining deductions to zero if interest is greater than remaining deductions" in {
+  "reduce total remaining deductions to zero if interestFromUKBanks is greater than remaining deductions" in {
 
-    val liability = liabilityFor(interest = 4000, totalRemainingDeductions = 3000)
+    val liability = liabilityFor(interestFromUkBanks = 4000, totalRemainingDeductions = 3000)
 
     liability.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))
     liability.deductions shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 3000))
   }
 
-  "reduce total remaining deductions by the interest if interest is less than remaining deductions" in {
+  "reduce total remaining deductions by the interestFromUKBanks if interestFromUKBanks is less than remaining deductions" in {
 
-    val liability = liabilityFor(interest = 1000, totalRemainingDeductions = 3000)
+    val liability = liabilityFor(interestFromUkBanks = 1000, totalRemainingDeductions = 3000)
 
     liability.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 2000))
     liability.deductions shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 3000))
   }
 
-  "not reduce total remaining deductions if interest is zero" in {
+  "not reduce total remaining deductions if interestFromUKBanks is zero" in {
 
-    val liability = liabilityFor(interest = 0, totalRemainingDeductions = 3000)
+    val liability = liabilityFor(interestFromUkBanks = 0, totalRemainingDeductions = 3000)
 
     liability.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 3000))
     liability.deductions shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 3000))
   }
 
-  private def liabilityFor(interest: BigDecimal, totalRemainingDeductions: BigDecimal) = {
+  private def liabilityFor(interestFromUkBanks: BigDecimal, totalRemainingDeductions: BigDecimal) = {
     val liability = aLiability(
-      interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties("ue1", interest)),
+      interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties("ue1", interestFromUkBanks)),
       deductionsRemaining = Some(Deductions(incomeTaxRelief = 0, totalDeductions = totalRemainingDeductions)),
       deductions = Some(Deductions(incomeTaxRelief = 0, totalDeductions = totalRemainingDeductions)),
       personalSavingsAllowance = Some(0),
@@ -216,19 +227,19 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
     SavingsIncomeTaxCalculation.run(SelfAssessment(), liability)
   }
 
-  private def savingsIncomeTaxFor(interest: BigDecimal, remainingDeductions: Deductions = Deductions(0, 0), savingsStartingRate: BigDecimal = 0, personalSavingsAllowance: BigDecimal = 0,
-                                  basicTaxBandAllocation: BigDecimal = 0, higherTaxBandAllocation: BigDecimal = 0, additionalHigherTaxBandAllocation: BigDecimal = 0) = {
+  private def savingsIncomeTaxFor(interestFromUKBanks: BigDecimal, remainingDeductions: Deductions = Deductions(0, 0), savingsStartingRate: BigDecimal = 0, personalSavingsAllowance: BigDecimal = 0,
+                                  basicTaxBandAllocated: BigDecimal = 0, higherTaxBandAllocated: BigDecimal = 0, additionalHigherTaxBandAllocated: BigDecimal = 0) = {
     val liability = aLiability(
-      interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties("ue1", interest)),
+      interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties("ue1", interestFromUKBanks)),
       deductionsRemaining = Some(remainingDeductions),
       deductions = Some(remainingDeductions),
       personalSavingsAllowance = Some(personalSavingsAllowance),
       savingsStartingRate = Some(savingsStartingRate)
     ).copy(
       payPensionsProfits = Seq(
-        TaxBandAllocation(basicTaxBandAllocation, BasicTaxBand),
-        TaxBandAllocation(higherTaxBandAllocation, HigherTaxBand),
-        TaxBandAllocation(additionalHigherTaxBandAllocation, AdditionalHigherTaxBand)
+        TaxBandAllocation(basicTaxBandAllocated, BasicTaxBand),
+        TaxBandAllocation(higherTaxBandAllocated, HigherTaxBand),
+        TaxBandAllocation(additionalHigherTaxBandAllocated, AdditionalHigherTaxBand)
       )
     )
 

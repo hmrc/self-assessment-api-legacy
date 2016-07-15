@@ -23,9 +23,9 @@ object SavingsIncomeTaxCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val personalSavingsAllowance = liability.personalSavingsAllowance.getOrElse(throw new IllegalStateException("SavingsIncomeTaxCalculation cannot be run as personalSavingsAllowance is required"))
+    val personalSavingsAllowance = liability.allowancesAndReliefs.personalSavingsAllowance.getOrElse(throw new IllegalStateException("SavingsIncomeTaxCalculation cannot be run as personalSavingsAllowance is required"))
     
-    val savingsStartingRate = liability.savingsStartingRate.getOrElse(throw new IllegalStateException("SavingsIncomeTaxCalculation cannot be run as savingsStartingRate is required"))
+    val savingsStartingRate = liability.allowancesAndReliefs.savingsStartingRate.getOrElse(throw new IllegalStateException("SavingsIncomeTaxCalculation cannot be run as savingsStartingRate is required"))
 
     val deductionsAfterPayPensions = liability.deductionsRemaining.getOrElse(throw new IllegalStateException("SavingsIncomeTaxCalculation cannot be run as deductionsRemaining is required"))
 

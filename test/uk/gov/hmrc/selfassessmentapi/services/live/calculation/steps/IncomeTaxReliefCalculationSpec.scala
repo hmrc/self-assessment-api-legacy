@@ -47,6 +47,6 @@ class IncomeTaxReliefCalculationSpec extends UnitSpec with SelfEmploymentSugar {
     IncomeTaxReliefCalculation.run(
       selfAssessment = SelfAssessment(),
       liability = aLiability(profitFromSelfEmployments = profitFromSelfEmployments)
-    ).incomeTaxRelief.get
+    ).allowancesAndReliefs.incomeTaxRelief.get
   }
 }

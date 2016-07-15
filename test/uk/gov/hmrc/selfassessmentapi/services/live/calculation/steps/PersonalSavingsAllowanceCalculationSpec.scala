@@ -31,7 +31,7 @@ class PersonalSavingsAllowanceCalculationSpec
       val liability = aLiability().copy(totalIncomeOnWhichTaxIsDue = Some(0))
       val result = PersonalSavingsAllowanceCalculation.run(SelfAssessment(), liability)
 
-      result.personalSavingsAllowance shouldEqual Some(BigDecimal(0))
+      result.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(0))
     }
 
     "calculate the personal savings allowance for the basic tax band" in forAll(
@@ -39,7 +39,7 @@ class PersonalSavingsAllowanceCalculationSpec
       val liability = aLiability().copy(totalIncomeOnWhichTaxIsDue = Some(amount))
       val result = PersonalSavingsAllowanceCalculation.run(SelfAssessment(), liability)
 
-      result.personalSavingsAllowance shouldEqual Some(BigDecimal(1000))
+      result.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(1000))
     }
 
     "calculate the personal savings allowance for the higher tax band" in forAll(
@@ -47,7 +47,7 @@ class PersonalSavingsAllowanceCalculationSpec
       val liability = aLiability().copy(totalIncomeOnWhichTaxIsDue = Some(amount))
       val result = PersonalSavingsAllowanceCalculation.run(SelfAssessment(), liability)
 
-      result.personalSavingsAllowance shouldEqual Some(BigDecimal(500))
+      result.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(500))
     }
 
     "calculate the personal savings allowance for the additional higher tax band" in forAll(
@@ -55,7 +55,7 @@ class PersonalSavingsAllowanceCalculationSpec
       val liability = aLiability().copy(totalIncomeOnWhichTaxIsDue = Some(amount))
       val result = PersonalSavingsAllowanceCalculation.run(SelfAssessment(), liability)
 
-      result.personalSavingsAllowance shouldEqual Some(BigDecimal(0))
+      result.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(0))
     }
   }
 

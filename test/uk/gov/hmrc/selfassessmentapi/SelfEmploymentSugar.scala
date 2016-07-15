@@ -56,8 +56,8 @@ trait SelfEmploymentSugar {
                  savingsStartingRate: Option[BigDecimal] = None): MongoLiability = {
 
     MongoLiability.create(saUtr, taxYear).copy( profitFromSelfEmployments = profitFromSelfEmployments.toSeq, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
-                                                dividendsFromUKSources = dividendsFromUKSources, deductions = deductions, deductionsRemaining = deductionsRemaining, personalSavingsAllowance = personalSavingsAllowance,
-                                                savingsStartingRate = savingsStartingRate)
+                                                dividendsFromUKSources = dividendsFromUKSources, deductions = deductions, deductionsRemaining = deductionsRemaining,
+                                                allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance, savingsStartingRate = savingsStartingRate))
   }
 
   def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0, lossBroughtForward: BigDecimal = 0) = SelfEmploymentIncome(sourceId = BSONObjectID.generate.stringify, taxableProfit = taxableProfit, profit = profit, lossBroughtForward = lossBroughtForward)

@@ -24,6 +24,6 @@ object IncomeTaxReliefCalculation extends CalculationStep {
 
     val incomeTaxRelief = roundUp(liability.profitFromSelfEmployments.map(_.lossBroughtForward).sum)
 
-    liability.copy(incomeTaxRelief = Some(incomeTaxRelief))
+    liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(incomeTaxRelief = Some(incomeTaxRelief)))
   }
 }

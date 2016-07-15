@@ -28,13 +28,13 @@ object PersonalAllowanceCalculation extends CalculationStep {
 
     val totalIncomeReceived = liability.totalIncomeReceived.getOrElse(throw new IllegalStateException("Cannot perform PersonalAllowanceCalculation as totalIncomeReceived has not been computed"))
 
-    val incomeTaxRelief = liability.incomeTaxRelief.getOrElse(throw new IllegalStateException("Cannot perform PersonalAllowanceCalculation as incomeTaxRelief has not been computed"))
+    val incomeTaxRelief = liability.allowancesAndReliefs.incomeTaxRelief.getOrElse(throw new IllegalStateException("Cannot perform PersonalAllowanceCalculation as incomeTaxRelief has not been computed"))
 
     val personalAllowance = roundDownToNearest(totalIncomeReceived - incomeTaxRelief, 2) match {
       case income if income <= taperingThreshold => standardAllowance
       case income if income > taperingThreshold => positiveOrZero(standardAllowance - ((income - taperingThreshold) / 2))
     }
 
-    liability.copy(personalAllowance = Some(personalAllowance))
+    liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(personalAllowance = Some(personalAllowance)))
   }
 }

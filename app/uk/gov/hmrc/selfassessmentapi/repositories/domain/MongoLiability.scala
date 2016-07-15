@@ -35,16 +35,13 @@ case class MongoLiability(id: BSONObjectID,
                           totalIncomeReceived: Option[BigDecimal] = None,
                           payPensionProfitsReceived: Option[BigDecimal] = None,
                           totalTaxableIncome: Option[BigDecimal] = None,
-                          incomeTaxRelief: Option[BigDecimal] = None,
-                          personalAllowance: Option[BigDecimal] = None,
                           deductions: Option[Deductions] = None,
                           deductionsRemaining: Option[Deductions] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
                           payPensionsProfits: Seq[TaxBandAllocation] = Nil,
                           savingsIncome: Seq[TaxBandAllocation] = Nil,
                           dividends: Seq[TaxBandAllocation] = Nil,
-                          personalSavingsAllowance: Option[BigDecimal] = None,
-                          savingsStartingRate: Option[BigDecimal] = None) {
+                          allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs()) {
 
   require(if (deductionsRemaining.isDefined) deductions.isDefined else true, "deductions must be defined if deductionsRemaining are")
   require((for {
@@ -65,7 +62,7 @@ case class MongoLiability(id: BSONObjectID,
         ),
         deductions = deductions,
         totalIncomeReceived = totalIncomeReceived.getOrElse(0),
-        personalAllowance = personalAllowance.getOrElse(0),
+        personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
         totalTaxableIncome = totalTaxableIncome.getOrElse(0),
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
@@ -97,12 +94,15 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
   def available: BigDecimal = positiveOrZero(taxBand.width - amount)
 }
 
+case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None, incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None)
+
 object MongoLiability {
 
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val incomeFormats = Json.format[SelfEmploymentIncome]
   implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
+  implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
   implicit val liabilityFormats = Json.format[MongoLiability]
 
   def create(saUtr: SaUtr, taxYear: TaxYear): MongoLiability = {

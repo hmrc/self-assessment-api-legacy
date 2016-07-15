@@ -23,9 +23,9 @@ object TotalAllowancesAndReliefs extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val incomeTaxRelief = liability.incomeTaxRelief.getOrElse(throw new IllegalStateException("Cannot perform TotalAllowancesAndReliefs as incomeTaxRelief has not been computed"))
+    val incomeTaxRelief = liability.allowancesAndReliefs.incomeTaxRelief.getOrElse(throw new IllegalStateException("Cannot perform TotalAllowancesAndReliefs as incomeTaxRelief has not been computed"))
 
-    val personalAllowance = liability.personalAllowance.getOrElse(throw new IllegalStateException("Cannot perform TotalAllowancesAndReliefs as personalAllowance has not been computed"))
+    val personalAllowance = liability.allowancesAndReliefs.personalAllowance.getOrElse(throw new IllegalStateException("Cannot perform TotalAllowancesAndReliefs as personalAllowance has not been computed"))
 
     val deductions = Some(Deductions(incomeTaxRelief = incomeTaxRelief, totalDeductions = incomeTaxRelief + personalAllowance))
 

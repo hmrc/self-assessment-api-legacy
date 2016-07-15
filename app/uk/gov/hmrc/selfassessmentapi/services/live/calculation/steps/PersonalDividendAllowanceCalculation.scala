@@ -66,7 +66,7 @@ object PersonalDividendAllowanceCalculation extends CalculationStep {
   }
 
   private def personalAllowance(implicit liability: MongoLiability): BigDecimal = {
-    liability.personalAllowance.getOrElse(BigDecimal(0))
+    liability.allowancesAndReliefs.personalAllowance.getOrElse(BigDecimal(0))
   }
 
 }

@@ -54,6 +54,6 @@ class SavingsStartingRateCalculationSpec extends UnitSpec with SelfEmploymentSug
       payPensionProfitsReceived = Some(payPensionProfitsReceived),
       deductions = Some(Deductions(0, totalDeductions))
     )
-    SavingsStartingRateCalculation.run(SelfAssessment(), liability).savingsStartingRate.get
+    SavingsStartingRateCalculation.run(SelfAssessment(), liability).allowancesAndReliefs.savingsStartingRate.get
   }
 }

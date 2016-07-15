@@ -41,7 +41,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         deductions = Some(Deductions(incomeTaxRelief = 20, totalDeductions = 20)),
         totalIncomeReceived = Some(1000),
         totalTaxableIncome = Some(2000),
-        personalAllowance = Some(3000),
+        allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(3000)),
         totalIncomeOnWhichTaxIsDue = Some(4000)
       )
 

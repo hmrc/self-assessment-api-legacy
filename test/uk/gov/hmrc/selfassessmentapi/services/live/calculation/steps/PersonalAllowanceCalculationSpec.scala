@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.AllowancesAndReliefs
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
 class PersonalAllowanceCalculationSpec extends UnitSpec with SelfEmploymentSugar {
@@ -81,8 +82,8 @@ class PersonalAllowanceCalculationSpec extends UnitSpec with SelfEmploymentSugar
   private def personalAllowanceFor(totalIncomeReceived: BigDecimal, incomeTaxRelief: BigDecimal = 0) = {
     val liability = aLiability().copy(
       totalIncomeReceived = Some(totalIncomeReceived),
-      incomeTaxRelief = Some(incomeTaxRelief)
+      allowancesAndReliefs = AllowancesAndReliefs(incomeTaxRelief = Some(incomeTaxRelief))
     )
-    PersonalAllowanceCalculation.run(SelfAssessment(), liability).personalAllowance.get
+    PersonalAllowanceCalculation.run(SelfAssessment(), liability).allowancesAndReliefs.personalAllowance.get
   }
 }

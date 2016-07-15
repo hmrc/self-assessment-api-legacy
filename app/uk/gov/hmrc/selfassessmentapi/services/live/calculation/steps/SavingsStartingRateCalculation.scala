@@ -32,6 +32,6 @@ object SavingsStartingRateCalculation extends CalculationStep {
 
     val savingsStartingRate = positiveOrZero(startingRateLimit - profitAfterDeductions)
 
-    liability.copy(savingsStartingRate = Some(savingsStartingRate))
+    liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(savingsStartingRate = Some(savingsStartingRate)))
   }
 }

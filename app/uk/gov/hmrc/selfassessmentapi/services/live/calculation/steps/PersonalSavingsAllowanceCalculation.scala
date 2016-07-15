@@ -30,6 +30,6 @@ object PersonalSavingsAllowanceCalculation extends CalculationStep {
         else 0
     }.getOrElse(0)
 
-    liability.copy(personalSavingsAllowance = Some(personalSavingsAllowance))
+    liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(personalSavingsAllowance = Some(personalSavingsAllowance)))
   }
 }

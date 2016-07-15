@@ -38,9 +38,9 @@ case class MongoLiability(id: BSONObjectID,
                           deductions: Option[Deductions] = None,
                           deductionsRemaining: Option[Deductions] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
-                          payPensionsProfits: Seq[TaxBandAllocation] = Nil,
+                          payPensionsProfitsIncome: Seq[TaxBandAllocation] = Nil,
                           savingsIncome: Seq[TaxBandAllocation] = Nil,
-                          dividends: Seq[TaxBandAllocation] = Nil,
+                          dividendsIncome: Seq[TaxBandAllocation] = Nil,
                           allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs()) {
 
   require(if (deductionsRemaining.isDefined) deductions.isDefined else true, "deductions must be defined if deductionsRemaining are")
@@ -67,10 +67,10 @@ case class MongoLiability(id: BSONObjectID,
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
       incomeTaxCalculations = IncomeTaxCalculations(
-        payPensionsProfits = payPensionsProfits.map(_.toTaxBandSummary),
+        payPensionsProfits = payPensionsProfitsIncome.map(_.toTaxBandSummary),
         savingsIncome = savingsIncome.map(_.toTaxBandSummary),
-        dividends = dividends.map(_.toTaxBandSummary),
-        incomeTaxCharged = (payPensionsProfits ++ savingsIncome ++ dividends).map(_.tax).sum
+        dividends = dividendsIncome.map(_.toTaxBandSummary),
+        incomeTaxCharged = (payPensionsProfitsIncome ++ savingsIncome ++ dividendsIncome).map(_.tax).sum
       ),
       credits = Nil,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),

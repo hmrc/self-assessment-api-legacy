@@ -30,7 +30,7 @@ class PersonalDividendAllowanceCalculationSpec extends UnitSpec with SelfEmploym
 
       val liability = aLiability()
 
-      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividends shouldBe Seq(TaxBandAllocation(0, DividendsNilTaxBand))
+      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividendsIncome shouldBe Seq(TaxBandAllocation(0, DividendsNilTaxBand))
     }
 
     "calculate personal dividend allowance capped for various data driven inputs" in {
@@ -57,7 +57,7 @@ class PersonalDividendAllowanceCalculationSpec extends UnitSpec with SelfEmploym
           dividendsFromUKSources = Seq(DividendsFromUKSources("dividend", BigDecimal(dividendIncome))),
           interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties("interest", BigDecimal(interestReceived))))
 
-        PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividends shouldBe Seq(TaxBandAllocation(BigDecimal(personalDividendAllowance), DividendsNilTaxBand))
+        PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividendsIncome shouldBe Seq(TaxBandAllocation(BigDecimal(personalDividendAllowance), DividendsNilTaxBand))
       }
     }
 
@@ -69,7 +69,7 @@ class PersonalDividendAllowanceCalculationSpec extends UnitSpec with SelfEmploym
       val dividends = DividendsFromUKSources("dividend", 2000)
       val liability = aLiability().copy(profitFromSelfEmployments = Seq(income), allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000)), deductions = Some(deductions), dividendsFromUKSources = Seq(dividends))
 
-      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividends shouldBe Seq(TaxBandAllocation(1000, DividendsNilTaxBand))
+      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividendsIncome shouldBe Seq(TaxBandAllocation(1000, DividendsNilTaxBand))
     }
 
 
@@ -84,7 +84,7 @@ class PersonalDividendAllowanceCalculationSpec extends UnitSpec with SelfEmploym
       val liability = aLiability().copy(profitFromSelfEmployments = Seq(income), allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000)), deductions = Some(deductions),
         dividendsFromUKSources = Seq(dividends), interestFromUKBanksAndBuildingSocieties = Seq(interestSavings))
 
-      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividends shouldBe Seq(TaxBandAllocation(1500, DividendsNilTaxBand))
+      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividendsIncome shouldBe Seq(TaxBandAllocation(1500, DividendsNilTaxBand))
     }
 
 
@@ -98,7 +98,7 @@ class PersonalDividendAllowanceCalculationSpec extends UnitSpec with SelfEmploym
       val liability = aLiability().copy(profitFromSelfEmployments = Seq(income), allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000)), deductions = Some(deductions),
         dividendsFromUKSources = Seq(dividends), interestFromUKBanksAndBuildingSocieties = Seq(interestSavings))
 
-      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividends shouldBe Seq(TaxBandAllocation(2000, DividendsNilTaxBand))
+      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividendsIncome shouldBe Seq(TaxBandAllocation(2000, DividendsNilTaxBand))
     }
 
 
@@ -110,7 +110,7 @@ class PersonalDividendAllowanceCalculationSpec extends UnitSpec with SelfEmploym
       val liability = aLiability().copy(profitFromSelfEmployments = Seq(income), allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000)), deductions = Some(deductions),
         dividendsFromUKSources = Seq(dividends))
 
-      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividends shouldBe Seq(TaxBandAllocation(2000, DividendsNilTaxBand))
+      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividendsIncome shouldBe Seq(TaxBandAllocation(2000, DividendsNilTaxBand))
     }
 
     "calculate personal dividend allowance capped at 5000 " in {
@@ -121,7 +121,7 @@ class PersonalDividendAllowanceCalculationSpec extends UnitSpec with SelfEmploym
       val liability = aLiability().copy(profitFromSelfEmployments = Seq(income), allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000)), deductions = Some(deductions),
         dividendsFromUKSources = Seq(dividends))
 
-      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividends shouldBe Seq(TaxBandAllocation(5000, DividendsNilTaxBand))
+      PersonalDividendAllowanceCalculation.run(SelfAssessment(), liability).dividendsIncome shouldBe Seq(TaxBandAllocation(5000, DividendsNilTaxBand))
     }
 
   }

@@ -236,7 +236,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
       personalSavingsAllowance = Some(personalSavingsAllowance),
       savingsStartingRate = Some(savingsStartingRate)
     ).copy(
-      payPensionsProfits = Seq(
+      payPensionsProfitsIncome = Seq(
         TaxBandAllocation(basicTaxBandAllocated, BasicTaxBand),
         TaxBandAllocation(higherTaxBandAllocated, HigherTaxBand),
         TaxBandAllocation(additionalHigherTaxBandAllocated, AdditionalHigherTaxBand)

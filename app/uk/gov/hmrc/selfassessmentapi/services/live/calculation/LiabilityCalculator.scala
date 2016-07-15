@@ -32,7 +32,7 @@ class LiabilityCalculator {
     TotalIncomeOnWhichTaxIsDueCalculation,
     PersonalSavingsAllowanceCalculation,
     SavingsStartingRateCalculation,
-    PayPensionProfitsTaxCalculation,
+    PayPensionProfitsIncomeTaxCalculation,
     SavingsIncomeTaxCalculation,
     PersonalDividendAllowanceCalculation
   )

@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 
-object PayPensionProfitsTaxCalculation extends CalculationStep {
+object PayPensionProfitsIncomeTaxCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
@@ -35,6 +35,6 @@ object PayPensionProfitsTaxCalculation extends CalculationStep {
       TaxBandState(taxBand = AdditionalHigherTaxBand, available = AdditionalHigherTaxBand.width)
     )
 
-    liability.copy(deductionsRemaining = Some(deductionsRemaining), payPensionsProfits = allocateToTaxBands(taxableProfit, taxBands))
+    liability.copy(deductionsRemaining = Some(deductionsRemaining), payPensionsProfitsIncome = allocateToTaxBands(taxableProfit, taxBands))
   }
 }

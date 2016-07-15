@@ -25,7 +25,7 @@ object PersonalDividendAllowanceCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
     val personalDividendAllowance = capAt(calculateTaxableDividendIncome(liability), 5000)
-    liability.copy(dividends = Seq(TaxBandAllocation(personalDividendAllowance, DividendsNilTaxBand)))
+    liability.copy(dividendsIncome = Seq(TaxBandAllocation(personalDividendAllowance, DividendsNilTaxBand)))
   }
 
 

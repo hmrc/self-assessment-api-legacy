@@ -43,5 +43,5 @@ object SavingsIncomeTaxCalculation extends CalculationStep {
   }
   
   private def availableAfterPayPensions(taxBand: TaxBand, liability: MongoLiability) =
-    liability.payPensionsProfits.find(_.taxBand == taxBand).map(_.available).getOrElse(taxBand.width)
+    liability.payPensionsProfitsIncome.find(_.taxBand == taxBand).map(_.available).getOrElse(taxBand.width)
 }

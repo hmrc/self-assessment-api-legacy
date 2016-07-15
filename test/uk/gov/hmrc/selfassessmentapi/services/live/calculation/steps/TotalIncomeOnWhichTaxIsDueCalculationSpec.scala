@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
 class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploymentSugar {
@@ -27,7 +26,8 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploy
 
       val liability = aLiability().copy(
         totalIncomeReceived = Some(100),
-        deductions = Some(Deductions(incomeTaxRelief = 50, totalDeductions = 50)))
+        totalAllowancesAndReliefs = Some(50)
+      )
 
       TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeOnWhichTaxIsDue = Some(50))
     }
@@ -36,7 +36,8 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploy
 
       val liability = aLiability().copy(
         totalIncomeReceived = Some(100),
-        deductions = Some(Deductions(incomeTaxRelief = 200, totalDeductions = 200)))
+        totalAllowancesAndReliefs = Some(200)
+      )
 
       TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeOnWhichTaxIsDue = Some(0))
     }
@@ -45,7 +46,8 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploy
 
       val liability = aLiability().copy(
         totalIncomeReceived = None,
-        deductions = Some(Deductions(incomeTaxRelief = 200, totalDeductions = 200)))
+        totalAllowancesAndReliefs = Some(200)
+      )
 
       intercept[IllegalStateException]{
         TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability)
@@ -56,8 +58,8 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploy
 
       val liability = aLiability().copy(
         totalIncomeReceived = Some(100),
-        deductions = None,
-        deductionsRemaining = None)
+        totalAllowancesAndReliefs = None
+      )
 
       intercept[IllegalStateException]{
         TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability)

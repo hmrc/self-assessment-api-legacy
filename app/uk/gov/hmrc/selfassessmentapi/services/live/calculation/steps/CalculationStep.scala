@@ -16,21 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 trait CalculationStep extends Math {
 
   def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability
 
-  protected def applyDeductions(amount: BigDecimal, deductions: Deductions): (BigDecimal, Deductions) = {
-      (
-        positiveOrZero(amount - deductions.totalDeductions),
-        deductions.copy(
-          incomeTaxRelief = positiveOrZero(deductions.incomeTaxRelief - amount),
-          totalDeductions = positiveOrZero(deductions.totalDeductions - amount)
-        )
-      )
+  protected def applyDeductions(amount: BigDecimal, deductions: BigDecimal): (BigDecimal, BigDecimal) = {
+    (positiveOrZero(amount - deductions), positiveOrZero(deductions - amount))
   }
 
   protected def allocateToTaxBands(income: BigDecimal, taxBands: Seq[TaxBandState]): Seq[TaxBandAllocation] = taxBands match {

@@ -25,8 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.DividendType
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{TaxBandAllocation, _}
 
 trait SelfEmploymentSugar {
 
@@ -49,14 +48,11 @@ trait SelfEmploymentSugar {
   def goodsAndServices(amount: BigDecimal) = MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
   def aLiability(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
-                 interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil,
-                 dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil, deductions: Option[Deductions] = Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0)),
-                 deductionsRemaining: Option[Deductions] = Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0)),
-                 personalSavingsAllowance: Option[BigDecimal] = None,
-                 savingsStartingRate: Option[BigDecimal] = None): MongoLiability = {
+                 interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil, dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
+                 deductionsRemaining: Option[BigDecimal] = Some(0), personalSavingsAllowance: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None): MongoLiability = {
 
     MongoLiability.create(saUtr, taxYear).copy( profitFromSelfEmployments = profitFromSelfEmployments.toSeq, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
-                                                dividendsFromUKSources = dividendsFromUKSources, deductions = deductions, deductionsRemaining = deductionsRemaining,
+                                                dividendsFromUKSources = dividendsFromUKSources, deductionsRemaining = deductionsRemaining,
                                                 allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance, savingsStartingRate = savingsStartingRate))
   }
 

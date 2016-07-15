@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.AllowancesAndReliefs
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
@@ -28,9 +27,7 @@ class TotalAllowancesAndReliefsSpec extends UnitSpec with SelfEmploymentSugar {
 
       val liability = aLiability().copy(allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000), incomeTaxRelief = Some(1400)))
 
-      TotalAllowancesAndReliefs.run(SelfAssessment(), liability).deductions shouldBe Some(
-        Deductions(incomeTaxRelief = 1400, totalDeductions = 6400)
-      )
+      TotalAllowancesAndReliefs.run(SelfAssessment(), liability).deductionsRemaining shouldBe Some(6400)
     }
   }
 }

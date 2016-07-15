@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
 object TotalAllowancesAndReliefs extends CalculationStep {
@@ -27,8 +26,8 @@ object TotalAllowancesAndReliefs extends CalculationStep {
 
     val personalAllowance = liability.allowancesAndReliefs.personalAllowance.getOrElse(throw PropertyNotComputedException("personalAllowance"))
 
-    val deductions = Some(Deductions(incomeTaxRelief = incomeTaxRelief, totalDeductions = incomeTaxRelief + personalAllowance))
+    val totalDeductions = incomeTaxRelief + personalAllowance
 
-    liability.copy(deductions = deductions, deductionsRemaining = deductions)
+    liability.copy(totalAllowancesAndReliefs = Some(totalDeductions), deductionsRemaining = Some(totalDeductions))
   }
 }

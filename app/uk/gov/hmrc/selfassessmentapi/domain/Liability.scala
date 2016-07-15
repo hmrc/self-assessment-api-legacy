@@ -55,7 +55,7 @@ object IncomeFromSources {
   implicit val format = Json.format[IncomeFromSources]
 }
 
-case class Deductions(incomeTaxRelief: BigDecimal, totalDeductions: BigDecimal) {
+case class Deductions(incomeTaxRelief: BigDecimal, personalAllowance: BigDecimal, totalDeductions: BigDecimal) {
   require(totalDeductions >= incomeTaxRelief, "totalDeductions must be greater than or equal to incomeTaxRelief at all times")
 }
 
@@ -75,7 +75,7 @@ object IncomeTaxCalculations {
   implicit val format = Json.format[IncomeTaxCalculations]
 }
 
-case class IncomeSummary(incomes: IncomeFromSources, deductions: Option[Deductions], totalIncomeReceived: BigDecimal, personalAllowance: BigDecimal, totalTaxableIncome: BigDecimal, totalIncomeOnWhichTaxIsDue: BigDecimal)
+case class IncomeSummary(incomes: IncomeFromSources, deductions: Option[Deductions], totalIncomeReceived: BigDecimal, totalIncomeOnWhichTaxIsDue: BigDecimal)
 
 object IncomeSummary {
   implicit val format = Json.format[IncomeSummary]
@@ -115,11 +115,10 @@ object Liability {
         ),
         deductions = Some(Deductions(
           incomeTaxRelief = BigDecimal(5000),
+          personalAllowance = BigDecimal(9440),
           totalDeductions = BigDecimal(14440)
         )),
         totalIncomeReceived = BigDecimal(93039),
-        personalAllowance = BigDecimal(9440),
-        totalTaxableIncome = BigDecimal(83599),
         totalIncomeOnWhichTaxIsDue = BigDecimal(80000)
       ),
       incomeTaxCalculations = IncomeTaxCalculations(

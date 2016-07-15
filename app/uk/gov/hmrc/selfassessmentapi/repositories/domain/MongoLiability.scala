@@ -35,20 +35,13 @@ case class MongoLiability(id: BSONObjectID,
                           totalIncomeReceived: Option[BigDecimal] = None,
                           payPensionProfitsReceived: Option[BigDecimal] = None,
                           totalTaxableIncome: Option[BigDecimal] = None,
-                          deductions: Option[Deductions] = None,
-                          deductionsRemaining: Option[Deductions] = None,
+                          totalAllowancesAndReliefs: Option[BigDecimal] = None,
+                          deductionsRemaining: Option[BigDecimal] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
                           payPensionsProfitsIncome: Seq[TaxBandAllocation] = Nil,
                           savingsIncome: Seq[TaxBandAllocation] = Nil,
                           dividendsIncome: Seq[TaxBandAllocation] = Nil,
-                          allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs()) {
-
-  require(if (deductionsRemaining.isDefined) deductions.isDefined else true, "deductions must be defined if deductionsRemaining are")
-  require((for {
-    ded <- deductions
-    remDed <- deductionsRemaining
-  } yield ded.incomeTaxRelief >= remDed.incomeTaxRelief && ded.totalDeductions >= remDed.totalDeductions).getOrElse(true),
-    "Values on deductions must be greater than or equal to the corresponding values on deductionsRemaining")
+                          allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs()) extends Math {
 
   def toLiability =
     Liability(
@@ -60,10 +53,12 @@ case class MongoLiability(id: BSONObjectID,
           dividendsFromUKSources = dividendsFromUKSources,
           employment = Nil
         ),
-        deductions = deductions,
+        deductions = Some(Deductions(
+          incomeTaxRelief = allowancesAndReliefs.incomeTaxRelief.getOrElse(0),
+          personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
+          totalDeductions = sum(allowancesAndReliefs.incomeTaxRelief, allowancesAndReliefs.personalAllowance)
+        )),
         totalIncomeReceived = totalIncomeReceived.getOrElse(0),
-        personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
-        totalTaxableIncome = totalTaxableIncome.getOrElse(0),
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
       incomeTaxCalculations = IncomeTaxCalculations(

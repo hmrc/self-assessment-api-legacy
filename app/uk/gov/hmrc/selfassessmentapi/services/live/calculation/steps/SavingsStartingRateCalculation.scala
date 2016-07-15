@@ -26,7 +26,7 @@ object SavingsStartingRateCalculation extends CalculationStep {
 
     val payPensionProfitsReceived = liability.payPensionProfitsReceived.getOrElse(throw PropertyNotComputedException("payPensionProfitsReceived"))
 
-    val deductions = liability.deductions.getOrElse(throw PropertyNotComputedException("deductions"))
+    val deductions = liability.totalAllowancesAndReliefs.getOrElse(throw PropertyNotComputedException("totalAllowancesAndReliefs"))
 
     val (profitAfterDeductions, _) = applyDeductions(payPensionProfitsReceived, deductions)
 

@@ -16,12 +16,31 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
 class SavingsStartingRateCalculationSpec extends UnitSpec with SelfEmploymentSugar {
 
   "run" should {
+
+    "return 5000 if payPensionProfitsReceived and deductions are equal to 0" in {
+
+      savingsStartingRateFor(payPensionProfitsReceived = 0, totalDeductions = 0) shouldBe 5000
+    }
+
+    "return the difference between profit and startingRateLimit (5000) if deductions are 0" in {
+
+      savingsStartingRateFor(payPensionProfitsReceived = 4500, totalDeductions = 0) shouldBe 500
+    }
+
+    "return 0 if profit is equal to startingRateLimit and deductions are 0" in {
+
+      savingsStartingRateFor(payPensionProfitsReceived = 5000, totalDeductions = 0) shouldBe 0
+    }
+
+    "return 0 if profit is more than startingRateLimit and deductions are 0" in {
+
+      savingsStartingRateFor(payPensionProfitsReceived = 6000, totalDeductions = 0) shouldBe 0
+    }
 
     "return 5000 if payPensionProfitsReceived is less than deductions" in {
 
@@ -52,7 +71,7 @@ class SavingsStartingRateCalculationSpec extends UnitSpec with SelfEmploymentSug
   private def savingsStartingRateFor(payPensionProfitsReceived: BigDecimal, totalDeductions: BigDecimal) = {
     val liability = aLiability().copy(
       payPensionProfitsReceived = Some(payPensionProfitsReceived),
-      deductions = Some(Deductions(0, totalDeductions))
+      totalAllowancesAndReliefs = Some(totalDeductions)
     )
     SavingsStartingRateCalculation.run(SelfAssessment(), liability).allowancesAndReliefs.savingsStartingRate.get
   }

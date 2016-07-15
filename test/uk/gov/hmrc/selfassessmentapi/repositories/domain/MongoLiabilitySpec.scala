@@ -38,10 +38,10 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         dividendsFromUKSources = Seq(
           DividendsFromUKSources("divId1", totalDividend = 100)
         ),
-        deductions = Some(Deductions(incomeTaxRelief = 20, totalDeductions = 20)),
+        totalAllowancesAndReliefs = Some(20),
         totalIncomeReceived = Some(1000),
         totalTaxableIncome = Some(2000),
-        allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(3000)),
+        allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(3000), incomeTaxRelief = Some(2000)),
         totalIncomeOnWhichTaxIsDue = Some(4000)
       )
 
@@ -62,10 +62,8 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
             ),
             employment = Nil
           ),
-          deductions = Some(Deductions(incomeTaxRelief = 20, totalDeductions = 20)),
+          deductions = Some(Deductions(personalAllowance = 3000, incomeTaxRelief = 2000, totalDeductions = 5000)),
           totalIncomeReceived = 1000,
-          totalTaxableIncome = 2000,
-          personalAllowance = 3000,
           totalIncomeOnWhichTaxIsDue = 4000
         ),
         incomeTaxCalculations = IncomeTaxCalculations(Nil, Nil, Nil, 0),

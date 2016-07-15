@@ -24,7 +24,7 @@ object TotalIncomeOnWhichTaxIsDueCalculation extends CalculationStep {
 
     val totalIncomeReceived = liability.totalIncomeReceived.getOrElse(throw PropertyNotComputedException("totalIncomeReceived"))
 
-    val totalAllowancesAndReliefs = liability.deductions.map(_.totalDeductions).getOrElse(throw PropertyNotComputedException("totalAllowancesAndReliefs"))
+    val totalAllowancesAndReliefs = liability.totalAllowancesAndReliefs.getOrElse(throw PropertyNotComputedException("totalAllowancesAndReliefs"))
 
     val totalIncomeOnWhichTaxIsDue = positiveOrZero(totalIncomeReceived - totalAllowancesAndReliefs)
 

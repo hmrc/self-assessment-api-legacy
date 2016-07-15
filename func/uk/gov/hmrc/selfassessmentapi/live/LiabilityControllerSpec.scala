@@ -65,11 +65,10 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        },
            |        "deductions": {
            |            "incomeTaxRelief": 20000,
+           |            "personalAllowance": 1471,
            |            "totalDeductions": 21471
            |        },
-           |        "personalAllowance": 1471,
            |        "totalIncomeReceived": 139058,
-           |        "totalTaxableIncome": 113058,
            |        "totalIncomeOnWhichTaxIsDue": 117587
            |    },
            |    "incomeTaxCalculations": {

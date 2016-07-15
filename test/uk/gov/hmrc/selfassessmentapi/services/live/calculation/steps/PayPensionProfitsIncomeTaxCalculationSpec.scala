@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Deductions
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
@@ -75,7 +74,7 @@ class PayPensionProfitsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploy
           TaxBandAllocation(0, HigherTaxBand),
           TaxBandAllocation(0, AdditionalHigherTaxBand)
         ),
-        totalDeductionsRemaining = 0
+        deductionsRemaining = 0
       )
     }
 
@@ -86,7 +85,7 @@ class PayPensionProfitsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploy
           TaxBandAllocation(0, HigherTaxBand),
           TaxBandAllocation(0, AdditionalHigherTaxBand)
         ),
-        totalDeductionsRemaining = 0
+        deductionsRemaining = 0
       )
     }
 
@@ -97,7 +96,7 @@ class PayPensionProfitsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploy
           TaxBandAllocation(28000, HigherTaxBand),
           TaxBandAllocation(0, AdditionalHigherTaxBand)
         ),
-        totalDeductionsRemaining = 0
+        deductionsRemaining = 0
       )
     }
 
@@ -108,7 +107,7 @@ class PayPensionProfitsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploy
           TaxBandAllocation(118000, HigherTaxBand),
           TaxBandAllocation(0, AdditionalHigherTaxBand)
         ),
-        totalDeductionsRemaining = 0
+        deductionsRemaining = 0
       )
     }
 
@@ -119,7 +118,7 @@ class PayPensionProfitsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploy
           TaxBandAllocation(118000, HigherTaxBand),
           TaxBandAllocation(150000, AdditionalHigherTaxBand)
         ),
-        totalDeductionsRemaining = 0
+        deductionsRemaining = 0
       )
     }
 
@@ -130,7 +129,7 @@ class PayPensionProfitsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploy
           TaxBandAllocation(0, HigherTaxBand),
           TaxBandAllocation(0, AdditionalHigherTaxBand)
         ),
-        totalDeductionsRemaining = 500
+        deductionsRemaining = 500
       )
     }
 
@@ -149,13 +148,12 @@ class PayPensionProfitsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploy
   private def payPensionProfitIncomeTaxAndDeductionsFor(payPensionProfitsReceived: BigDecimal, totalDeductions: BigDecimal) = {
     val liability = aLiability().copy(
       payPensionProfitsReceived = Some(payPensionProfitsReceived),
-      deductions = Some(Deductions(incomeTaxRelief = totalDeductions, totalDeductions = totalDeductions)),
-      deductionsRemaining = Some(Deductions(incomeTaxRelief = totalDeductions, totalDeductions = totalDeductions))
+      deductionsRemaining = Some(totalDeductions)
     )
     val liabilityAfterCalculation = PayPensionProfitsIncomeTaxCalculation.run(SelfAssessment(), liability)
 
-    result(liabilityAfterCalculation.payPensionsProfitsIncome, liabilityAfterCalculation.deductionsRemaining.get.totalDeductions)
+    result(liabilityAfterCalculation.payPensionsProfitsIncome, liabilityAfterCalculation.deductionsRemaining.get)
   }
 
-  case class result(payPensionsProfitsIncome: Seq[TaxBandAllocation], totalDeductionsRemaining: BigDecimal)
+  case class result(payPensionsProfitsIncome: Seq[TaxBandAllocation], deductionsRemaining: BigDecimal)
 }

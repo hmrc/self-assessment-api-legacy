@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.{Deductions, InterestFromUKBanksAndBuildingSocieties}
+import uk.gov.hmrc.selfassessmentapi.domain.InterestFromUKBanksAndBuildingSocieties
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
@@ -27,7 +27,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     "not allocate tax to any of the tax bands if remaining deductions are bigger than savings income" in {
 
-      savingsIncomeTaxFor(interestFromUKBanks = 6000, remainingDeductions = Deductions(0, 7000), savingsStartingRate = 5000) shouldBe Seq(
+      savingsIncomeTaxFor(interestFromUKBanks = 6000, remainingDeductions = 7000, savingsStartingRate = 5000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
         aTaxBandAllocation(0, SavingsNilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
@@ -195,31 +195,27 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
 
     val liability = liabilityFor(interestFromUkBanks = 4000, totalRemainingDeductions = 3000)
 
-    liability.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 0))
-    liability.deductions shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 3000))
+    liability.deductionsRemaining shouldBe Some(0)
   }
 
   "reduce total remaining deductions by the interestFromUKBanks if interestFromUKBanks is less than remaining deductions" in {
 
     val liability = liabilityFor(interestFromUkBanks = 1000, totalRemainingDeductions = 3000)
 
-    liability.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 2000))
-    liability.deductions shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 3000))
+    liability.deductionsRemaining shouldBe Some(2000)
   }
 
   "not reduce total remaining deductions if interestFromUKBanks is zero" in {
 
     val liability = liabilityFor(interestFromUkBanks = 0, totalRemainingDeductions = 3000)
 
-    liability.deductionsRemaining shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 3000))
-    liability.deductions shouldBe Some(Deductions(incomeTaxRelief = 0, totalDeductions = 3000))
+    liability.deductionsRemaining shouldBe Some(3000)
   }
 
   private def liabilityFor(interestFromUkBanks: BigDecimal, totalRemainingDeductions: BigDecimal) = {
     val liability = aLiability(
       interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties("ue1", interestFromUkBanks)),
-      deductionsRemaining = Some(Deductions(incomeTaxRelief = 0, totalDeductions = totalRemainingDeductions)),
-      deductions = Some(Deductions(incomeTaxRelief = 0, totalDeductions = totalRemainingDeductions)),
+      deductionsRemaining = Some(totalRemainingDeductions),
       personalSavingsAllowance = Some(0),
       savingsStartingRate = Some(0)
     )
@@ -227,12 +223,11 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
     SavingsIncomeTaxCalculation.run(SelfAssessment(), liability)
   }
 
-  private def savingsIncomeTaxFor(interestFromUKBanks: BigDecimal, remainingDeductions: Deductions = Deductions(0, 0), savingsStartingRate: BigDecimal = 0, personalSavingsAllowance: BigDecimal = 0,
+  private def savingsIncomeTaxFor(interestFromUKBanks: BigDecimal, remainingDeductions: BigDecimal = 0, savingsStartingRate: BigDecimal = 0, personalSavingsAllowance: BigDecimal = 0,
                                   basicTaxBandAllocated: BigDecimal = 0, higherTaxBandAllocated: BigDecimal = 0, additionalHigherTaxBandAllocated: BigDecimal = 0) = {
     val liability = aLiability(
       interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties("ue1", interestFromUKBanks)),
       deductionsRemaining = Some(remainingDeductions),
-      deductions = Some(remainingDeductions),
       personalSavingsAllowance = Some(personalSavingsAllowance),
       savingsStartingRate = Some(savingsStartingRate)
     ).copy(

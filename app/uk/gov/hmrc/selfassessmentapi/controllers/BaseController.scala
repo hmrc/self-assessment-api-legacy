@@ -17,7 +17,6 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.data.validation.ValidationError
-import play.api.i18n.Messages
 import play.api.libs.json._
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.api.controllers.ErrorNotFound
@@ -58,7 +57,7 @@ trait BaseController
       (path, errSeq) <- errors
       error <- errSeq
     } yield {
-      InvalidPart(extractErrorCode(error), Messages(error.message), path.toString())
+      InvalidPart(extractErrorCode(error), error.message, path.toString())
     }
   }
 

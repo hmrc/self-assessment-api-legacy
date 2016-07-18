@@ -23,6 +23,7 @@ object ErrorCode extends Enumeration {
   val
     // TODO check name is OK
   INVALID_REQUEST,
+  INVALID_FIELD,
   TAX_YEAR_INVALID,
   MAX_FIELD_LENGTH_EXCEEDED,
   INVALID_MONETARY_AMOUNT,

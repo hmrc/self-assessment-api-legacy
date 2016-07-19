@@ -129,8 +129,27 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |                "tax": 0,
            |                "taxBand": "nilRate",
            |                "taxableAmount": 3000
-           |           }],
-           |    "incomeTaxCharged": 39234,
+           |            },
+           |            {
+           |                "chargedAt": "7.5%",
+           |                "tax": 0,
+           |                "taxBand": "basicRate",
+           |                "taxableAmount": 0
+           |            },
+           |            {
+           |                "chargedAt": "32.5%",
+           |                "tax": 0,
+           |                "taxBand": "higherRate",
+           |                "taxableAmount": 0
+           |            },
+           |            {
+           |                "chargedAt": "38.1%",
+           |                "tax": 0,
+           |                "taxBand": "additionalHigherRate",
+           |                "taxableAmount": 0
+           |            }
+           |    ],
+           |    "incomeTaxCharged": 39234
            |    },
            |    "incomeTaxDeducted": {
            |      "interestFromUk": 2400,

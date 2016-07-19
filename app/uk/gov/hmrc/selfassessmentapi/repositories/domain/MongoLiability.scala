@@ -89,6 +89,11 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
   def tax: BigDecimal = roundDown(amount * taxBand.chargedAt / 100)
 
   def available: BigDecimal = positiveOrZero(taxBand.width - amount)
+
+  def +(other: TaxBandAllocation) = {
+    require(taxBand == other.taxBand)
+    TaxBandAllocation(amount + other.amount, taxBand)
+  }
 }
 
 case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None, incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None)

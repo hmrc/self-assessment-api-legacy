@@ -121,5 +121,20 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
     }
   }
 
+  "TaxBandSummary.+" should {
+
+    "return a sum of taxable amounts from both band allocations" in {
+
+      aTaxBandAllocation(500, BasicTaxBand) + aTaxBandAllocation(500, BasicTaxBand) shouldBe aTaxBandAllocation(1000, BasicTaxBand)
+    }
+
+    "throw IllegalStateException if the other band allocation is for a different band" in {
+
+      intercept[IllegalArgumentException] {
+        aTaxBandAllocation(100, BasicTaxBand) + aTaxBandAllocation(1000, HigherTaxBand)
+      }
+    }
+  }
+
   private def aTaxBandSummary(taxBand: String, taxableAmount: BigDecimal, chargedAt: String, tax: BigDecimal) = TaxBandSummary(taxBand, taxableAmount, chargedAt, tax)
 }

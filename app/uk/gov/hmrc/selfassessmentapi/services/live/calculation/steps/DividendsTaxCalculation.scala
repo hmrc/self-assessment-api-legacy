@@ -26,7 +26,7 @@ object DividendsTaxCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
-    val deductions = liability.deductionsRemaining.getOrElse(throw new IllegalStateException("DividendTaxCalculation cannot be run as deductionsRemaining is required"))
+    val deductions = liability.deductionsRemaining.getOrElse(throw PropertyNotComputedException("deductionsRemaining"))
 
     val (basicBandAvailability, higherBandAvailabilityAdjustment) = adjustedAvailability(BasicTaxBand, liability)
     val (higherBandAvailability, _) = adjustedAvailability(HigherTaxBand, liability)
@@ -52,7 +52,7 @@ object DividendsTaxCalculation extends CalculationStep {
     (for {
       fromSavings <- liability.savingsIncome.find(_.taxBand == taxBand)
       fromPpp <- liability.payPensionsProfitsIncome.find(_.taxBand == taxBand)
-    } yield (fromPpp + fromSavings).available).headOption.getOrElse(taxBand.width)
+    } yield (fromPpp + fromSavings).available).getOrElse(taxBand.width)
   }
 
   private def adjustedAvailability(band: TaxBand, liability: MongoLiability): (BigDecimal, BigDecimal) = {
@@ -66,5 +66,4 @@ object DividendsTaxCalculation extends CalculationStep {
       (availabilityForBand, 0)
     }
   }
-
 }

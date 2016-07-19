@@ -88,7 +88,7 @@ object TaxBand {
 
   case object DividendBasicTaxBand extends TaxBand {
     val id = "DividendBasicTaxBandId"
-    val name = "dividendBasicRate"
+    val name = "basicRate"
     val chargedAt = BigDecimal(7.5)
     val lowerBound = BigDecimal(5001)
     val upperBound = Some(BigDecimal(32000))
@@ -96,7 +96,7 @@ object TaxBand {
 
   case object DividendHigherTaxBand extends TaxBand {
     val id = "DividendHigherTaxBandId"
-    val name = "dividendHigherRate"
+    val name = "higherRate"
     val chargedAt = BigDecimal(32.5)
     val lowerBound = BigDecimal(32001)
     val upperBound = Some(BigDecimal(150000))
@@ -104,7 +104,7 @@ object TaxBand {
 
   case object DividendAdditionalHigherTaxBand extends TaxBand {
     val id = "DividendAdditionalHigherTaxBandID"
-    val name = "dividendAdditionalHigherRate"
+    val name = "additionalHigherRate"
     val chargedAt = BigDecimal(38.1)
     val lowerBound = BigDecimal(150001)
     val upperBound = None

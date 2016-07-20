@@ -1,7 +1,7 @@
 
 ## Changes since latest production release
 
-**No important changes**
+* Liability endpoints have been updated to support a single liability per tax year.
 
 ## [0.38.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.38.0) 29-June-2016
 

@@ -81,10 +81,8 @@ object Documentation extends BaseController with Links {
     EndpointDocumentation("Delete Source", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceId)),
     EndpointDocumentation("Retrieve Sources", uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceId)),
 
-    EndpointDocumentation("Request Liability", uk.gov.hmrc.selfassessmentapi.views.xml.createLiability(utr, taxYear, liabilityId)),
-    EndpointDocumentation("Retrieve Liability", uk.gov.hmrc.selfassessmentapi.views.xml.readLiability(utr, taxYear, liabilityId)),
-    EndpointDocumentation("Delete Liability", uk.gov.hmrc.selfassessmentapi.views.xml.deleteLiability(utr, taxYear, liabilityId)),
-    EndpointDocumentation("Retrieve Liabilities", uk.gov.hmrc.selfassessmentapi.views.xml.listLiabilities(utr, taxYear, liabilityId)))
+    EndpointDocumentation("Request Liability", uk.gov.hmrc.selfassessmentapi.views.xml.createLiability(utr, taxYear)),
+    EndpointDocumentation("Retrieve Liability", uk.gov.hmrc.selfassessmentapi.views.xml.readLiability(utr, taxYear)))
 
   private lazy val documentationByName = documentation.map(x => x.name -> x.view).toMap
 

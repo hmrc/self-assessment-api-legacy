@@ -3,10 +3,8 @@ GET        /:utr                   uk.gov.hmrc.selfassessmentapi.controllers.liv
 GET        /:utr/:taxYear          uk.gov.hmrc.selfassessmentapi.controllers.live.TaxYearDiscoveryController.discoverTaxYear(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
 PUT        /:utr/:taxYear          uk.gov.hmrc.selfassessmentapi.controllers.live.TaxYearDiscoveryController.updateTaxYearProperties(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
 
-POST       /:utr/:taxYear/liabilities                    uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.requestLiability(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
-GET        /:utr/:taxYear/liabilities                    uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.find(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
-GET        /:utr/:taxYear/liabilities/:liabilityId       uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.retrieveLiability(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear, liabilityId: String)
-DELETE     /:utr/:taxYear/liabilities/:liabilityId       uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.deleteLiability(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear, liabilityId: String)
+POST       /:utr/:taxYear/liability                    uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.requestLiability(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
+GET        /:utr/:taxYear/liability                    uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.retrieveLiability(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear)
 
 GET         /:utr/:taxYear/:sourceType/:sourceId        uk.gov.hmrc.selfassessmentapi.controllers.live.SourceController.read(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear, sourceType: uk.gov.hmrc.selfassessmentapi.domain.SourceType, sourceId: uk.gov.hmrc.selfassessmentapi.domain.SourceId)
 GET         /:utr/:taxYear/:sourceType                  uk.gov.hmrc.selfassessmentapi.controllers.live.SourceController.list(utr: uk.gov.hmrc.domain.SaUtr, taxYear: uk.gov.hmrc.selfassessmentapi.domain.TaxYear, sourceType: uk.gov.hmrc.selfassessmentapi.domain.SourceType)

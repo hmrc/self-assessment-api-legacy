@@ -46,7 +46,6 @@ case class MongoLiability(id: BSONObjectID,
 
   def toLiability =
     Liability(
-      id = Some(liabilityId),
       income = IncomeSummary(
         incomes = IncomeFromSources(
           selfEmployment = profitFromSelfEmployments.map(_.toIncome),

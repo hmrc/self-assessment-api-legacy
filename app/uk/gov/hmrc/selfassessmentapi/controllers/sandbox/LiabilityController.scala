@@ -16,13 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
-import java.util.UUID
-
 import play.api.hal.HalLink
-import play.api.libs.json.Json._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain._
@@ -34,33 +31,21 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   override val context: String = AppContext.apiGatewayContext
 
   override def requestLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    val liabilityId = UUID.randomUUID().toString
       val links = Set(
-        HalLink("self", liabilityHref(utr, taxYear, liabilityId))
+        HalLink("self", liabilityHref(utr, taxYear))
       )
     Future.successful(Accepted(halResource(JsObject(Nil), links)))
   }
 
-  override def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
-    val liability = createLiability(liabilityId)
+  override def retrieveLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
+    val liability = createLiability
     val links = Set(
-      HalLink("self", liabilityHref(utr, taxYear, liabilityId))
+      HalLink("self", liabilityHref(utr, taxYear))
     )
     Future.successful(Ok(halResource(Json.toJson(liability), links)))
   }
 
-  def createLiability(id: LiabilityId): Liability = Liability.example(id)
+  def createLiability: Liability = Liability.example
 
 
-  override def deleteLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
-    Future.successful(NoContent)
-  }
-
-  override def find(saUtr: SaUtr, taxYear: TaxYear): Action[AnyContent] = Action.async { request =>
-    val result= Seq(createLiability("1234"), createLiability("4321"), createLiability("7777"))
-    val liabilities = toJson(
-      result.map(liability => halResource(Json.toJson(liability), Set(HalLink("self", liabilityHref(saUtr, taxYear, liability.id.get)))))
-    )
-    Future.successful(Ok(halResourceList("liabilities", liabilities, liabilitiesHref(saUtr, taxYear))))
-  }
 }

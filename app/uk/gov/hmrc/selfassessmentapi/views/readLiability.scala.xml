@@ -2,20 +2,20 @@
 @import uk.gov.hmrc.selfassessmentapi.domain._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, liabilityId: LiabilityId)
+@(saUtr: SaUtr, taxYear: TaxYear)
 <endpoint>
     <name>Retrieve Liability</name>
     <description>This endpoint retrieves a liability estimate</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/liabilities/{liabilityId}</resource>
+        <resource>GET /self-assessment/{utr}/{taxYear}/liability</resource>
     </section>
-    @partials.liabilityPathParams(saUtr, taxYear, Some(liabilityId))
+    @partials.basePathParams(saUtr, Some(taxYear))
     @partials.requestHeaders(false)
     @partials.authorisation(false)
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>200 (OK)</httpStatus>
-        <json>@liabilityResponse(saUtr, taxYear, liabilityId)</json>
+        <json>@liabilityResponse(saUtr, taxYear)</json>
     </section>
 </endpoint>

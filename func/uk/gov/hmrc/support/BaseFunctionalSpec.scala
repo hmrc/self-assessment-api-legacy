@@ -50,7 +50,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def liabilityIdFromHal() = {
       getLinkFromBody("self") flatMap { link =>
-        s"/self-assessment/\\d+/$taxYear/liabilities/(\\w+)".r findFirstMatchIn link map { firstMatch =>
+        s"/self-assessment/\\d+/$taxYear/liability".r findFirstMatchIn link map { firstMatch =>
           firstMatch.group(1)
         }
       }

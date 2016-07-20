@@ -65,7 +65,7 @@ private object AppDependencies {
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.scalatestplus" %% "play" % "1.2.0" % scope,
         "com.github.tomakehurst" % "wiremock" % "1.54" % scope,
-        "uk.gov.hmrc" %% "reactivemongo-test"   % "1.2.0" % scope,
+        "uk.gov.hmrc" %% "reactivemongo-test"   % "1.6.0" % scope,
         "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.50.3" % scope,
         "org.mongodb" %% "casbah" % "3.1.0" % scope,
         "org.scalacheck" %% "scalacheck" % "1.12.5" % scope

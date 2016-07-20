@@ -15,11 +15,11 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(saUtr)
       .when()
-        .post(s"/$saUtr/$taxYear/liabilities")
+        .post(s"/$saUtr/$taxYear/liability")
       .thenAssertThat()
         .statusIs(202)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""^/self-assessment/$saUtr/$taxYear/liabilities/.+""".r)
+        .bodyHasLink("self", s"""^/self-assessment/$saUtr/$taxYear/liability""".r)
     }
   }
 
@@ -203,35 +203,14 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(s"/$saUtr/$taxYear/liabilities")
+        .post(s"/$saUtr/$taxYear/liability")
         .thenAssertThat()
         .statusIs(202)
         .when()
-        .get(s"/$saUtr/$taxYear/liabilities/%liabilityId%")
+        .get(s"/$saUtr/$taxYear/liability")
         .thenAssertThat()
         .statusIs(200)
         .bodyIsLike(expectedJson)
-    }
-  }
-
-  "delete liability" should {
-    "return a resourceIsNotImplemented response" in {
-      given()
-        .userIsAuthorisedForTheResource(saUtr)
-        .when()
-        .delete(s"/$saUtr/$taxYear/liabilities/1234")
-        .thenAssertThat()
-        .isNotImplemented
-    }
-  }
-
-  "find liability" should {
-    "return a resourceIsNotImplemented response" in {
-      given().userIsAuthorisedForTheResource(saUtr)
-        .when()
-        .get(s"/$saUtr/$taxYear/liabilities")
-        .thenAssertThat()
-        .isNotImplemented
     }
   }
 

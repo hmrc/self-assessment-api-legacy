@@ -39,6 +39,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.{NotFo
 import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorBadRequest, ErrorNotImplemented, UnknownSummaryException}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 import scala.util.matching.Regex
@@ -142,20 +143,22 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
   }
 
   override def onError(request : RequestHeader, ex: Throwable) = {
-     // TODO do we need to audit these errors?
-    ex.getCause match {
-      case ex: UnknownSummaryException => Future.successful(NotFound(Json.toJson(ErrorNotFound)))
-      case ex: NotImplementedException => Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-      case _ => super.onError(request, ex)
+    super.onError(request, ex).map { result =>
+      ex.getCause match {
+        case ex: UnknownSummaryException => NotFound(Json.toJson(ErrorNotFound))
+        case ex: NotImplementedException => NotImplemented(Json.toJson(ErrorNotImplemented))
+        case _ => result
+      }
     }
   }
 
   override def onBadRequest(request: RequestHeader, error: String) = {
-    // TODO do we need to audit these errors?
-    error match {
-      case "ERROR_INVALID_SOURCE_TYPE" => Future.successful(NotFound(Json.toJson(ErrorNotFound)))
-      case "ERROR_TAX_YEAR_INVALID" => Future.successful(BadRequest(Json.toJson(ErrorBadRequest(ErrorCode.TAX_YEAR_INVALID, "Tax year invalid"))))
-      case _ => super.onBadRequest(request, error)
+    super.onBadRequest(request, error).map { result =>
+      error match {
+        case "ERROR_INVALID_SOURCE_TYPE" => NotFound(Json.toJson(ErrorNotFound))
+        case "ERROR_TAX_YEAR_INVALID" => BadRequest(Json.toJson(ErrorBadRequest(ErrorCode.TAX_YEAR_INVALID, "Tax year invalid")))
+        case _ => result
+      }
     }
   }
 }

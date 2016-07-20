@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor5}
 import uk.gov.hmrc.selfassessmentapi.domain.IncomeTaxDeducted
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoUnearnedIncomesSavingsIncomeSummary
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
 class TaxDeductedAmountForUkSavingsIncomeCalculationSpec
@@ -27,6 +28,13 @@ class TaxDeductedAmountForUkSavingsIncomeCalculationSpec
     with SelfEmploymentSugar {
 
   "run" should {
+
+    "calculate tax deducted amount for UK savings when there is no interest from banks" in {
+      val liability = aLiability()
+
+      TaxDeductedAmountForUkSavingsIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(
+          incomeTaxDeducted = Some(IncomeTaxDeducted(interestFromUk = 0, total = 0)))
+    }
 
     "calculate tax deducted amount for UK savings income across several unearned incomes considering only taxed interest" in {
 
@@ -40,7 +48,13 @@ class TaxDeductedAmountForUkSavingsIncomeCalculationSpec
                           anUnearnedInterestIncomeSummary("taxedInterest4", InterestFromBanksTaxed, 200),
                           anUnearnedInterestIncomeSummary("untaxedInterest2", InterestFromBanksUntaxed, 500),
                           BigDecimal(300),
-                          BigDecimal(75)),
+                          BigDecimal(75)))
+
+      checkTable(inputs)
+    }
+
+    "calculate tax deducted amount for UK savings income with amounts that do not require rounding" in {
+      val inputs = Table(("interest 1", "interest 2", "interest 3", "total interest", "total tax deducted"),
                          (anUnearnedInterestIncomeSummary("taxedInterest5", InterestFromBanksTaxed, 100),
                           anUnearnedInterestIncomeSummary("taxedInterest6", InterestFromBanksTaxed, 200),
                           anUnearnedInterestIncomeSummary("taxedInterest7", InterestFromBanksTaxed, 2000),
@@ -50,7 +64,12 @@ class TaxDeductedAmountForUkSavingsIncomeCalculationSpec
                           anUnearnedInterestIncomeSummary("taxedInterest9", InterestFromBanksTaxed, 700),
                           anUnearnedInterestIncomeSummary("taxedInterest10", InterestFromBanksTaxed, 5800),
                           BigDecimal(6900),
-                          BigDecimal(1725)),
+                          BigDecimal(1725)))
+      checkTable(inputs)
+    }
+
+    "calculate tax deducted amount for UK savings income with amounts that require rounding" in {
+      val inputs = Table(("interest 1", "interest 2", "interest 3", "total interest", "total tax deducted"),
                          (anUnearnedInterestIncomeSummary("taxedInterest11", InterestFromBanksTaxed, 786.78),
                           anUnearnedInterestIncomeSummary("taxedInterest12", InterestFromBanksTaxed, 456.76),
                           anUnearnedInterestIncomeSummary("taxedInterest13", InterestFromBanksTaxed, 2000.56),
@@ -61,15 +80,23 @@ class TaxDeductedAmountForUkSavingsIncomeCalculationSpec
                           anUnearnedInterestIncomeSummary("taxedInterest16", InterestFromBanksTaxed, 3623.67),
                           BigDecimal(5623.67),
                           BigDecimal(1406)))
+      checkTable(inputs)
+    }
+  }
 
-      forAll(inputs) { (interest1, interest2, interest3, totalInterest, totalTaxDeducted) =>
-        val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(interest1, interest2, interest3))
-        val liability = aLiability()
+  def checkTable(
+      inputs: TableFor5[MongoUnearnedIncomesSavingsIncomeSummary,
+                        MongoUnearnedIncomesSavingsIncomeSummary,
+                        MongoUnearnedIncomesSavingsIncomeSummary,
+                        BigDecimal,
+                        BigDecimal]): Unit = {
+    forAll(inputs) { (interest1, interest2, interest3, totalInterest, totalTaxDeducted) =>
+      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(interest1, interest2, interest3))
+      val liability = aLiability()
 
-        TaxDeductedAmountForUkSavingsIncomeCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)),
-                                                           liability) shouldBe liability.copy(
-            incomeTaxDeducted = Some(IncomeTaxDeducted(interestFromUk = totalInterest, total = totalTaxDeducted)))
-      }
+      TaxDeductedAmountForUkSavingsIncomeCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)),
+                                                         liability) shouldBe liability.copy(
+          incomeTaxDeducted = Some(IncomeTaxDeducted(interestFromUk = totalInterest, total = totalTaxDeducted)))
     }
   }
 }

@@ -24,7 +24,7 @@ trait BaseFunctionalSpec extends TestApplication {
     UrlInterpolation {
 
     if (request.startsWith("POST") || request.startsWith("PUT")) {
-      Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal(), "liabilityId" -> liabilityIdFromHal()) foreach {
+      Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal()) foreach {
         case (name, fn) =>
           fn map { evaluatedValue =>
             urlPathVariables += (name -> evaluatedValue)
@@ -43,14 +43,6 @@ trait BaseFunctionalSpec extends TestApplication {
     def summaryIdFromHal() = {
       getLinkFromBody("self") flatMap { link =>
         s"/self-assessment/\\d+/$taxYear/[\\w-]+/\\w+/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
-          firstMatch.group(1)
-        }
-      }
-    }
-
-    def liabilityIdFromHal() = {
-      getLinkFromBody("self") flatMap { link =>
-        s"/self-assessment/\\d+/$taxYear/liabilities/(\\w+)".r findFirstMatchIn link map { firstMatch =>
           firstMatch.group(1)
         }
       }

@@ -87,14 +87,13 @@ object CalculatedAmount {
   implicit val format = Json.format[CalculatedAmount]
 }
 
-case class Liability(id: Option[LiabilityId] = None, income: IncomeSummary, incomeTaxCalculations: IncomeTaxCalculations, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal)
+case class Liability(income: IncomeSummary, incomeTaxCalculations: IncomeTaxCalculations, credits: Seq[Amount], class4Nic: CalculatedAmount, totalTaxDue: BigDecimal)
 
 object Liability {
   implicit val format = Json.format[Liability]
 
-  def example(id: LiabilityId): Liability =
+  def example: Liability =
     Liability(
-      id = Some(id),
       income = IncomeSummary(
         incomes = IncomeFromSources(
           selfEmployment = Seq(

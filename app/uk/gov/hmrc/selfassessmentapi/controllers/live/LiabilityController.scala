@@ -19,15 +19,13 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 import play.api.hal.HalLink
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.LiabilityService
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
@@ -38,17 +36,17 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   override def requestLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
     liabilityService.calculate(utr, taxYear) map { liabilityId =>
       val links = Set(
-        HalLink("self", liabilityHref(utr, taxYear, liabilityId))
+        HalLink("self", liabilityHref(utr, taxYear))
       )
       Accepted(halResource(JsObject(Nil), links))
     }
   }
 
-  override def retrieveLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
+  override def retrieveLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
     liabilityService.find(utr, taxYear) map {
       case Some(liability) =>
         val links = Set(
-          HalLink("self", liabilityHref(utr, taxYear, liabilityId))
+          HalLink("self", liabilityHref(utr, taxYear))
         )
         Ok(halResource(Json.toJson(liability), links))
 
@@ -57,11 +55,4 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
     }
   }
 
-  override def deleteLiability(utr: SaUtr, taxYear: TaxYear, liabilityId: String) = Action.async { request =>
-    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-  }
-
-  override def find(utr: SaUtr, taxYear: TaxYear): Action[AnyContent] = Action.async { request =>
-    Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-  }
 }

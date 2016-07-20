@@ -46,7 +46,6 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
       )
 
       liability.toLiability shouldBe Liability(
-        id = Some(liability.liabilityId),
         income = IncomeSummary(
           incomes = IncomeFromSources(
             selfEmployment = Seq(

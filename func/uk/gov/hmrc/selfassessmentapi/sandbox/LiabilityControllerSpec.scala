@@ -8,11 +8,11 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
   "request liability" should {
     "return a 202 response with a link to retrieve the liability" in {
       when()
-        .post(s"/sandbox/$saUtr/$taxYear/liabilities")
+        .post(s"/sandbox/$saUtr/$taxYear/liability")
         .thenAssertThat()
         .statusIs(202)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""^/self-assessment/$saUtr/$taxYear/liabilities/.+""".r)
+        .bodyHasLink("self", s"""^/self-assessment/$saUtr/$taxYear/liability""".r)
     }
   }
 
@@ -84,35 +84,14 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       when()
-        .get(s"/sandbox/$saUtr/$taxYear/liabilities/1234")
+        .get(s"/sandbox/$saUtr/$taxYear/liability")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""^/self-assessment/$saUtr/$taxYear/liabilities/1234""".r)
+        .bodyHasLink("self", s"""^/self-assessment/$saUtr/$taxYear/liability""".r)
         .bodyIs(expectedJson)
     }
 
-    "return a valid response when retrieving list of liabilities" in {
-      when()
-        .get(s"/sandbox/$saUtr/$taxYear/liabilities")
-        .thenAssertThat()
-        .statusIs(200)
-        .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/liabilities")
-        .bodyHasPath("""_embedded \ liabilities(0) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/liabilities/1234")
-        .bodyHasPath("""_embedded \ liabilities(1) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/liabilities/4321")
-        .bodyHasPath("""_embedded \ liabilities(2) \ _links \ self \ href""", s"/self-assessment/$saUtr/$taxYear/liabilities/7777")
-    }
-
-  }
-
-  "delete liability" should {
-    "return a 204 response" in {
-      when()
-        .delete(s"/sandbox/$saUtr/$taxYear/liabilities/1234")
-        .thenAssertThat()
-        .statusIs(204)
-    }
   }
 
 }

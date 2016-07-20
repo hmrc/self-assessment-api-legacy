@@ -31,11 +31,8 @@ trait Links {
   def discoverTaxYearHref(utr: SaUtr, taxYear: TaxYear): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearDiscoveryController.discoverTaxYear(utr, taxYear).url)
 
-  def liabilityHref(utr: SaUtr, taxYear: TaxYear, liabilityId: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, taxYear, liabilityId).url)
-
-  def liabilitiesHref(utr: SaUtr, taxYear: TaxYear): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.find(utr, taxYear).url)
+  def liabilityHref(utr: SaUtr, taxYear: TaxYear): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, taxYear).url)
 
   def sourceIdHref(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SourceController.read(utr, taxYear, sourceType, seId).url)

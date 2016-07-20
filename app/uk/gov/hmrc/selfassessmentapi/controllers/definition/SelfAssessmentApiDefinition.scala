@@ -159,7 +159,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/liabilities",
+                uriPattern = "/{utr}/{taxYear}/liability",
                 endpointName = "Request Liability",
                 method = HttpMethod.POST,
                 authType = AuthType.USER,
@@ -167,28 +167,12 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/liabilities/{liabilityId}",
+                uriPattern = "/{utr}/{taxYear}/liability",
                 endpointName = "Retrieve Liability",
                 method = HttpMethod.GET,
                 authType = AuthType.USER,
                 throttlingTier = ResourceThrottlingTier.UNLIMITED,
                 scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/liabilities",
-                endpointName = "Retrieve Liabilities",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/liabilities/{liabilityId}",
-                endpointName = "Delete Liability",
-                method = HttpMethod.DELETE,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
               )
             )
           )

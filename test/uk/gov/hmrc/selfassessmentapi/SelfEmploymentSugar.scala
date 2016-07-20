@@ -23,7 +23,8 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.DividendType
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{FromUKCompanies, DividendType}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{TaxBandAllocation, _}
 
@@ -37,7 +38,7 @@ trait SelfEmploymentSugar {
 
   def anUnearnedInterestIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, `type`: SavingsIncomeType = InterestFromBanksUntaxed, amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
 
-  def anUnearnedDividendIncomeSummary(summaryId: SummaryId, `type`: DividendType, amount: BigDecimal) = MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
+  def anUnearnedDividendIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, `type`: DividendType = FromUKCompanies, amount: BigDecimal) = MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
 
   def income(`type`: IncomeType, amount: BigDecimal) = MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 

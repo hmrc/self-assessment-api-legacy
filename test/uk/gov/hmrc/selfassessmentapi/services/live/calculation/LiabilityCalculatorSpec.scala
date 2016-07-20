@@ -26,7 +26,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
 
   "calculate" should {
 
-    "calculate tax (nonSavingsIncome = 150000)" in {
+    "calculate tax - only non savings income, which is allocated across all of the tax bands" in {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 180000)
 
@@ -44,7 +44,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
     }
 
-    "calculate tax (savingsIncome = 20000)" in {
+    "calculate tax - only non savings income, which is within basic tax band" in {
 
       val liability = liabilityCalculationFor(savingsIncome = 20000)
 
@@ -57,7 +57,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
     }
 
-    "calculate tax (dividendsIncome = 15000)" in {
+    "calculate tax - only dividends income, which is allocated only to nil tax band because of personal allowance" in {
 
       val liability = liabilityCalculationFor(dividendsIncome = 15000)
 
@@ -69,7 +69,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
     }
 
-    "calculate tax (dividendsIncome = 160000)" in {
+    "calculate tax - only dividends income, which is allocated across all the tax bands" in {
 
       val liability = liabilityCalculationFor(dividendsIncome = 160000)
 
@@ -82,7 +82,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
     }
 
     //TODO ignored until bug with dividends is fixed
-    "calculate tax (savingsIncome = 20000, dividendsIncome = 80000)" ignore {
+    "calculate tax - savings and dividends income" ignore {
 
       val liability = liabilityCalculationFor(savingsIncome = 20000, dividendsIncome = 80000)
 
@@ -102,7 +102,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
     }
 
     //TODO ignored until bug with dividends is fixed
-    "calculate tax (savingsIncome = 20000, dividendsIncome = 130000)" ignore {
+    "calculate tax - savings and dividends income, which is allocated across all the tax bands" ignore {
 
       val liability = liabilityCalculationFor(savingsIncome = 20000, dividendsIncome = 130000)
 
@@ -121,7 +121,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
     }
 
-    "calculate tax (nonSavingsIncome = 9000, savingsIncome = 6000)" in {
+    "calculate tax - non savings and savings income - all within personal allowance and savings starting tax band" in {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 9000, savingsIncome = 6000)
 
@@ -139,7 +139,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
     }
 
-    "calculate tax (nonSavingsIncome = 36000, savingsIncome = 12000)" in {
+    "calculate tax - non savings and savings income - savings income allocated up to higher tax band" in {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 36000, savingsIncome = 12000)
 
@@ -157,7 +157,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
     }
 
-    "calculate tax (nonSavingsIncome = 50000, dividendsIncome = 120000)" in {
+    "calculate tax - non savings and dividend income - dividends allocated only to higher and additional higher tax bands" in {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 50000, dividendsIncome = 120000)
 
@@ -174,7 +174,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
     }
 
-    "calculate tax (nonSavingsIncome = 9000, savingsIncome = 6000, dividendsIncome = 10000)" in {
+    "calculate tax - non savings, savings and dividends income" in {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 20000, savingsIncome = 20000, dividendsIncome = 10000)
 

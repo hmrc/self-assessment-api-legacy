@@ -35,7 +35,7 @@ class LiabilityCalculator {
     PayPensionProfitsIncomeTaxCalculation,
     SavingsIncomeTaxCalculation,
     DividendsTaxCalculation,
-    TaxDeductedAmountForUkSavingsIncomeCalculation
+    IncomeTaxDeductedCalculation
   )
 
   def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {

@@ -20,14 +20,14 @@ import uk.gov.hmrc.selfassessmentapi.domain.IncomeTaxDeducted
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
-object TaxDeductedAmountForUkSavingsIncomeCalculation extends CalculationStep {
+object IncomeTaxDeductedCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    val totalInterest = selfAssessment.unearnedIncomes.map { unearnedIncome =>
+    val totalTaxedInterest = selfAssessment.unearnedIncomes.map { unearnedIncome =>
       unearnedIncome.savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
     }.sum
-    val grossedUpInterest = roundDown(totalInterest * 100 / 80)
-    val totalTaxDeducted = roundUp(grossedUpInterest - totalInterest)
+    val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
+    val totalTaxDeducted = roundUp(grossedUpInterest - totalTaxedInterest)
     liability.copy(
-        incomeTaxDeducted = Some(IncomeTaxDeducted(interestFromUk = totalInterest, total = totalTaxDeducted)))
+        incomeTaxDeducted = Some(IncomeTaxDeducted(interestFromUk = totalTaxedInterest, total = totalTaxDeducted)))
   }
 }

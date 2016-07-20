@@ -124,8 +124,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |                "taxableAmount": 0
            |            }
            |    ],
-                "dividends": [
-           |            {
+           |    "dividends": [{
            |                "chargedAt": "0%",
            |                "tax": 0,
            |                "taxBand": "nilRate",
@@ -151,6 +150,10 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |            }
            |    ],
            |    "incomeTaxCharged": 39234
+           |    },
+           |    "incomeTaxDeducted": {
+           |      "interestFromUk": 2400,
+           |      "total": 600
            |    },
            |    "totalTaxDue": 0
            |}

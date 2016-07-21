@@ -22,6 +22,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math
 
 case class MongoLiability(id: BSONObjectID,
@@ -44,6 +45,36 @@ case class MongoLiability(id: BSONObjectID,
                           allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
                           incomeTaxDeducted: Option[IncomeTaxDeducted] = None) extends Math {
 
+  private val dividendsTaxes = dividendsIncome.map {
+    bandAllocation => bandAllocation.taxBand match {
+      case NilTaxBand => bandAllocation.toTaxBandSummary(0)
+      case BasicTaxBand => bandAllocation.toTaxBandSummary(7.5)
+      case HigherTaxBand => bandAllocation.toTaxBandSummary(32.5)
+      case AdditionalHigherTaxBand => bandAllocation.toTaxBandSummary(38.1)
+      case unsupported => throw new IllegalArgumentException(s"Unsupported dividend tax band: $unsupported")
+    }
+  }
+
+  private val savingsTaxes = savingsIncome.map {
+    bandAllocation => bandAllocation.taxBand match {
+      case NilTaxBand => bandAllocation.toTaxBandSummary(0)
+      case SavingsStartingTaxBand => bandAllocation.toTaxBandSummary(0)
+      case BasicTaxBand => bandAllocation.toTaxBandSummary(20)
+      case HigherTaxBand => bandAllocation.toTaxBandSummary(40)
+      case AdditionalHigherTaxBand => bandAllocation.toTaxBandSummary(45)
+      case unsupported => throw new IllegalArgumentException(s"Unsupported savings tax band: $unsupported")
+    }
+  }
+
+  private val payPensionProfitTaxes = payPensionsProfitsIncome.map{
+    bandAllocation => bandAllocation.taxBand match {
+      case BasicTaxBand => bandAllocation.toTaxBandSummary(20)
+      case HigherTaxBand => bandAllocation.toTaxBandSummary(40)
+      case AdditionalHigherTaxBand => bandAllocation.toTaxBandSummary(45)
+      case unsupported => throw new IllegalArgumentException(s"Unsupported pay pension profit tax band: $unsupported")
+    }
+  }
+
   def toLiability =
     Liability(
       income = IncomeSummary(
@@ -62,10 +93,10 @@ case class MongoLiability(id: BSONObjectID,
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
       incomeTaxCalculations = IncomeTaxCalculations(
-        payPensionsProfits = payPensionsProfitsIncome.map(_.toTaxBandSummary),
-        savingsIncome = savingsIncome.map(_.toTaxBandSummary),
-        dividends = dividendsIncome.map(_.toTaxBandSummary),
-        incomeTaxCharged = (payPensionsProfitsIncome ++ savingsIncome ++ dividendsIncome).map(_.tax).sum
+        payPensionsProfits = payPensionProfitTaxes,
+        savingsIncome = savingsTaxes,
+        dividends = dividendsTaxes,
+        incomeTaxCharged = (payPensionProfitTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
       ),
       credits = Nil,
       class4Nic = CalculatedAmount(calculations = Nil, total = 0),
@@ -83,13 +114,13 @@ case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, p
 
 case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math {
 
-  def toTaxBandSummary = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"${taxBand.chargedAt}%", tax)
+  def toTaxBandSummary(chargedAt: BigDecimal) = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"${chargedAt}%", tax(chargedAt))
 
-  def tax: BigDecimal = roundDown(amount * taxBand.chargedAt / 100)
+  def tax(chargedAt: BigDecimal): BigDecimal = roundDown(amount * chargedAt / 100)
 
   def available: BigDecimal = positiveOrZero(taxBand.width - amount)
 
-  def +(other: TaxBandAllocation) = {
+  def + (other: TaxBandAllocation) = {
     require(taxBand == other.taxBand)
     TaxBandAllocation(amount + other.amount, taxBand)
   }

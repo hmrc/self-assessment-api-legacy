@@ -31,7 +31,7 @@ object SavingsIncomeTaxCalculation extends CalculationStep {
 
     val taxBands = Seq(
       TaxBandState(taxBand = SavingsStartingTaxBand, available = savingsStartingRate),
-      TaxBandState(taxBand = SavingsNilTaxBand, available = personalSavingsAllowance),
+      TaxBandState(taxBand = NilTaxBand, available = personalSavingsAllowance),
       TaxBandState(taxBand = BasicTaxBand, available = positiveOrZero(availableAfterPayPensions(BasicTaxBand, liability) - savingsStartingRate - personalSavingsAllowance)),
       TaxBandState(taxBand = HigherTaxBand, available = availableAfterPayPensions(HigherTaxBand, liability)),
       TaxBandState(taxBand = AdditionalHigherTaxBand, available = availableAfterPayPensions(AdditionalHigherTaxBand, liability))

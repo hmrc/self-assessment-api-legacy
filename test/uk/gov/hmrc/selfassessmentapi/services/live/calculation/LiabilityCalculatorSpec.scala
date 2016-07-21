@@ -37,7 +37,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
       liability.savingsIncome shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
-        aTaxBandAllocation(0, SavingsNilTaxBand),
+        aTaxBandAllocation(0, NilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
@@ -50,7 +50,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
 
       liability.savingsIncome shouldBe Seq(
         aTaxBandAllocation(5000, SavingsStartingTaxBand),
-        aTaxBandAllocation(1000, SavingsNilTaxBand),
+        aTaxBandAllocation(1000, NilTaxBand),
         aTaxBandAllocation(3000, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
@@ -62,10 +62,10 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       val liability = liabilityCalculationFor(dividendsIncome = 15000)
 
       liability.dividendsIncome shouldBe Seq(
-        aTaxBandAllocation(4000, DividendsNilTaxBand),
-        aTaxBandAllocation(0, DividendBasicTaxBand),
-        aTaxBandAllocation(0, DividendHigherTaxBand),
-        aTaxBandAllocation(0, DividendAdditionalHigherTaxBand)
+        aTaxBandAllocation(4000, NilTaxBand),
+        aTaxBandAllocation(0, BasicTaxBand),
+        aTaxBandAllocation(0, HigherTaxBand),
+        aTaxBandAllocation(0, AdditionalHigherTaxBand)
       )
     }
 
@@ -74,50 +74,48 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       val liability = liabilityCalculationFor(dividendsIncome = 160000)
 
       liability.dividendsIncome shouldBe Seq(
-        aTaxBandAllocation(5000, DividendsNilTaxBand),
-        aTaxBandAllocation(32000, DividendBasicTaxBand),
-        aTaxBandAllocation(118000, DividendHigherTaxBand),
-        aTaxBandAllocation(5000, DividendAdditionalHigherTaxBand)
+        aTaxBandAllocation(5000, NilTaxBand),
+        aTaxBandAllocation(27000, BasicTaxBand),
+        aTaxBandAllocation(118000, HigherTaxBand),
+        aTaxBandAllocation(10000, AdditionalHigherTaxBand)
       )
     }
 
-    //TODO ignored until bug with dividends is fixed
-    "calculate tax - savings and dividends income" ignore {
+    "calculate tax - savings and dividends income" in {
 
       val liability = liabilityCalculationFor(savingsIncome = 20000, dividendsIncome = 80000)
 
       liability.savingsIncome shouldBe Seq(
         aTaxBandAllocation(5000, SavingsStartingTaxBand),
-        aTaxBandAllocation(500, SavingsNilTaxBand),
+        aTaxBandAllocation(500, NilTaxBand),
         aTaxBandAllocation(3500, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
       )
       liability.dividendsIncome shouldBe Seq(
-        aTaxBandAllocation(5000, DividendsNilTaxBand),
-        aTaxBandAllocation(18000, DividendBasicTaxBand),
-        aTaxBandAllocation(57000, DividendHigherTaxBand),
-        aTaxBandAllocation(0, DividendAdditionalHigherTaxBand)
+        aTaxBandAllocation(5000, NilTaxBand),
+        aTaxBandAllocation(18000, BasicTaxBand),
+        aTaxBandAllocation(57000, HigherTaxBand),
+        aTaxBandAllocation(0, AdditionalHigherTaxBand)
       )
     }
 
-    //TODO ignored until bug with dividends is fixed
-    "calculate tax - savings and dividends income, which is allocated across all the tax bands" ignore {
+    "calculate tax - savings and dividends income, which is allocated across all the tax bands" in {
 
-      val liability = liabilityCalculationFor(savingsIncome = 20000, dividendsIncome = 130000)
+      val liability = liabilityCalculationFor(savingsIncome = 20000, dividendsIncome = 150000)
 
       liability.savingsIncome shouldBe Seq(
         aTaxBandAllocation(5000, SavingsStartingTaxBand),
-        aTaxBandAllocation(500, SavingsNilTaxBand),
-        aTaxBandAllocation(14500, BasicTaxBand),
+        aTaxBandAllocation(0, NilTaxBand),
+        aTaxBandAllocation(15000, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
       )
       liability.dividendsIncome shouldBe Seq(
-        aTaxBandAllocation(5000, DividendsNilTaxBand),
-        aTaxBandAllocation(7000, DividendBasicTaxBand),
-        aTaxBandAllocation(118000, DividendHigherTaxBand),
-        aTaxBandAllocation(20000, DividendAdditionalHigherTaxBand)
+        aTaxBandAllocation(5000, NilTaxBand),
+        aTaxBandAllocation(7000, BasicTaxBand),
+        aTaxBandAllocation(118000, HigherTaxBand),
+        aTaxBandAllocation(20000, AdditionalHigherTaxBand)
       )
     }
 
@@ -132,7 +130,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
       liability.savingsIncome shouldBe Seq(
         aTaxBandAllocation(4000, SavingsStartingTaxBand),
-        aTaxBandAllocation(0, SavingsNilTaxBand),
+        aTaxBandAllocation(0, NilTaxBand),
         aTaxBandAllocation(0, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
@@ -150,7 +148,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
       liability.savingsIncome shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
-        aTaxBandAllocation(500, SavingsNilTaxBand),
+        aTaxBandAllocation(500, NilTaxBand),
         aTaxBandAllocation(6500, BasicTaxBand),
         aTaxBandAllocation(5000, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
@@ -167,10 +165,10 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
       )
       liability.dividendsIncome shouldBe Seq(
-        aTaxBandAllocation(5000, DividendsNilTaxBand),
-        aTaxBandAllocation(0, DividendBasicTaxBand),
-        aTaxBandAllocation(100000, DividendHigherTaxBand),
-        aTaxBandAllocation(15000, DividendAdditionalHigherTaxBand)
+        aTaxBandAllocation(5000, NilTaxBand),
+        aTaxBandAllocation(0, BasicTaxBand),
+        aTaxBandAllocation(95000, HigherTaxBand),
+        aTaxBandAllocation(20000, AdditionalHigherTaxBand)
       )
     }
 
@@ -185,16 +183,16 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
       )
       liability.savingsIncome shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
-        aTaxBandAllocation(500, SavingsNilTaxBand),
+        aTaxBandAllocation(500, NilTaxBand),
         aTaxBandAllocation(19500, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
       )
       liability.dividendsIncome shouldBe Seq(
-        aTaxBandAllocation(5000, DividendsNilTaxBand),
-        aTaxBandAllocation(3000, DividendBasicTaxBand),
-        aTaxBandAllocation(2000, DividendHigherTaxBand),
-        aTaxBandAllocation(0, DividendAdditionalHigherTaxBand)
+        aTaxBandAllocation(5000, NilTaxBand),
+        aTaxBandAllocation(0, BasicTaxBand),
+        aTaxBandAllocation(5000, HigherTaxBand),
+        aTaxBandAllocation(0, AdditionalHigherTaxBand)
       )
     }
   }

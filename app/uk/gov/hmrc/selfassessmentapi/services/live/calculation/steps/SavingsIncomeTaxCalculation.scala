@@ -27,21 +27,21 @@ object SavingsIncomeTaxCalculation extends CalculationStep {
     
     val savingsStartingRate = liability.allowancesAndReliefs.savingsStartingRate.getOrElse(throw PropertyNotComputedException("savingsStartingRate"))
 
-    val deductionsAfterPayPensions = liability.deductionsRemaining.getOrElse(throw PropertyNotComputedException("deductionsRemaining"))
+    val deductionsAfterNonSavings = liability.deductionsRemaining.getOrElse(throw PropertyNotComputedException("deductionsRemaining"))
 
     val taxBands = Seq(
       TaxBandState(taxBand = SavingsStartingTaxBand, available = savingsStartingRate),
       TaxBandState(taxBand = NilTaxBand, available = personalSavingsAllowance),
-      TaxBandState(taxBand = BasicTaxBand, available = positiveOrZero(availableAfterPayPensions(BasicTaxBand, liability) - savingsStartingRate - personalSavingsAllowance)),
-      TaxBandState(taxBand = HigherTaxBand, available = availableAfterPayPensions(HigherTaxBand, liability)),
-      TaxBandState(taxBand = AdditionalHigherTaxBand, available = availableAfterPayPensions(AdditionalHigherTaxBand, liability))
+      TaxBandState(taxBand = BasicTaxBand, available = positiveOrZero(availableAfterNonSavings(BasicTaxBand, liability) - savingsStartingRate - personalSavingsAllowance)),
+      TaxBandState(taxBand = HigherTaxBand, available = availableAfterNonSavings(HigherTaxBand, liability)),
+      TaxBandState(taxBand = AdditionalHigherTaxBand, available = availableAfterNonSavings(AdditionalHigherTaxBand, liability))
     )
 
-    val (taxableSavingsIncome, deductionsRemaining) = applyDeductions(liability.totalSavingsIncome, deductionsAfterPayPensions)
+    val (taxableSavingsIncome, deductionsRemaining) = applyDeductions(liability.totalSavingsIncome, deductionsAfterNonSavings)
 
     liability.copy(deductionsRemaining = Some(deductionsRemaining), savingsIncome = allocateToTaxBands(taxableSavingsIncome, taxBands))
   }
   
-  private def availableAfterPayPensions(taxBand: TaxBand, liability: MongoLiability) =
-    liability.payPensionsProfitsIncome.find(_.taxBand == taxBand).map(_.available).getOrElse(taxBand.width)
+  private def availableAfterNonSavings(taxBand: TaxBand, liability: MongoLiability) =
+    liability.nonSavingsIncome.find(_.taxBand == taxBand).map(_.available).getOrElse(taxBand.width)
 }

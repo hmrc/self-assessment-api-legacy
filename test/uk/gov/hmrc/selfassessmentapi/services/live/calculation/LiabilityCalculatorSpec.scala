@@ -30,7 +30,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 180000)
 
-      liability.payPensionsProfitsIncome shouldBe Seq(
+      liability.nonSavingsIncome shouldBe Seq(
         aTaxBandAllocation(32000, BasicTaxBand),
         aTaxBandAllocation(118000, HigherTaxBand),
         aTaxBandAllocation(30000, AdditionalHigherTaxBand)
@@ -123,7 +123,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 9000, savingsIncome = 6000)
 
-      liability.payPensionsProfitsIncome shouldBe Seq(
+      liability.nonSavingsIncome shouldBe Seq(
         aTaxBandAllocation(0, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
@@ -141,7 +141,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 36000, savingsIncome = 12000)
 
-      liability.payPensionsProfitsIncome shouldBe Seq(
+      liability.nonSavingsIncome shouldBe Seq(
         aTaxBandAllocation(25000, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
@@ -159,7 +159,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 50000, dividendsIncome = 120000)
 
-      liability.payPensionsProfitsIncome shouldBe Seq(
+      liability.nonSavingsIncome shouldBe Seq(
         aTaxBandAllocation(32000, BasicTaxBand),
         aTaxBandAllocation(18000, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
@@ -176,7 +176,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
 
       val liability = liabilityCalculationFor(nonSavingsIncome = 20000, savingsIncome = 20000, dividendsIncome = 10000)
 
-      liability.payPensionsProfitsIncome shouldBe Seq(
+      liability.nonSavingsIncome shouldBe Seq(
         aTaxBandAllocation(9000, BasicTaxBand),
         aTaxBandAllocation(0, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)

@@ -64,7 +64,7 @@ class DividendsTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar {
 
   }
 
-  "for income from payment pension and dividends" should {
+  "for income from non savings and dividends" should {
 
     "calculate tax for self employment and dividend income" in {
       dividendTaxFor(dividendsFromUKSources = Seq(DividendsFromUKSources(sourceId = "", totalDividend = 2000)),
@@ -190,7 +190,7 @@ class DividendsTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar {
     }
   }
 
-  "for income from payment pension and profit, interest and dividends" should {
+  "for income from non savings, savings and dividends" should {
 
     "calculate tax for self employment interest and and dividend income" in {
       dividendTaxFor(dividendsFromUKSources = Seq(DividendsFromUKSources(sourceId = "", totalDividend = 2000)),
@@ -280,7 +280,7 @@ class DividendsTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar {
       dividendsFromUKSources = dividendsFromUKSources,
       deductionsRemaining = Some(remainingDeductions)
     ).copy(
-      payPensionsProfitsIncome = Seq(
+      nonSavingsIncome = Seq(
         TaxBandAllocation(basicTaxBandAllocated, BasicTaxBand),
         TaxBandAllocation(higherTaxBandAllocated, HigherTaxBand),
         TaxBandAllocation(additionalHigherTaxBandAllocated, AdditionalHigherTaxBand)

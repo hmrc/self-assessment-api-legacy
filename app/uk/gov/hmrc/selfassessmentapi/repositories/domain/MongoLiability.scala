@@ -43,7 +43,7 @@ case class MongoLiability(id: BSONObjectID,
                           savingsIncome: Seq[TaxBandAllocation] = Nil,
                           dividendsIncome: Seq[TaxBandAllocation] = Nil,
                           allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
-                          incomeTaxDeducted: Option[IncomeTaxDeducted] = None) extends Math {
+                          incomeTaxDeducted: Option[MongoIncomeTaxDeducted] = None) extends Math {
 
   private val dividendsTaxes = dividendsIncome.map {
     bandAllocation => bandAllocation.taxBand match {
@@ -104,7 +104,10 @@ case class MongoLiability(id: BSONObjectID,
         dividends = dividendsTaxes,
         total = (payPensionProfitTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
       ),
-      incomeTaxDeducted = incomeTaxDeducted.getOrElse(IncomeTaxDeducted(0, 0)),
+      incomeTaxDeducted = incomeTaxDeducted.map(incomeTaxDeducted =>
+        IncomeTaxDeducted(
+          interestFromUk = incomeTaxDeducted.interestFromUk,
+          total = incomeTaxDeducted.interestFromUk)).getOrElse(IncomeTaxDeducted(0, 0)),
       totalTaxDue = 0
     )
 
@@ -132,6 +135,8 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
 
 case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None, incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None)
 
+case class MongoIncomeTaxDeducted(interestFromUk: BigDecimal)
+
 object MongoLiability {
 
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
@@ -139,6 +144,7 @@ object MongoLiability {
   implicit val incomeFormats = Json.format[SelfEmploymentIncome]
   implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
   implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
+  implicit val incomeTaxDeductedFormats = Json.format[MongoIncomeTaxDeducted]
   implicit val liabilityFormats = Json.format[MongoLiability]
 
   def create(saUtr: SaUtr, taxYear: TaxYear): MongoLiability = {

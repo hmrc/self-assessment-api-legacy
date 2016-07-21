@@ -1,0 +1,18 @@
+@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.selfassessmentapi.domain._
+
+@(saUtr: SaUtr, taxYear: TaxYear)
+<section id="path-parameters">
+    <title>Path Parameters</title>
+    <table>
+        <headings>
+            <cell>Name</cell>
+            <cell>Type</cell>
+            <cell>Example</cell>
+            <cell>Description</cell>
+        </headings>
+        <rows>
+            @basePathParams(saUtr, Some(taxYear))
+        </rows>
+    </table>
+</section>

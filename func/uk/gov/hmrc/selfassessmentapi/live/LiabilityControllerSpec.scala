@@ -157,7 +157,8 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |      "interestFromUk": 2400,
            |      "total": 600
            |    },
-           |    "totalTaxDue": 0
+           |    "totalTaxDue": 38634,
+           |    "totalTaxOverpaid": 0
            |}
         """.stripMargin
 

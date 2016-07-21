@@ -79,27 +79,31 @@ case class MongoLiability(id: BSONObjectID,
     Liability(
       income = IncomeSummary(
         incomes = IncomeFromSources(
-          selfEmployment = profitFromSelfEmployments.map(_.toIncome),
-          interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
-          dividendsFromUKSources = dividendsFromUKSources,
-          employment = Nil
+          nonSavings = NonSavingsIncomes(
+            selfEmployment = profitFromSelfEmployments.map(_.toIncome),
+            employment = Nil
+          ),
+          savings = SavingsIncomes(
+            fromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties
+          ),
+          dividends = DividendsIncomes(
+            fromUKSources = dividendsFromUKSources
+          ),
+          total = totalIncomeReceived.getOrElse(0)
         ),
         deductions = Some(Deductions(
           incomeTaxRelief = allowancesAndReliefs.incomeTaxRelief.getOrElse(0),
           personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
-          totalDeductions = sum(allowancesAndReliefs.incomeTaxRelief, allowancesAndReliefs.personalAllowance)
+          total = sum(allowancesAndReliefs.incomeTaxRelief, allowancesAndReliefs.personalAllowance)
         )),
-        totalIncomeReceived = totalIncomeReceived.getOrElse(0),
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
       incomeTaxCalculations = IncomeTaxCalculations(
-        payPensionsProfits = payPensionProfitTaxes,
-        savingsIncome = savingsTaxes,
+        nonSavings = payPensionProfitTaxes,
+        savings = savingsTaxes,
         dividends = dividendsTaxes,
-        incomeTaxCharged = (payPensionProfitTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
+        total = (payPensionProfitTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
       ),
-      credits = Nil,
-      class4Nic = CalculatedAmount(calculations = Nil, total = 0),
       incomeTaxDeducted = incomeTaxDeducted.getOrElse(IncomeTaxDeducted(0, 0)),
       totalTaxDue = 0
     )

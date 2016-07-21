@@ -22,38 +22,44 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         s"""
           |{
           |  "income": {
-          |    "incomes": {
+          |   "incomes": {
+          |     "nonSavings": {
           |       "selfEmployment": [
           |         {"sourceId": "self-employment-1", "taxableProfit": 8200, "profit": 10000},
           |         {"sourceId": "self-employment-2", "taxableProfit": 25000, "profit": 28000}
-          |       ],
-          |       "interestFromUKBanksAndBuildingSocieties": [
-          |         {"sourceId": "interest-income-1", "totalInterest": 100},
-          |         {"sourceId": "interest-income-2", "totalInterest": 200}
-          |       ],
-          |       "dividendsFromUKSources": [
-          |         {"sourceId": "dividend-income-1", "totalDividend": 1000},
-          |         {"sourceId": "dividend-income-2", "totalDividend": 2000}
           |       ],
           |       "employment": [
           |         {"sourceId": "employment-1", "taxableProfit": 5000, "profit": 5000}
           |       ]
           |     },
-          |     "deductions": {
-          |       "incomeTaxRelief": 5000,
-          |       "personalAllowance": 9440,
-          |       "totalDeductions": 14440
+          |     "savings": {
+          |       "fromUKBanksAndBuildingSocieties": [
+          |         {"sourceId": "interest-income-1", "totalInterest": 100},
+          |         {"sourceId": "interest-income-2", "totalInterest": 200}
+          |       ]
           |     },
-          |     "totalIncomeReceived": 93039,
-          |     "totalIncomeOnWhichTaxIsDue": 80000
+          |     "dividends": {
+          |       "fromUKSources": [
+          |         {"sourceId": "dividend-income-1", "totalDividend": 1000},
+          |         {"sourceId": "dividend-income-2", "totalDividend": 2000}
+          |       ]
+          |     },
+          |     "total": 93039
+          |   },
+          |   "deductions": {
+          |     "incomeTaxRelief": 5000,
+          |     "personalAllowance": 9440,
+          |     "total": 14440
+          |   },
+          |   "totalIncomeOnWhichTaxIsDue": 80000
           |  },
           |  "incomeTaxCalculations": {
-          |     "payPensionsProfits": [
+          |     "nonSavings": [
           |       {"taxBand": "basicRate", "taxableAmount": 10000, "chargedAt": "20%", "tax": 2000},
           |       {"taxBand": "higherRate", "taxableAmount": 10000, "chargedAt": "40%", "tax": 4000},
           |       {"taxBand": "additionalHigherRate", "taxableAmount": 10000, "chargedAt": "45%", "tax": 4500}
           |     ],
-          |     "savingsIncome": [
+          |     "savings": [
           |       {"taxBand": "startingRate", "taxableAmount": 10000, "chargedAt": "0%", "tax": 0},
           |       {"taxBand": "nilRate", "taxableAmount": 10000, "chargedAt": "0%", "tax": 0},
           |       {"taxBand": "basicRate", "taxableAmount": 10000, "chargedAt": "20%", "tax": 2000},
@@ -66,18 +72,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |       {"taxBand": "higherRate", "taxableAmount": 10000, "chargedAt": "40%", "tax": 4000},
           |       {"taxBand": "additionalHigherRate", "taxableAmount": 10000, "chargedAt": "45%", "tax": 4500}
           |     ],
-          |     "incomeTaxCharged": 31500
-          |  },
-          |  "credits": [
-          |        {"type": "dividend", "amount": 46.6},
-          |        {"type": "interest-charged", "amount": 12.25}
-          |  ],
-          |  "class4Nic": {
-          |      "calculations": [
-          |          { "type": "class-4-nic", "amount": 33695, "percentage": 9, "total": 3032.55},
-          |          { "type": "class-4-nic", "amount": 41030, "percentage": 2, "total": 820.60}
-          |      ],
-          |      "total": 3853.15
+          |     "total": 31500
           |  },
           |  "incomeTaxDeducted": {
           |      "interestFromUk": 0,

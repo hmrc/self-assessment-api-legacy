@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, TaxBand, TaxBandAllocation}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, TaxBand}
 
 
 object DividendsTaxCalculation extends CalculationStep {
@@ -30,8 +30,8 @@ object DividendsTaxCalculation extends CalculationStep {
 
     val availabilities = List((available(BasicTaxBand, liability), BigDecimal(0)),
                               (available(HigherTaxBand, liability), BigDecimal(0)))
-    val untaxed = List((BigDecimal(0), untaxedIncome(liability)))
-    val adjustedAvailabilities = availabilities.foldLeft(untaxed)(calcAvailability).reverse.tail.unzip._1
+    val taxExemptIncome = List((BigDecimal(0), getTaxExemptIncome(liability)))
+    val adjustedAvailabilities = availabilities.foldLeft(taxExemptIncome)(calcAvailability).reverse.tail.unzip._1
 
     val taxBands = Seq(
       TaxBandState(taxBand = NilTaxBand, available = dividendAllowance),
@@ -45,7 +45,7 @@ object DividendsTaxCalculation extends CalculationStep {
     liability.copy(deductionsRemaining = Some(deductionsRemaining), dividendsIncome = allocateToTaxBands(taxableDividendsIncome, taxBands))
   }
 
-  private def untaxedIncome(liability: MongoLiability): BigDecimal = {
+  private def getTaxExemptIncome(liability: MongoLiability): BigDecimal = {
     sum(liability.savingsIncome.find(_.taxBand == NilTaxBand).map(_.amount),
       liability.savingsIncome.find(_.taxBand == SavingsStartingTaxBand).map(_.amount),
       Some(capAt(liability.dividendsFromUKSources.map(_.totalDividend).sum, dividendAllowance)))

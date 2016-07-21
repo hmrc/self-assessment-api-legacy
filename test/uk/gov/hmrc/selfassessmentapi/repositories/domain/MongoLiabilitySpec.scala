@@ -80,7 +80,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
     "map to liability and calculate the income tax charged" in {
 
       val liability = MongoLiability.create(generateSaUtr(), taxYear).copy(
-        payPensionsProfitsIncome = Seq(
+        nonSavingsIncome = Seq(
           aTaxBandAllocation(1000, BasicTaxBand),
           aTaxBandAllocation(2000, HigherTaxBand),
           aTaxBandAllocation(2000, AdditionalHigherTaxBand)

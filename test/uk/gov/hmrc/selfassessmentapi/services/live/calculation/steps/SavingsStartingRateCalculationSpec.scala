@@ -22,55 +22,55 @@ class SavingsStartingRateCalculationSpec extends UnitSpec with SelfEmploymentSug
 
   "run" should {
 
-    "return 5000 if payPensionProfitsReceived and deductions are equal to 0" in {
+    "return 5000 if nonSavingsIncomeReceived and deductions are equal to 0" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 0, totalDeductions = 0) shouldBe 5000
+      savingsStartingRateFor(nonSavingsIncomeReceived = 0, totalDeductions = 0) shouldBe 5000
     }
 
     "return the difference between profit and startingRateLimit (5000) if deductions are 0" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 4500, totalDeductions = 0) shouldBe 500
+      savingsStartingRateFor(nonSavingsIncomeReceived = 4500, totalDeductions = 0) shouldBe 500
     }
 
     "return 0 if profit is equal to startingRateLimit and deductions are 0" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 5000, totalDeductions = 0) shouldBe 0
+      savingsStartingRateFor(nonSavingsIncomeReceived = 5000, totalDeductions = 0) shouldBe 0
     }
 
     "return 0 if profit is more than startingRateLimit and deductions are 0" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 6000, totalDeductions = 0) shouldBe 0
+      savingsStartingRateFor(nonSavingsIncomeReceived = 6000, totalDeductions = 0) shouldBe 0
     }
 
-    "return 5000 if payPensionProfitsReceived is less than deductions" in {
+    "return 5000 if nonSavingsIncomeReceived is less than deductions" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 5000, totalDeductions = 6000) shouldBe 5000
+      savingsStartingRateFor(nonSavingsIncomeReceived = 5000, totalDeductions = 6000) shouldBe 5000
     }
 
-    "return 5000 if payPensionProfitsReceived is equal to deductions" in {
+    "return 5000 if nonSavingsIncomeReceived is equal to deductions" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 6000, totalDeductions = 6000) shouldBe 5000
+      savingsStartingRateFor(nonSavingsIncomeReceived = 6000, totalDeductions = 6000) shouldBe 5000
     }
 
-    "return the difference between profit after deductions and startingRateLimit (5000) if payPensionProfitsReceived is less than deductions + startingRateLimit" in {
+    "return the difference between profit after deductions and startingRateLimit (5000) if nonSavingsIncomeReceived is less than deductions + startingRateLimit" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 9000, totalDeductions = 6000) shouldBe 2000
+      savingsStartingRateFor(nonSavingsIncomeReceived = 9000, totalDeductions = 6000) shouldBe 2000
     }
 
-    "return 0 if payPensionProfitsReceived is equal to deductions + startingRateLimit" in {
+    "return 0 if nonSavingsIncomeReceived is equal to deductions + startingRateLimit" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 11000, totalDeductions = 6000) shouldBe 0
+      savingsStartingRateFor(nonSavingsIncomeReceived = 11000, totalDeductions = 6000) shouldBe 0
     }
 
-    "return 0 if payPensionProfitsReceived is more than deductions + startingRateLimit" in {
+    "return 0 if nonSavingsIncomeReceived is more than deductions + startingRateLimit" in {
 
-      savingsStartingRateFor(payPensionProfitsReceived = 100000, totalDeductions = 6000) shouldBe 0
+      savingsStartingRateFor(nonSavingsIncomeReceived = 100000, totalDeductions = 6000) shouldBe 0
     }
   }
 
-  private def savingsStartingRateFor(payPensionProfitsReceived: BigDecimal, totalDeductions: BigDecimal) = {
+  private def savingsStartingRateFor(nonSavingsIncomeReceived: BigDecimal, totalDeductions: BigDecimal) = {
     val liability = aLiability().copy(
-      payPensionProfitsReceived = Some(payPensionProfitsReceived),
+      nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived),
       totalAllowancesAndReliefs = Some(totalDeductions)
     )
     SavingsStartingRateCalculation.run(SelfAssessment(), liability).allowancesAndReliefs.savingsStartingRate.get

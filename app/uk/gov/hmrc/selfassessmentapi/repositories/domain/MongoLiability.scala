@@ -34,12 +34,12 @@ case class MongoLiability(id: BSONObjectID,
                           interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil,
                           dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
                           totalIncomeReceived: Option[BigDecimal] = None,
-                          payPensionProfitsReceived: Option[BigDecimal] = None,
+                          nonSavingsIncomeReceived: Option[BigDecimal] = None,
                           totalTaxableIncome: Option[BigDecimal] = None,
                           totalAllowancesAndReliefs: Option[BigDecimal] = None,
                           deductionsRemaining: Option[BigDecimal] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
-                          payPensionsProfitsIncome: Seq[TaxBandAllocation] = Nil,
+                          nonSavingsIncome: Seq[TaxBandAllocation] = Nil,
                           savingsIncome: Seq[TaxBandAllocation] = Nil,
                           dividendsIncome: Seq[TaxBandAllocation] = Nil,
                           allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
@@ -51,7 +51,7 @@ case class MongoLiability(id: BSONObjectID,
       case BasicTaxBand => bandAllocation.toTaxBandSummary(7.5)
       case HigherTaxBand => bandAllocation.toTaxBandSummary(32.5)
       case AdditionalHigherTaxBand => bandAllocation.toTaxBandSummary(38.1)
-      case unsupported => throw new IllegalArgumentException(s"Unsupported dividend tax band: $unsupported")
+      case unsupported => throw new IllegalArgumentException(s"Unsupported dividends tax band: $unsupported")
     }
   }
 
@@ -66,12 +66,12 @@ case class MongoLiability(id: BSONObjectID,
     }
   }
 
-  private val payPensionProfitTaxes = payPensionsProfitsIncome.map{
+  private val nonSavingsTaxes = nonSavingsIncome.map{
     bandAllocation => bandAllocation.taxBand match {
       case BasicTaxBand => bandAllocation.toTaxBandSummary(20)
       case HigherTaxBand => bandAllocation.toTaxBandSummary(40)
       case AdditionalHigherTaxBand => bandAllocation.toTaxBandSummary(45)
-      case unsupported => throw new IllegalArgumentException(s"Unsupported pay pension profit tax band: $unsupported")
+      case unsupported => throw new IllegalArgumentException(s"Unsupported non savings tax band: $unsupported")
     }
   }
 
@@ -99,10 +99,10 @@ case class MongoLiability(id: BSONObjectID,
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
       incomeTaxCalculations = IncomeTaxCalculations(
-        nonSavings = payPensionProfitTaxes,
+        nonSavings = nonSavingsTaxes,
         savings = savingsTaxes,
         dividends = dividendsTaxes,
-        total = (payPensionProfitTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
+        total = (nonSavingsTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
       ),
       incomeTaxDeducted = incomeTaxDeducted.getOrElse(IncomeTaxDeducted(0, 0)),
       totalTaxDue = 0

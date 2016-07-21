@@ -37,14 +37,14 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
         DividendsFromUKSources("dividend2", 2000)
       ))
 
-      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(payPensionProfitsReceived = Some(500.50), totalIncomeReceived = Some(3750.50), totalTaxableIncome = Some(0))
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(500.50), totalIncomeReceived = Some(3750.50), totalTaxableIncome = Some(0))
     }
 
     "calculate total income if there is no income from self employments" in {
 
       val liability = aLiability()
 
-      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(payPensionProfitsReceived = Some(0), totalIncomeReceived = Some(0), totalTaxableIncome = Some(0))
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(0), totalIncomeReceived = Some(0), totalTaxableIncome = Some(0))
     }
 
     "calculate total income if there is no income from self employments but has interest from UK banks and building societies" in {
@@ -54,7 +54,7 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
         InterestFromUKBanksAndBuildingSocieties("ue2", 250)
       ))
 
-      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(payPensionProfitsReceived = Some(0), totalIncomeReceived = Some(400), totalTaxableIncome = Some(0))
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(0), totalIncomeReceived = Some(400), totalTaxableIncome = Some(0))
     }
 
 
@@ -65,7 +65,7 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
         DividendsFromUKSources("dividend2", 2000)
       ))
 
-      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(payPensionProfitsReceived = Some(0), totalIncomeReceived = Some(3000), totalTaxableIncome = Some(0))
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(0), totalIncomeReceived = Some(3000), totalTaxableIncome = Some(0))
     }
   }
 }

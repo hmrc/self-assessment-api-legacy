@@ -135,7 +135,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
       )
     }
 
-    "allocate tax to BasicTaxBand and HigherTaxBand if BasicTaxBand is partially allocated by payPensionProfit" in {
+    "allocate tax to BasicTaxBand and HigherTaxBand if BasicTaxBand is partially allocated by nonSavingsProfit" in {
 
       savingsIncomeTaxFor(interestFromUKBanks = 50000, basicTaxBandAllocated = 20000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
@@ -146,7 +146,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
       )
     }
 
-    "allocate tax to BasicTaxBand, HigherTaxBand and AdditionalHigherTaxBand if BasicTaxBand is partially allocated by payPensionProfit" in {
+    "allocate tax to BasicTaxBand, HigherTaxBand and AdditionalHigherTaxBand if BasicTaxBand is partially allocated by nonSavingsProfit" in {
 
       savingsIncomeTaxFor(interestFromUKBanks = 150000, basicTaxBandAllocated = 20000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
@@ -157,7 +157,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
       )
     }
 
-    "allocate tax to HigherTaxBand and AdditionalHigherTaxBand if BasicTaxBand is already fully allocated by payPensionProfit" in {
+    "allocate tax to HigherTaxBand and AdditionalHigherTaxBand if BasicTaxBand is already fully allocated by nonSavingsProfit" in {
 
       savingsIncomeTaxFor(interestFromUKBanks = 150000, basicTaxBandAllocated = 32000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
@@ -168,7 +168,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
       )
     }
 
-    "allocate tax to AdditionalHigherTaxBand if both BasicTaxBand and HigherTaxBand are already fully allocated by payPensionProfit" in {
+    "allocate tax to AdditionalHigherTaxBand if both BasicTaxBand and HigherTaxBand are already fully allocated by nonSavingsProfit" in {
 
       savingsIncomeTaxFor(interestFromUKBanks = 10000, basicTaxBandAllocated = 32000, higherTaxBandAllocated = 118000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
@@ -179,7 +179,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
       )
     }
 
-    "allocate tax to AdditionalHigherTaxBand if AdditionalHigherTaxBand is partially, BasicTaxBand and HigherTaxBand are already fully allocated by payPensionProfit" in {
+    "allocate tax to AdditionalHigherTaxBand if AdditionalHigherTaxBand is partially, BasicTaxBand and HigherTaxBand are already fully allocated by nonSavingsProfit" in {
 
       savingsIncomeTaxFor(interestFromUKBanks = 10000, basicTaxBandAllocated = 32000, higherTaxBandAllocated = 118000, additionalHigherTaxBandAllocated = 100000) shouldBe Seq(
         aTaxBandAllocation(0, SavingsStartingTaxBand),
@@ -231,7 +231,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar 
       personalSavingsAllowance = Some(personalSavingsAllowance),
       savingsStartingRate = Some(savingsStartingRate)
     ).copy(
-      payPensionsProfitsIncome = Seq(
+      nonSavingsIncome = Seq(
         TaxBandAllocation(basicTaxBandAllocated, BasicTaxBand),
         TaxBandAllocation(higherTaxBandAllocated, HigherTaxBand),
         TaxBandAllocation(additionalHigherTaxBandAllocated, AdditionalHigherTaxBand)

@@ -54,7 +54,7 @@ object DividendsTaxCalculation extends CalculationStep {
   private def available(taxBand: TaxBand, liability: MongoLiability) = {
     (for {
       fromSavings <- liability.savingsIncome.find(_.taxBand == taxBand)
-      fromPpp <- liability.payPensionsProfitsIncome.find(_.taxBand == taxBand)
+      fromPpp <- liability.nonSavingsIncome.find(_.taxBand == taxBand)
     } yield (fromPpp + fromSavings).available).getOrElse(taxBand.width)
   }
 

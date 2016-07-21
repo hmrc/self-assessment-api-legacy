@@ -48,26 +48,30 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
       liability.toLiability shouldBe Liability(
         income = IncomeSummary(
           incomes = IncomeFromSources(
-            selfEmployment = Seq(
-              Income("seId1", taxableProfit = 10, profit = 20),
-              Income("seId2", taxableProfit = 20, profit = 40)
+            nonSavings = NonSavingsIncomes(
+              selfEmployment = Seq(
+                Income("seId1", taxableProfit = 10, profit = 20),
+                Income("seId2", taxableProfit = 20, profit = 40)
+              ),
+              employment = Nil
             ),
-            interestFromUKBanksAndBuildingSocieties = Seq(
-              InterestFromUKBanksAndBuildingSocieties("interestId1", totalInterest = 20),
-              InterestFromUKBanksAndBuildingSocieties("interestId2", totalInterest = 40)
+            savings = SavingsIncomes(
+              fromUKBanksAndBuildingSocieties = Seq(
+                InterestFromUKBanksAndBuildingSocieties("interestId1", totalInterest = 20),
+                InterestFromUKBanksAndBuildingSocieties("interestId2", totalInterest = 40)
+              )
             ),
-            dividendsFromUKSources = Seq(
-              DividendsFromUKSources("divId1", totalDividend = 100)
+            dividends = DividendsIncomes(
+              fromUKSources = Seq(
+                DividendsFromUKSources("divId1", totalDividend = 100)
+              )
             ),
-            employment = Nil
+            total = 1000
           ),
-          deductions = Some(Deductions(personalAllowance = 3000, incomeTaxRelief = 2000, totalDeductions = 5000)),
-          totalIncomeReceived = 1000,
+          deductions = Some(Deductions(personalAllowance = 3000, incomeTaxRelief = 2000, total = 5000)),
           totalIncomeOnWhichTaxIsDue = 4000
         ),
         incomeTaxCalculations = IncomeTaxCalculations(Nil, Nil, Nil, 0),
-        credits = Nil,
-        class4Nic = CalculatedAmount(Nil, 0),
         incomeTaxDeducted = IncomeTaxDeducted(0, 0),
         totalTaxDue = 0
       )
@@ -97,12 +101,12 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
       )
 
       liability.toLiability.incomeTaxCalculations shouldBe IncomeTaxCalculations(
-        payPensionsProfits = Seq(
+        nonSavings = Seq(
           aTaxBandSummary(BasicTaxBand.name, 1000, "20%", 200),
           aTaxBandSummary(HigherTaxBand.name, 2000, "40%", 800),
           aTaxBandSummary(AdditionalHigherTaxBand.name, 2000, "45%", 900)
         ),
-        savingsIncome = Seq(
+        savings = Seq(
           aTaxBandSummary(SavingsStartingTaxBand.name, 1000, "0%", 0),
           aTaxBandSummary(NilTaxBand.name, 1000, "0%", 0),
           aTaxBandSummary(BasicTaxBand.name, 1000, "20%", 200),
@@ -114,9 +118,8 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           aTaxBandSummary(BasicTaxBand.name, 1000, "7.5%", 75),
           aTaxBandSummary(HigherTaxBand.name, 1000, "32.5%", 325),
           aTaxBandSummary(AdditionalHigherTaxBand.name, 1000, "38.1%", 381)
-
         ),
-        incomeTaxCharged = 3731
+        total = 3731
       )
     }
   }

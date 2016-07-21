@@ -10,7 +10,7 @@
         <title>Resource</title>
         <resource>GET /self-assessment/{utr}/{taxYear}/liability</resource>
     </section>
-    @partials.basePathParams(saUtr, Some(taxYear))
+    @partials.liabilityPathParams(saUtr, taxYear)
     @partials.requestHeaders(false)
     @partials.authorisation(false)
     <section id="sample-response">

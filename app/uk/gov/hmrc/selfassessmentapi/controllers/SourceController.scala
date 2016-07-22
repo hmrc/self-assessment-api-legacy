@@ -73,7 +73,6 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
   protected def deleteSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
     sourceHandler(sourceType).delete(saUtr, taxYear, sourceId) map {
       case true => NoContent
-      // TODO untested??
       case false => notFound
     }
   }

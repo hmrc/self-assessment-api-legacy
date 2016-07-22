@@ -191,4 +191,26 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     }
   }
 
+  "I" should {
+    "not be able to update a non existent summary" in {
+      implementedSources foreach { sourceType =>
+        implementedSummaries(sourceType) foreach { summaryType =>
+          given()
+            .userIsAuthorisedForTheResource(saUtr)
+          .when()
+            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .thenAssertThat()
+            .statusIs(201)
+            .contentTypeIsHalJson()
+            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+          .when()
+            .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567", Some(summaryType.example()))
+            .withAcceptHeader()
+            .thenAssertThat()
+            .isNotFound
+        }
+      }
+    }
+  }
+
 }

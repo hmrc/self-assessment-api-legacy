@@ -18,18 +18,18 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor4}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoIncomeTaxDeducted, MongoUnearnedIncomesSavingsIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoTaxDeducted, MongoUnearnedIncomesSavingsIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
-class IncomeTaxDeductedCalculationSpec extends UnitSpec with TableDrivenPropertyChecks with SelfEmploymentSugar {
+class TaxDeductedCalculationSpec extends UnitSpec with TableDrivenPropertyChecks with SelfEmploymentSugar {
 
   "run" should {
 
     "calculate tax deducted amount for UK savings when there is no interest from banks" in {
       val liability = aLiability()
 
-      IncomeTaxDeductedCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(
-          incomeTaxDeducted = Some(MongoIncomeTaxDeducted(interestFromUk = 0)))
+      TaxDeductedCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(
+          taxDeducted = Some(MongoTaxDeducted(interestFromUk = 0)))
     }
 
     "calculate tax deducted amount for UK savings income across several unearned incomes considering only taxed interest" in {
@@ -83,9 +83,9 @@ class IncomeTaxDeductedCalculationSpec extends UnitSpec with TableDrivenProperty
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(interest1, interest2, interest3))
       val liability = aLiability()
 
-      IncomeTaxDeductedCalculation
+      TaxDeductedCalculation
         .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe liability.copy(
-          incomeTaxDeducted = Some(MongoIncomeTaxDeducted(interestFromUk = taxDeducted)))
+          taxDeducted = Some(MongoTaxDeducted(interestFromUk = taxDeducted)))
     }
   }
 }

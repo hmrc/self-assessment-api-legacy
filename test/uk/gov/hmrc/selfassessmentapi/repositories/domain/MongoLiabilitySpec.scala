@@ -72,7 +72,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           totalIncomeOnWhichTaxIsDue = 4000
         ),
         incomeTaxCalculations = IncomeTaxCalculations(Nil, Nil, Nil, 0),
-        incomeTaxDeducted = IncomeTaxDeducted(0, 0),
+        taxDeducted = TaxDeducted(0, 0),
         totalTaxDue = 0,
         totalTaxOverpaid = 0
       )
@@ -134,7 +134,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         savingsIncome = Seq(
           aTaxBandAllocation(1000, NilTaxBand)
         ),
-        incomeTaxDeducted = Some(MongoIncomeTaxDeducted(
+        taxDeducted = Some(MongoTaxDeducted(
           interestFromUk = 1000
         ))
       )

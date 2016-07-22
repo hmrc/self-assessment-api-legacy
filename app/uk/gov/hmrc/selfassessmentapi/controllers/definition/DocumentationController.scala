@@ -58,7 +58,6 @@ object Documentation extends BaseController with Links {
 
   private val sourceId: SourceId = "00d2d32d"
   private val summaryId: SourceId = "00d2d98a"
-  private val liabilityId: LiabilityId = "00d2d98a"
   private val utr = SaUtr("2234567890")
   private val taxYear = TaxYear("2016-17")
 

@@ -29,12 +29,12 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
       scopes = Seq(
         Scope(
           key = readScope,
-          name = "Self-Assessment - Read",
+          name = "View your Self-Assessment information",
           description = "Allow read access to self assessment data"
         ),
         Scope(
           key = writeScope,
-          name = "Self-Assessment - Write",
+          name = "Change your Self-Assessment information",
           description = "Allow write access to self assessment data"
         )
       ),

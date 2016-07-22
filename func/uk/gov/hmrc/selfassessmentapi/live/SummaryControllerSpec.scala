@@ -116,6 +116,21 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     }
   }
 
+  "I" should {
+    "not be able to create summary for a non existent source" in {
+      val summaryTypes = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes
+
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .post(s"/$saUtr/$taxYear/${SourceTypes.SelfEmployments.name}/1234567890/${summaryTypes.Incomes.name}",
+          Some(summaryTypes.Incomes.example()))
+        .withAcceptHeader()
+        .thenAssertThat()
+        .isNotFound
+    }
+  }
+
 
 
   "I" should {

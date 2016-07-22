@@ -50,8 +50,7 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
         }
       case Right(futOptId) => futOptId.map {
         case Some(id) => Created(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
-        // TODO untested
-        case _ => BadRequest
+        case _ => notFound
       }
     }
   }

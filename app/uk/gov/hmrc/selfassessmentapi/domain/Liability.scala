@@ -92,7 +92,7 @@ object IncomeTaxDeducted {
   implicit val format = Json.format[IncomeTaxDeducted]
 }
 
-case class Liability(income: IncomeSummary, incomeTaxCalculations: IncomeTaxCalculations, incomeTaxDeducted: IncomeTaxDeducted, totalTaxDue: BigDecimal)
+case class Liability(income: IncomeSummary, incomeTaxCalculations: IncomeTaxCalculations, incomeTaxDeducted: IncomeTaxDeducted, totalTaxDue: BigDecimal, totalTaxOverpaid: BigDecimal)
 
 object Liability {
   implicit val format = Json.format[Liability]
@@ -122,7 +122,7 @@ object Liability {
               DividendsFromUKSources("dividend-income-2", 2000)
             )
           ),
-          total = BigDecimal(93039)
+          total = 93039
         ),
         deductions = Some(Deductions(
           incomeTaxRelief = BigDecimal(5000),
@@ -156,6 +156,7 @@ object Liability {
         interestFromUk = 0,
         total = 0
       ),
-      totalTaxDue = BigDecimal(25796.95)
+      totalTaxDue = 25796.95,
+      totalTaxOverpaid = 0
     )
 }

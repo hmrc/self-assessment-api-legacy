@@ -26,7 +26,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
 
     "map to liability" in {
 
-      val liability = MongoLiability.create(generateSaUtr(), taxYear).copy(
+      val liability = aLiability().copy(
         profitFromSelfEmployments = Seq(
           SelfEmploymentIncome(sourceId = "seId1", taxableProfit = 10, profit = 20, lossBroughtForward = 15),
           SelfEmploymentIncome(sourceId = "seId2", taxableProfit = 20, profit = 40, lossBroughtForward = 30)
@@ -73,13 +73,14 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         ),
         incomeTaxCalculations = IncomeTaxCalculations(Nil, Nil, Nil, 0),
         incomeTaxDeducted = IncomeTaxDeducted(0, 0),
-        totalTaxDue = 0
+        totalTaxDue = 0,
+        totalTaxOverpaid = 0
       )
     }
 
     "map to liability and calculate the income tax charged" in {
 
-      val liability = MongoLiability.create(generateSaUtr(), taxYear).copy(
+      val liability = aLiability().copy(
         nonSavingsIncome = Seq(
           aTaxBandAllocation(1000, BasicTaxBand),
           aTaxBandAllocation(2000, HigherTaxBand),
@@ -100,7 +101,9 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         )
       )
 
-      liability.toLiability.incomeTaxCalculations shouldBe IncomeTaxCalculations(
+      val result = liability.toLiability
+
+      result.incomeTaxCalculations shouldBe IncomeTaxCalculations(
         nonSavings = Seq(
           aTaxBandSummary(BasicTaxBand.name, 1000, "20%", 200),
           aTaxBandSummary(HigherTaxBand.name, 2000, "40%", 800),
@@ -121,6 +124,23 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         ),
         total = 3731
       )
+      result.totalTaxDue shouldBe 3731
+      result.totalTaxOverpaid shouldBe 0
+    }
+
+    "map to liability and calculate the income tax overpaid if total tax is negative" in {
+
+      val liability = aLiability().copy(
+        savingsIncome = Seq(
+          aTaxBandAllocation(1000, NilTaxBand)
+        ),
+        incomeTaxDeducted = Some(MongoIncomeTaxDeducted(
+          interestFromUk = 1000
+        ))
+      )
+      val result = liability.toLiability
+      result.totalTaxDue shouldBe 0
+      result.totalTaxOverpaid shouldBe 1000
     }
   }
 

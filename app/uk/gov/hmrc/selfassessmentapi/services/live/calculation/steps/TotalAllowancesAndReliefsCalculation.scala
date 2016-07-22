@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 
-object TotalAllowancesAndReliefs extends CalculationStep {
+object TotalAllowancesAndReliefsCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 

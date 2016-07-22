@@ -28,7 +28,7 @@ class LiabilityCalculator {
     TotalIncomeCalculation,
     IncomeTaxReliefCalculation,
     PersonalAllowanceCalculation,
-    TotalAllowancesAndReliefs,
+    TotalAllowancesAndReliefsCalculation,
     TotalIncomeOnWhichTaxIsDueCalculation,
     PersonalSavingsAllowanceCalculation,
     SavingsStartingRateCalculation,

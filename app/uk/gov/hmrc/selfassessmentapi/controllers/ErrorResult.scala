@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import uk.gov.hmrc.selfassessmentapi.domain.ValidationErrors
 
-trait ErrorResult
+sealed trait ErrorResult
 
 case class GenericErrorResult(message: String) extends ErrorResult
 

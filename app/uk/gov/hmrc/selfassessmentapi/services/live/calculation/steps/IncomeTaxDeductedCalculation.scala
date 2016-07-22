@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.IncomeTaxDeducted
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoIncomeTaxDeducted, MongoLiability}
 
 object IncomeTaxDeductedCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
@@ -27,7 +26,6 @@ object IncomeTaxDeductedCalculation extends CalculationStep {
     }.sum
     val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
     val totalTaxDeducted = roundUp(grossedUpInterest - totalTaxedInterest)
-    liability.copy(
-        incomeTaxDeducted = Some(IncomeTaxDeducted(interestFromUk = totalTaxedInterest, total = totalTaxDeducted)))
+    liability.copy(incomeTaxDeducted = Some(MongoIncomeTaxDeducted(interestFromUk = totalTaxDeducted)))
   }
 }

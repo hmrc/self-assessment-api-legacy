@@ -10,7 +10,7 @@
         <title>Resource</title>
         <resource>POST /self-assessment/{utr}/{taxYear}/liability</resource>
     </section>
-    @partials.basePathParams(saUtr, Some(taxYear))
+    @partials.liabilityPathParams(saUtr, taxYear)
     @partials.requestHeaders(false)
     @partials.authorisation(true)
     <section id="sample-response">

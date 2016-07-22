@@ -46,8 +46,6 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
             // TODO untested
             case GenericErrorResult(message) => BadRequest(message)
             case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
-            // TODO untested
-            case _ => BadRequest
           }
         }
       case Right(futOptId) => futOptId.map {
@@ -74,8 +72,6 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
             // TODO untested
             case GenericErrorResult(message) => BadRequest(message)
             case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
-            // TODO untested
-            case _ => BadRequest
           }
         }
       case Right(optResult) => optResult.map {

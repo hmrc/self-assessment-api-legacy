@@ -43,7 +43,7 @@ case class MongoLiability(id: BSONObjectID,
                           savingsIncome: Seq[TaxBandAllocation] = Nil,
                           dividendsIncome: Seq[TaxBandAllocation] = Nil,
                           allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
-                          incomeTaxDeducted: Option[IncomeTaxDeducted] = None) extends Math {
+                          incomeTaxDeducted: Option[MongoIncomeTaxDeducted] = None) extends Math {
 
   private lazy val dividendsTaxes = dividendsIncome.map {
     bandAllocation => bandAllocation.taxBand match {
@@ -77,7 +77,9 @@ case class MongoLiability(id: BSONObjectID,
 
   private lazy val totalIncomeTax = (nonSavingsTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
 
-  private lazy val totalTaxDue = totalIncomeTax - incomeTaxDeducted.map(_.total).getOrElse(0)
+  private lazy val totalTaxDeducted = incomeTaxDeducted.map(_.interestFromUk).getOrElse(BigDecimal(0))
+
+  private lazy val totalTaxDue = totalIncomeTax - totalTaxDeducted
 
   def toLiability =
     Liability(
@@ -108,7 +110,11 @@ case class MongoLiability(id: BSONObjectID,
         dividends = dividendsTaxes,
         total = totalIncomeTax
       ),
-      incomeTaxDeducted = incomeTaxDeducted.getOrElse(IncomeTaxDeducted(0, 0)),
+      incomeTaxDeducted = incomeTaxDeducted.map(incomeTaxDeducted =>
+        IncomeTaxDeducted(
+          interestFromUk = incomeTaxDeducted.interestFromUk,
+          total = totalTaxDeducted)
+      ).getOrElse(IncomeTaxDeducted(0, 0)),
       totalTaxDue = if (totalTaxDue > 0) totalTaxDue else 0,
       totalTaxOverpaid = if (totalTaxDue < 0) totalTaxDue.abs else 0
     )
@@ -137,6 +143,8 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
 
 case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None, incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None)
 
+case class MongoIncomeTaxDeducted(interestFromUk: BigDecimal)
+
 object MongoLiability {
 
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
@@ -144,6 +152,7 @@ object MongoLiability {
   implicit val incomeFormats = Json.format[SelfEmploymentIncome]
   implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
   implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
+  implicit val incomeTaxDeductedFormats = Json.format[MongoIncomeTaxDeducted]
   implicit val liabilityFormats = Json.format[MongoLiability]
 
   def create(saUtr: SaUtr, taxYear: TaxYear): MongoLiability = {

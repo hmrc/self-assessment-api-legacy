@@ -40,8 +40,6 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
             // TODO untested
             case GenericErrorResult(message) => BadRequest(message)
             case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
-            // TODO untested
-            case _ => BadRequest
           }
         }
       case Right(id) => id.map { sourceId => Created(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId))) }
@@ -63,8 +61,6 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
             // TODO untested
             case GenericErrorResult(message) => BadRequest(message)
             case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
-            // TODO untested
-            case _ => BadRequest
           }
         }
       case Right(result) => result.map {

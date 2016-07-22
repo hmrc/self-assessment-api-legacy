@@ -134,9 +134,8 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         savingsIncome = Seq(
           aTaxBandAllocation(1000, NilTaxBand)
         ),
-        incomeTaxDeducted = Some(IncomeTaxDeducted(
-          interestFromUk = 1000,
-          total = 1000
+        incomeTaxDeducted = Some(MongoIncomeTaxDeducted(
+          interestFromUk = 1000
         ))
       )
       val result = liability.toLiability

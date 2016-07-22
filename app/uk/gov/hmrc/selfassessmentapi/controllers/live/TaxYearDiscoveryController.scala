@@ -76,10 +76,8 @@ object TaxYearDiscoveryController extends BaseController with Links {
             validateRequest(taxYearProperties, taxYear.taxYear) match {
               case Some(invalidPart) => Future.successful(BadRequest(Json.toJson(InvalidRequest(ErrorCode.INVALID_REQUEST, "Invalid request", Seq(invalidPart)))))
               case None =>
-                repository.updateTaxYearProperties(utr, taxYear, taxYearProperties).map {
-                  case true => Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
-                  // TODO untested
-                  case false => notFound
+                repository.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { x =>
+                  Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
                 }
             }
           }

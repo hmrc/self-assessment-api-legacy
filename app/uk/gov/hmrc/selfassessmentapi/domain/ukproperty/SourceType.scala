@@ -55,7 +55,7 @@ object SourceType {
           |you can only claim capital allowances for
           |furniture and fixtures or other equipment for use
           |in a dwelling house if it qualifies as a Furnished
-          |Holiday Letting (FHL)""".stripMargin, optional = true),
+          |Holiday Letting""".stripMargin, optional = true),
       PositiveMonetaryFieldDescription(name, "wearAndTearAllowance", "10% wear and tear allowance", optional = true),
       FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "lossBroughtForward", "Loss brought forward used against this year’s profits"),

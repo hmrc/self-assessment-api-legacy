@@ -25,8 +25,10 @@ object SourceType {
 
   case object SelfEmployments extends SourceType {
     override val name = "self-employments"
+
     override def example(sourceId: Option[SourceId] = None): JsValue = toJson(SelfEmployment.example(sourceId))
-    override val summaryTypes : Set[SummaryType] = Set(Incomes, Expenses, GoodsAndServicesOwnUses, BalancingCharges)
+
+    override val summaryTypes: Set[SummaryType] = Set(Incomes, Expenses, GoodsAndServicesOwnUses, BalancingCharges)
     override val title = "Sample self-employments"
 
     override def description(action: String) = s"$action a self-employment"
@@ -34,10 +36,7 @@ object SourceType {
     override val fieldDescriptions = Seq(
       FullFieldDescription(name, "commencementDate", "Date", "2016-01-01", "Date in yyyy-dd-mm format"),
       FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this self-employment", optional = true),
-      PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance",
-        """If you bought equipment (but not cars) on or after 6 April 2014, you can claim Annual Investment Allowance (AIA). Up to 31 December 2015 the maximum annual amount of AIA was £500,000.
-          |From 1 January 2016 the maximum annual amount of AIA is £200,000
-          |If you use the equipment for both business and private use, you’ll need to reduce the Annual Investment Allowance (AIA) you claim by the private use proportion""".stripMargin, optional = true),
+      PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", "Annual Investment Allowance of up to £200,000 can be used for equipment (but not cars) bought on or after 6 April 2014", optional = true),
       PositiveMonetaryFieldDescription(name, "capitalAllowanceMainPool", "Capital allowances at 18% on equipment, including cars with lower CO2 emissions", optional = true),
       PositiveMonetaryFieldDescription(name, "capitalAllowanceSpecialRatePool", "Capital allowances at 8% on equipment, including cars with higher CO2 emissions", optional = true),
       PositiveMonetaryFieldDescription(name, "restrictedCapitalAllowance", "Restricted capital allowances for cars costing more than £12,000 – if bought before 6 April 2009", optional = true),
@@ -53,7 +52,7 @@ object SourceType {
       PositiveMonetaryFieldDescription(name, "overlapReliefUsed", "Overlap relief used this year", optional = true),
       PositiveMonetaryFieldDescription(name, "accountingAdjustment", "Adjustment for change of accounting practice", optional = true),
       MonetaryFieldDescription(name, "averagingAdjustment", "Averaging adjustment (only for farmers, market gardeners and creators of literary or artistic works)", optional = true),
-      PositiveMonetaryFieldDescription(name, "lossBroughtForward", "Loss brought forward from earlier years set off against\n\nthis year’s profits", optional = true),
+      PositiveMonetaryFieldDescription(name, "lossBroughtForward", "Loss brought forward from earlier years set off against this year’s profits", optional = true),
       PositiveMonetaryFieldDescription(name, "outstandingBusinessIncome", "Any other business income, such as rebates received, and non arm’s length reverse premiums", optional = true)
     )
   }

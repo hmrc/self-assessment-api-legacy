@@ -34,9 +34,9 @@ object SourceType {
     override val fieldDescriptions = Seq(
       FullFieldDescription(name, "propertyLocation", "Enum", PropertyLocationType.values.mkString(", "), "The location of the property"),
       FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
-      PositiveMonetaryFieldDescription(name, "capitalAllowance"),
+      PositiveMonetaryFieldDescription(name, "capitalAllowance", "Amount claimed for any equipment or vehicles for Furnished Holiday Lettings (not other furnished residential lettings)"),
       FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
-      PositiveMonetaryFieldDescription(name, "lossBroughtForward")
+      PositiveMonetaryFieldDescription(name, "lossBroughtForward", "Loss brought forward used against this year’s profits")
     )
   }
 

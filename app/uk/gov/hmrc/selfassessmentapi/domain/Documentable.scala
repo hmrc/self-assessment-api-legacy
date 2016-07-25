@@ -33,10 +33,9 @@ case class PositiveMonetaryFieldDescription(source: String, name: String, descri
   val example = "100.00"
 }
 
-case class MonetaryFieldDescription(source: String, name: String, optional: Boolean = false) extends FieldDescription {
+case class MonetaryFieldDescription(source: String, name: String, description: String = "Monetary amount", optional: Boolean = false) extends FieldDescription {
   val `type` = "Money"
   val example = "-100.00"
-  val description = "Monetary amount"
 }
 
 case class ObjectFieldDescription(source: String, name: String, exampleJson: JsValue, optional: Boolean = false, description: String = "Object") extends FieldDescription {

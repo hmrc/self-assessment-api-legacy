@@ -18,13 +18,11 @@
         <headings>
             <cell>Name</cell>
             <cell>Type</cell>
-            <cell>Example</cell>
             <cell>Description</cell>
-            <cell>Optional</cell>
         </headings>
         <rows>
             @sourceType.fieldDescriptions.map { cur =>
-               @fieldDescription(cur, false)
+               @fieldDescriptionShort(cur)
             }
         </rows>
     </table>

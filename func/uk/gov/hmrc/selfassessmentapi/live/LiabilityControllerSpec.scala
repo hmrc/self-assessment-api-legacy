@@ -25,6 +25,15 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
 
   "retrieve liability" should {
 
+    "return a not found response when a liability has not been requested" in {
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/$saUtr/$taxYear/liability")
+        .thenAssertThat()
+        .isNotFound
+    }
+
     "return a 200 response with liability details" in {
 
       /*

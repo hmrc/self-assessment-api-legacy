@@ -49,8 +49,6 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
           HalLink("self", liabilityHref(utr, taxYear))
         )
         Ok(halResource(Json.toJson(liability), links))
-
-      // TODO untested???
       case _ => notFound
     }
   }

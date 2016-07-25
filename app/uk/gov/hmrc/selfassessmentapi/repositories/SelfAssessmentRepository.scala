@@ -21,7 +21,7 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONNull, BSONObjectID, BSONString}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONElement, BSONNull, BSONObjectID, BSONString, Producer}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
@@ -52,17 +52,28 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
 
 
   def touch(saUtr: SaUtr, taxYear: TaxYear) = {
-    val now = DateTime.now(DateTimeZone.UTC)
+
     for {
       result <- atomicUpsert(
         BSONDocument("saUtr" -> BSONString(saUtr.toString), "taxYear" -> BSONString(taxYear.toString)),
-        BSONDocument(
-          "$setOnInsert" -> BSONDocument("createdDateTime" -> BSONDateTime(now.getMillis)),
-          "$set" -> BSONDocument("lastModifiedDateTime" -> BSONDateTime(now.getMillis))
-        )
+        touchModifier()
       )
     } yield ()
   }
+
+  private def touchModifier(): BSONDocument = {
+    val now = DateTime.now(DateTimeZone.UTC)
+    BSONDocument(
+      setOnInsert(now),
+      "$set" -> BSONDocument(lastModifiedDateTimeModfier(now))
+    )
+  }
+
+  private def setOnInsert(dateTime: DateTime): Producer[BSONElement] =
+    "$setOnInsert" -> BSONDocument("createdDateTime" -> BSONDateTime(dateTime.getMillis))
+
+  private def lastModifiedDateTimeModfier(dateTime: DateTime): Producer[BSONElement] =
+    "lastModifiedDateTime" -> BSONDateTime(dateTime.getMillis)
 
 
   def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[MongoSelfAssessment]] = {
@@ -83,26 +94,31 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
 
   def isInsertion(suppliedId: BSONObjectID, returned: MongoSelfAssessment): Boolean = suppliedId.equals(returned.id)
 
-  def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Boolean] = {
-    touch(saUtr, taxYear)
-    val pensionContributionModifiers =
+  def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Unit] = {
+    val now = DateTime.now(DateTimeZone.UTC)
+    val pensionContributionModifiers:BSONDocument =
       taxYearProperties.pensionContributions
         .map(pensionContributions =>
-          Seq(
-            "$set" -> BSONDocument(
+            BSONDocument(
+              lastModifiedDateTimeModfier(now),
               "taxYearProperties" -> BSONDocument(
                 "pensionContributions" -> BSONDocument(
                   Seq(
                     "ukRegisteredPension" -> pensionContributions.ukRegisteredPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
                     "retirementAnnuity" -> pensionContributions.retirementAnnuity.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
                     "employerScheme" -> pensionContributions.employerScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                    "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)))))))
-        .getOrElse(Seq("$set" -> BSONDocument("pensionContributions" -> BSONNull)))
+                    "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull))))))
+        .getOrElse(BSONDocument(
+          lastModifiedDateTimeModfier(now),
+          "pensionContributions" -> BSONNull))
     for {
-      result <- atomicUpdate(
+      result <- atomicUpsert(
         BSONDocument("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear),
-        BSONDocument(pensionContributionModifiers))
-    } yield result.nonEmpty
+        BSONDocument(
+          setOnInsert(now),
+          "$set" -> pensionContributionModifiers
+        ))
+    } yield ()
   }
 
   def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] =

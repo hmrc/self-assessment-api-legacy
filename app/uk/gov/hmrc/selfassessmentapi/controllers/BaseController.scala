@@ -39,14 +39,9 @@ trait BaseController
 
   override protected def withJsonBody[T](f: (T) => Future[Result])(
     implicit request: Request[JsValue], m: Manifest[T], reads: Reads[T]) =
-    Try(request.body.validate[T]) match {
-      case Success(JsSuccess(payload, _)) => f(payload)
-      case Success(JsError(errors)) =>
-        // TODO untested
-        Future.successful(BadRequest(Json.toJson(invalidRequest(errors))))
-      case Failure(e) =>
-        // TODO untested
-        Future.successful(BadRequest(s"could not parse body due to ${e.getMessage}"))
+    request.body.validate[T] match {
+      case JsSuccess(payload, _) => f(payload)
+      case JsError(errors) => Future.successful(BadRequest(Json.toJson(invalidRequest(errors))))
     }
 
   def invalidRequest(errors: ValidationErrors) =

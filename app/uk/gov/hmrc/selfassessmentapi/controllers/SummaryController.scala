@@ -50,8 +50,7 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
         }
       case Right(futOptId) => futOptId.map {
         case Some(id) => Created(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
-        // TODO untested
-        case _ => BadRequest
+        case _ => notFound
       }
     }
   }
@@ -76,7 +75,6 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
         }
       case Right(optResult) => optResult.map {
         case true => Ok(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
-        // TODO untested???
         case false => notFound
       }
     }
@@ -87,7 +85,6 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
   protected def deleteSummary(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
     handler(sourceType, summaryTypeName).delete(saUtr, taxYear, sourceId, summaryId) map {
       case true => NoContent
-      // TODO untested???
       case false => notFound
     }
   }

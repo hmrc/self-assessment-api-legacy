@@ -140,8 +140,6 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       val taxYearProps2 = TaxYearProperties(pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(50000.00))))
       val result = await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, taxYearProps2))
 
-      result shouldBe true
-
       val records = await(mongoRepository.findTaxYearProperties(saUtr, taxYear))
       records.size shouldBe 1
       records shouldEqual Some(taxYearProps2)

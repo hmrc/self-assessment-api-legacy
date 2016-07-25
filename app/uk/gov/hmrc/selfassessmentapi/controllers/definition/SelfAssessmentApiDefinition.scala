@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.config.AppContext._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.APIStatus.APIStatus
 
 class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
@@ -45,6 +46,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
         versions = Seq(
           APIVersion(
             version = "1.0",
+            access = buildWhiteListingAccess(),
             status = apiStatus,
             endpoints = Seq(
               Endpoint(
@@ -180,6 +182,14 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
         requiresTrust = None
       )
     )
+
+  private def buildWhiteListingAccess(): Option[Access] = {
+    for {
+      config <- AppContext.whiteListing
+      whiteListingEnabled <- config.getBoolean("enabled")
+      if whiteListingEnabled
+    } yield Access("PRIVATE", config.getStringSeq("applicationIds").getOrElse(throw new RuntimeException(s"$env.white-listing.applicationIds is not configured")))
+  }
 }
 
 object PublishedSelfAssessmentApiDefinition extends SelfAssessmentApiDefinition(AppContext.apiGatewayContext, APIStatus.PUBLISHED)

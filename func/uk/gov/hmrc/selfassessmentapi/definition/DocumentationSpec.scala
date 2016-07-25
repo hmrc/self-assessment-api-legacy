@@ -1,10 +1,14 @@
 package uk.gov.hmrc.selfassessmentapi.definition
 
+import play.api.libs.json.JsObject
+import play.api.test.FakeApplication
 import play.utils.UriEncoding
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.{APIStatus, SelfAssessmentApiDefinition}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class DocumentationSpec extends BaseFunctionalSpec {
+
+  override lazy val app = FakeApplication(additionalConfiguration = Map("Test.white-listing.enabled" -> false))
 
   "Request to /api/definition" should {
     "return 200 with json response" in {
@@ -16,6 +20,19 @@ class DocumentationSpec extends BaseFunctionalSpec {
         .contentTypeIsJson()
     }
   }
+
+  "When white-listing is disabled Request to /api/definition" should {
+    "return 200 without the white-listing access section in the json response" in {
+      given()
+        .when()
+        .get("/api/definition").withoutAcceptHeader()
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyDoesNotHavePath[JsObject](s""" \\ api \\ versions(0) \\ access """)
+    }
+  }
+
 
   "Request to /api/documentation/<version>/<endpoint>" should {
     "return 200 with xml response for all endpoints in SelfAssessmentDefinition" in {

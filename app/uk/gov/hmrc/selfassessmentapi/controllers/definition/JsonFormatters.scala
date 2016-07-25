@@ -29,10 +29,11 @@ object JsonFormatters {
 
   implicit val formatParameter = Json.format[Parameter]
   implicit val formatEndpoint = Json.format[Endpoint]
+  implicit val formatAccess = Json.format[Access]
   implicit val formatAPIVersion = Json.format[APIVersion]
   implicit val formatAPIDefinition = Json.format[APIDefinition]
   implicit val formatScope = Json.format[Scope]
-  implicit val formatDefintion = Json.format[Definition]
+  implicit val formatDefinition = Json.format[Definition]
 
 }
 

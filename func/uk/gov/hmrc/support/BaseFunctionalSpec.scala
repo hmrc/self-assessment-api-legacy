@@ -128,7 +128,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def bodyIsError(code: String) = body(_ \ "code").is(code)
 
-    def isValidationError(error:(String,String)) : Assertions = isValidationError(error._1, error._2)
+    def isValidationError(error: (String, String)): Assertions = isValidationError(error._1, error._2)
 
     def isValidationError(path: String, code: String) = {
       statusIs(400)
@@ -214,6 +214,14 @@ trait BaseFunctionalSpec extends TestApplication {
           case None => fail(s"$x did not match pattern")
         }
         case unknown => fail(s"No value found for $path")
+      }
+      this
+    }
+
+    def bodyDoesNotHavePath[T](path: String)(implicit reads: Reads[T]) = {
+      extractPathElement[T](path) match {
+        case Some(x) => fail(s"$x match found")
+        case None =>
       }
       this
     }

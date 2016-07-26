@@ -47,6 +47,9 @@ trait BaseController
   def invalidRequest(errors: ValidationErrors) =
     InvalidRequest(ErrorCode.INVALID_REQUEST, "Validation failed", invalidPartsSeq(errors))
 
+  def invalidRequest(message: String) =
+    ErrorBadRequest(ErrorCode.INVALID_REQUEST, message)
+
   private def invalidPartsSeq(errors: ValidationErrors): Seq[InvalidPart] = {
     for {
       (path, errSeq) <- errors

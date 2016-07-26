@@ -37,8 +37,7 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
-            // TODO untested
-            case GenericErrorResult(message) => BadRequest(message)
+            case GenericErrorResult(message) => BadRequest(Json.toJson(invalidRequest(message)))
             case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
           }
         }
@@ -58,8 +57,7 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
-            // TODO untested
-            case GenericErrorResult(message) => BadRequest(message)
+            case GenericErrorResult(message) => BadRequest(Json.toJson(invalidRequest(message)))
             case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
           }
         }

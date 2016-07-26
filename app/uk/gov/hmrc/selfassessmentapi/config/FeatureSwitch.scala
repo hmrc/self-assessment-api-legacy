@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.config
 
 import play.api.Configuration
+import uk.gov.hmrc.selfassessmentapi.config.AppContext._
 import uk.gov.hmrc.selfassessmentapi.domain.SourceType
 
 case class FeatureSwitch(value: Option[Configuration]) {
@@ -27,6 +28,20 @@ case class FeatureSwitch(value: Option[Configuration]) {
       if(summary.isEmpty) FeatureConfig(config).isSourceEnabled(sourceType.name)
       else FeatureConfig(config).isSummaryEnabled(sourceType.name, summary)
     case None => DEFAULT_VALUE
+  }
+
+  def isWhiteListingEnabled = {
+    value match {
+      case Some(config) => config.getBoolean("white-list.enabled").getOrElse(false)
+      case None => false
+    }
+  }
+
+  def whiteListedApplicationIds = {
+    value match {
+      case Some(config) => config.getStringSeq("white-list.applicationIds").getOrElse(throw new RuntimeException(s"$env.feature-switch.white-list.applicationIds is not configured"))
+      case None => Seq()
+    }
   }
 }
 

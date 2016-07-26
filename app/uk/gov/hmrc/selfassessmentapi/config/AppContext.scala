@@ -30,7 +30,6 @@ object AppContext extends ServicesConfig {
   lazy val registrationEnabled: Boolean = current.configuration.getBoolean(s"$env.microservice.services.service-locator.enabled").getOrElse(true)
   lazy val featureSwitch = current.configuration.getConfig(s"$env.feature-switch")
   lazy val updateTaxYearPropertiesEnabled: Boolean = current.configuration.getBoolean(s"update-tax-year-properties.enabled").getOrElse(true)
-  lazy val whiteListing = current.configuration.getConfig(s"$env.white-listing")
   def deleteExpiredDataJob = current.configuration.getConfig(s"$env.scheduling.deleteExpiredDataJob").getOrElse(throw new RuntimeException(s"$env.scheduling.deleteExpiredDataJob is not configured"))
 
   val supportedTaxYears: Set[String] = Set("2016-17")

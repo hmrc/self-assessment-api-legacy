@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.APIStatus.APIStatus
 
 class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
@@ -45,6 +45,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
         versions = Seq(
           APIVersion(
             version = "1.0",
+            access = buildWhiteListingAccess(),
             status = apiStatus,
             endpoints = Seq(
               Endpoint(
@@ -180,6 +181,14 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
         requiresTrust = None
       )
     )
+
+  private def buildWhiteListingAccess(): Option[Access] = {
+    val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
+    featureSwitch.isWhiteListingEnabled match {
+      case true =>  Some(Access("PRIVATE", featureSwitch.whiteListedApplicationIds))
+      case false => None
+    }
+  }
 }
 
 object PublishedSelfAssessmentApiDefinition extends SelfAssessmentApiDefinition(AppContext.apiGatewayContext, APIStatus.PUBLISHED)

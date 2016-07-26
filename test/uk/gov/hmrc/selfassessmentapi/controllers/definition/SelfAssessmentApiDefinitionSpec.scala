@@ -17,12 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.TestApplication
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.JsonFormatters._
 
-import JsonFormatters._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SelfAssessmentApiDefinitionSpec extends UnitSpec {
+class SelfAssessmentApiDefinitionSpec extends TestApplication {
 
   "Self Assessment API Definition" should {
     "round trip json" in {

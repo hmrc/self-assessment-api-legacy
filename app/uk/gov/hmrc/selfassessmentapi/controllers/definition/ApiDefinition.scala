@@ -63,8 +63,12 @@ case class Scope(key: String,
 
 case class APIVersion(
                        version: String,
+                       access: Option[Access] = None,
                        status: APIStatus,
                        endpoints: Seq[Endpoint])
+
+
+case class Access(`type`: String, whitelistedApplicationIds: Seq[String])
 
 case class Endpoint(
                      uriPattern: String,

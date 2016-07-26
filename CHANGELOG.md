@@ -2,6 +2,10 @@
 ## Changes since latest production release
 
 * Liability endpoints have been updated to support a single liability per tax year.
+* Calculate estimated liability for tax-payer with following income sources
+    * Self-Employment, 
+    * UK Savings Interest and 
+    * UK Dividends
 
 ## [0.38.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.38.0) 29-June-2016
 

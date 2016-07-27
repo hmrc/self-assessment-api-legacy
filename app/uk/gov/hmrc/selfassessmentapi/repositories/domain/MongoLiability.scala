@@ -86,8 +86,7 @@ case class MongoLiability(id: BSONObjectID,
       income = IncomeSummary(
         incomes = IncomeFromSources(
           nonSavings = NonSavingsIncomes(
-            selfEmployment = profitFromSelfEmployments.map(_.toIncome),
-            employment = Nil
+            selfEmployment = profitFromSelfEmployments.map(_.toIncome)
           ),
           savings = SavingsIncomes(
             fromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties

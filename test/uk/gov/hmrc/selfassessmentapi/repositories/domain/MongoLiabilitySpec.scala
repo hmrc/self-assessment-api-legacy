@@ -52,8 +52,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
               selfEmployment = Seq(
                 Income("seId1", taxableProfit = 10, profit = 20),
                 Income("seId2", taxableProfit = 20, profit = 40)
-              ),
-              employment = Nil
+              )
             ),
             savings = SavingsIncomes(
               fromUKBanksAndBuildingSocieties = Seq(

@@ -46,7 +46,6 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |    "income": {
            |      "incomes": {
            |        "nonSavings": {
-           |          "employment": [],
            |          "selfEmployment": [
            |            {
            |              "profit": 58529,

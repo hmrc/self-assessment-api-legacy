@@ -36,7 +36,7 @@ object DividendsFromUKSources {
   implicit val format = Json.format[DividendsFromUKSources]
 }
 
-case class NonSavingsIncomes(selfEmployment: Seq[Income], employment: Seq[Income])
+case class NonSavingsIncomes(selfEmployment: Seq[Income])
 
 object NonSavingsIncomes {
   implicit val format = Json.format[NonSavingsIncomes]
@@ -105,9 +105,6 @@ object Liability {
             selfEmployment = Seq(
               Income("self-employment-1", 8200, 10000),
               Income("self-employment-2", 25000, 28000)
-            ),
-            employment = Seq(
-              Income("employment-1", 5000, 5000)
             )
           ),
           savings = SavingsIncomes(

@@ -7,6 +7,13 @@ jdk:
 - oraclejdk8
 cache:
   directories:
-    - '$HOME/.ivy2/cache'
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
+env:
+  matrix:
+    - TEST_COMMAND="test"
+    - TEST_COMMAND="func:test"
 script:
-  - sbt test func:test
+  - sbt "$TEST_COMMAND"
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm

@@ -36,24 +36,32 @@ object SourceType {
     override val fieldDescriptions = Seq(
       FullFieldDescription(name, "commencementDate", "Date", "2016-01-01", "Date in yyyy-dd-mm format"),
       FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this self-employment", optional = true),
-      PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", "Annual Investment Allowance of up to £200,000 can be used for equipment (but not cars) bought on or after 6 April 2014", optional = true),
-      PositiveMonetaryFieldDescription(name, "capitalAllowanceMainPool", "Capital allowances at 18% on equipment, including cars with lower CO2 emissions", optional = true),
-      PositiveMonetaryFieldDescription(name, "capitalAllowanceSpecialRatePool", "Capital allowances at 8% on equipment, including cars with higher CO2 emissions", optional = true),
-      PositiveMonetaryFieldDescription(name, "restrictedCapitalAllowance", "Restricted capital allowances for cars costing more than £12,000 – if bought before 6 April 2009", optional = true),
-      PositiveMonetaryFieldDescription(name, "businessPremisesRenovationAllowance", "Business Premises Renovation Allowance (BPRA) (Assisted Areas only)", optional = true),
-      PositiveMonetaryFieldDescription(name, "enhancedCapitalAllowance", "100% and other enhanced capital allowances", optional = true),
-      PositiveMonetaryFieldDescription(name, "allowancesOnSales", "Allowances on sale or cessation of business use (where you have disposed of assets for less than their tax value)", optional = true),
+      PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", "Annual Investment Allowance of up to £200,000 can be claimed for purchases of equipment (but not cars) on or after 6 April 2014", optional = true),
+      PositiveMonetaryFieldDescription(name, "capitalAllowanceMainPool",
+        """Writing down allowance of 18% can be claimed on the final balance of main pool costs.
+          |If the final balance before claiming WDA is £1,000 or less, a small pool allowance can be claimed for the full amount instead of the WDA""".stripMargin, optional = true),
+      PositiveMonetaryFieldDescription(name, "capitalAllowanceSpecialRatePool",
+        """Writing down allowance of 8% can be claimed on the final balance of the special rate pool costs.
+          |If the final balance before claiming WDA is £1,000 or less, a small pool allowance can be claimed for the full amount instead of the WDA""".stripMargin, optional = true),
+      PositiveMonetaryFieldDescription(name, "restrictedCapitalAllowance", optional = true),
+      PositiveMonetaryFieldDescription(name, "businessPremisesRenovationAllowance", "When eligible, BPRA can be claimed for the cost of renovating or repairing unused business premises", optional = true),
+      PositiveMonetaryFieldDescription(name, "enhancedCapitalAllowance", "100% capital allowance can be claimed for eligible capital purchases", optional = true),
+      PositiveMonetaryFieldDescription(name, "allowancesOnSales",
+        """If the business ceases, any balance left in the relevant pool can be claimed after
+          |either the selling price or market value has been deducted from the pool balance, as a balancing allowance instead of claiming a WDA""".stripMargin, optional = true),
       FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this self-employment", optional = true),
-      PositiveMonetaryFieldDescription(name, "includedNonTaxableProfits", "Income, receipts and other profits included in business income or expenses but not taxable as business profits", optional = true),
+      PositiveMonetaryFieldDescription(name, "includedNonTaxableProfits", "For income, receipts and other profits that have been included in business turnover but are not taxable as business profits", optional = true),
       MonetaryFieldDescription(name, "basisAdjustment",
-        """You pay tax on the profits of your basis period for the tax year.
-          |When you’ve been in business for a couple of years, the basis period is usually the 12-month accounting period.
-          |Different rules apply when you start or cease a business or if you change accounting date""".stripMargin, optional = true),
-      PositiveMonetaryFieldDescription(name, "overlapReliefUsed", "Overlap relief used this year", optional = true),
-      PositiveMonetaryFieldDescription(name, "accountingAdjustment", "Adjustment for change of accounting practice", optional = true),
-      MonetaryFieldDescription(name, "averagingAdjustment", "Averaging adjustment (only for farmers, market gardeners and creators of literary or artistic works)", optional = true),
-      PositiveMonetaryFieldDescription(name, "lossBroughtForward", "Loss brought forward from earlier years set off against this year’s profits", optional = true),
-      PositiveMonetaryFieldDescription(name, "outstandingBusinessIncome", "Any other business income, such as rebates received, and non arm’s length reverse premiums", optional = true)
+        """Tax is paid on the profits of the basis period for the tax year.
+          |If the basis period is not the same as the accounting period, an adjustment is needed to arrive at the profit or loss for the basis period""".stripMargin, optional = true),
+      PositiveMonetaryFieldDescription(name, "overlapReliefUsed", "When eligible, overlap relief can claimed if the business has overlap profits", optional = true),
+      PositiveMonetaryFieldDescription(name, "accountingAdjustment", "If accounting practice has changed (from cash to accrual) an adjustment may be required", optional = true),
+      MonetaryFieldDescription(name, "averagingAdjustment", "If an averaging claim changes the amount of the profit, an adjustment is required. Cannot be used if using cash basis", optional = true),
+      PositiveMonetaryFieldDescription(name, "lossBroughtForward",
+        """If a loss was made in the previous or earlier tax years, this can be used against the profits from this tax year.
+           The loss claimed cannot be more than the adjusted profit for this tax year
+        """.stripMargin, optional = true),
+      PositiveMonetaryFieldDescription(name, "outstandingBusinessIncome", """For other business income that hasn’t been included such as rebates received and non arm’s length reverse premiums""", optional = true)
     )
   }
 

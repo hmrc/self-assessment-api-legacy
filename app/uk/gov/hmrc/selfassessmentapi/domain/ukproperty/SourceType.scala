@@ -36,30 +36,24 @@ object SourceType {
     override val fieldDescriptions = Seq(
       FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance",
-        """You can claim Annual Investment Allowance
-          |(AIA) if you bought equipment (but not cars)
-          |during the year. You can claim AIA up to
-          |a maximum annual amount. You can’t claim AIA
-          |for expenditure on equipment and other items for
-          |use in a dwelling house""".stripMargin, optional = true),
+        """Annual Investment Allowance can be claimed if equipment was purchased (but not cars) during the year.
+          |AIA can be claimed up to a maximum annual amount.
+          |AIA can’t be claimed for expenditure on equipment and other items for use in a dwelling house""".stripMargin, optional = true),
       PositiveMonetaryFieldDescription(name, "businessPremisesRenovationAllowance",
-        """You may be able to claim 100% BPRA for the
-          |cost of renovating or repairing business premises.
-          |To qualify, it must be in an Assisted Area
-          |and unused for at least 1 year before the work to
-          |bring them back into business use started""".stripMargin, optional = true),
+        "When eligible, BPRA can be claimed for the cost of renovating or repairing business premises", optional = true),
       PositiveMonetaryFieldDescription(name, "otherCapitalAllowance",
-        """The type of capital allowance and amount that
-          |you can claim will depend on the cost, type of
-          |asset and other circumstances. For example,
-          |you can only claim capital allowances for
-          |furniture and fixtures or other equipment for use
-          |in a dwelling house if it qualifies as a Furnished
-          |Holiday Letting""".stripMargin, optional = true),
-      PositiveMonetaryFieldDescription(name, "wearAndTearAllowance", "10% wear and tear allowance", optional = true),
+        "The type of capital allowance and amount that can be claimed will depend on the cost, type of asset and other circumstances", optional = true),
+      PositiveMonetaryFieldDescription(name, "wearAndTearAllowance",
+        """For fully furnished accommodation, wear & tear allowance can be claimed up to 10%
+          | of the net rents (including chargeable premiums & reverse premiums) after deducting charges or services that a
+          | tenant would usually pay for but which are paid by you (such as Council Tax)""".stripMargin, optional = true),
       FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
-      PositiveMonetaryFieldDescription(name, "lossBroughtForward", "Loss brought forward used against this year’s profits"),
-      PositiveMonetaryFieldDescription(name, "rentARoomRelief", "Rent a Room exempt amount", optional = true)
+      PositiveMonetaryFieldDescription(name, "lossBroughtForward",
+        """If a loss was made in the previous or earlier tax years,
+          |this can be used against the profits from this tax year""".stripMargin),
+      PositiveMonetaryFieldDescription(name, "rentARoomRelief",
+        """For claiming the exempt amount (either £4,250 or £2,125, if let jointly)
+          | if any Rent a Room income has been included within Rental Income""".stripMargin, optional = true)
     )
   }
 

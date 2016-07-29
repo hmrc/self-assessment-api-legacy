@@ -1,1 +1,2 @@
-curl --silent --data '{"individualEnrolments": {"sa": "989898"}}' --header "Content-Type:application/json" http://localhost:8500/auth/gg/12345678/sign-in | grep -o "Bearer.*" | tr '"' '~' | cut -d~ -f1
+#!/usr/bin/env bash
+curl --silent --data '{ "individualEnrolments": { "sa": "989898" },  "allEnrolments": [  {  "key": "IR-SA",  "identifiers": [ {  "key": "UTR",  "value": "989898" } ], "state": "Activated" }  ] }' --header "Content-Type:application/json" http://localhost:8500/auth/gg/12345678/sign-in | grep -o "Bearer.*" | tr '"' '~' | cut -d~ -f1

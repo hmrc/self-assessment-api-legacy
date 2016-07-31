@@ -77,7 +77,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
   "delete by utr and taxYear" should {
     "delete  all self employments for utr/tax year" in {
-      val sources = for {
+      for {
         n <- 1 to 10
         source = selfEmployment()
         id = await(selfEmploymentRepository.create(saUtr, taxYear, source))
@@ -93,7 +93,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
     "not delete self employments for different utr" in {
       val saUtr2: SaUtr = generateSaUtr()
-      val source1 = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+      await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
       val source2 = await(selfEmploymentRepository.create(saUtr2, taxYear, selfEmployment()))
 
       await(selfEmploymentRepository.delete(saUtr, taxYear))
@@ -120,7 +120,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
     "not include self employments for different utr" in {
       val source1 = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val source2 = await(selfEmploymentRepository.create(generateSaUtr(), taxYear, selfEmployment()))
+      await(selfEmploymentRepository.create(generateSaUtr(), taxYear, selfEmployment()))
 
       val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
 

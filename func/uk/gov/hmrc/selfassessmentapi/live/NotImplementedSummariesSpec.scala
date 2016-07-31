@@ -15,7 +15,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
       SourceTypes.UnearnedIncomes -> Set(unearnedincome.SummaryTypes.Benefits),
       SourceTypes.UKProperties -> SourceTypes.UKProperties.summaryTypes,
       SourceTypes.FurnishedHolidayLettings -> SourceTypes.FurnishedHolidayLettings.summaryTypes,
-      SourceTypes.Employments -> SourceTypes.Employments.summaryTypes
+      SourceTypes.Employments -> Set()
     )
 
   "create summaries" should {

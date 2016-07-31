@@ -57,15 +57,4 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
     }
   }
 
-  "employments source and all its summaries" should {
-    "not be visible" in {
-      given()
-        .userIsAuthorisedForTheResource(saUtr)
-        .when()
-        .get(s"/$saUtr/$taxYear/${Employments.name}")
-        .thenAssertThat()
-        .isNotImplemented
-    }
-  }
-
 }

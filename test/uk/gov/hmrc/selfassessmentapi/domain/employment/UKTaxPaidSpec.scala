@@ -19,11 +19,11 @@ package uk.gov.hmrc.selfassessmentapi.domain.employment
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.JsonSpec
 
-class UKTaxPaidSpec extends JsonSpec {
+class UkTaxPaidSpec extends JsonSpec {
 
   "format" should {
-    "round trip UKTaxPaid json" in {
-        roundTripJson(UKTaxPaid(amount = BigDecimal(1000)))
+    "round trip UkTaxPaid json" in {
+        roundTripJson(UkTaxPaid(amount = BigDecimal(1000)))
     }
   }
 
@@ -31,8 +31,8 @@ class UKTaxPaidSpec extends JsonSpec {
 
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.12456), BigDecimal(1000.123454), BigDecimal(1000.123456789)).foreach { testAmount =>
-        assertValidationError[UKTaxPaid](
-          UKTaxPaid(amount = testAmount),
+        assertValidationError[UkTaxPaid](
+          UkTaxPaid(amount = testAmount),
           Map("/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid employments-ukTaxPaid")
       }
     }

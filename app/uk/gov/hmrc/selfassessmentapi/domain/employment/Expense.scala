@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.employment.ExpenseType.ExpenseType
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
   val TravelAndSubsistence, FixedDeductions, ProfessionalFees, Other = Value
+  implicit val employmentExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Employment Expense type is invalid"))
 }
 
 case class Expense(id: Option[SummaryId] = None,

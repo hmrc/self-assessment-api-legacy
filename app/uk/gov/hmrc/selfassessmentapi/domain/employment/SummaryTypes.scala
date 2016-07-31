@@ -55,9 +55,9 @@ object SummaryTypes {
     )
   }
 
-  case object UKTaxesPaid extends SummaryType {
+  case object UkTaxesPaid extends SummaryType {
     override val name = "uk-taxes-paid"
-    override def example(id: Option[SummaryId] = None): JsValue = toJson(UKTaxPaid.example(id))
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(UkTaxPaid.example(id))
     override val title = "Sample UK Taxes paid"
     override def description(action: String) = s"$action an UK Tax paid for the specified source"
     override val fieldDescriptions = Seq(

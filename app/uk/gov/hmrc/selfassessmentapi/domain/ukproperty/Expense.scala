@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.ExpenseType.ExpenseType
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
   val PremisesRunningCosts, RepairsAndMaintenance, FinancialCosts, ProfessionalFees, CostOfServices, Other = Value
+  implicit val types = EnumJson.enumFormat(ExpenseType, Some("UK Property Expense type is invalid"))
 }
 
 
@@ -35,7 +36,6 @@ case class Expense(id: Option[SummaryId] = None,
 
 object Expense extends JsonMarshaller[Expense] {
 
-  implicit val types = EnumJson.enumFormat(ExpenseType, Some("UK Property Expense type is invalid"))
   implicit val writes = Json.writes[Expense]
   implicit val reads: Reads[Expense] = (
     Reads.pure(None) and

@@ -1,8 +1,8 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import org.joda.time.LocalDate
-import play.api.libs.json.Json.toJson
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json.{parse, toJson}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
 import uk.gov.hmrc.selfassessmentapi.domain.employment.Employment
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
@@ -12,6 +12,8 @@ import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.UKProperty
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.UnearnedIncome
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
@@ -27,22 +29,24 @@ case class UpdateScenario(updatedValue: JsValue, expectedUpdate: ExpectedUpdate)
 
 class SourceControllerSpec extends BaseFunctionalSpec {
 
-  val implementedSourceTypes = Set(SourceTypes.SelfEmployments, SourceTypes.UnearnedIncomes, SourceTypes.FurnishedHolidayLettings, SourceTypes.Employments)
-
-  val notImplementedSourceTypes = Set(SourceTypes.UKProperties)
-
   val ok: Regex = "20.".r
 
   val errorScenarios: Map[SourceType, ErrorScenario] = Map(
     SelfEmployments -> ErrorScenario(invalidInput = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
       error = ExpectedError(path = "/commencementDate", code = s"$COMMENCEMENT_DATE_NOT_IN_THE_PAST")),
     UnearnedIncomes -> ErrorScenario(invalidInput = toJson(UnearnedIncome.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok)),
-    FurnishedHolidayLettings -> ErrorScenario(invalidInput = Json.parse(s"""
-                                                                            |{
-                                                                            |  "propertyLocation": "The Moon"
-                                                                            |}
-                                                                          """.stripMargin),
+    FurnishedHolidayLettings -> ErrorScenario(invalidInput = parse(s"""
+                                                                      |{
+                                                                      |  "propertyLocation": "The Moon"
+                                                                      |}
+                                                                    """.stripMargin),
       error = ExpectedError(path = "/propertyLocation", code = "NO_VALUE_FOUND")),
+    UKProperties -> ErrorScenario(invalidInput = parse(s"""
+                                                          |{
+                                                          |  "rentARoomRelief": "1000.456"
+                                                          |}
+                                                        """.stripMargin),
+      error = ExpectedError(path = "/rentARoomRelief", code = "INVALID_MONETARY_AMOUNT")),
     Employments -> ErrorScenario(invalidInput = toJson(Employment.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok))
   )
 
@@ -54,13 +58,15 @@ class SourceControllerSpec extends BaseFunctionalSpec {
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     FurnishedHolidayLettings -> UpdateScenario(updatedValue = toJson(FurnishedHolidayLetting.example().copy(propertyLocation = EEA)),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
+    UKProperties -> UpdateScenario(updatedValue = toJson(UKProperty.example().copy(rentARoomRelief = Some(7777))),
+      expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     Employments -> UpdateScenario(updatedValue = toJson(Employment.example()),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = ""))
   )
 
   "I" should {
     "be able to create, update and delete a self assessment source" in {
-      implementedSourceTypes.foreach { sourceType =>
+      SourceTypes.types.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -120,7 +126,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "not be able to get a non-existent source" in {
-      implementedSourceTypes.foreach { sourceType =>
+      SourceTypes.types.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -149,7 +155,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "not be able to create a source with invalid data" in {
-      implementedSourceTypes.filter(errorScenarios(_).error.httpStatusCode != ok).foreach { sourceType =>
+      SourceTypes.types.filter(errorScenarios(_).error.httpStatusCode != ok).foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -161,7 +167,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "not be able to update a source with invalid data" in {
-      implementedSourceTypes.filter(errorScenarios(_).error.httpStatusCode != ok).foreach { sourceType =>
+      SourceTypes.types.filter(errorScenarios(_).error.httpStatusCode != ok).foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -176,7 +182,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "not be able to update a non-existent" in {
-      implementedSourceTypes.foreach { sourceType =>
+      SourceTypes.types.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -187,7 +193,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     }
 
     "not be able to delete a non-existent" in {
-      implementedSourceTypes.foreach { sourceType =>
+      SourceTypes.types.foreach { sourceType =>
         given()
           .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -196,42 +202,5 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           .isNotFound
       }
     }
-  }
-
-  "Not Implemented Live source controller" should {
-
-    "return a Not Implemented response on GET" in {
-      notImplementedSourceTypes.foreach { sourceType =>
-        given()
-          .userIsAuthorisedForTheResource(saUtr)
-        .when()
-          .get(s"/$saUtr/$taxYear/${sourceType.name}")
-          .thenAssertThat()
-          .isNotImplemented
-      }
-    }
-
-    "return a Not Implemented response on POST" in {
-      notImplementedSourceTypes.foreach { sourceType =>
-        given()
-          .userIsAuthorisedForTheResource(saUtr)
-        .when()
-          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
-          .thenAssertThat()
-          .isNotImplemented
-      }
-    }
-
-    "return a Not Implemented response on PUT" in {
-      notImplementedSourceTypes.foreach { sourceType =>
-        given()
-          .userIsAuthorisedForTheResource(saUtr)
-        .when()
-          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
-          .thenAssertThat()
-          .isNotImplemented
-      }
-    }
-
   }
 }

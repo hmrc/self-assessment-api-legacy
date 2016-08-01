@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType.IncomeType
 object IncomeType extends Enumeration {
   type IncomeType = Value
   val RentIncome, PremiumsOfLeaseGrant, ReversePremiums = Value
+  implicit val types = EnumJson.enumFormat(IncomeType, Some("UK Property Income type is invalid"))
 }
 
 
@@ -35,7 +36,6 @@ case class Income(id: Option[SummaryId] = None,
 
 object Income extends JsonMarshaller[Income] {
 
-  implicit val types = EnumJson.enumFormat(IncomeType, Some("UK Property Income type is invalid"))
   override implicit val writes = Json.writes[Income]
   override implicit val reads: Reads[Income] = (
     Reads.pure(None) and

@@ -10,13 +10,10 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
   private val sourceId = UUID.randomUUID()
   private val summaryId = UUID.randomUUID()
 
-  val notImplementedSummaries: Map[SourceType, Set[SummaryType]] =
-    Map(SourceTypes.SelfEmployments -> Set(),
-      SourceTypes.UnearnedIncomes -> Set(unearnedincome.SummaryTypes.Benefits),
-      SourceTypes.UKProperties -> SourceTypes.UKProperties.summaryTypes,
-      SourceTypes.FurnishedHolidayLettings -> Set(),
-      SourceTypes.Employments -> Set()
-    )
+  val notImplementedSummaries =
+    Map[SourceType, Set[SummaryType]](
+      SourceTypes.UnearnedIncomes -> Set(unearnedincome.SummaryTypes.Benefits)
+    ).withDefaultValue(Set[SummaryType]())
 
   "create summaries" should {
     "not be implemented" in {

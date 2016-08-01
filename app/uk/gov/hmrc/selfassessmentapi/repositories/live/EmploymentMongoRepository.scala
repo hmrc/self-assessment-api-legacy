@@ -19,6 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.repositories.live
 import play.api.libs.json.Json._
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
+import reactivemongo.api.indexes.Index
+import reactivemongo.api.indexes.IndexType.Ascending
 import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
@@ -46,6 +48,16 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
     with AtomicUpdate[MongoEmployment]
     with TypedSourceSummaryRepository[MongoEmployment, BSONObjectID] {
   self =>
+
+  override def indexes: Seq[Index] = Seq(
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("employments_utr_taxyear"), unique = false),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending)), name = Some("employments_utr_taxyear_sourceid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("incomes.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_incomesid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("expenses.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_expensesid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("benefits.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_benefitsid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("uktaxpaid.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_uktaxpaidid"), unique = true),
+    Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("employments_last_modified"), unique = false))
+
   override def create(saUtr: SaUtr, taxYear: TaxYear, employment: Employment): Future[SourceId] = {
     val mongoEmployment = MongoEmployment.create(saUtr, taxYear, employment)
     insert(mongoEmployment).map(_ => mongoEmployment.sourceId)

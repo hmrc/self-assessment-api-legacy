@@ -55,7 +55,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("incomes.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_incomesid"), unique = true),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("expenses.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_expensesid"), unique = true),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("benefits.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_benefitsid"), unique = true),
-    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("uktaxpaid.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_uktaxpaidid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("ukTaxPaid.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_uktaxpaidid"), unique = true),
     Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("employments_last_modified"), unique = false))
 
   override def create(saUtr: SaUtr, taxYear: TaxYear, employment: Employment): Future[SourceId] = {

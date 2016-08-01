@@ -51,12 +51,3 @@ Now you can test sandbox:
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
-
-### Kubernetes
-
-  minikube start
-  eval $(minikube docker-env)
-  sbt dist
-  unzip -d target/universal $(find target/universal -type f -maxdepth 1 -name '*.zip')
-  mv target/universal/self-assessment-api-0.49.0-3-g73326f4 docker/self-assessment-api
-  docker build --no-cache -t self-assessment-api:1 docker

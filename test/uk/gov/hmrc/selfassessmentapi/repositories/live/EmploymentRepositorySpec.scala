@@ -23,20 +23,21 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.domain.JsonMarshaller
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.domain.employment._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoEmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class EmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
 
-  private val mongoRepository = new SelfEmploymentMongoRepository
-  private val selfEmploymentRepository: SourceRepository[SelfEmployment] = mongoRepository
-  private val summariesMap: Map[JsonMarshaller[_], SummaryRepository[_]] = Map(Income -> mongoRepository.IncomeRepository,
-    Expense -> mongoRepository.ExpenseRepository, BalancingCharge -> mongoRepository.BalancingChargeRepository,
-    GoodsAndServicesOwnUse -> mongoRepository.GoodsAndServicesOwnUseRepository)
-
+  private val mongoRepository = new EmploymentMongoRepository
+  private val employmentRepository: SourceRepository[Employment] = mongoRepository
+  private val summariesMap: Map[JsonMarshaller[_], SummaryRepository[_]] = Map(
+      Income -> mongoRepository.IncomeRepository,
+      Expense -> mongoRepository.ExpenseRepository,
+      Benefit -> mongoRepository.BenefitRepository,
+      UkTaxPaid -> mongoRepository.UkTaxPaidRepository)
 
   override def beforeEach() {
     await(mongoRepository.drop)
@@ -45,179 +46,88 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
   val saUtr = generateSaUtr()
 
-  def selfEmployment(): SelfEmployment = SelfEmployment.example()
-
-  "round trip" should {
-    "create and retrieve using generated id" in {
-      val source = selfEmployment()
-      val id = await(selfEmploymentRepository.create(saUtr, taxYear, source))
-      val found: SelfEmployment = await(selfEmploymentRepository.findById(saUtr, taxYear, id)).get
-
-      found.commencementDate shouldBe source.commencementDate
-    }
-  }
+  def employment(): Employment = Employment.example()
 
   "delete by Id" should {
-    "return true when self employment is deleted" in {
-      val source = selfEmployment()
-      val id = await(selfEmploymentRepository.create(saUtr, taxYear, source))
-      val result = await(selfEmploymentRepository.delete(saUtr, taxYear, id))
+    "return true when employment is deleted" in {
+      val source = employment()
+      val id = await(employmentRepository.create(saUtr, taxYear, source))
+      val result = await(employmentRepository.delete(saUtr, taxYear, id))
 
       result shouldBe true
     }
 
-    "return false when self employment is not deleted" in {
-      val source = selfEmployment()
-      val id = await(selfEmploymentRepository.create(saUtr, taxYear, source))
-      val result = await(selfEmploymentRepository.delete(generateSaUtr(), taxYear, id))
+    "return false when employment is not deleted" in {
+      val source = employment()
+      val id = await(employmentRepository.create(saUtr, taxYear, source))
+      val result = await(employmentRepository.delete(generateSaUtr(), taxYear, id))
 
       result shouldBe false
     }
   }
 
   "delete by utr and taxYear" should {
-    "delete  all self employments for utr/tax year" in {
+    "delete  all employments for utr/tax year" in {
       for {
         n <- 1 to 10
-        source = selfEmployment()
-        id = await(selfEmploymentRepository.create(saUtr, taxYear, source))
+        source = employment()
+        id = await(employmentRepository.create(saUtr, taxYear, source))
       } yield source.copy(id = Some(id))
 
+      await(employmentRepository.delete(saUtr, taxYear))
 
-      await(selfEmploymentRepository.delete(saUtr, taxYear))
-
-      val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
+      val found: Seq[Employment] = await(employmentRepository.list(saUtr, taxYear))
 
       found shouldBe empty
     }
 
-    "not delete self employments for different utr" in {
+    "not delete employments for different utr" in {
       val saUtr2: SaUtr = generateSaUtr()
-      await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      val source2 = await(selfEmploymentRepository.create(saUtr2, taxYear, selfEmployment()))
+      await(employmentRepository.create(saUtr, taxYear, employment()))
+      val source2 = await(employmentRepository.create(saUtr2, taxYear, employment()))
 
-      await(selfEmploymentRepository.delete(saUtr, taxYear))
-      val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr2, taxYear))
+      await(employmentRepository.delete(saUtr, taxYear))
+      val found: Seq[Employment] = await(employmentRepository.list(saUtr2, taxYear))
 
       found.flatMap(_.id) should contain theSameElementsAs Seq(source2)
     }
   }
 
-
   "list" should {
-    "retrieve all self employments for utr/tax year" in {
+    "retrieve all employments for utr/tax year" in {
       val sources = for {
         n <- 1 to 10
-        source = selfEmployment()
-        id = await(selfEmploymentRepository.create(saUtr, taxYear, source))
+        source = employment()
+        id = await(employmentRepository.create(saUtr, taxYear, source))
       } yield source.copy(id = Some(id))
 
-
-      val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
+      val found: Seq[Employment] = await(employmentRepository.list(saUtr, taxYear))
 
       found should contain theSameElementsAs sources
     }
 
-    "not include self employments for different utr" in {
-      val source1 = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
-      await(selfEmploymentRepository.create(generateSaUtr(), taxYear, selfEmployment()))
+    "not include employments for different utr" in {
+      val source1 = await(employmentRepository.create(saUtr, taxYear, employment()))
+      await(employmentRepository.create(generateSaUtr(), taxYear, employment()))
 
-      val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
+      val found: Seq[Employment] = await(employmentRepository.list(saUtr, taxYear))
 
       found.flatMap(_.id) should contain theSameElementsAs Seq(source1)
     }
   }
 
-  "update" should {
-    def verifyUpdate(original: SelfEmployment, updated: SelfEmployment) = {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, original))
-      val result = await(selfEmploymentRepository.update(saUtr, taxYear, sourceId, updated))
-      result shouldEqual true
-
-      val found = await(selfEmploymentRepository.findById(saUtr, taxYear, sourceId))
-      found shouldEqual Some(updated.copy(id = Some(sourceId)))
-
-    }
-    "return true when the self employment exists and has been updated" in {
-      val source = selfEmployment()
-
-      val allowances = Allowances(
-        annualInvestmentAllowance = Some(BigDecimal(10.00)),
-        capitalAllowanceMainPool = Some(BigDecimal(20.00)),
-        capitalAllowanceSpecialRatePool = Some(BigDecimal(30.00)),
-        restrictedCapitalAllowance = Some(BigDecimal(40.00)),
-        businessPremisesRenovationAllowance = Some(BigDecimal(50.00)),
-        enhancedCapitalAllowance = Some(BigDecimal(60.00)),
-        allowancesOnSales = Some(BigDecimal(70.00)))
-
-      val adjustments = Adjustments(
-        includedNonTaxableProfits = Some(BigDecimal(10.00)),
-        basisAdjustment = Some(BigDecimal(20.00)),
-        overlapReliefUsed = Some(BigDecimal(30.00)),
-        accountingAdjustment = Some(BigDecimal(40.00)),
-        averagingAdjustment = Some(BigDecimal(50.00)),
-        lossBroughtForward = Some(BigDecimal(60.00)),
-        outstandingBusinessIncome = Some(BigDecimal(70.00)))
-
-      val updatedSource = source.copy(
-        commencementDate = source.commencementDate.minusMonths(1),
-        allowances = Some(allowances),
-        adjustments = Some(adjustments)
-      )
-
-      verifyUpdate(source, updatedSource)
-    }
-
-    "set allowances to None if not provided" in {
-      val source = selfEmployment()
-
-      val updatedSource = source.copy(
-        allowances = None
-      )
-
-      verifyUpdate(source, updatedSource)
-    }
-
-    "set each allowance to None if not provided" in {
-      val source = selfEmployment()
-
-      val updatedSource = source.copy(
-        allowances = Some(Allowances())
-      )
-
-      verifyUpdate(source, updatedSource)
-    }
-
-    "set adjustments to None if not provided" in {
-      val source = selfEmployment()
-
-      val updatedSource = source.copy(
-        adjustments = None
-      )
-
-      verifyUpdate(source, updatedSource)
-    }
-
-    "set each adjustment to None if not provided" in {
-      val source = selfEmployment()
-
-      val updatedSource = source.copy(
-        adjustments = Some(Adjustments())
-      )
-
-      verifyUpdate(source, updatedSource)
-    }
-
-    "return false when the self employment does not exist" in {
-      val result = await(selfEmploymentRepository.update(saUtr, taxYear, UUID.randomUUID().toString, selfEmployment()))
+    "return false when the employment does not exist" in {
+      val result = await(employmentRepository.update(saUtr, taxYear, UUID.randomUUID().toString, employment()))
       result shouldEqual false
     }
 
+  "update" should {
+
     "not remove incomes" in {
-      val source = MongoSelfEmployment.create(saUtr, taxYear, selfEmployment()).copy(incomes = Seq(MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, IncomeType.Turnover, 10)))
+      val source = MongoEmployment.create(saUtr, taxYear, employment()).copy(incomes = Seq(MongoEmploymentIncomeSummary(BSONObjectID.generate.stringify, IncomeType.Salary, 1000)))
       await(mongoRepository.insert(source))
       val found = await(mongoRepository.findById(saUtr, taxYear, source.sourceId)).get
-      await(selfEmploymentRepository.update(saUtr, taxYear, source.sourceId, found))
+      await(employmentRepository.update(saUtr, taxYear, source.sourceId, found))
 
       val found1 = await(mongoRepository.findById(source.id))
 
@@ -225,10 +135,10 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     }
 
     "update last modified" in {
-      val source = selfEmployment()
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, source))
+      val source = employment()
+      val sourceId = await(employmentRepository.create(saUtr, taxYear, source))
       val found = await(mongoRepository.findById(BSONObjectID(sourceId)))
-      await(selfEmploymentRepository.update(saUtr, taxYear, sourceId, source))
+      await(employmentRepository.update(saUtr, taxYear, sourceId, source))
 
       val found1 = await(mongoRepository.findById(BSONObjectID(sourceId)))
 
@@ -242,7 +152,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   "create summary" should {
     "add a summary to an empty list when source exists and return id" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         val summary = summaryItem.example()
         val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary)))
 
@@ -256,7 +166,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
     "add a summary to the existing list when source exists and return id" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         val summary = summaryItem.example()
         val summary1 = summaryItem.example()
         val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary)))
@@ -265,7 +175,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
         val summaries = await(repo.list(saUtr, taxYear, sourceId))
 
         val found = summaries.get
-        found should contain theSameElementsAs Seq(summaryItem.example(id = summaryId), summaryItem.example(id = summaryId1))
+        found should contain theSameElementsAs Seq(summaryItem.example(id = summaryId),
+                                                   summaryItem.example(id = summaryId1))
       }
     }
 
@@ -287,14 +198,14 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
     "return none if the summary does not exist" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         await(repo.findById(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify)) shouldEqual None
       }
     }
 
     "return the summary if found" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         val summary = summaryItem.example()
         val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
         val found = await(repo.findById(saUtr, taxYear, sourceId, summaryId))
@@ -307,7 +218,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   "list summaries" should {
     "return empty list when source has no summaries" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         await(repo.list(saUtr, taxYear, sourceId)) shouldEqual Some(Seq.empty)
       }
     }
@@ -322,7 +233,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   "delete summary" should {
     "return true when the summary has been deleted" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         val summary = summaryItem.example()
         val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
         await(repo.delete(saUtr, taxYear, sourceId, summaryId)) shouldEqual true
@@ -331,7 +242,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
     "only delete the specified summary" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         val summary = summaryItem.example()
         val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
         val summaryId1 = await(repo.create(saUtr, taxYear, sourceId, cast(summary)))
@@ -351,7 +262,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
     "return false when the summary does not exist" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         await(repo.delete(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify)) shouldEqual false
       }
     }
@@ -360,7 +271,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   "update income" should {
     "return true when the income has been updated" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         val summary = summaryItem.example()
         val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
 
@@ -375,7 +286,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
     "only update the specified income" in {
       for ((summaryItem, repo) <- summariesMap) {
-        val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+        val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
         val summary1 = summaryItem.example()
         val summaryId1 = await(repo.create(saUtr, taxYear, sourceId, cast(summary1))).get
         val summary2 = summaryItem.example()
@@ -386,23 +297,28 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
         val found = await(repo.list(saUtr, taxYear, sourceId)).get
 
-        found should contain theSameElementsAs Seq(summaryItem.example(id = Some(summaryId1)), summaryItem.example(id = Some(summaryId2)))
+        found should contain theSameElementsAs Seq(summaryItem.example(id = Some(summaryId1)),
+                                                   summaryItem.example(id = Some(summaryId2)))
       }
     }
 
     "return false when the source does not exist" in {
       for ((summaryItem, repo) <- summariesMap) {
-        await(repo.update(saUtr, taxYear, BSONObjectID.generate.stringify, BSONObjectID.generate.stringify, cast(summaryItem.example()))) shouldEqual false
+        await(
+            repo.update(saUtr,
+                        taxYear,
+                        BSONObjectID.generate.stringify,
+                        BSONObjectID.generate.stringify,
+                        cast(summaryItem.example()))) shouldEqual false
       }
     }
 
     "return false when the income does not exist" in {
-      val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
+      val sourceId = await(employmentRepository.create(saUtr, taxYear, employment()))
       for ((summaryItem, repo) <- summariesMap) {
         await(repo.update(saUtr, taxYear, sourceId, BSONObjectID.generate.stringify, cast(summaryItem.example()))) shouldEqual false
       }
     }
   }
-
 
 }

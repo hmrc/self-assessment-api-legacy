@@ -27,6 +27,7 @@ object BenefitType extends Enumeration {
   type BenefitType = Value
   val CompanyVehicle, Fuel, PrivateInsurance, VouchersCCAndExcessMileage, GoodsProvidedByEmployer,
       Accommodation, ExpensesPayments, Other = Value
+  implicit val employmentBenefitTypes = EnumJson.enumFormat(BenefitType, Some("Employment Benefit type is invalid"))
 }
 
 case class Benefit(id: Option[SummaryId] = None,

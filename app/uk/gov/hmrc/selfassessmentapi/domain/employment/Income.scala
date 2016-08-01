@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.employment.IncomeType.IncomeType
 object IncomeType extends Enumeration {
   type IncomeType = Value
   val Salary, Other = Value
+  implicit val employmentIncomeTypes = EnumJson.enumFormat(IncomeType, Some("Employment Income type is invalid"))
 }
 
 case class Income(id: Option[SummaryId] = None,

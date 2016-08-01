@@ -6,6 +6,7 @@
     * Self-Employment, 
     * UK Savings Interest and 
     * UK Dividends
+* Live implementation for Employments source
 
 ## [0.38.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.38.0) 29-June-2016
 

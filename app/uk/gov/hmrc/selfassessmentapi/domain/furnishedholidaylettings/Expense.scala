@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson.enumFormat
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType.ExpenseType
 
@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
   val PremisesRunningCosts, FinancialCosts, ProfessionalFees, Other = Value
+  implicit val format = enumFormat(ExpenseType, Some("Furnished Holiday Lettings Expense type is invalid"))
 }
 
 case class Expense(id: Option[SummaryId] = None,
@@ -33,7 +34,7 @@ case class Expense(id: Option[SummaryId] = None,
 
 object Expense extends JsonMarshaller[Expense] {
 
-  implicit val types = EnumJson.enumFormat(ExpenseType, Some("Furnished Holiday Lettings Expense type is invalid"))
+
   implicit val writes = Json.writes[Expense]
   implicit val reads: Reads[Expense] = (
     Reads.pure(None) and

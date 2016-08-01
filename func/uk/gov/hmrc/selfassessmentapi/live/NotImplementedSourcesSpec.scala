@@ -8,7 +8,7 @@ class NotImplementedSourcesSpec extends BaseFunctionalSpec {
 
   val sourceId = BSONObjectID.generate.stringify
 
-  val notImplementedTypes  = Set(SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties)
+  val notImplementedTypes  = Set(SourceTypes.UKProperties)
   
   "Create source" should {
     "return a resourceIsNotImplemented response" in {

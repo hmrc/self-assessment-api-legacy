@@ -14,7 +14,7 @@ class NotImplementedSummariesSpec extends BaseFunctionalSpec {
     Map(SourceTypes.SelfEmployments -> Set(),
       SourceTypes.UnearnedIncomes -> Set(unearnedincome.SummaryTypes.Benefits),
       SourceTypes.UKProperties -> SourceTypes.UKProperties.summaryTypes,
-      SourceTypes.FurnishedHolidayLettings -> SourceTypes.FurnishedHolidayLettings.summaryTypes,
+      SourceTypes.FurnishedHolidayLettings -> Set(),
       SourceTypes.Employments -> Set()
     )
 

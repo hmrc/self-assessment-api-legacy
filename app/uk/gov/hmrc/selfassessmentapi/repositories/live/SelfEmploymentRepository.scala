@@ -56,6 +56,8 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending)), name = Some("se_utr_taxyear_sourceid"), unique = true),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("incomes.summaryId", Ascending)), name = Some("se_utr_taxyear_source_incomesid"), unique = true),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("expenses.summaryId", Ascending)), name = Some("se_utr_taxyear_source_expensesid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("balancingCharges.summaryId", Ascending)), name = Some("se_utr_taxyear_source_balancingchargesid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("goodsAndServicesOwnUse.summaryId", Ascending)), name = Some("se_utr_taxyear_source_goodsandservicesownuseid"), unique = true),
     Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("se_last_modified"), unique = false))
 
 

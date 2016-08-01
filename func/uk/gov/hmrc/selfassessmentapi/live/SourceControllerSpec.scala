@@ -1,11 +1,14 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import org.joda.time.LocalDate
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json.toJson
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
 import uk.gov.hmrc.selfassessmentapi.domain.employment.Employment
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.FurnishedHolidayLetting
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.EEA
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
@@ -24,22 +27,32 @@ case class UpdateScenario(updatedValue: JsValue, expectedUpdate: ExpectedUpdate)
 
 class SourceControllerSpec extends BaseFunctionalSpec {
 
-  val implementedSourceTypes = Set(SourceTypes.SelfEmployments, SourceTypes.UnearnedIncomes, SourceTypes.Employments)
+  val implementedSourceTypes = Set(SourceTypes.SelfEmployments, SourceTypes.UnearnedIncomes, SourceTypes.FurnishedHolidayLettings, SourceTypes.Employments)
 
-  val notImplementedSourceTypes = Set(SourceTypes.FurnishedHolidayLettings, SourceTypes.UKProperties)
+  val notImplementedSourceTypes = Set(SourceTypes.UKProperties)
 
   val ok: Regex = "20.".r
+
   val errorScenarios: Map[SourceType, ErrorScenario] = Map(
     SelfEmployments -> ErrorScenario(invalidInput = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
       error = ExpectedError(path = "/commencementDate", code = s"$COMMENCEMENT_DATE_NOT_IN_THE_PAST")),
     UnearnedIncomes -> ErrorScenario(invalidInput = toJson(UnearnedIncome.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok)),
+    FurnishedHolidayLettings -> ErrorScenario(invalidInput = Json.parse(s"""
+                                                                            |{
+                                                                            |  "propertyLocation": "The Moon"
+                                                                            |}
+                                                                          """.stripMargin),
+      error = ExpectedError(path = "/propertyLocation", code = "NO_VALUE_FOUND")),
     Employments -> ErrorScenario(invalidInput = toJson(Employment.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok))
   )
+
 
   val updateScenarios: Map[SourceType, UpdateScenario] = Map(
     SelfEmployments -> UpdateScenario(updatedValue = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().minusDays(1))),
       expectedUpdate = ExpectedUpdate(path = _ \ "commencementDate", value = LocalDate.now().minusDays(1).toString("yyyy-MM-dd"))),
     UnearnedIncomes -> UpdateScenario(updatedValue = toJson(UnearnedIncome.example()),
+      expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
+    FurnishedHolidayLettings -> UpdateScenario(updatedValue = toJson(FurnishedHolidayLetting.example().copy(propertyLocation = EEA)),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     Employments -> UpdateScenario(updatedValue = toJson(Employment.example()),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = ""))

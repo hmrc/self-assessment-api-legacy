@@ -19,13 +19,14 @@ package uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson.enumFormat
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
 
 object PropertyLocationType extends Enumeration {
   type PropertyLocationType = Value
   val UK, EEA = Value
+  implicit val format = enumFormat(PropertyLocationType, Some("Furnished holiday lettings property location type is invalid"))
 }
 
 case class FurnishedHolidayLetting(id: Option[SourceId] = None,
@@ -35,8 +36,6 @@ case class FurnishedHolidayLetting(id: Option[SourceId] = None,
 
 
 object FurnishedHolidayLetting extends JsonMarshaller[FurnishedHolidayLetting]{
-
-  implicit val propertyLocationTypes = EnumJson.enumFormat(PropertyLocationType, Some("Furnished holiday lettings property location type is invalid"))
 
   implicit val writes = Json.writes[FurnishedHolidayLetting]
 

@@ -64,7 +64,7 @@ class UnearnedIncomeRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
   "delete by utr and taxYear" should {
     "delete  all unearned incomes for utr/tax year" in {
-      val sources = for {
+      for {
         n <- 1 to 10
         source = unearnedIncome()
         id = await(unearnedIncomeMongoRepository.create(saUtr, taxYear, source))
@@ -116,16 +116,6 @@ class UnearnedIncomeRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   }
 
   "update" should {
-    def verifyUpdate(original: UnearnedIncome, updated: UnearnedIncome) = {
-      val sourceId = await(unearnedIncomeMongoRepository.create(saUtr, taxYear, original))
-      val result = await(unearnedIncomeMongoRepository.update(saUtr, taxYear, sourceId, updated))
-      result shouldEqual true
-
-      val found = await(unearnedIncomeMongoRepository.findById(saUtr, taxYear, sourceId))
-      found shouldEqual Some(updated.copy(id = Some(sourceId)))
-
-    }
-
 
     "return false when the unearned income does not exist" in {
       val result = await(unearnedIncomeMongoRepository.update(saUtr, taxYear, UUID.randomUUID().toString, unearnedIncome()))

@@ -78,7 +78,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
 
   "delete by utr and taxYear" should {
     "delete all uk properties for utr/tax year" in {
-      val sources = for {
+      for {
         n <- 1 to 10
         source = ukProperty()
         id = await(ukPropertiesRepository.create(saUtr, taxYear, source))
@@ -94,7 +94,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
 
     "not delete uk properties for different utr" in {
       val saUtr2: SaUtr = generateSaUtr()
-      val source1 = await(ukPropertiesRepository.create(saUtr, taxYear, ukProperty()))
+      await(ukPropertiesRepository.create(saUtr, taxYear, ukProperty()))
       val source2 = await(ukPropertiesRepository.create(saUtr2, taxYear, ukProperty()))
 
       await(ukPropertiesRepository.delete(saUtr, taxYear))
@@ -121,7 +121,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
 
     "not include uk properties for different utr" in {
       val source1 = await(ukPropertiesRepository.create(saUtr, taxYear, ukProperty()))
-      val source2 = await(ukPropertiesRepository.create(generateSaUtr(), taxYear, ukProperty()))
+      await(ukPropertiesRepository.create(generateSaUtr(), taxYear, ukProperty()))
 
       val found: Seq[UKProperty] = await(ukPropertiesRepository.list(saUtr, taxYear))
 

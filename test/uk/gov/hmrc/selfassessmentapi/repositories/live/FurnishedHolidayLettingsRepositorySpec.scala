@@ -79,7 +79,7 @@ class FurnishedHolidayLettingsRepositorySpec extends MongoEmbeddedDatabase with 
 
   "delete by utr and taxYear" should {
     "delete all furnished holiday lettings for utr/tax year" in {
-      val sources = for {
+      for {
         n <- 1 to 10
         source = furnishedHolidayLetting()
         id = await(furnishedHolidayLettingsRepository.create(saUtr, taxYear, source))
@@ -95,7 +95,7 @@ class FurnishedHolidayLettingsRepositorySpec extends MongoEmbeddedDatabase with 
 
     "not delete furnished holiday letting for different utr" in {
       val saUtr2: SaUtr = generateSaUtr()
-      val source1 = await(furnishedHolidayLettingsRepository.create(saUtr, taxYear, furnishedHolidayLetting()))
+      await(furnishedHolidayLettingsRepository.create(saUtr, taxYear, furnishedHolidayLetting()))
       val source2 = await(furnishedHolidayLettingsRepository.create(saUtr2, taxYear, furnishedHolidayLetting()))
 
       await(furnishedHolidayLettingsRepository.delete(saUtr, taxYear))
@@ -122,7 +122,7 @@ class FurnishedHolidayLettingsRepositorySpec extends MongoEmbeddedDatabase with 
 
     "not include furnished holiday letting for different utr" in {
       val source1 = await(furnishedHolidayLettingsRepository.create(saUtr, taxYear, furnishedHolidayLetting()))
-      val source2 = await(furnishedHolidayLettingsRepository.create(generateSaUtr(), taxYear, furnishedHolidayLetting()))
+      await(furnishedHolidayLettingsRepository.create(generateSaUtr(), taxYear, furnishedHolidayLetting()))
 
       val found: Seq[FurnishedHolidayLetting] = await(furnishedHolidayLettingsRepository.list(saUtr, taxYear))
 

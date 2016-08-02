@@ -21,7 +21,7 @@ import play.api.hal.HalLink
 import play.api.libs.json.JsObject
 import play.api.mvc.Action
 import play.api.mvc.hal._
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -32,7 +32,10 @@ trait CustomerResolverController extends BaseController with Links {
 
   val confidenceLevel: ConfidenceLevel
 
-  def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]]
+  def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] = {
+      val utrGenerator = new SaUtrGenerator()
+      Future.successful(Some(utrGenerator.nextSaUtr))
+  }
 
   final def resolve = Action.async { request =>
     saUtr(confidenceLevel)(hc(request)).map {

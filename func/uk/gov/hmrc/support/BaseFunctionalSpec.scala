@@ -1,5 +1,6 @@
 package uk.gov.hmrc.support
 
+import com.github.tomakehurst.wiremock.client.RequestPatternBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.json.{JSONArray, JSONObject}
 import org.skyscreamer.jsonassert.JSONAssert.assertEquals
@@ -175,6 +176,10 @@ trait BaseFunctionalSpec extends TestApplication {
     def contentTypeIsJson() = contentTypeIs("application/json; charset=utf-8")
 
     def contentTypeIsHalJson() = contentTypeIs("application/hal+json")
+
+    def noInteractionsWithExternalSystems() = {
+      verify(0, RequestPatternBuilder.allRequests())
+    }
 
     def bodyIs(expectedBody: String) = {
       response.body shouldBe expectedBody

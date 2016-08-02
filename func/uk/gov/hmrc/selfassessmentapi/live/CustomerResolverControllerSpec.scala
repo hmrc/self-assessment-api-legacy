@@ -4,7 +4,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class CustomerResolverControllerSpec extends BaseFunctionalSpec {
 
-  "Live Customer Resolver" should {
+  "Live Customer Resolver (customer resolution enabled)" should {
     "return a 200 response with a link to /self-assessment/utr when the customer is enrolled in SA" in {
       given()
         .userIsEnrolledInSa(saUtr)

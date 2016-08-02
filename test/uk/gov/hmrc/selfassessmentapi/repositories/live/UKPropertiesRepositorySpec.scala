@@ -59,7 +59,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
   }
 
   "delete by Id" should {
-    "return true when furnished holiday letting is deleted" in {
+    "return true when uk property is deleted" in {
       val source = ukProperty()
       val id = await(ukPropertiesRepository.create(saUtr, taxYear, source))
       val result = await(ukPropertiesRepository.delete(saUtr, taxYear, id))
@@ -67,7 +67,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
       result shouldBe true
     }
 
-    "return false when furnished holiday letting is not deleted" in {
+    "return false when uk property is not deleted" in {
       val source = ukProperty()
       val id = await(ukPropertiesRepository.create(saUtr, taxYear, source))
       val result = await(ukPropertiesRepository.delete(generateSaUtr(), taxYear, id))
@@ -77,7 +77,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
   }
 
   "delete by utr and taxYear" should {
-    "delete all furnished holiday lettings for utr/tax year" in {
+    "delete all uk properties for utr/tax year" in {
       val sources = for {
         n <- 1 to 10
         source = ukProperty()
@@ -92,7 +92,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
       found shouldBe empty
     }
 
-    "not delete furnished holiday letting for different utr" in {
+    "not delete uk properties for different utr" in {
       val saUtr2: SaUtr = generateSaUtr()
       val source1 = await(ukPropertiesRepository.create(saUtr, taxYear, ukProperty()))
       val source2 = await(ukPropertiesRepository.create(saUtr2, taxYear, ukProperty()))
@@ -106,7 +106,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
 
 
   "list" should {
-    "retrieve all furnished holiday letting for utr/tax year" in {
+    "retrieve all uk properties for utr/tax year" in {
       val sources = for {
         n <- 1 to 10
         source = ukProperty()
@@ -119,7 +119,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
       found should contain theSameElementsAs sources
     }
 
-    "not include furnished holiday letting for different utr" in {
+    "not include uk properties for different utr" in {
       val source1 = await(ukPropertiesRepository.create(saUtr, taxYear, ukProperty()))
       val source2 = await(ukPropertiesRepository.create(generateSaUtr(), taxYear, ukProperty()))
 
@@ -139,7 +139,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
       found shouldEqual Some(updated.copy(id = Some(sourceId)))
 
     }
-    "return true when the furnished holiday letting exists and has been updated" in {
+    "return true when the uk properties exists and has been updated" in {
       val source = ukProperty()
 
       val allowances = Allowances(
@@ -180,7 +180,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
       verifyUpdate(source, updatedSource)
     }
 
-    "return false when the furnished holiday letting does not exist" in {
+    "return false when the uk property does not exist" in {
       val result = await(ukPropertiesRepository.update(saUtr, taxYear, UUID.randomUUID().toString, ukProperty()))
       result shouldEqual false
     }
@@ -376,6 +376,4 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
       }
     }
   }
-
-
 }

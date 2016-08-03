@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 trait SummaryController extends BaseController with Links with SourceTypeSupport {
 
-  override lazy val context: String = AppContext.apiGatewayContext
+  override lazy val context: String = AppContext.apiGatewayLinkContext
 
   def handler(sourceType: SourceType, summaryTypeName: String): SummaryHandler[_] = {
     val summaryType = sourceType.summaryTypes.find(_.name == summaryTypeName)

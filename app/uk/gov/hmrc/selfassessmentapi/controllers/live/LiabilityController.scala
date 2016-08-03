@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 
   private val liabilityService = LiabilityService()
 

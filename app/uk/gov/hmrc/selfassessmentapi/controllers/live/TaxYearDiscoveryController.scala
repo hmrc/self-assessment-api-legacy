@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object TaxYearDiscoveryController extends BaseController with Links {
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
   val repository = SelfAssessmentRepository()
 
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>

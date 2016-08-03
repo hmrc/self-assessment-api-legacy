@@ -22,5 +22,5 @@ import uk.gov.hmrc.selfassessmentapi.config.{AppContext, MicroserviceAuthFilter}
 
 case object CustomerResolverController extends uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverController {
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 }

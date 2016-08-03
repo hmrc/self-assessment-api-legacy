@@ -191,6 +191,6 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
   }
 }
 
-object PublishedSelfAssessmentApiDefinition extends SelfAssessmentApiDefinition(AppContext.apiGatewayContext, APIStatus.PUBLISHED)
+object PublishedSelfAssessmentApiDefinition extends SelfAssessmentApiDefinition(AppContext.apiGatewayRegistrationContext, APIStatus.PUBLISHED)
 
-object PrototypedSelfAssessmentApiDefinition extends SelfAssessmentApiDefinition(AppContext.apiGatewayContext, APIStatus.PROTOTYPED)
+object PrototypedSelfAssessmentApiDefinition extends SelfAssessmentApiDefinition(AppContext.apiGatewayRegistrationContext, APIStatus.PROTOTYPED)

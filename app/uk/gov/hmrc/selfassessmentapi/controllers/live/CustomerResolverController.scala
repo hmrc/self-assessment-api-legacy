@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 case object CustomerResolverController extends uk.gov.hmrc.selfassessmentapi.controllers.CustomerResolverController {
   override val confidenceLevel: ConfidenceLevel = MicroserviceAuthFilter.authParamsConfig.authConfig(this.productPrefix).confidenceLevel
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 
   override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] =
     if(AppContext.authEnabled) AuthConnector.saUtr(confidenceLevel) else super.saUtr(confidenceLevel)

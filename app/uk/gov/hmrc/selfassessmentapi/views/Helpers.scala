@@ -29,7 +29,7 @@ import scala.xml.PCData
 
 object Helpers extends HalSupport with Links {
 
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 
   def sourceTypeAndSummaryTypeResponse(utr: SaUtr, taxYear: TaxYear,  sourceId: SourceId, summaryId: SummaryId) =
     sourceTypeAndSummaryTypeIdResponse(obj(), utr, taxYear, SourceTypes.SelfEmployments, sourceId, selfemployment.SummaryTypes.Incomes, summaryId)

@@ -25,7 +25,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
   override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
 
   "self-employments and only self-employment incomes" should {
-    "be visible" in {
+    "be visible in live" in {
 
       given()
         .userIsAuthorisedForTheResource(saUtr)
@@ -52,6 +52,37 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .get(s"/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
+        .thenAssertThat()
+        .isNotImplemented
+    }
+
+    "be visible in sandbox" in {
+
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/sandbox/$saUtr/$taxYear/${SelfEmployments.name}")
+        .thenAssertThat()
+        .statusIs(200)
+
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/sandbox/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/incomes")
+        .thenAssertThat()
+        .statusIs(200)
+
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/sandbox/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
+        .thenAssertThat()
+        .isNotImplemented
+
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .get(s"/sandbox/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
         .thenAssertThat()
         .isNotImplemented
     }

@@ -1,8 +1,11 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.Employments
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
@@ -14,7 +17,9 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     }
   }
 
-  val invalidAmountTestData: Set[SummaryType] = Set(selfemployment.SummaryTypes.GoodsAndServicesOwnUses) ++ FurnishedHolidayLettings.summaryTypes
+  val invalidAmountTestData: Set[SummaryType] = Set(selfemployment.SummaryTypes.GoodsAndServicesOwnUses) ++
+                                                FurnishedHolidayLettings.summaryTypes ++ Employments.summaryTypes ++
+                                                UKProperties.summaryTypes
 
   private def invalidRequestBody(summaryType: SummaryType) = {
     if (invalidAmountTestData.contains(summaryType)) {
@@ -32,16 +37,16 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     }
   }
 
-  private val implementedSources = Seq(SourceTypes.SelfEmployments, SourceTypes.UnearnedIncomes, SourceTypes.FurnishedHolidayLettings)
-
-  private val implementedSummaries = Map(
+  private val implementedSummaries = Map[SourceType, Set[SummaryType]](
+    Employments -> Employments.summaryTypes,
     SourceTypes.SelfEmployments -> SourceTypes.SelfEmployments.summaryTypes,
-    SourceTypes.UnearnedIncomes -> Set(unearnedincome.SummaryTypes.SavingsIncomes, unearnedincome.SummaryTypes.Dividends),
-    SourceTypes.FurnishedHolidayLettings -> SourceTypes.FurnishedHolidayLettings.summaryTypes)
+    SourceTypes.UnearnedIncomes -> Set(SummaryTypes.SavingsIncomes, SummaryTypes.Dividends),
+    SourceTypes.FurnishedHolidayLettings -> SourceTypes.FurnishedHolidayLettings.summaryTypes,
+    SourceTypes.UKProperties -> SourceTypes.UKProperties.summaryTypes)
 
   "I" should {
     "be able to create, get, update and delete all summaries for all sources" in {
-      implementedSources foreach { sourceType =>
+      SourceTypes.types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
@@ -106,7 +111,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to create summary with invalid payload" in {
-      implementedSources foreach { sourceType =>
+      SourceTypes.types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
@@ -146,7 +151,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to update summary with invalid payload" in {
-      implementedSources foreach { sourceType =>
+      SourceTypes.types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
@@ -175,7 +180,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to get a non existent summary" in {
-      implementedSources foreach { sourceType =>
+      SourceTypes.types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
@@ -197,7 +202,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to delete a non existent summary" in {
-      implementedSources foreach { sourceType =>
+      SourceTypes.types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)
@@ -219,7 +224,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to update a non existent summary" in {
-      implementedSources foreach { sourceType =>
+      SourceTypes.types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
             .userIsAuthorisedForTheResource(saUtr)

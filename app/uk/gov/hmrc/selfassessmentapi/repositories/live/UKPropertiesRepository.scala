@@ -201,4 +201,25 @@ class UKPropertiesMongoRepository(implicit mongo: () => DB)
       list(saUtr, taxYear, sourceId).map(_.getOrElse(Seq()).map(privateUseAdjustment => JsonItem(privateUseAdjustment.id.get.toString, toJson(privateUseAdjustment))))
   }
 
+  object TaxPaidRepository extends SummaryRepository[TaxPaid] {
+    override def create(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, goodsAndServicesOwnUse: TaxPaid): Future[Option[SummaryId]] =
+      self.createSummary(saUtr, taxYear, sourceId, MongoUKPropertiesTaxPaidSummary.toMongoSummary(goodsAndServicesOwnUse))
+
+    override def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[TaxPaid]] =
+      self.findSummaryById[TaxPaid](saUtr, taxYear, sourceId, (ukp: MongoUKProperties) => ukp.taxesPaid.find(_.summaryId == id).map(_.toTaxPaid))
+
+    override def update(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, goodsAndServicesOwnUse: TaxPaid): Future[Boolean] =
+      self.updateSummary(saUtr, taxYear, sourceId, MongoUKPropertiesTaxPaidSummary.toMongoSummary(goodsAndServicesOwnUse, Some(id)),
+        (ukp: MongoUKProperties) => ukp.taxesPaid.exists(_.summaryId == id))
+
+    override def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
+      self.deleteSummary(saUtr, taxYear, sourceId, id, MongoUKPropertiesTaxPaidSummary.arrayName, (ukp: MongoUKProperties) => ukp.taxesPaid.exists(_.summaryId == id))
+
+    override def list(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[TaxPaid]]] =
+      self.listSummaries[TaxPaid](saUtr, taxYear, sourceId, (ukp: MongoUKProperties) => ukp.taxesPaid.map(_.toTaxPaid))
+
+    override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Seq[JsonItem]] =
+      list(saUtr, taxYear, sourceId).map(_.getOrElse(Seq()).map(privateUseAdjustment => JsonItem(privateUseAdjustment.id.get.toString, toJson(privateUseAdjustment))))
+  }
+
 }

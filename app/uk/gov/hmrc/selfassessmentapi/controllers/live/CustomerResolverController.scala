@@ -29,5 +29,5 @@ case object CustomerResolverController extends uk.gov.hmrc.selfassessmentapi.con
   override val context: String = AppContext.apiGatewayContext
 
   override def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] =
-    if(AppContext.customerResolutionEnabled) AuthConnector.saUtr(confidenceLevel) else super.saUtr(confidenceLevel)
+    if(AppContext.authEnabled) AuthConnector.saUtr(confidenceLevel) else super.saUtr(confidenceLevel)
 }

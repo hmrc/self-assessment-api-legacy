@@ -142,6 +142,32 @@ object MongoUKPropertiesPrivateUseAdjustmentSummary {
   }
 }
 
+case class MongoUKPropertiesTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary {
+
+  val arrayName = MongoUKPropertiesTaxPaidSummary.arrayName
+
+  def toTaxPaid = TaxPaid(id = Some(summaryId), amount = amount)
+
+  def toBsonDocument = BSONDocument(
+    "summaryId" -> summaryId,
+    "amount" -> BSONDouble(amount.doubleValue())
+  )
+}
+
+object MongoUKPropertiesTaxPaidSummary {
+
+  val arrayName = "taxesPaid"
+
+  implicit val format = Json.format[MongoUKPropertiesTaxPaidSummary]
+
+  def toMongoSummary(taxPaid: TaxPaid, id: Option[SummaryId] = None): MongoUKPropertiesTaxPaidSummary = {
+    MongoUKPropertiesTaxPaidSummary(
+      summaryId = id.getOrElse(BSONObjectID.generate.stringify),
+      amount = taxPaid.amount
+    )
+  }
+}
+
 case class MongoUKProperties(id: BSONObjectID,
                                sourceId: SourceId,
                                saUtr: SaUtr,
@@ -154,7 +180,8 @@ case class MongoUKProperties(id: BSONObjectID,
                                incomes: Seq[MongoUKPropertiesIncomeSummary] = Nil,
                                expenses: Seq[MongoUKPropertiesExpenseSummary] = Nil,
                                balancingCharges: Seq[MongoUKPropertiesBalancingChargeSummary] = Nil,
-                               privateUseAdjustment: Seq[MongoUKPropertiesPrivateUseAdjustmentSummary] = Nil) extends SourceMetadata {
+                               privateUseAdjustment: Seq[MongoUKPropertiesPrivateUseAdjustmentSummary] = Nil,
+                               taxesPaid: Seq[MongoUKPropertiesTaxPaidSummary] = Nil) extends SourceMetadata {
 
   def toUKProperties = UKProperty(
     id = Some(sourceId),

@@ -14,7 +14,7 @@
     @partials.sourcePathParams(saUtr, taxYear, None, None, None)
     @partials.requestHeaders(true)
     @partials.authorisation(true)
-    @SourceTypes.types.map { sourceType =>
+    @enabledSourceTypes.map { sourceType =>
         @partials.sourceWriteRequest("POST", saUtr, taxYear, sourceType, None)
     }
     <section id="sample-response">

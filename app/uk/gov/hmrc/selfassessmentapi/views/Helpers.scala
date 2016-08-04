@@ -21,7 +21,7 @@ import play.api.hal.HalLink
 import play.api.libs.json.Json._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.{HalSupport, Links}
 import uk.gov.hmrc.selfassessmentapi.domain._
 
@@ -30,6 +30,13 @@ import scala.xml.PCData
 object Helpers extends HalSupport with Links {
 
   override val context: String = AppContext.apiGatewayContext
+
+  private val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
+
+  val enabledSourceTypes: Set[SourceType] = SourceTypes.types.filter(featureSwitch.isEnabled)
+
+  def enabledSummaries(sourceType: SourceType): Set[SummaryType] =
+    sourceType.summaryTypes.filter(summary => featureSwitch.isEnabled(sourceType, summary.name))
 
   def sourceTypeAndSummaryTypeResponse(utr: SaUtr, taxYear: TaxYear,  sourceId: SourceId, summaryId: SummaryId) =
     sourceTypeAndSummaryTypeIdResponse(obj(), utr, taxYear, SourceTypes.SelfEmployments, sourceId, selfemployment.SummaryTypes.Incomes, summaryId)
@@ -89,7 +96,7 @@ object Helpers extends HalSupport with Links {
   }
 
   def discoveryLinks(utr: SaUtr, taxYear: TaxYear): Set[HalLink] = {
-    val sourceLinks = SourceTypes.types.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
+    val sourceLinks = enabledSourceTypes.map(sourceType => HalLink(sourceType.name, sourceHref(utr, taxYear, sourceType)))
     val links = sourceLinks + HalLink("liability", liabilityHref(utr, taxYear)) + HalLink("self", discoverTaxYearHref(utr, taxYear))
     links
   }

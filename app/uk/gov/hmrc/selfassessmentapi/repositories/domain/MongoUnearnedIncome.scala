@@ -21,9 +21,10 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.BenefitType.BenefitType
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome, UnearnedIncome}
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Benefit, Dividend, SavingsIncome, UnearnedIncome}
 import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, _}
 
 case class MongoUnearnedIncomesSavingsIncomeSummary(summaryId: SummaryId,
@@ -55,6 +56,43 @@ object MongoUnearnedIncomesSavingsIncomeSummary {
       summaryId = id.getOrElse(BSONObjectID.generate.stringify),
       `type` = income.`type`,
       amount = income.amount
+    )
+  }
+}
+
+case class MongoUnearnedIncomesBenefitSummary(summaryId: SummaryId,
+                                              `type`: BenefitType,
+                                              amount: BigDecimal,
+                                              taxDeduction: BigDecimal) extends MongoSummary {
+
+  val arrayName = MongoUnearnedIncomesBenefitSummary.arrayName
+
+  def toBenefit: Benefit =
+    Benefit(id = Some(summaryId),
+      `type` = `type`,
+      amount = amount,
+      taxDeduction = taxDeduction)
+
+  def toBsonDocument = BSONDocument(
+    "summaryId" -> summaryId,
+    "amount" -> BSONDouble(amount.doubleValue()),
+    "taxDeduction" -> BSONDouble(taxDeduction.doubleValue()),
+    "type" -> BSONString(`type`.toString)
+  )
+}
+
+object MongoUnearnedIncomesBenefitSummary {
+
+  val arrayName = "benefits"
+
+  implicit val format = Json.format[MongoUnearnedIncomesBenefitSummary]
+
+  def toMongoSummary(income: Benefit, id: Option[SummaryId] = None): MongoUnearnedIncomesBenefitSummary = {
+    MongoUnearnedIncomesBenefitSummary(
+      summaryId = id.getOrElse(BSONObjectID.generate.stringify),
+      `type` = income.`type`,
+      amount = income.amount,
+      taxDeduction = income.taxDeduction
     )
   }
 }
@@ -98,7 +136,8 @@ case class MongoUnearnedIncome(id: BSONObjectID,
                                lastModifiedDateTime: DateTime,
                                createdDateTime: DateTime,
                                savings: Seq[MongoUnearnedIncomesSavingsIncomeSummary] = Nil,
-                               dividends: Seq[MongoUnearnedIncomesDividendSummary] = Nil) extends SourceMetadata {
+                               dividends: Seq[MongoUnearnedIncomesDividendSummary] = Nil,
+                               benefits: Seq[MongoUnearnedIncomesBenefitSummary] = Nil) extends SourceMetadata {
 
   def toUnearnedIncome = UnearnedIncome(
     id = Some(sourceId))

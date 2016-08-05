@@ -5,7 +5,6 @@ import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.Employments
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
@@ -25,7 +24,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     if (invalidAmountTestData.contains(summaryType)) {
       Some(Json.parse(s"""{"amount":1000.123}"""))
     } else {
-      Some(Json.parse(s"""{"type":"InvalidType", "amount":1000.00}"""))
+      Some(Json.parse(s"""{"type":"InvalidType", "amount":1000.00, "taxDeduction":1000.00}"""))
     }
   }
 
@@ -40,7 +39,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   private val implementedSummaries = Map[SourceType, Set[SummaryType]](
     Employments -> Employments.summaryTypes,
     SourceTypes.SelfEmployments -> SourceTypes.SelfEmployments.summaryTypes,
-    SourceTypes.UnearnedIncomes -> Set(SummaryTypes.SavingsIncomes, SummaryTypes.Dividends),
+    SourceTypes.UnearnedIncomes -> SourceTypes.UnearnedIncomes.summaryTypes,
     SourceTypes.FurnishedHolidayLettings -> SourceTypes.FurnishedHolidayLettings.summaryTypes,
     SourceTypes.UKProperties -> SourceTypes.UKProperties.summaryTypes)
 
@@ -83,7 +82,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .body(_ \ "type").is(exampleSummaryTypeValue(summaryType)).body(_ \ "amount").is((summaryType.example() \ "amount").as[BigDecimal])
           .when()
             .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%",
-              Some(Json.parse(s"""{"type":"${exampleSummaryTypeValue(summaryType)}", "amount":1200.00}""")))
+              Some(Json.parse(s"""{"type":"${exampleSummaryTypeValue(summaryType)}", "amount":1200.00, "taxDeduction":1000.00}""")))
             .thenAssertThat()
             .statusIs(200)
             .contentTypeIsHalJson()
@@ -106,8 +105,6 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       }
     }
   }
-
-
 
   "I" should {
     "not be able to create summary with invalid payload" in {
@@ -146,8 +143,6 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
         .isNotFound
     }
   }
-
-
 
   "I" should {
     "not be able to update summary with invalid payload" in {

@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.domain.SaUtr
 @import uk.gov.hmrc.selfassessmentapi.domain._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
 @(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summaryId: SummaryId)
 <endpoint>
@@ -12,8 +13,8 @@
     @partials.sourcePathParams(saUtr, taxYear, Some(sourceId), Some(selfemployment.SummaryTypes.Incomes), Some(summaryId))
     @partials.requestHeaders(false)
     @partials.authorisation(false)
-    @SourceTypes.types.map { sourceType =>
-        @sourceType.summaryTypes.map { summaryType =>
+    @enabledSourceTypes.map { sourceType =>
+        @enabledSummaries(sourceType).map { summaryType =>
             @partials.summaryReadResponse(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)
         }
     }

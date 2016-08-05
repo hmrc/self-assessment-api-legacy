@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.domain.SaUtr
 @import uk.gov.hmrc.selfassessmentapi.domain._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
 @(saUtr: SaUtr, taxYear: TaxYear, sourceId: Option[SourceId], summaryType: Option[SummaryType], summaryId: Option[SummaryId])
 <section id="path-parameters">
@@ -21,7 +22,7 @@
                     <code>String</code>
                 </cell>
                 <cell>
-                    <code>@(SourceTypes.types.map(_.name).mkString(", "))</code>
+                    <code>@(enabledSourceTypes.map(_.name).mkString(", "))</code>
                 </cell>
                 <cell>The type of source</cell>
             </row>
@@ -78,13 +79,13 @@
                 <cell>Summary types</cell>
             </headings>
             <rows>
-            @SourceTypes.types.map { sourceType =>
+            @enabledSourceTypes.map { sourceType =>
                 <row>
                     <cell>
                         <code>@(sourceType.name)</code>
                     </cell>
                     <cell>
-                        <code>@sourceType.summaryTypes.map(_.name).mkString(", ")</code>
+                        <code>@enabledSummaries(sourceType).map(_.name).mkString(", ")</code>
                     </cell>
                 </row>
             }

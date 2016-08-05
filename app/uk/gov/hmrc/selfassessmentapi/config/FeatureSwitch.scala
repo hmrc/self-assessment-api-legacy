@@ -23,6 +23,11 @@ import uk.gov.hmrc.selfassessmentapi.domain.SourceType
 case class FeatureSwitch(value: Option[Configuration]) {
   val DEFAULT_VALUE = false
 
+  def isEnabled(sourceType: SourceType): Boolean = value match {
+    case Some(config) => FeatureConfig(config).isSourceEnabled(sourceType.name)
+    case None => DEFAULT_VALUE
+  }
+
   def isEnabled(sourceType: SourceType, summary: String): Boolean = value match {
     case Some(config) =>
       if(summary.isEmpty) FeatureConfig(config).isSourceEnabled(sourceType.name)

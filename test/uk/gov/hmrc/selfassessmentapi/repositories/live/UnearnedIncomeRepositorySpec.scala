@@ -22,8 +22,8 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome, UnearnedIncome}
-import uk.gov.hmrc.selfassessmentapi.domain.{JsonMarshaller, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain.JsonMarshaller
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Benefit, Dividend, SavingsIncome, UnearnedIncome}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,8 +32,9 @@ class UnearnedIncomeRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
   private val mongoRepository = new UnearnedIncomeMongoRepository
   private val unearnedIncomeMongoRepository: SourceRepository[UnearnedIncome] = mongoRepository
-  private val summariesMap: Map[JsonMarshaller[_], SummaryRepository[_]] = Map(Dividend -> mongoRepository.DividendRepository, SavingsIncome -> mongoRepository.SavingsIncomeRepository)
-
+  private val summariesMap: Map[JsonMarshaller[_], SummaryRepository[_]] = Map(Dividend -> mongoRepository.DividendRepository,
+                                                                               SavingsIncome -> mongoRepository.SavingsIncomeRepository,
+                                                                               Benefit -> mongoRepository.BenefitRepository)
 
   override def beforeEach() {
     await(mongoRepository.drop)

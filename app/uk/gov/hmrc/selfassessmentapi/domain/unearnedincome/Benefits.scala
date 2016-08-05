@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.domain.unearnedincome
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson.enumFormat
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.BenefitType.BenefitType
@@ -27,13 +27,13 @@ import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.BenefitType.BenefitTy
 object BenefitType extends Enumeration {
   type BenefitType = Value
   val StatePension, StatePensionLumpSum, PensionsAnnuitiesPayments, TaxableIncapacityBenefit, JobSeekersAllowance, OtherTaxableStatePensions = Value
+  implicit val format = enumFormat(BenefitType, Some("Unearned Income Benefit type is invalid"))
 }
 
 case class Benefit(id: Option[String] = None, `type`: BenefitType, amount: BigDecimal, taxDeduction: BigDecimal)
 
 object Benefit extends JsonMarshaller[Benefit] {
 
-  implicit val savingsIncomeTypes = EnumJson.enumFormat(BenefitType, Some("Unearned Income Benefit type is invalid"))
   implicit val writes = Json.writes[Benefit]
 
   implicit val reads: Reads[Benefit] = (

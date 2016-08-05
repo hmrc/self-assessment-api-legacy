@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.{DividendsFromUKSources, InterestFromUKBanksAndBuildingSocieties}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, SelfEmploymentIncome}
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
 class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
@@ -26,7 +26,10 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
 
     "calculate total income" in {
 
-      val liability = aLiability(profitFromSelfEmployments = Seq(
+      val liability = aLiability(incomeFromEmployments = Seq(
+        EmploymentIncome("e1", 100, 50, 25, 25),
+        EmploymentIncome("e2", 200, 100.50, 50, 49.50)
+      ),profitFromSelfEmployments = Seq(
         SelfEmploymentIncome("se1", 0, 300, 0),
         SelfEmploymentIncome("se2", 0, 200.50, 0)
       ), interestFromUKBanksAndBuildingSocieties = Seq(
@@ -37,17 +40,38 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
         DividendsFromUKSources("dividend2", 2000)
       ))
 
-      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(500.50), totalIncomeReceived = Some(3750.50), totalTaxableIncome = Some(0))
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(575), totalIncomeReceived = Some(3825), totalTaxableIncome = Some(0))
     }
 
-    "calculate total income if there is no income from self employments" in {
+    "calculate total income if there are no sources" in {
 
       val liability = aLiability()
 
       TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(0), totalIncomeReceived = Some(0), totalTaxableIncome = Some(0))
     }
 
-    "calculate total income if there is no income from self employments but has interest from UK banks and building societies" in {
+    "calculate total income if there are employments source" in {
+
+      val liability =  aLiability(incomeFromEmployments = Seq(
+        EmploymentIncome("e1", 100, 50, 25, 25),
+        EmploymentIncome("e2", 200, 100.50, 50, 49.50)
+      ))
+
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(74.5), totalIncomeReceived = Some(74.5), totalTaxableIncome = Some(0))
+    }
+
+
+    "calculate total income if there are self employments source" in {
+
+      val liability =  aLiability(profitFromSelfEmployments = Seq(
+        SelfEmploymentIncome("se1", 0, 300, 0),
+        SelfEmploymentIncome("se2", 0, 200.50, 0)
+      ))
+
+      TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(500.5), totalIncomeReceived = Some(500.5), totalTaxableIncome = Some(0))
+    }
+
+    "calculate total income if there are interest from UK banks and building societies" in {
 
       val liability =  aLiability(interestFromUKBanksAndBuildingSocieties = Seq(
         InterestFromUKBanksAndBuildingSocieties("ue1", 150),
@@ -58,7 +82,7 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
     }
 
 
-    "calculate total income if there is no income from self employments but has dividends from unearned income" in {
+    "calculate total income if there are dividends from unearned income" in {
 
       val liability =  aLiability(dividendsFromUKSources = Seq(
         DividendsFromUKSources("dividend1", 1000),

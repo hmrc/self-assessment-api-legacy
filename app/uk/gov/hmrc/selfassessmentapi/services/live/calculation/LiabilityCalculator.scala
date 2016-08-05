@@ -22,6 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 class LiabilityCalculator {
 
   private val calculationSteps = Seq(
+    EmploymentIncomeCalculation,
     SelfEmploymentProfitCalculation,
     UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
     DividendsFromUKSourcesCalculation,

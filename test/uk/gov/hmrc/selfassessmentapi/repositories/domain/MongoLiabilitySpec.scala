@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{EmploymentIncome => _, SelfEmploymentIncome => _, _ }
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
@@ -27,6 +27,10 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
     "map to liability" in {
 
       val liability = aLiability().copy(
+        incomeFromEmployments = Seq(
+          EmploymentIncome(sourceId = "eId1", pay =  100, benefitsAndExpenses = 50, allowableExpenses = 50, total = 100),
+          EmploymentIncome(sourceId = "eId2", pay =  200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
+        ),
         profitFromSelfEmployments = Seq(
           SelfEmploymentIncome(sourceId = "seId1", taxableProfit = 10, profit = 20, lossBroughtForward = 15),
           SelfEmploymentIncome(sourceId = "seId2", taxableProfit = 20, profit = 40, lossBroughtForward = 30)
@@ -49,9 +53,13 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         income = IncomeSummary(
           incomes = IncomeFromSources(
             nonSavings = NonSavingsIncomes(
+              employment = Seq(
+                uk.gov.hmrc.selfassessmentapi.domain.EmploymentIncome(sourceId = "eId1", pay =  100, benefitsAndExpenses = 50, allowableExpenses = 50, total = 100),
+                uk.gov.hmrc.selfassessmentapi.domain.EmploymentIncome(sourceId = "eId2", pay =  200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
+              ),
               selfEmployment = Seq(
-                Income("seId1", taxableProfit = 10, profit = 20),
-                Income("seId2", taxableProfit = 20, profit = 40)
+                uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncome("seId1", taxableProfit = 10, profit = 20),
+                uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncome("seId2", taxableProfit = 20, profit = 40)
               )
             ),
             savings = SavingsIncomes(

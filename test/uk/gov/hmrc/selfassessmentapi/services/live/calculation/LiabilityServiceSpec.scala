@@ -18,24 +18,23 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
-import uk.gov.hmrc.selfassessmentapi.repositories.live.{LiabilityMongoRepository, SelfEmploymentMongoRepository}
-import uk.gov.hmrc.selfassessmentapi.repositories.live.{UnearnedIncomeMongoRepository, LiabilityMongoRepository, SelfEmploymentMongoRepository}
+import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
-import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, SelfEmploymentSugar}
+import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, TestApplication}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class LiabilityServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach with MockitoSugar with SelfEmploymentSugar {
+class LiabilityServiceSpec extends TestApplication with SelfEmploymentSugar {
 
   private val saUtr = generateSaUtr()
   private val liabilityRepo = new LiabilityMongoRepository()
+  private val employmentRepo = new EmploymentMongoRepository
   private val selfEmploymentRepo = new SelfEmploymentMongoRepository()
   private val unearnedIncomeRepo = new UnearnedIncomeMongoRepository()
   private val liabilityCalculator = mock[LiabilityCalculator]
-  private val service = new LiabilityService(selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator)
+  private val service = new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator)
 
   "find" should {
 
@@ -64,7 +63,7 @@ class LiabilityServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach
 
       val liabilityAfterCalculation = aLiability(saUtr, taxYear)
 
-      when(liabilityCalculator.calculate(eqTo(SelfAssessment(Seq(selfEmployment), Seq(anUnearnedIncome))), any[MongoLiability])).thenReturn(liabilityAfterCalculation)
+      when(liabilityCalculator.calculate(eqTo(SelfAssessment(selfEmployments = Seq(selfEmployment), unearnedIncomes = Seq(anUnearnedIncome))), any[MongoLiability])).thenReturn(liabilityAfterCalculation)
 
       await(service.calculate(saUtr, taxYear))
 
@@ -84,6 +83,75 @@ class LiabilityServiceSpec extends MongoEmbeddedDatabase with BeforeAndAfterEach
       await(service.calculate(saUtr, taxYear))
 
       await(liabilityRepo.findBy(saUtr, taxYear)) shouldBe Some(liabilityAfterCalculation)
+    }
+
+    "get employment sources from repository when Employment source is switched on" in {
+      val employmentRepo = mock[EmploymentMongoRepository]
+      val service = spy(new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator))
+
+      when(service.isSourceEnabled(Employments)).thenReturn(true)
+      when(employmentRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+
+      await(service.calculate(saUtr, taxYear))
+
+      verify(employmentRepo).findAll(saUtr, taxYear)
+    }
+
+    "not get employment sources from repository when Employment source is switched off" in {
+      val employmentRepo = mock[EmploymentMongoRepository]
+      val service = spy(new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator))
+
+      when(service.isSourceEnabled(Employments)).thenReturn(false)
+
+      await(service.calculate(saUtr, taxYear))
+
+      verifyNoMoreInteractions(employmentRepo)
+    }
+
+    "get self employment sources from repository when Self Employment source is switched on" in {
+      val selfEmploymentRepo = mock[SelfEmploymentMongoRepository]
+      val service = spy(new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator))
+
+      when(service.isSourceEnabled(SelfEmployments)).thenReturn(true)
+      when(selfEmploymentRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+
+      await(service.calculate(saUtr, taxYear))
+
+      verify(selfEmploymentRepo).findAll(saUtr, taxYear)
+    }
+
+    "not get self employment sources from repository when Self Employment source is switched off" in {
+      val selfEmploymentRepo = mock[SelfEmploymentMongoRepository]
+      val service = spy(new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator))
+
+      when(service.isSourceEnabled(SelfEmployments)).thenReturn(false)
+
+      await(service.calculate(saUtr, taxYear))
+
+      verifyNoMoreInteractions(selfEmploymentRepo)
+    }
+
+    "get unearned incomes sources from repository when Unearned Incomes source is switched on" in {
+      val unearnedIncomeRepo = mock[UnearnedIncomeMongoRepository]
+      val service = spy(new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator))
+
+      when(service.isSourceEnabled(UnearnedIncomes)).thenReturn(true)
+      when(unearnedIncomeRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+
+      await(service.calculate(saUtr, taxYear))
+
+      verify(unearnedIncomeRepo).findAll(saUtr, taxYear)
+    }
+
+    "not get unearned incomes sources from repository when Unearned Incomes source is switched off" in {
+      val unearnedIncomeRepo = mock[UnearnedIncomeMongoRepository]
+      val service = spy(new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, liabilityCalculator))
+
+      when(service.isSourceEnabled(UnearnedIncomes)).thenReturn(false)
+
+      await(service.calculate(saUtr, taxYear))
+
+      verifyNoMoreInteractions(unearnedIncomeRepo)
     }
   }
 }

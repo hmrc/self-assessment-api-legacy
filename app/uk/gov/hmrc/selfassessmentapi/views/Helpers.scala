@@ -29,7 +29,7 @@ import scala.xml.PCData
 
 object Helpers extends HalSupport with Links {
 
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 
   private val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
 

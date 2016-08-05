@@ -54,7 +54,7 @@ object Documentation extends BaseController with Links {
 
   case class EndpointDocumentation(name: String, view: Xml)
 
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 
   private val sourceId: SourceId = "00d2d32d"
   private val summaryId: SourceId = "00d2d98a"

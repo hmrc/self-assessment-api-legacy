@@ -15,7 +15,6 @@
  */
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
-import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, SummaryId, TaxYear}

@@ -55,6 +55,7 @@ class UnearnedIncomeMongoRepository(implicit mongo: () => DB)
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending)), name = Some("ui_utr_taxyear_sourceid"), unique = true),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("savings.summaryId", Ascending)), name = Some("ui_utr_taxyear_source_savingsid"), unique = true),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("dividends.summaryId", Ascending)), name = Some("ui_utr_taxyear_source_dividendsid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("benefits.summaryId", Ascending)), name = Some("ui_utr_taxyear_source_benefitsid"), unique = true),
     Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("ui_last_modified"), unique = false))
 
 

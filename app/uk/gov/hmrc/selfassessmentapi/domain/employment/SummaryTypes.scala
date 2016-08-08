@@ -28,8 +28,8 @@ object SummaryTypes {
     override val title = "Sample Employments incomes"
     override def description(action: String) = s"$action an income for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("employments", "type", "Enum", IncomeType.values.mkString(", "), "Type of income"),
-      PositiveMonetaryFieldDescription("employments", "amount")
+      FullFieldDescription("employments", "type", "Enum", IncomeType.values.mkString(", "), s"Type of income employment income (one of the following: ${IncomeType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("employments", "amount", "Pay from employment from P45 and/or P60. Also includes tips & other payments not included in the P60.")
     )
   }
 
@@ -39,8 +39,8 @@ object SummaryTypes {
     override val title = "Sample employment benefits"
     override def description(action: String) = s"$action a benefit for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("employments", "type", "Enum", BenefitType.values.mkString(", "), "Type of benefit"),
-      PositiveMonetaryFieldDescription("employments", "amount")
+      FullFieldDescription("employments", "type", "Enum", BenefitType.values.mkString(", "), s"Type of benefit (one of the following: ${BenefitType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("employments", "amount", "Benefits received from the employer (as per P11D), split by benefit type.")
     )
   }
 
@@ -50,8 +50,8 @@ object SummaryTypes {
     override val title = "Sample Employments expenses"
     override def description(action: String) = s"$action an expense for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("employments", "type", "Enum", ExpenseType.values.mkString(", "), "Type of expense"),
-      PositiveMonetaryFieldDescription("employments", "amount")
+      FullFieldDescription("employments", "type", "Enum", ExpenseType.values.mkString(", "), s"Type of expense (one of the following: ${ExpenseType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("employments", "amount", "For claiming costs related to the employment, split by expense type")
     )
   }
 
@@ -61,7 +61,7 @@ object SummaryTypes {
     override val title = "Sample UK Taxes paid"
     override def description(action: String) = s"$action an UK Tax paid for the specified source"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("employments", "amount")
+      PositiveMonetaryFieldDescription("employments", "amount", "For claiming costs related to the employment, split by expense type")
     )
   }
 }

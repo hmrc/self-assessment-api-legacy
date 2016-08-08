@@ -41,6 +41,6 @@ case class TaxBandState(taxBand: TaxBand, available: BigDecimal) {
   def allocate(income: BigDecimal): BigDecimal = if (income < available) income else available
 }
 
-case class SelfAssessment(selfEmployments: Seq[MongoSelfEmployment] = Seq(), unearnedIncomes: Seq[MongoUnearnedIncome] = Seq())
+case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),selfEmployments: Seq[MongoSelfEmployment] = Seq(), unearnedIncomes: Seq[MongoUnearnedIncome] = Seq())
 
 case class PropertyNotComputedException(property: String) extends IllegalStateException(s"Cannot run calculation step as required property $property has not been computed yet")

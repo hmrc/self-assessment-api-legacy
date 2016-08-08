@@ -18,10 +18,10 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live.ukproperty
 
 import uk.gov.hmrc.play.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty._
-import uk.gov.hmrc.selfassessmentapi.domain.{Income => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.live.UKPropertiesRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
 

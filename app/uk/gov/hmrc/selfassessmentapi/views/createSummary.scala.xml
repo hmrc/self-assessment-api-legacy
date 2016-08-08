@@ -14,8 +14,8 @@
     @partials.sourcePathParams(saUtr, taxYear, Some(sourceId), Some(selfemployment.SummaryTypes.Incomes), None)
     @partials.requestHeaders(true)
     @partials.authorisation(true)
-    @SourceTypes.types.map { sourceType =>
-        @sourceType.summaryTypes.map { summaryType =>
+    @enabledSourceTypes.map { sourceType =>
+        @enabledSummaries(sourceType).map { summaryType =>
             @partials.summaryWriteRequest("POST", saUtr, taxYear, sourceType, sourceId, summaryType, None)
         }
     }

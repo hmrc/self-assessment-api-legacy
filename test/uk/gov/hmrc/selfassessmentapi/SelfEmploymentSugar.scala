@@ -19,12 +19,11 @@ package uk.gov.hmrc.selfassessmentapi
 import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{EmploymentIncome => _, SelfEmploymentIncome => _, _}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{FromUKCompanies, DividendType}
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{DividendType, FromUKCompanies}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{TaxBandAllocation, _}
 
@@ -48,11 +47,11 @@ trait SelfEmploymentSugar {
 
   def goodsAndServices(amount: BigDecimal) = MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
-  def aLiability(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
+  def aLiability(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, incomeFromEmployments: Seq[EmploymentIncome] = Nil, profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
                  interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil, dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
                  deductionsRemaining: Option[BigDecimal] = Some(0), personalSavingsAllowance: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None): MongoLiability = {
 
-    MongoLiability.create(saUtr, taxYear).copy( profitFromSelfEmployments = profitFromSelfEmployments.toSeq, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
+    MongoLiability.create(saUtr, taxYear).copy( incomeFromEmployments = incomeFromEmployments, profitFromSelfEmployments = profitFromSelfEmployments, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
                                                 dividendsFromUKSources = dividendsFromUKSources, deductionsRemaining = deductionsRemaining,
                                                 allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance, savingsStartingRate = savingsStartingRate))
   }

@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.domain.SaUtr
 @import uk.gov.hmrc.selfassessmentapi.domain._
+@import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
 @(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId)
 <endpoint>
@@ -12,7 +13,7 @@
     @partials.sourcePathParams(saUtr, taxYear, Some(sourceId), None, None)
     @partials.requestHeaders(false)
     @partials.authorisation(false)
-    @SourceTypes.types.map { sourceType =>
+    @enabledSourceTypes.map { sourceType =>
         @partials.sourceReadResponse(saUtr, taxYear, sourceType, sourceId)
     }
 </endpoint>

@@ -23,7 +23,7 @@ trait Links {
 
   val context: String
 
-  private def createLink(endpointUrl: String) = s"/$context$endpointUrl"
+  private def createLink(endpointUrl: String) = s"$context$endpointUrl"
 
   def discoverTaxYearsHref(utr: SaUtr): String =
     createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearsDiscoveryController.discoverTaxYears(utr).url)

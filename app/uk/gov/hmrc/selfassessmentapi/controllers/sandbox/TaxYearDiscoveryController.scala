@@ -34,7 +34,7 @@ import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 import scala.concurrent.Future
 
 object TaxYearDiscoveryController extends BaseController with Links {
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
     Future.successful(Ok(halResource(toJson(TaxYearProperties.example()), discoveryLinks(utr, taxYear))))

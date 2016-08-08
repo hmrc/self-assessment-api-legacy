@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.LiabilityController {
 
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 
   override def requestLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
       val links = Set(

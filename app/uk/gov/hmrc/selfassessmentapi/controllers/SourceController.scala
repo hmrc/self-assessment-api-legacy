@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 trait SourceController extends BaseController with Links with SourceTypeSupport {
 
-  override lazy val context: String = AppContext.apiGatewayContext
+  override lazy val context: String = AppContext.apiGatewayLinkContext
 
   protected def createSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = {
     sourceHandler(sourceType).create(saUtr, taxYear, request.body) match {

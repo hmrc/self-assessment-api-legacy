@@ -19,5 +19,5 @@ package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 
 object TaxYearsDiscoveryController extends uk.gov.hmrc.selfassessmentapi.controllers.TaxYearsDiscoveryController {
-  override val context: String = AppContext.apiGatewayContext
+  override val context: String = AppContext.apiGatewayLinkContext
 }

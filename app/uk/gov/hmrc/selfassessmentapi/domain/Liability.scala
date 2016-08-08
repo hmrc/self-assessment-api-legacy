@@ -18,10 +18,16 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.Json
 
-case class Income(sourceId: String, taxableProfit: BigDecimal, profit: BigDecimal)
+case class EmploymentIncome(sourceId: String, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses : BigDecimal, total: BigDecimal)
 
-object Income {
-  implicit val format = Json.format[Income]
+object EmploymentIncome {
+  implicit val format = Json.format[EmploymentIncome]
+}
+
+case class SelfEmploymentIncome(sourceId: String, taxableProfit: BigDecimal, profit: BigDecimal)
+
+object SelfEmploymentIncome {
+  implicit val format = Json.format[SelfEmploymentIncome]
 }
 
 case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, totalInterest: BigDecimal)
@@ -36,7 +42,7 @@ object DividendsFromUKSources {
   implicit val format = Json.format[DividendsFromUKSources]
 }
 
-case class NonSavingsIncomes(selfEmployment: Seq[Income])
+case class NonSavingsIncomes(employment: Seq[EmploymentIncome], selfEmployment: Seq[SelfEmploymentIncome])
 
 object NonSavingsIncomes {
   implicit val format = Json.format[NonSavingsIncomes]
@@ -102,9 +108,13 @@ object Liability {
       income = IncomeSummary(
         incomes = IncomeFromSources(
           nonSavings = NonSavingsIncomes(
+            employment = Seq(
+              EmploymentIncome("employment-1", 1000, 500,  250, 1250),
+              EmploymentIncome("employment-2", 2000, 1000,  500, 2500)
+            ),
             selfEmployment = Seq(
-              Income("self-employment-1", 8200, 10000),
-              Income("self-employment-2", 25000, 28000)
+              SelfEmploymentIncome("self-employment-1", 8200, 10000),
+              SelfEmploymentIncome("self-employment-2", 25000, 28000)
             )
           ),
           savings = SavingsIncomes(

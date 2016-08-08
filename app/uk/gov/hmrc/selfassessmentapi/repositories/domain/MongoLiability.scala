@@ -30,6 +30,7 @@ case class MongoLiability(id: BSONObjectID,
                           saUtr: SaUtr,
                           taxYear: TaxYear,
                           createdDateTime: DateTime,
+                          incomeFromEmployments: Seq[EmploymentIncome] = Nil,
                           profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
                           interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil,
                           dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
@@ -86,7 +87,8 @@ case class MongoLiability(id: BSONObjectID,
       income = IncomeSummary(
         incomes = IncomeFromSources(
           nonSavings = NonSavingsIncomes(
-            selfEmployment = profitFromSelfEmployments.map(_.toIncome)
+            employment = incomeFromEmployments.map(_.toEmploymentIncome),
+            selfEmployment = profitFromSelfEmployments.map(_.toSelfEmploymentIncome)
           ),
           savings = SavingsIncomes(
             fromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties
@@ -121,9 +123,15 @@ case class MongoLiability(id: BSONObjectID,
   def totalSavingsIncome = interestFromUKBanksAndBuildingSocieties.map(_.totalInterest).sum
 }
 
+
+case class EmploymentIncome(sourceId: SourceId, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses : BigDecimal, total: BigDecimal) {
+
+  def toEmploymentIncome = uk.gov.hmrc.selfassessmentapi.domain.EmploymentIncome(sourceId, pay, benefitsAndExpenses, allowableExpenses, total)
+}
+
 case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal, lossBroughtForward: BigDecimal) {
 
-  def toIncome = Income(sourceId, taxableProfit, profit)
+  def toSelfEmploymentIncome = uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncome(sourceId, taxableProfit, profit)
 }
 
 case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math {
@@ -148,7 +156,8 @@ object MongoLiability {
 
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
-  implicit val incomeFormats = Json.format[SelfEmploymentIncome]
+  implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
+  implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
   implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
   implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
   implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]

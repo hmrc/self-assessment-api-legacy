@@ -30,7 +30,7 @@ object SummaryTypes {
     override def description(action: String) = s"$action a savings income for the specified source"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription("unearned income", "type", "Enum", SavingsIncomeType.values.mkString(", "), "Type of savings income"),
+      FullFieldDescription("unearned income", "type", "Enum", "Type of savings income"),
       PositiveMonetaryFieldDescription("unearned income", "amount")
     )
   }
@@ -43,7 +43,7 @@ object SummaryTypes {
     override def description(action: String) = s"$action a dividend for the specified source"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription("unearned income", "type", "Enum", DividendType.values.mkString(", "), "Type of dividends income"),
+      FullFieldDescription("unearned income", "type", "Enum", "Type of dividends income"),
       PositiveMonetaryFieldDescription("unearned income", "amount")
     )
   }
@@ -56,7 +56,7 @@ object SummaryTypes {
     override def description(action: String) = s"$action a benefit for the specified source"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription("unearned income", "type", "Enum", BenefitType.values.mkString(", "), "Type of benefit"),
+      FullFieldDescription("unearned income", "type", "Enum", "Type of benefit"),
       PositiveMonetaryFieldDescription("unearned income", "amount")
     )
   }

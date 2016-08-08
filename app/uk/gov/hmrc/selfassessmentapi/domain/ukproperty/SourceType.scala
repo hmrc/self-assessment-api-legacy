@@ -34,7 +34,7 @@ object SourceType {
     override def description(action: String) = s"$action a UK property"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
+      FullFieldDescription(name, "allowances", "Object", "Allowances claimed for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance",
         """Annual Investment Allowance can be claimed if equipment was purchased (but not cars) during the year.
           |AIA can be claimed up to a maximum annual amount.
@@ -47,7 +47,7 @@ object SourceType {
         """For fully furnished accommodation, wear & tear allowance can be claimed up to 10%
           | of the net rents (including chargeable premiums & reverse premiums) after deducting charges or services that a
           | tenant would usually pay for but which are paid by you (such as Council Tax)""".stripMargin, optional = true),
-      FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
+      FullFieldDescription(name, "adjustments", "Object", "Adjustments for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "lossBroughtForward",
         """If a loss was made in the previous or earlier tax years,
           |this can be used against the profits from this tax year""".stripMargin),

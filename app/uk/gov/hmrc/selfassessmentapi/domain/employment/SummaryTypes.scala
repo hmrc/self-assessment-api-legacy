@@ -28,7 +28,7 @@ object SummaryTypes {
     override val title = "Sample Employments incomes"
     override def description(action: String) = s"$action an income for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("employments", "type", "Enum", IncomeType.values.mkString(", "), "Type of income"),
+      FullFieldDescription("employments", "type", "Enum", "Type of income"),
       PositiveMonetaryFieldDescription("employments", "amount")
     )
   }
@@ -39,7 +39,7 @@ object SummaryTypes {
     override val title = "Sample employment benefits"
     override def description(action: String) = s"$action a benefit for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("employments", "type", "Enum", BenefitType.values.mkString(", "), "Type of benefit"),
+      FullFieldDescription("employments", "type", "Enum", "Type of benefit"),
       PositiveMonetaryFieldDescription("employments", "amount")
     )
   }
@@ -50,7 +50,7 @@ object SummaryTypes {
     override val title = "Sample Employments expenses"
     override def description(action: String) = s"$action an expense for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("employments", "type", "Enum", ExpenseType.values.mkString(", "), "Type of expense"),
+      FullFieldDescription("employments", "type", "Enum", "Type of expense"),
       PositiveMonetaryFieldDescription("employments", "amount")
     )
   }
@@ -60,8 +60,6 @@ object SummaryTypes {
     override def example(id: Option[SummaryId] = None): JsValue = toJson(UkTaxPaid.example(id))
     override val title = "Sample UK Taxes paid"
     override def description(action: String) = s"$action an UK Tax paid for the specified source"
-    override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("employments", "amount")
-    )
+    override val fieldDescriptions = Seq(PositiveMonetaryFieldDescription("employments", "amount"))
   }
 }

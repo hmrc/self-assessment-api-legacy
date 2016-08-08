@@ -9,9 +9,6 @@
     <cell>
         <code>String</code>
     </cell>
-    <cell>
-        <code>@saUtr</code>
-    </cell>
     <cell>The Self Assessment UTR of the customer</cell>
 </row>
 @taxYear.map { ty =>
@@ -21,9 +18,6 @@
         </cell>
         <cell>
             <code>String</code>
-        </cell>
-        <cell>
-            <code>@ty</code>
         </cell>
         <cell>The tax year the data applies to</cell>
     </row>

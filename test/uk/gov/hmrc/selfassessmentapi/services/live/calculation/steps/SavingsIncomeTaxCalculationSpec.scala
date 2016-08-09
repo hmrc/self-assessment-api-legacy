@@ -19,9 +19,9 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 import uk.gov.hmrc.selfassessmentapi.domain.InterestFromUKBanksAndBuildingSocieties
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfAssessmentSugar {
 
   "run" should {
 

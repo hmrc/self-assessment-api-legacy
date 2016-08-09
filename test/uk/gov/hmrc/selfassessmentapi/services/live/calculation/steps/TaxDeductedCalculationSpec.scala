@@ -17,11 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor4}
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoTaxDeducted, MongoUnearnedIncomesSavingsIncomeSummary}
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoTaxDeducted, MongoUkTaxPaidForEmployment, MongoUnearnedIncomesSavingsIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class TaxDeductedCalculationSpec extends UnitSpec with TableDrivenPropertyChecks with SelfEmploymentSugar {
+class TaxDeductedCalculationSpec extends UnitSpec with TableDrivenPropertyChecks with SelfAssessmentSugar {
 
   "run" should {
 
@@ -29,7 +30,7 @@ class TaxDeductedCalculationSpec extends UnitSpec with TableDrivenPropertyChecks
       val liability = aLiability()
 
       TaxDeductedCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(
-          taxDeducted = Some(MongoTaxDeducted(interestFromUk = 0)))
+          taxDeducted = Some(MongoTaxDeducted(interestFromUk = 0, ukTaxPAid = 0, ukTaxesPaidForEmployments = Nil)))
     }
 
     "calculate tax deducted amount for UK savings income across several unearned incomes considering only taxed interest" in {
@@ -72,6 +73,58 @@ class TaxDeductedCalculationSpec extends UnitSpec with TableDrivenPropertyChecks
                           BigDecimal(1406)))
       checkTable(inputs)
     }
+
+    "return a calculation error if none of the sum of the UK tax paid for a given employment is positive" in {
+      val employment1UkTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", -34.87)
+      val employment2UkTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -299.45)
+      val employment2ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", -300.87)
+      val employment1 =
+        anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
+      val employment2 =
+        anEmployment().copy(ukTaxPaid = Seq(employment2UkTaxPaidSummary1, employment2ukTaxPaidSummary2))
+      val liability = aLiability()
+
+      TaxDeductedCalculation
+        .run(SelfAssessment(employments = Seq(employment1, employment2)), liability)
+        .calculationError
+        .map(error => error.code)
+        .getOrElse(None) shouldBe ErrorCode.INVALID_EMPLOYMENT_TAX_PAID
+    }
+
+    "return a calculation error if the total tax paid is not positive" in {
+      val ukTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -812.45)
+      val ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", 234.87)
+      val employments = anEmployment().copy(ukTaxPaid = Seq(ukTaxPaidSummary1, ukTaxPaidSummary2))
+      val liability = aLiability()
+
+      TaxDeductedCalculation
+        .run(SelfAssessment(employments = Seq(employments)), liability)
+        .calculationError
+        .map(error => error.code)
+        .getOrElse(None) shouldBe ErrorCode.INVALID_EMPLOYMENT_TAX_PAID
+    }
+
+    "calculate the tax deducted as the rounded up sum of UK tax paid across all employments" in {
+      val employment1UkTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", -34.87)
+      val employment2UkTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", 299.45)
+      val employment2ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", 300.87)
+      val employment1 =
+        anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
+      val employment2 =
+        anEmployment().copy(ukTaxPaid = Seq(employment2UkTaxPaidSummary1, employment2ukTaxPaidSummary2))
+      val liability = aLiability()
+
+      TaxDeductedCalculation
+        .run(SelfAssessment(employments = Seq(employment1, employment2)), liability) shouldBe liability.copy(
+          taxDeducted = Some(
+              MongoTaxDeducted(interestFromUk = 0,
+                               ukTaxPAid = 453,
+                               ukTaxesPaidForEmployments =
+                                 Seq(MongoUkTaxPaidForEmployment(employment1.sourceId, -147.32),
+                                     MongoUkTaxPaidForEmployment(employment2.sourceId, 600.32)))))
+    }
   }
 
   def checkTable(
@@ -83,9 +136,9 @@ class TaxDeductedCalculationSpec extends UnitSpec with TableDrivenPropertyChecks
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(interest1, interest2, interest3))
       val liability = aLiability()
 
-      TaxDeductedCalculation
-        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe liability.copy(
-          taxDeducted = Some(MongoTaxDeducted(interestFromUk = taxDeducted)))
+      TaxDeductedCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe liability
+        .copy(taxDeducted =
+              Some(MongoTaxDeducted(interestFromUk = taxDeducted, ukTaxPAid = 0, ukTaxesPaidForEmployments = Nil)))
     }
   }
 }

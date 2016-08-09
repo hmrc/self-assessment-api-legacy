@@ -92,7 +92,13 @@ object IncomeSummary {
   implicit val format = Json.format[IncomeSummary]
 }
 
-case class TaxDeducted(interestFromUk: BigDecimal, total: BigDecimal)
+case class UkTaxPaidForEmployment(sourceId: String, taxPaid: BigDecimal)
+
+object UkTaxPaidForEmployment {
+  implicit val format = Json.format[UkTaxPaidForEmployment]
+}
+
+case class TaxDeducted(interestFromUk: BigDecimal, fromEmployments: Seq[UkTaxPaidForEmployment], total: BigDecimal)
 
 object TaxDeducted {
   implicit val format = Json.format[TaxDeducted]
@@ -161,6 +167,9 @@ object Liability {
       ),
       taxDeducted = TaxDeducted(
         interestFromUk = 0,
+        fromEmployments = Seq(
+          UkTaxPaidForEmployment("employment-1", 4000),
+          UkTaxPaidForEmployment("employment-2", 5000)),
         total = 0
       ),
       totalTaxDue = 25796.95,

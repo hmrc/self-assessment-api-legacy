@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
 import uk.gov.hmrc.selfassessmentapi.domain.{EmploymentIncome => _, SelfEmploymentIncome => _, _ }
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
+class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar {
 
   "MongoLiability.toLiability" should {
 
@@ -79,7 +79,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           totalIncomeOnWhichTaxIsDue = 4000
         ),
         incomeTaxCalculations = IncomeTaxCalculations(Nil, Nil, Nil, 0),
-        taxDeducted = TaxDeducted(0, 0),
+        taxDeducted = TaxDeducted(0, Nil, 0),
         totalTaxDue = 0,
         totalTaxOverpaid = 0
       )
@@ -142,7 +142,9 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           aTaxBandAllocation(1000, NilTaxBand)
         ),
         taxDeducted = Some(MongoTaxDeducted(
-          interestFromUk = 1000
+          interestFromUk = 1000,
+          ukTaxPAid = 0,
+          ukTaxesPaidForEmployments = Nil
         ))
       )
       val result = liability.toLiability

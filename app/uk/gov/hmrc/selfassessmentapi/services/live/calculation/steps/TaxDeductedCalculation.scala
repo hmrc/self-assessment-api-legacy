@@ -17,15 +17,40 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoTaxDeducted, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{CalculationError, MongoLiability, MongoTaxDeducted, MongoUkTaxPaidForEmployment}
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 
 object TaxDeductedCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
     val totalTaxedInterest = selfAssessment.unearnedIncomes.map { unearnedIncome =>
       unearnedIncome.savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
     }.sum
+
     val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
-    val totalTaxDeducted = roundUp(grossedUpInterest - totalTaxedInterest)
-    liability.copy(taxDeducted = Some(MongoTaxDeducted(interestFromUk = totalTaxDeducted)))
+    val interestFromUk = roundUp(grossedUpInterest - totalTaxedInterest)
+
+    val (initialUkTaxesPaid, initialAccUkTaxPaid) = (Seq[MongoUkTaxPaidForEmployment](), BigDecimal(0))
+
+    val (ukTaxesPaidForEmployments, totalUkTaxesPaid) =
+      selfAssessment.employments.foldLeft((initialUkTaxesPaid, initialAccUkTaxPaid)) {
+        case ((ukTaxesPaid, accUkTaxPaid), employment) =>
+          val ukTaxPaidForEmployment = employment.ukTaxPaid.map(_.amount).sum
+          (ukTaxesPaid :+ MongoUkTaxPaidForEmployment(employment.sourceId, ukTaxPaidForEmployment),
+           accUkTaxPaid + ukTaxPaidForEmployment)
+      }
+
+    //FIXME: confirm if > or >= 0
+    val isValidTaxPaid = ukTaxesPaidForEmployments.isEmpty ||
+        (ukTaxesPaidForEmployments.exists(_.ukTaxPaid > 0) && totalUkTaxesPaid > 0)
+
+    liability.copy(
+        taxDeducted = Some(
+            MongoTaxDeducted(interestFromUk = interestFromUk,
+                             ukTaxPAid = roundUp(totalUkTaxesPaid),
+                             ukTaxesPaidForEmployments = ukTaxesPaidForEmployments)),
+        calculationError =
+          if (isValidTaxPaid) None
+          else
+            Some(CalculationError(INVALID_EMPLOYMENT_TAX_PAID, "Tax Paid from your Employment(s) should not be negative")))
   }
 }

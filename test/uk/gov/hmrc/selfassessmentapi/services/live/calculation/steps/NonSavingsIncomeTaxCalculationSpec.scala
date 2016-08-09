@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class NonSavingsIncomeTaxCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class NonSavingsIncomeTaxCalculationSpec extends UnitSpec with SelfAssessmentSugar {
 
   "run with no deductions" should {
 

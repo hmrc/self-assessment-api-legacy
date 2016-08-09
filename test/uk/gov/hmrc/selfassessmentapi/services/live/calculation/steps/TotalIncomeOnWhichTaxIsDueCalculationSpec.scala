@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfAssessmentSugar {
 
   "run" should {
 

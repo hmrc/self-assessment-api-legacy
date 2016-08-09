@@ -39,3 +39,11 @@ case class InvalidRequest(code: ErrorCode, message: String, errors: Seq[InvalidP
 object InvalidRequest {
   implicit val writes = Json.writes[InvalidRequest]
 }
+
+case class LiabilityCalculationError(code: ErrorCode, message: String)
+
+object LiabilityCalculationError {
+  implicit val writes = Json.writes[LiabilityCalculationError]
+}
+
+

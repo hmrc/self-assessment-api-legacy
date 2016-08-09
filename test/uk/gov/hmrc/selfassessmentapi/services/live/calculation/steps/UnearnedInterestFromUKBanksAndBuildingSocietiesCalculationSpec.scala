@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.InterestFromUKBanksAndBuildingSocieties
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends UnitSpec with SelfAssessmentSugar {
 
   "run" should {
 

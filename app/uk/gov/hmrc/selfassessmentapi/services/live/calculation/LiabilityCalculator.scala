@@ -40,7 +40,18 @@ class LiabilityCalculator {
   )
 
   def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    calculationSteps.foldLeft(liability)((liability, step) => step.run(selfAssessment, liability))
+    val (successLiabilities: Stream[MongoLiability], errorLiabilities: Stream[MongoLiability]) =
+      runSteps(selfAssessment, liability)
+
+    if (errorLiabilities.isEmpty) successLiabilities.last else errorLiabilities.head
+  }
+
+  private[calculation] def runSteps(selfAssessment: SelfAssessment,
+                                    liability: MongoLiability): (Stream[MongoLiability], Stream[MongoLiability]) = {
+    val (successLiabilities, errorLiabilities) = calculationSteps.toStream
+      .scanLeft(liability)((accLiability, step) => step.run(selfAssessment, accLiability))
+      .span(_.calculationError.isEmpty)
+    (successLiabilities, errorLiabilities)
   }
 }
 

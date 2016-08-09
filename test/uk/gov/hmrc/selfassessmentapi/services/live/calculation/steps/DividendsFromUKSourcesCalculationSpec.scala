@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.DividendsFromUKSources
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType._
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessmentSugar {
 
   "run" should {
 

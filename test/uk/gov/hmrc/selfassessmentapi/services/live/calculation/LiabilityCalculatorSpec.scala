@@ -20,9 +20,9 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
+class LiabilityCalculatorSpec extends UnitSpec with SelfAssessmentSugar {
 
   "calculate" should {
 
@@ -194,6 +194,21 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfEmploymentSugar {
         aTaxBandAllocation(5000, HigherTaxBand),
         aTaxBandAllocation(0, AdditionalHigherTaxBand)
       )
+    }
+
+    "run the liability calculation steps up to when a calculation error occurs" in {
+
+      val ukTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -812.45)
+      val ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", 234.87)
+      val employments = anEmployment().copy(ukTaxPaid = Seq(ukTaxPaidSummary1, ukTaxPaidSummary2))
+
+      val selfAssessment = SelfAssessment(
+        selfEmployments = Seq(aSelfEmployment().copy(incomes = Seq(income(IncomeType.Turnover, 20000)))),
+        employments = Seq(employments))
+
+      val (_, errorLiabilities) = LiabilityCalculator().runSteps(selfAssessment, MongoLiability.create(generateSaUtr(), taxYear))
+
+      errorLiabilities.head.calculationError shouldBe defined
     }
   }
 

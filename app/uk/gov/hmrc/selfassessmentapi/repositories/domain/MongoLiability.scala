@@ -21,6 +21,7 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math
@@ -44,7 +45,8 @@ case class MongoLiability(id: BSONObjectID,
                           savingsIncome: Seq[TaxBandAllocation] = Nil,
                           dividendsIncome: Seq[TaxBandAllocation] = Nil,
                           allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
-                          taxDeducted: Option[MongoTaxDeducted] = None) extends Math {
+                          taxDeducted: Option[MongoTaxDeducted] = None,
+                          calculationError: Option[CalculationError] = None) extends Math {
 
   private lazy val dividendsTaxes = dividendsIncome.map {
     bandAllocation => bandAllocation.taxBand match {
@@ -78,7 +80,7 @@ case class MongoLiability(id: BSONObjectID,
 
   private lazy val totalIncomeTax = (nonSavingsTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
 
-  private lazy val totalTaxDeducted = taxDeducted.map(_.interestFromUk).getOrElse(BigDecimal(0))
+  private lazy val totalTaxDeducted = taxDeducted.map(taxDeducted => taxDeducted.interestFromUk + taxDeducted.ukTaxPAid).getOrElse(BigDecimal(0))
 
   private lazy val totalTaxDue = totalIncomeTax - totalTaxDeducted
 
@@ -114,8 +116,12 @@ case class MongoLiability(id: BSONObjectID,
       taxDeducted = taxDeducted.map(taxDeducted =>
         TaxDeducted(
           interestFromUk = taxDeducted.interestFromUk,
+          fromEmployments = taxDeducted.ukTaxesPaidForEmployments.map(ukTaxPaidForEmployment =>
+            UkTaxPaidForEmployment(
+              ukTaxPaidForEmployment.sourceId,
+              ukTaxPaidForEmployment.ukTaxPaid)),
           total = totalTaxDeducted)
-      ).getOrElse(TaxDeducted(0, 0)),
+      ).getOrElse(TaxDeducted(0, Nil, 0)),
       totalTaxDue = if (totalTaxDue > 0) totalTaxDue else 0,
       totalTaxOverpaid = if (totalTaxDue < 0) totalTaxDue.abs else 0
     )
@@ -142,7 +148,7 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
 
   def available: BigDecimal = positiveOrZero(taxBand.width - amount)
 
-  def + (other: TaxBandAllocation) = {
+  def +(other: TaxBandAllocation) = {
     require(taxBand == other.taxBand)
     TaxBandAllocation(amount + other.amount, taxBand)
   }
@@ -150,7 +156,11 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
 
 case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None, incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None)
 
-case class MongoTaxDeducted(interestFromUk: BigDecimal)
+case class MongoUkTaxPaidForEmployment(sourceId: SourceId, ukTaxPaid: BigDecimal)
+
+case class MongoTaxDeducted(interestFromUk: BigDecimal, ukTaxPAid: BigDecimal, ukTaxesPaidForEmployments: Seq[MongoUkTaxPaidForEmployment])
+
+case class CalculationError(code: ErrorCode, message: String)
 
 object MongoLiability {
 
@@ -160,7 +170,9 @@ object MongoLiability {
   implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
   implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
   implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
+  implicit val ukTaxPaidForEmploymentFormats = Json.format[MongoUkTaxPaidForEmployment]
   implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]
+  implicit val calculationErrorFormats = Json.format[CalculationError]
   implicit val liabilityFormats = Json.format[MongoLiability]
 
   def create(saUtr: SaUtr, taxYear: TaxYear): MongoLiability = {
@@ -174,4 +186,5 @@ object MongoLiability {
     )
   }
 }
+
 

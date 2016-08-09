@@ -1,10 +1,12 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json.toJson
+import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
+import uk.gov.hmrc.selfassessmentapi.domain.employment.UkTaxPaid
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
@@ -163,9 +165,13 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |    },
            |    "taxDeducted": {
            |      "interestFromUk": 600,
-           |      "total": 600
+           |      "fromEmployments":[
+           |        { "taxPaid": 3000.0 },
+           |        { "taxPaid": 5000.0 }
+           |      ],
+           |      "total": 8600
            |    },
-           |    "totalTaxDue": 38634,
+           |    "totalTaxDue": 30634,
            |    "totalTaxOverpaid": 0
            |}
         """.stripMargin
@@ -197,6 +203,30 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
+        .post(s"/$saUtr/$taxYear/employments", Some(Employments.example()))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/employments/%sourceId%/uk-taxes-paid", Some(toJson(UkTaxPaid.example().copy(amount = 1000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/employments/%sourceId%/uk-taxes-paid", Some(toJson(UkTaxPaid.example().copy(amount = 2000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/employments", Some(Employments.example()))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/employments/%sourceId%/uk-taxes-paid", Some(toJson(UkTaxPaid.example().copy(amount = 2000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/employments/%sourceId%/uk-taxes-paid", Some(toJson(UkTaxPaid.example().copy(amount = 3000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
         .post(s"/$saUtr/$taxYear/unearned-incomes", Some(UnearnedIncomes.example()))
         .thenAssertThat()
         .statusIs(201)
@@ -225,6 +255,31 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .bodyIsLike(expectedJson)
+    }
+
+    "return an HTTP 422 Unprocessable entity response if an error occurred in the liability calculation" in {
+      given()
+        .userIsAuthorisedForTheResource(saUtr)
+        .when()
+        .post(s"/$saUtr/$taxYear/employments", Some(Employments.example()))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/employments/%sourceId%/uk-taxes-paid", Some(toJson(UkTaxPaid.example().copy(amount = -1000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/employments/%sourceId%/uk-taxes-paid", Some(toJson(UkTaxPaid.example().copy(amount = -2000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/liability")
+        .thenAssertThat()
+        .statusIs(202)
+        .when()
+        .get(s"/$saUtr/$taxYear/liability")
+        .thenAssertThat()
+        .statusIs(422)
     }
   }
 }

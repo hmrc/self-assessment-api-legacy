@@ -16,37 +16,32 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Adjustments
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec, domain}
 
 class IncomeTaxReliefCalculationSpec extends UnitSpec with SelfEmploymentSugar {
 
   "run" should {
 
-    "calculate income tax relief if there is no income from self employments" in {
+    "income tax relief is the rounded up sum of loss brought forward for income sources" in {
+      val selfEmploymentOne = aSelfEmployment().copy(adjustments = Some(Adjustments(lossBroughtForward = Some(100.14))))
+      val selfEmploymentTwo = aSelfEmployment().copy(adjustments = Some(Adjustments(lossBroughtForward = Some(200.59))))
+      val ukPropertyOne = aUkProperty().copy(adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(100.12))))
+      val ukPropertyTwo = aUkProperty().copy(adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(300.45))))
 
-      incomeTaxReliefFor(profitFromSelfEmployments = Nil) shouldBe 0
+      incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo), uKProperties = Seq(ukPropertyOne, ukPropertyTwo)) shouldBe 702
     }
 
-    "calculate income tax relief if there is income from one self employment" in {
-
-      incomeTaxReliefFor(profitFromSelfEmployments = Seq(aSelfEmploymentIncome(lossBroughtForward = 100))) shouldBe 100
-    }
-
-    "calculate income tax relief if there is income from multiple self employments" in {
-
-      incomeTaxReliefFor(profitFromSelfEmployments = Seq(
-        aSelfEmploymentIncome(lossBroughtForward = 100),
-        aSelfEmploymentIncome(lossBroughtForward = 199.99),
-        aSelfEmploymentIncome(lossBroughtForward = 0.01)
-      )) shouldBe 300
+    "income tax relief is 0 if there is no loss brought forward" in {
+      incomeTaxReliefFor(selfEmployments = Seq.empty, uKProperties = Seq.empty) shouldBe 0
     }
   }
 
-  private def incomeTaxReliefFor(profitFromSelfEmployments: Seq[SelfEmploymentIncome]) = {
+  private def incomeTaxReliefFor(selfEmployments: Seq[MongoSelfEmployment], uKProperties: Seq[MongoUKProperties]): BigDecimal = {
     IncomeTaxReliefCalculation.run(
-      selfAssessment = SelfAssessment(),
-      liability = aLiability(profitFromSelfEmployments = profitFromSelfEmployments)
+      selfAssessment = SelfAssessment(selfEmployments = selfEmployments, ukProperties = uKProperties),
+      liability = aLiability()
     ).allowancesAndReliefs.incomeTaxRelief.get
   }
 }

@@ -187,6 +187,7 @@ case class MongoSelfEmployment(id: BSONObjectID,
                                expenses: Seq[MongoSelfEmploymentExpenseSummary] = Nil,
                                balancingCharges: Seq[MongoSelfEmploymentBalancingChargeSummary] = Nil,
                                goodsAndServicesOwnUse: Seq[MongoSelfEmploymentGoodsAndServicesOwnUseSummary] = Nil) extends SourceMetadata {
+  def lossBroughtForward = adjustments.flatMap(_.lossBroughtForward).getOrElse(BigDecimal(0))
 
   def toSelfEmployment = SelfEmployment(
     id = Some(sourceId),

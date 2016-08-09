@@ -18,18 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-
-case class EmploymentIncome(sourceId: String, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses: BigDecimal, total: BigDecimal)
-
-object EmploymentIncome {
-  implicit val format = Json.format[EmploymentIncome]
-}
-
-case class SelfEmploymentIncome(sourceId: String, taxableProfit: BigDecimal, profit: BigDecimal)
-
-object SelfEmploymentIncome {
-  implicit val format = Json.format[SelfEmploymentIncome]
-}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, SelfEmploymentIncome, UkPropertyIncome}
 
 case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, totalInterest: BigDecimal)
 
@@ -43,9 +32,12 @@ object DividendsFromUKSources {
   implicit val format = Json.format[DividendsFromUKSources]
 }
 
-case class NonSavingsIncomes(employment: Seq[EmploymentIncome], selfEmployment: Seq[SelfEmploymentIncome])
+case class NonSavingsIncomes(employment: Seq[EmploymentIncome], selfEmployment: Seq[SelfEmploymentIncome], ukProperties: Seq[UkPropertyIncome])
 
 object NonSavingsIncomes {
+  implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
+  implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
+  implicit val ukPropertyIncomeFormats = Json.format[UkPropertyIncome]
   implicit val format = Json.format[NonSavingsIncomes]
 }
 
@@ -110,7 +102,8 @@ object Liability {
         incomes = IncomeFromSources(
           nonSavings = NonSavingsIncomes(
             employment = exampleEmploymentIncomes,
-            selfEmployment = exampleSelfEmploymentIncomes
+            selfEmployment = exampleSelfEmploymentIncomes,
+            ukProperties = exampleUkPropertiesIncomes
           ),
           savings = SavingsIncomes(
             fromUKBanksAndBuildingSocieties = exampleInterestFromUKBanksAndBuildingSocieties
@@ -174,6 +167,17 @@ object Liability {
           SelfEmploymentIncome("self-employment-1", 8200, 10000),
           SelfEmploymentIncome("self-employment-2", 25000, 28000)
         )
+      case false => Seq()
+    }
+  }
+
+  private def exampleUkPropertiesIncomes = {
+    FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.UKProperties) match {
+      case true => Seq(
+        UkPropertyIncome("property1", profit = 2000, taxableProfit = 1800),
+        UkPropertyIncome("property2", profit = 1500, taxableProfit = 1500)
+      )
+
       case false => Seq()
     }
   }

@@ -22,7 +22,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain.employment.BenefitType.BenefitType
 import uk.gov.hmrc.selfassessmentapi.domain.employment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.domain.employment.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.domain.{EmploymentIncome => _, SelfEmploymentIncome => _, _}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 trait EmploymentSugar {

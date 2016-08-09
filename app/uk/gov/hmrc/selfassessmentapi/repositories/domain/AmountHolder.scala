@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
+package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
-
-object IncomeTaxReliefCalculation extends CalculationStep {
-
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    val incomeTaxRelief = roundUp(selfAssessment.selfEmployments.map(_.lossBroughtForward).sum +
-      selfAssessment.ukProperties.map(_.lossBroughtForward).sum)
-
-    liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(incomeTaxRelief = Some(incomeTaxRelief)))
-  }
+trait AmountHolder {
+  val amount: BigDecimal
 }

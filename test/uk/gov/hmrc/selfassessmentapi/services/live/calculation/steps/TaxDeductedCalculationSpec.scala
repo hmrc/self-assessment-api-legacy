@@ -92,17 +92,25 @@ class TaxDeductedCalculationSpec extends UnitSpec with TableDrivenPropertyChecks
         .getOrElse(None) shouldBe ErrorCode.INVALID_EMPLOYMENT_TAX_PAID
     }
 
-    "return a calculation error if the total tax paid is not positive" in {
-      val ukTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -812.45)
-      val ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", 234.87)
-      val employments = anEmployment().copy(ukTaxPaid = Seq(ukTaxPaidSummary1, ukTaxPaidSummary2))
+    "cap the UK tax paid at zero if the total tax paid is not positive" in {
+      val employment1UkTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", -934.87)
+      val employment2UkTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", 199.45)
+      val employment2ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", 300.87)
+      val employment1 =
+        anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
+      val employment2 =
+        anEmployment().copy(ukTaxPaid = Seq(employment2UkTaxPaidSummary1, employment2ukTaxPaidSummary2))
       val liability = aLiability()
 
       TaxDeductedCalculation
-        .run(SelfAssessment(employments = Seq(employments)), liability)
-        .calculationError
-        .map(error => error.code)
-        .getOrElse(None) shouldBe ErrorCode.INVALID_EMPLOYMENT_TAX_PAID
+        .run(SelfAssessment(employments = Seq(employment1, employment2)), liability) shouldBe liability.copy(
+          taxDeducted = Some(
+              MongoTaxDeducted(interestFromUk = 0,
+                               ukTaxPAid = 0,
+                               ukTaxesPaidForEmployments =
+                                 Seq(MongoUkTaxPaidForEmployment(employment1.sourceId, -1047.32),
+                                     MongoUkTaxPaidForEmployment(employment2.sourceId, 500.32)))))
     }
 
     "calculate the tax deducted as the rounded up sum of UK tax paid across all employments" in {

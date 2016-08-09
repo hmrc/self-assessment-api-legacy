@@ -39,18 +39,20 @@ object TaxDeductedCalculation extends CalculationStep {
            accUkTaxPaid + ukTaxPaidForEmployment)
       }
 
-    //FIXME: confirm if > or >= 0
-    val isValidTaxPaid = ukTaxesPaidForEmployments.isEmpty ||
-        (ukTaxesPaidForEmployments.exists(_.ukTaxPaid > 0) && totalUkTaxesPaid > 0)
+    val isValidTaxPaid = ukTaxesPaidForEmployments.isEmpty || ukTaxesPaidForEmployments.exists(_.ukTaxPaid >= 0)
 
-    liability.copy(
-        taxDeducted = Some(
-            MongoTaxDeducted(interestFromUk = interestFromUk,
-                             ukTaxPAid = roundUp(totalUkTaxesPaid),
-                             ukTaxesPaidForEmployments = ukTaxesPaidForEmployments)),
-        calculationError =
-          if (isValidTaxPaid) None
-          else
-            Some(CalculationError(INVALID_EMPLOYMENT_TAX_PAID, "Tax Paid from your Employment(s) should not be negative")))
+    liability.copy(taxDeducted =
+                     if (isValidTaxPaid)
+                       Some(
+                           MongoTaxDeducted(interestFromUk = interestFromUk,
+                                            ukTaxPAid = if (totalUkTaxesPaid <= 0) 0 else roundUp(totalUkTaxesPaid),
+                                            ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
+                     else None,
+                   calculationError =
+                     if (isValidTaxPaid) None
+                     else
+                       Some(
+                           CalculationError(INVALID_EMPLOYMENT_TAX_PAID,
+                                            "Tax Paid from your Employment(s) should not be negative")))
   }
 }

@@ -14,8 +14,8 @@ class AuthorisationSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
-        // TODO - 401 Not Authenticated, should be 403 Forbidden
         .statusIs(401)
+        .contentTypeIsJson()
         // TODO - check the body (and add whatever code is need to create that body)
     }
   }

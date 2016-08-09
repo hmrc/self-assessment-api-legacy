@@ -257,7 +257,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .bodyIsLike(expectedJson)
     }
 
-    "return an HTTP 422 Unprocessable entity response if an error occurred in the liability calculation" in {
+    "return an HTTP 403 response if an error occurred in the liability calculation" in {
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -279,7 +279,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/$saUtr/$taxYear/liability")
         .thenAssertThat()
-        .statusIs(422)
+        .statusIs(403)
     }
   }
 }

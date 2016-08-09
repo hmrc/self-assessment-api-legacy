@@ -45,7 +45,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   override def retrieveLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
     liabilityService.find(utr, taxYear) map {
       case Some(Left(error)) =>
-        UnprocessableEntity(Json.toJson(error))
+        Forbidden(Json.toJson(error))
       case Some(Right(liability)) =>
         val links = Set(HalLink("self", liabilityHref(utr, taxYear)))
         Ok(halResource(Json.toJson(liability), links))

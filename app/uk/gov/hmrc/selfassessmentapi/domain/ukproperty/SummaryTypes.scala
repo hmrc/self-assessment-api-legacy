@@ -28,8 +28,8 @@ object SummaryTypes {
     override val title = "Sample UK property incomes"
     override def description(action: String) = s"$action an income for the specified UK Property"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("uk-property", "type", "Enum", "Type of income"),
-      PositiveMonetaryFieldDescription("uk-properties", "amount")
+      FullFieldDescription("uk-property", "type", "Enum", s"Type of income (one of the following: ${IncomeType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("uk-properties", "amount", "Income from all UK property & land (does not include any income/profits from FHL). Split by income type")
     )
   }
 
@@ -39,8 +39,8 @@ object SummaryTypes {
     override val title = "Sample UK property expenses"
     override def description(action: String) = s"$action an expense for the specified UK Property"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("uk-property", "type", "Enum", "Type of expense"),
-      PositiveMonetaryFieldDescription("uk-properties", "amount")
+      FullFieldDescription("uk-property", "type", "Enum", s"Type of expense (one of the following: ${ExpenseType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("uk-properties", "amount", "Running costs associated with the rental business, split by expense type")
     )
   }
 
@@ -50,7 +50,7 @@ object SummaryTypes {
     override val title = "Sample UK property taxes paid"
     override def description(action: String) = s"$action a tax paid for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-properties", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount", "For non-resident landlords - amount of tax taken off any property rental income.")
     )
   }
 
@@ -60,7 +60,8 @@ object SummaryTypes {
     override val title = "Sample UK property balancing charges"
     override def description(action: String) = s"$action a balancing charge for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-properties", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount", "For items where capital allowances were claimed that have been sold," +
+        " given away or stopped being used, a balancing charge may be needed.")
     )
   }
 
@@ -70,7 +71,8 @@ object SummaryTypes {
     override val title = "Sample UK property private use adjustment"
     override def description(action: String) = s"$action a private use adjustment for the specified UK Property"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("uk-properties", "amount")
+      PositiveMonetaryFieldDescription("uk-properties", "amount", "The private use (non-business) amount of any expenses " +
+        "that weren’t solely for the business.")
     )
   }
 

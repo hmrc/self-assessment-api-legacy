@@ -28,7 +28,8 @@ object SummaryTypes {
     override val title = "Sample furnished holiday lettings income"
     override def description(action: String) = s"$action a furnished holiday lettings income summary for the specified source"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount")
+      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount", "The total amount of income from all your Furnished Holiday Lettings " +
+        "(including income from services you provide to tenants) for the given location (UK / EEA).")
     )
   }
 
@@ -38,8 +39,8 @@ object SummaryTypes {
     override val title = "Sample expenses"
     override def description(action: String) = s"$action an expense for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("furnished-holiday-lettings", "type", "Enum", "Type of expense"),
-      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount")
+      FullFieldDescription("furnished-holiday-lettings", "type", "Enum", s"Type of expense (one of the following: ${ExpenseType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount", "Business costs related to the Furnished Holiday Letting, split out by expense type")
     )
   }
 
@@ -49,7 +50,7 @@ object SummaryTypes {
     override val title = "Sample furnished holiday lettings private use adjustment"
     override def description(action: String) = s"$action a private use adjustment summary for the specified source"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount")
+      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount", "The private use (non-business) amount of any expenses that weren’t solely for the business.")
     )
   }
 
@@ -59,7 +60,8 @@ object SummaryTypes {
     override val title = "Sample furnished holiday lettings balancing charge"
     override def description(action: String) = s"$action a furnished holiday lettings balancing charge summary for the specified source"
     override val fieldDescriptions = Seq(
-      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount")
+      PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount", "For items where capital allowances were claimed that have been sold, given away or stopped being used," +
+        " a balancing charge may be needed.")
     )
   }
 

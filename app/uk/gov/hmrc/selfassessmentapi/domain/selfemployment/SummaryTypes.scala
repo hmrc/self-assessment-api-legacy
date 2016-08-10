@@ -28,8 +28,8 @@ object SummaryTypes {
     override val title = "Sample self-employment incomes"
     override def description(action: String) = s"$action an income for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("self-employments", "type", "Enum", "Type of income"),
-      PositiveMonetaryFieldDescription("self-employments", "amount")
+      FullFieldDescription("self-employments", "type", "Enum", s"Type of income (one of the following: ${IncomeType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("self-employments", "amount", "Income from the business including turnover (from takings, fees & sales) earned or received by the business before expenses, and other business income not included within turnover.")
     )
   }
 
@@ -39,8 +39,8 @@ object SummaryTypes {
     override val title = "Sample self-employment expenses"
     override def description(action: String) = s"$action an expense for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("self-employments", "type", "Enum", "Type of expense"),
-      PositiveMonetaryFieldDescription("self-employments", "amount")
+      FullFieldDescription("self-employments", "type", "Enum", s"Type of expense (one of the following: ${ExpenseType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("self-employments", "amount", "Allowable expenses associated with the running of the business, split by expense type")
     )
   }
 
@@ -50,8 +50,9 @@ object SummaryTypes {
     override val title = "Sample self-employment balancing charges"
     override def description(action: String) = s"$action a balancing charge for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("self-employments", "type", "Enum", "Type of balancing charge"),
-      PositiveMonetaryFieldDescription("self-employments", "amount")
+      FullFieldDescription("self-employments", "type", "Enum", s"Type of balancing charge (one of the following: ${BalancingChargeType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("self-employments", "amount", "If an item has been sold where capital allowance was claimed, and the sale or value of the item is more than the pool value or cost, " +
+        "a balancing charge is required to pay tax on the difference.")
     )
   }
 
@@ -60,7 +61,9 @@ object SummaryTypes {
     override def example(id: Option[SummaryId] = None): JsValue = toJson(GoodsAndServicesOwnUse.example(id))
     override val title = "Sample self-employment goods and service for own use"
     override def description(action: String) = s"$action a goods and service for own use summary for the specified source"
-    override val fieldDescriptions = Seq(PositiveMonetaryFieldDescription("self-employments", "amount"))
+    override val fieldDescriptions = Seq(
+      PositiveMonetaryFieldDescription("self-employments", "amount", "To account for the normal sale price of goods or stock have been taken out of the business.")
+    )
   }
 
 }

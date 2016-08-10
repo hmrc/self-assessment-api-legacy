@@ -196,7 +196,7 @@ class LiabilityCalculatorSpec extends UnitSpec with SelfAssessmentSugar {
       )
     }
 
-    "run the liability calculation steps up to when a calculation error occurs" in {
+    "run the liability calculation steps until a calculation error occurs" in {
 
       val ukTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -812.45)
       val ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", 234.87)

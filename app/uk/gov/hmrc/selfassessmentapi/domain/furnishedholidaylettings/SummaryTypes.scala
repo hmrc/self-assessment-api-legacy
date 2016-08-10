@@ -39,7 +39,7 @@ object SummaryTypes {
     override val title = "Sample expenses"
     override def description(action: String) = s"$action an expense for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("furnished-holiday-lettings", "type", "Enum", ExpenseType.values.mkString(", "), s"Type of expense (one of the following: ${ExpenseType.values.mkString(", ")})"),
+      FullFieldDescription("furnished-holiday-lettings", "type", "Enum", s"Type of expense (one of the following: ${ExpenseType.values.mkString(", ")})"),
       PositiveMonetaryFieldDescription("furnished-holiday-lettings", "amount", "Business costs related to the Furnished Holiday Letting, split out by expense type")
     )
   }

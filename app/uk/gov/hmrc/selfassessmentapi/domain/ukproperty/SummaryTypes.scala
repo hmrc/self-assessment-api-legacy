@@ -28,7 +28,7 @@ object SummaryTypes {
     override val title = "Sample UK property incomes"
     override def description(action: String) = s"$action an income for the specified UK Property"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("uk-property", "type", "Enum", IncomeType.values.mkString(", "), s"Type of income (one of the following: ${IncomeType.values.mkString(", ")})"),
+      FullFieldDescription("uk-property", "type", "Enum", s"Type of income (one of the following: ${IncomeType.values.mkString(", ")})"),
       PositiveMonetaryFieldDescription("uk-properties", "amount", "Income from all UK property & land (does not include any income/profits from FHL). Split by income type")
     )
   }
@@ -39,7 +39,7 @@ object SummaryTypes {
     override val title = "Sample UK property expenses"
     override def description(action: String) = s"$action an expense for the specified UK Property"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("uk-property", "type", "Enum", ExpenseType.values.mkString(", "), s"Type of expense (one of the following: ${ExpenseType.values.mkString(", ")})"),
+      FullFieldDescription("uk-property", "type", "Enum", s"Type of expense (one of the following: ${ExpenseType.values.mkString(", ")})"),
       PositiveMonetaryFieldDescription("uk-properties", "amount", "Running costs associated with the rental business, split by expense type")
     )
   }

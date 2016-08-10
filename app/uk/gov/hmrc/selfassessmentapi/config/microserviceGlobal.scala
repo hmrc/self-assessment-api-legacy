@@ -25,7 +25,7 @@ import play.api.mvc._
 import play.api.{Application, Configuration, Play, Routes}
 import uk.gov.hmrc.api.config.{ServiceLocatorConfig, ServiceLocatorRegistration}
 import uk.gov.hmrc.api.connector.ServiceLocatorConnector
-import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, ErrorNotFound, HeaderValidator}
+import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, ErrorNotFound, ErrorUnauthorized, HeaderValidator}
 import uk.gov.hmrc.play.audit.filters.AuditFilter
 import uk.gov.hmrc.play.auth.controllers.{AuthConfig, AuthParamsControllerConfig}
 import uk.gov.hmrc.play.auth.microservice.connectors.{AccountId, HttpVerb, Regime, ResourceToAuthorise}
@@ -39,8 +39,8 @@ import uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.{NotFo
 import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorBadRequest, ErrorNotImplemented, UnknownSummaryException}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.matching.Regex
 
@@ -97,6 +97,16 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
       case authConfig.pattern(utr) =>
         Some(ResourceToAuthorise(verb, Regime("sa"), AccountId(utr)))
       case _ => None
+    }
+  }
+
+  override def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
+    super.apply(next)(rh) map { res =>
+      res.header.status
+      match {
+        case 401 => Status(ErrorUnauthorized.httpStatusCode)(Json.toJson(ErrorUnauthorized))
+        case _ => res
+      }
     }
   }
 

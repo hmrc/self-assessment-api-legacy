@@ -34,8 +34,8 @@ object SourceType {
     override def description(action: String) = s"$action a self-employment"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "commencementDate", "Date", "2016-01-01", "Date in yyyy-dd-mm format"),
-      FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this self-employment", optional = true),
+      FullFieldDescription(name, "commencementDate", "Date", "Date in yyyy-dd-mm format"),
+      FullFieldDescription(name, "allowances", "Object", "Allowances claimed for this self-employment", optional = true),
       PositiveMonetaryFieldDescription(name, "annualInvestmentAllowance", "Annual Investment Allowance of up to £200,000 can be claimed for purchases of equipment (but not cars) on or after 6 April 2014", optional = true),
       PositiveMonetaryFieldDescription(name, "capitalAllowanceMainPool",
         """Writing down allowance of 18% can be claimed on the final balance of main pool costs.
@@ -49,7 +49,7 @@ object SourceType {
       PositiveMonetaryFieldDescription(name, "allowancesOnSales",
         """If the business ceases, any balance left in the relevant pool can be claimed after
           |either the selling price or market value has been deducted from the pool balance, as a balancing allowance instead of claiming a WDA""".stripMargin, optional = true),
-      FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this self-employment", optional = true),
+      FullFieldDescription(name, "adjustments", "Object", "Adjustments for this self-employment", optional = true),
       PositiveMonetaryFieldDescription(name, "includedNonTaxableProfits", "For income, receipts and other profits that have been included in business turnover but are not taxable as business profits", optional = true),
       MonetaryFieldDescription(name, "basisAdjustment",
         """Tax is paid on the profits of the basis period for the tax year.

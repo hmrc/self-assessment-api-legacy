@@ -9,7 +9,6 @@
         <headings>
             <cell>Name</cell>
             <cell>Type</cell>
-            <cell>Example</cell>
             <cell>Description</cell>
         </headings>
         <rows>
@@ -21,9 +20,6 @@
                 <cell>
                     <code>String</code>
                 </cell>
-                <cell>
-                    <code>@(enabledSourceTypes.map(_.name).mkString(", "))</code>
-                </cell>
                 <cell>The type of source</cell>
             </row>
             @sourceId.map { sId =>
@@ -33,9 +29,6 @@
                     </cell>
                     <cell>
                         <code>String</code>
-                    </cell>
-                    <cell>
-                        <code>@sId</code>
                     </cell>
                     <cell>The source id</cell>
                 </row>
@@ -47,9 +40,6 @@
                         <cell>
                             <code>String</code>
                         </cell>
-                        <cell>
-                            <code>@st</code>
-                        </cell>
                         <cell>The type of summary</cell>
                     </row>
                     @summaryId.map { id =>
@@ -59,9 +49,6 @@
                             </cell>
                             <cell>
                                 <code>String</code>
-                            </cell>
-                            <cell>
-                                <code>@id</code>
                             </cell>
                             <cell>The summary id</cell>
                         </row>

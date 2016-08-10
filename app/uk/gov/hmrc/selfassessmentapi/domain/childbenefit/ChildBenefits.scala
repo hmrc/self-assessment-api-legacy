@@ -28,8 +28,8 @@ case object ChildBenefits extends TaxYearPropertyType {
   override val title: String = "Sample child benefit"
   override val fieldDescriptions = Seq(
     PositiveMonetaryFieldDescription(name, "amount", "Total amount of Child Benefit taxpayer and their partner got for the tax year"),
-    FullFieldDescription(name, "numberOfChildren", "Int", "3", "Number of children taxpayer and their partner got Child Benefit for"),
-    FullFieldDescription(name, "dateBenefitStopped", "Date", "2016-04-23", "The date that taxpayer and their partner stopped getting all Child Benefit payments", optional = true)
+    FullFieldDescription(name, "numberOfChildren", "Int", "Number of children taxpayer and their partner got Child Benefit for"),
+    FullFieldDescription(name, "dateBenefitStopped", "Date", "The date that taxpayer and their partner stopped getting all Child Benefit payments", optional = true)
   )
 
 }

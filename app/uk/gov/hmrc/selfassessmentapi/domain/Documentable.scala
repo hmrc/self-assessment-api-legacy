@@ -16,34 +16,27 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import play.api.libs.json.JsValue
-import uk.gov.hmrc.selfassessmentapi.views.Helpers.prettyPrint
-
 trait FieldDescription {
   val source: String
   val name: String
   val `type`: String
   def description: String
-  val example: AnyRef
   val optional: Boolean
 }
 
 case class PositiveMonetaryFieldDescription(source: String, name: String, description: String = "Positive monetary amount", optional: Boolean = false) extends FieldDescription {
   val `type` = "Money"
-  val example = "100.00"
 }
 
 case class MonetaryFieldDescription(source: String, name: String, description: String = "Monetary amount", optional: Boolean = false) extends FieldDescription {
   val `type` = "Money"
-  val example = "-100.00"
 }
 
-case class ObjectFieldDescription(source: String, name: String, exampleJson: JsValue, optional: Boolean = false, description: String = "Object") extends FieldDescription {
+case class ObjectFieldDescription(source: String, name: String, optional: Boolean = false, description: String = "Object") extends FieldDescription {
   val `type` = "Object"
-  val example = prettyPrint(exampleJson)
 }
 
-case class FullFieldDescription(source: String, name: String, `type`: String, example: String, description: String, optional: Boolean = false) extends FieldDescription
+case class FullFieldDescription(source: String, name: String, `type`: String, description: String, optional: Boolean = false) extends FieldDescription
 
 trait Documentable {
   val title: String

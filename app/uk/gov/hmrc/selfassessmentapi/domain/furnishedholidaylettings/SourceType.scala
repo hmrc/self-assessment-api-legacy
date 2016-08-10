@@ -32,10 +32,10 @@ object SourceType {
     override def description(action: String) = s"$action a furnished holiday letting"
 
     override val fieldDescriptions = Seq(
-      FullFieldDescription(name, "propertyLocation", "Enum", PropertyLocationType.values.mkString(", "), "The location of the property"),
-      FullFieldDescription(name, "allowances", "Object", "", "Allowances claimed for this property", optional = true),
+      FullFieldDescription(name, "propertyLocation", "Enum", "The location of the property"),
+      FullFieldDescription(name, "allowances", "Object", "Allowances claimed for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "capitalAllowance", "Amount claimed for any equipment or vehicles for your FHL (not other furnished residential lettings)"),
-      FullFieldDescription(name, "adjustments", "Object", "", "Adjustments for this property", optional = true),
+      FullFieldDescription(name, "adjustments", "Object", "Adjustments for this property", optional = true),
       PositiveMonetaryFieldDescription(name, "lossBroughtForward",
         """If a loss was made in the previous or earlier tax years, this can be used against the profits from this tax year.
           |The loss claimed cannot be more than the adjusted profit for this tax year""".stripMargin)

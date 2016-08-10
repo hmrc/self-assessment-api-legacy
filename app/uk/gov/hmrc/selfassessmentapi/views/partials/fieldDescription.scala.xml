@@ -5,7 +5,6 @@
   @if(includeSource){<cell><code>@(fieldDescription.source)</code></cell>}
   <cell><code>@(fieldDescription.name)</code></cell>
   <cell><code>@(fieldDescription.`type`)</code></cell>
-  <cell><code>@(fieldDescription.example)</code></cell>
   <cell><code>@(fieldDescription.description)</code></cell>
   <cell><code>@(fieldDescription.optional)</code></cell>
 </row>

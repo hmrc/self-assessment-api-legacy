@@ -18,4 +18,99 @@
         <httpStatus>200 (OK)</httpStatus>
         <json>@liabilityResponse(saUtr, taxYear)</json>
     </section>
+    <section>
+        <title>Response Fields</title>
+        <table>
+            <headings>
+                <cell>Name</cell>
+                <cell>Description</cell>
+            </headings>
+            <rows>
+                taxableProfit (under each nonSavings Income source)
+            </rows>
+            <rows>
+                Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses
+                    + goods used for own use minus (allowable expenses + capital allowances)
+            </rows>
+            <rows>
+                profit (under each nonSavings Income source)
+            </rows>
+            <rows>
+                taxableProfit plus losses brought forward.
+            </rows>
+            <rows>
+                totalInterest (under each savings Income source)
+            </rows>
+            <rows>
+                totalInterest is Grossed-up Taxed Interest plus Untaxed Interest.
+            </rows>
+            <rows>
+                totalDividend (under each dividends income source)
+            </rows>
+            <rows>
+                totalDividend is sum of all dividends from UK sources.
+            </rows>
+            <rows>
+                incomeTaxRelief (under deductions)
+            </rows>
+            <rows>
+                incomeTaxRelief is Sum of all losses brought forward.
+            </rows>
+            <rows>
+                personalAllowance (under deductions)
+            </rows>
+            <rows>
+                personalAllowance is annual personal allowance the tax payer is entitled to, which is usually standard £11,000.
+            </rows>
+            <rows>
+                totalIncomeOnWhichTaxIsDue
+            </rows>
+            <rows>
+                totalIncomeOnWhichTaxIsDue is total income on which tax is due which is Total Income Received minus Total deductions.
+            </rows>
+            <rows>
+                taxBand (under incomeTaxCalculations)
+            </rows>
+            <rows>
+                To indicate whether the calculation is for basic rate band or higher rate band or additional higher rate band.
+                In Savings and Dividends income case, the tax band also includes the Starting Rate Band and Nil Rate bands.
+            </rows>
+            <rows>
+                taxableAmount (under incomeTaxCalculations)
+            </rows>
+            <rows>
+                Total Taxable Income on which the rate band and tax rate is applied.
+            </rows>
+            <rows>
+                chargedAt (under incomeTaxCalculations)
+            </rows>
+            <rows>
+                Tax percentage that is applied depending upon the band.
+            </rows>
+            <rows>
+                tax (under incomeTaxCalculations)
+            </rows>
+            <rows>
+                Calculated tax value i.e. taxable amount * charged at
+            </rows>
+            <rows>
+                interestFromUk (under taxDeducted)
+            </rows>
+            <rows>
+                Grossed-up Taxed interest that tax payer received minus taxed interest
+            </rows>
+            <rows>
+                totalTaxDue
+            </rows>
+            <rows>
+                Total Income Tax minus Total Tax Deductions (if it is positive)
+            </rows>
+            <rows>
+                totalTaxOverpaid
+            </rows>
+            <rows>
+                Total Income Tax minus Total Tax Deductions (if it is negative)
+            </rows>
+        </table>
+    </section>
 </endpoint>

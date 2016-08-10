@@ -60,13 +60,14 @@
                 personalAllowance (under deductions)
             </rows>
             <rows>
-                personalAllowance is annual personal allowance the tax payer is entitled to, which is usually standard £11,000.
+                This is the annual personal allowance the taxpayer is entitled to. This is currently a maximum of £11,000 for the tax year.
+                Note, Personal Allowance may be reduced/tapered dependent on the value of total income.
             </rows>
             <rows>
                 totalIncomeOnWhichTaxIsDue
             </rows>
             <rows>
-                totalIncomeOnWhichTaxIsDue is total income on which tax is due which is Total Income Received minus Total deductions.
+                This is the total income on which tax is due after reliefs and allowances have been deducted (Total Income Received minus Total deductions).
             </rows>
             <rows>
                 taxBand (under incomeTaxCalculations)
@@ -97,7 +98,7 @@
                 interestFromUk (under taxDeducted)
             </rows>
             <rows>
-                Grossed-up Taxed interest that tax payer received minus taxed interest
+                Grossed-up Taxed interest that the tax payer received minus taxed interest
             </rows>
             <rows>
                 totalTaxDue

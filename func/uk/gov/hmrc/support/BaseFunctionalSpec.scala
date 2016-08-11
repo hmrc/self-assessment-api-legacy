@@ -265,6 +265,16 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
+    def bodyHasString(content: String) = {
+      response.body.contains(content) shouldBe true
+      this
+    }
+
+    def bodyDoesNotHaveString(content: String) = {
+      response.body.contains(content) shouldBe false
+      this
+    }
+
     def statusIs(statusCode: Regex) = {
       withClue(s"expected $request to return $statusCode; but got ${response.body}\n") {
         response.status.toString should fullyMatch regex statusCode

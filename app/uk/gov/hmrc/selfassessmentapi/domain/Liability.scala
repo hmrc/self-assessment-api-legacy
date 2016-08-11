@@ -17,8 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 
-case class EmploymentIncome(sourceId: String, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses : BigDecimal, total: BigDecimal)
+case class EmploymentIncome(sourceId: String, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses: BigDecimal, total: BigDecimal)
 
 object EmploymentIncome {
   implicit val format = Json.format[EmploymentIncome]
@@ -108,26 +109,14 @@ object Liability {
       income = IncomeSummary(
         incomes = IncomeFromSources(
           nonSavings = NonSavingsIncomes(
-            employment = Seq(
-              EmploymentIncome("employment-1", 1000, 500,  250, 1250),
-              EmploymentIncome("employment-2", 2000, 1000,  500, 2500)
-            ),
-            selfEmployment = Seq(
-              SelfEmploymentIncome("self-employment-1", 8200, 10000),
-              SelfEmploymentIncome("self-employment-2", 25000, 28000)
-            )
+            employment = exampleEmploymentIncomes,
+            selfEmployment = exampleSelfEmploymentIncomes
           ),
           savings = SavingsIncomes(
-            fromUKBanksAndBuildingSocieties = Seq(
-              InterestFromUKBanksAndBuildingSocieties("interest-income-1", 100),
-              InterestFromUKBanksAndBuildingSocieties("interest-income-2", 200)
-            )
+            fromUKBanksAndBuildingSocieties = exampleInterestFromUKBanksAndBuildingSocieties
           ),
           dividends = DividendsIncomes(
-            fromUKSources = Seq(
-              DividendsFromUKSources("dividend-income-1", 1000),
-              DividendsFromUKSources("dividend-income-2", 2000)
-            )
+            fromUKSources = exampleDividendsFromUKSources
           ),
           total = 93039
         ),
@@ -166,4 +155,49 @@ object Liability {
       totalTaxDue = 25796.95,
       totalTaxOverpaid = 0
     )
+
+  private def exampleEmploymentIncomes = {
+    FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.Employments) match {
+      case true =>
+        Seq(
+          EmploymentIncome("employment-1", 1000, 500, 250, 1250),
+          EmploymentIncome("employment-2", 2000, 1000, 500, 2500)
+        )
+      case false => Seq()
+    }
+  }
+
+  private def exampleSelfEmploymentIncomes = {
+    FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.SelfEmployments) match {
+      case true =>
+        Seq(
+          SelfEmploymentIncome("self-employment-1", 8200, 10000),
+          SelfEmploymentIncome("self-employment-2", 25000, 28000)
+        )
+      case false => Seq()
+    }
+  }
+
+  private def exampleInterestFromUKBanksAndBuildingSocieties = {
+    FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.UnearnedIncomes) match {
+      case true =>
+        Seq(
+          InterestFromUKBanksAndBuildingSocieties("interest-income-1", 100),
+          InterestFromUKBanksAndBuildingSocieties("interest-income-2", 200)
+        )
+      case false => Seq()
+    }
+  }
+
+  private def exampleDividendsFromUKSources = {
+    FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.UnearnedIncomes) match {
+      case true =>
+        Seq(
+          DividendsFromUKSources("dividend-income-1", 1000),
+          DividendsFromUKSources("dividend-income-2", 2000)
+        )
+      case false => Seq()
+    }
+  }
+
 }

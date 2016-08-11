@@ -5,6 +5,8 @@ scala:
 - 2.11.8
 jdk:
 - oraclejdk8
+services:
+  - mongodb
 cache:
   directories:
      - $HOME/.m2/repository
@@ -12,10 +14,10 @@ cache:
      - $HOME/.ivy2
 env:
   matrix:
-    - TEST_COMMAND="test"
-    - TEST_COMMAND="func:test"
+    - TEST_COMMAND=test
+    - TEST_COMMAND=func:test
 script:
-  - sbt "$TEST_COMMAND"
+  - sbt -DMONGO_TEST_URI="mongodb://127.0.0.1:27017/self-assessment-api"  "$TEST_COMMAND"
   # Trick to avoid unnecessary cache updates
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm

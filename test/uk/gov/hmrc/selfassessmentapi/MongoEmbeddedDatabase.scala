@@ -51,6 +51,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
 
   protected def startEmbeddedMongo() = {
     if (useEmbeddedMongo) {
+      Logger.info("Starting embedded mongo")
       mongodExe = MongodStarter.getInstance(runtimeConfig).prepare(new MongodConfigBuilder()
         .version(Version.Main.PRODUCTION)
         .net(new Net(localhost, embeddedPort, Network.localhostIsIPv6()))
@@ -84,7 +85,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
   }
 
   protected def clearMongoCollections() = {
-    List("selfEmployments", "selfAssessments", "jobHistory", "liabilities").foreach {
+    mongoClient.collectionNames().foreach {
       coll => mongoClient.getCollection(coll).remove(new BasicDBObject())
     }
   }

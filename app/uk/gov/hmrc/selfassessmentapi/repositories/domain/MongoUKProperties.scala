@@ -28,7 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 
 case class MongoUKPropertiesIncomeSummary(summaryId: SummaryId,
                                           `type`: IncomeType,
-                                          amount: BigDecimal) extends MongoSummary {
+                                          amount: BigDecimal) extends MongoSummary with AmountHolder {
 
   val arrayName = MongoUKPropertiesIncomeSummary.arrayName
 
@@ -58,7 +58,7 @@ object MongoUKPropertiesIncomeSummary {
 
 case class MongoUKPropertiesExpenseSummary(summaryId: SummaryId,
                                              `type`: ExpenseType,
-                                             amount: BigDecimal) extends MongoSummary {
+                                             amount: BigDecimal) extends MongoSummary with AmountHolder {
   val arrayName = MongoUKPropertiesExpenseSummary.arrayName
 
   def toExpense: Expense =
@@ -89,7 +89,7 @@ object MongoUKPropertiesExpenseSummary {
 }
 
 case class MongoUKPropertiesBalancingChargeSummary(summaryId: SummaryId,
-                                                     amount: BigDecimal) extends MongoSummary {
+                                                     amount: BigDecimal) extends MongoSummary with AmountHolder {
   val arrayName = MongoUKPropertiesBalancingChargeSummary.arrayName
 
   def toBalancingCharge =
@@ -116,7 +116,7 @@ object MongoUKPropertiesBalancingChargeSummary {
   }
 }
 
-case class MongoUKPropertiesPrivateUseAdjustmentSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary {
+case class MongoUKPropertiesPrivateUseAdjustmentSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary with AmountHolder {
 
   val arrayName = MongoUKPropertiesPrivateUseAdjustmentSummary.arrayName
 
@@ -172,9 +172,9 @@ case class MongoUKProperties(id: BSONObjectID,
                                sourceId: SourceId,
                                saUtr: SaUtr,
                                taxYear: TaxYear,
-                               lastModifiedDateTime: DateTime,
-                               createdDateTime: DateTime,
-                               rentARoomRelief: Option[BigDecimal],
+                               lastModifiedDateTime: DateTime = DateTime.now(DateTimeZone.UTC),
+                               createdDateTime: DateTime = DateTime.now(DateTimeZone.UTC),
+                               rentARoomRelief: Option[BigDecimal] = None,
                                allowances: Option[Allowances] = None,
                                adjustments: Option[Adjustments] = None,
                                incomes: Seq[MongoUKPropertiesIncomeSummary] = Nil,
@@ -182,6 +182,11 @@ case class MongoUKProperties(id: BSONObjectID,
                                balancingCharges: Seq[MongoUKPropertiesBalancingChargeSummary] = Nil,
                                privateUseAdjustment: Seq[MongoUKPropertiesPrivateUseAdjustmentSummary] = Nil,
                                taxesPaid: Seq[MongoUKPropertiesTaxPaidSummary] = Nil) extends SourceMetadata {
+  def rentARoomReliefAmount = rentARoomRelief.getOrElse(BigDecimal(0))
+
+  def allowancesTotal = allowances.map(_.total).getOrElse(BigDecimal(0))
+
+  def lossBroughtForward = adjustments.flatMap(_.lossBroughtForward).getOrElse(BigDecimal(0))
 
   def toUKProperties = UKProperty(
     id = Some(sourceId),
@@ -203,14 +208,11 @@ object MongoUKProperties {
 
   def create(saUtr: SaUtr, taxYear: TaxYear, ukp: UKProperty): MongoUKProperties = {
     val id = BSONObjectID.generate
-    val now = DateTime.now(DateTimeZone.UTC)
     MongoUKProperties(
       id = id,
       sourceId = id.stringify,
       saUtr = saUtr,
       taxYear = taxYear,
-      lastModifiedDateTime = now,
-      createdDateTime = now,
       rentARoomRelief = ukp.rentARoomRelief,
       allowances = ukp.allowances,
       adjustments = ukp.adjustments)

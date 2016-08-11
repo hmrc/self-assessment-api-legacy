@@ -27,12 +27,12 @@ object SelfEmploymentProfitCalculation extends CalculationStep {
 
     val profitFromSelfEmployments = selfAssessment.selfEmployments.map { selfEmployment =>
       val adjustedProfit = positiveOrZero(profitIncreases(selfEmployment) - profitReductions(selfEmployment))
-      val lossBroughtForward = valueOrZero(capAt(selfEmployment.adjustments.flatMap(_.lossBroughtForward), adjustedProfit))
+      val lossBroughtForward = capAt(selfEmployment.lossBroughtForward, adjustedProfit)
       val outstandingBusinessIncome = valueOrZero(selfEmployment.adjustments.flatMap(_.outstandingBusinessIncome))
       val taxableProfit = adjustedProfit - lossBroughtForward + outstandingBusinessIncome
       val profit = roundDown(taxableProfit + lossBroughtForward)
 
-      SelfEmploymentIncome(sourceId = selfEmployment.sourceId, taxableProfit = roundDown(taxableProfit), profit = profit, lossBroughtForward = lossBroughtForward)
+      SelfEmploymentIncome(sourceId = selfEmployment.sourceId, taxableProfit = roundDown(taxableProfit), profit = profit)
     }
 
     liability.copy(profitFromSelfEmployments = profitFromSelfEmployments)

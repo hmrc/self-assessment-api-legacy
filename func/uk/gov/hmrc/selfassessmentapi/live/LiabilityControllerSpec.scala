@@ -1,8 +1,10 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json.toJson
+import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.support.BaseFunctionalSpec
@@ -55,6 +57,12 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |              "profit": 74529,
            |              "taxableProfit": 64529
            |            }
+           |          ],
+           |          "ukProperties": [
+           |            {
+           |              "profit": 2450,
+           |              "taxableProfit": 2200
+           |            }
            |          ]
            |        },
            |        "savings": {
@@ -71,14 +79,14 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |            }
            |          ]
            |        },
-           |        "total": 139058
+           |        "total": 141508
            |      },
            |      "deductions": {
-           |        "incomeTaxRelief": 20000,
-           |        "personalAllowance": 1471,
-           |        "total": 21471
+           |        "incomeTaxRelief": 20250,
+           |        "personalAllowance": 371,
+           |        "total": 20621
            |      },
-           |      "totalIncomeOnWhichTaxIsDue": 117587
+           |      "totalIncomeOnWhichTaxIsDue": 120887
            |    },
            |    "incomeTaxCalculations": {
            |      "nonSavings": [
@@ -90,9 +98,9 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        },
            |        {
            |          "chargedAt": "40%",
-           |          "tax": 31834,
+           |          "tax": 33154,
            |          "taxBand": "higherRate",
-           |          "taxableAmount": 79587
+           |          "taxableAmount": 82887
            |        },
            |        {
            |          "chargedAt": "45%",
@@ -159,13 +167,13 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |          "taxableAmount": 0
            |        }
            |      ],
-           |      "total": 39234
+           |      "total": 40554
            |    },
            |    "taxDeducted": {
            |      "interestFromUk": 600,
            |      "total": 600
            |    },
-           |    "totalTaxDue": 38634,
+           |    "totalTaxDue": 39954,
            |    "totalTaxOverpaid": 0
            |}
         """.stripMargin
@@ -214,6 +222,14 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .when()
         .post(s"/$saUtr/$taxYear/unearned-incomes/%sourceId%/dividends", Some(toJson(Dividend.example().copy(amount = 2000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/uk-properties", Some(UKProperties.example()))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/uk-properties/%sourceId%/incomes", Some(toJson(domain.ukproperty.Income.example().copy(amount = 15000))))
         .thenAssertThat()
         .statusIs(201)
         .when()

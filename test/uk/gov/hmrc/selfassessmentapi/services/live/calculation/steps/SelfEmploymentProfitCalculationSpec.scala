@@ -56,7 +56,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 2430, profit = 2430, lossBroughtForward = 0)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 2430, profit = 2430)
       ))
     }
 
@@ -73,7 +73,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 5000, profit = 5000, lossBroughtForward = 0)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 5000, profit = 5000)
       ))
     }
 
@@ -93,7 +93,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1800, profit = 1800, lossBroughtForward = 0)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1800, profit = 1800)
       ))
     }
 
@@ -116,7 +116,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900, lossBroughtForward = 0)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900)
       ))
     }
 
@@ -133,7 +133,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1298, profit = 1298, lossBroughtForward = 0)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1298, profit = 1298)
       ))
     }
 
@@ -153,7 +153,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900, lossBroughtForward = 0)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900)
       ))
     }
 
@@ -170,7 +170,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 30000, profit = 30000, lossBroughtForward = 0)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 30000, profit = 30000)
       ))
     }
 
@@ -187,7 +187,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 999, profit = 2000, lossBroughtForward = 1000.49)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 999, profit = 2000)
       ))
     }
 
@@ -204,7 +204,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 2000, lossBroughtForward = 2000)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 2000)
       ))
     }
 
@@ -224,7 +224,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
         )))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 0, lossBroughtForward = 0)
+        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 0)
       ))
     }
 
@@ -242,8 +242,8 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
       ))
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability) shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome("se1", taxableProfit = 1200, profit = 1200, lossBroughtForward = 0),
-        SelfEmploymentIncome("se2", taxableProfit = 800, profit = 800, lossBroughtForward = 0)
+        SelfEmploymentIncome("se1", taxableProfit = 1200, profit = 1200),
+        SelfEmploymentIncome("se2", taxableProfit = 800, profit = 800)
       ))
     }
   }

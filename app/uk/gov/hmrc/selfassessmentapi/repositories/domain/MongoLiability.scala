@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
+import com.fasterxml.jackson.annotation.{JsonIgnore, JsonIgnoreProperties}
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
@@ -36,7 +37,6 @@ case class MongoLiability(id: BSONObjectID,
                           dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
                           totalIncomeReceived: Option[BigDecimal] = None,
                           nonSavingsIncomeReceived: Option[BigDecimal] = None,
-                          totalTaxableIncome: Option[BigDecimal] = None,
                           totalAllowancesAndReliefs: Option[BigDecimal] = None,
                           deductionsRemaining: Option[BigDecimal] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
@@ -44,7 +44,8 @@ case class MongoLiability(id: BSONObjectID,
                           savingsIncome: Seq[TaxBandAllocation] = Nil,
                           dividendsIncome: Seq[TaxBandAllocation] = Nil,
                           allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
-                          taxDeducted: Option[MongoTaxDeducted] = None) extends Math {
+                          taxDeducted: Option[MongoTaxDeducted] = None,
+                          profitFromUkProperties: Seq[UkPropertyIncome] = Nil) extends Math {
 
   private lazy val dividendsTaxes = dividendsIncome.map {
     bandAllocation => bandAllocation.taxBand match {
@@ -87,8 +88,9 @@ case class MongoLiability(id: BSONObjectID,
       income = IncomeSummary(
         incomes = IncomeFromSources(
           nonSavings = NonSavingsIncomes(
-            employment = incomeFromEmployments.map(_.toEmploymentIncome),
-            selfEmployment = profitFromSelfEmployments.map(_.toSelfEmploymentIncome)
+            employment = incomeFromEmployments,
+            selfEmployment = profitFromSelfEmployments,
+            ukProperties = profitFromUkProperties
           ),
           savings = SavingsIncomes(
             fromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties
@@ -124,15 +126,11 @@ case class MongoLiability(id: BSONObjectID,
 }
 
 
-case class EmploymentIncome(sourceId: SourceId, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses : BigDecimal, total: BigDecimal) {
+case class EmploymentIncome(sourceId: SourceId, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses : BigDecimal, total: BigDecimal)
 
-  def toEmploymentIncome = uk.gov.hmrc.selfassessmentapi.domain.EmploymentIncome(sourceId, pay, benefitsAndExpenses, allowableExpenses, total)
-}
+case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal)
 
-case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal, lossBroughtForward: BigDecimal) {
-
-  def toSelfEmploymentIncome = uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncome(sourceId, taxableProfit, profit)
-}
+case class UkPropertyIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal)
 
 case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math {
 
@@ -158,6 +156,7 @@ object MongoLiability {
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
   implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
+  implicit val ukPropertyIncomeFormats = Json.format[UkPropertyIncome]
   implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
   implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
   implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]

@@ -25,7 +25,10 @@ case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
                       businessPremisesRenovationAllowance: Option[BigDecimal] = None,
                       otherCapitalAllowance: Option[BigDecimal] = None,
                       wearAndTearAllowance: Option[BigDecimal] = None
-                     )
+                     ) {
+
+  def total: BigDecimal = Sum(annualInvestmentAllowance, businessPremisesRenovationAllowance, otherCapitalAllowance, wearAndTearAllowance)
+}
 
 object Allowances {
   implicit val writes = Json.writes[Allowances]

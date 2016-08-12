@@ -23,7 +23,12 @@ import uk.gov.hmrc.selfassessmentapi.domain.{JsonMarshaller, _}
 case class PensionContribution(ukRegisteredPension: Option[BigDecimal] = None,
                                retirementAnnuity: Option[BigDecimal] = None,
                                employerScheme: Option[BigDecimal] = None,
-                               overseasPension: Option[BigDecimal] = None)
+                               overseasPension: Option[BigDecimal] = None) {
+
+  def retirementAnnuityContract: BigDecimal = {
+    Sum(retirementAnnuity, employerScheme, overseasPension)
+  }
+}
 
 object PensionContribution extends JsonMarshaller[PensionContribution] {
 

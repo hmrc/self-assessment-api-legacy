@@ -28,8 +28,8 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
 
       val liability = aLiability().copy(
         incomeFromEmployments = Seq(
-          EmploymentIncome(sourceId = "eId1", pay =  100, benefitsAndExpenses = 50, allowableExpenses = 50, total = 100),
-          EmploymentIncome(sourceId = "eId2", pay =  200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
+          EmploymentIncome(sourceId = "eId1", pay = 100, benefitsAndExpenses = 50, allowableExpenses = 50, total = 100),
+          EmploymentIncome(sourceId = "eId2", pay = 200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
         ),
         profitFromSelfEmployments = Seq(
           SelfEmploymentIncome(sourceId = "seId1", taxableProfit = 10, profit = 20),
@@ -47,7 +47,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
         ),
         totalAllowancesAndReliefs = Some(20),
         totalIncomeReceived = Some(1000),
-        allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(3000), incomeTaxRelief = Some(2000)),
+        allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(3000), incomeTaxRelief = Some(2000), retirementAnnuityContract = Some(1000)),
         totalIncomeOnWhichTaxIsDue = Some(4000)
       )
 
@@ -80,7 +80,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
             ),
             total = 1000
           ),
-          deductions = Some(Deductions(personalAllowance = 3000, incomeTaxRelief = 2000, total = 5000)),
+          deductions = Some(Deductions(personalAllowance = 3000, incomeTaxRelief = 2000, retirementAnnuityContract = 1000, total = 6000)),
           totalIncomeOnWhichTaxIsDue = 4000
         ),
         incomeTaxCalculations = IncomeTaxCalculations(Nil, Nil, Nil, 0),

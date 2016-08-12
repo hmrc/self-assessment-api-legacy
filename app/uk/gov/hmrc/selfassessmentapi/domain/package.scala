@@ -49,4 +49,8 @@ package object domain {
   object Total {
     def apply(value: Seq[AmountHolder]): BigDecimal = value.map(_.amount).sum
   }
+
+  object PositiveOrZero {
+    def apply(n: BigDecimal): BigDecimal = if (n > 0) n else 0
+  }
 }

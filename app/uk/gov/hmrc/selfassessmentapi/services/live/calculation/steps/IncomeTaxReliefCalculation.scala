@@ -21,9 +21,16 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 object IncomeTaxReliefCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    val incomeTaxRelief = roundUp(selfAssessment.selfEmployments.map(_.lossBroughtForward).sum +
-      selfAssessment.ukProperties.map(_.lossBroughtForward).sum)
+    val incomeTaxRelief = roundUp(selfAssessment.selfEmployments.map(_.lossBroughtForward).sum) +
+      roundUp(cappedPropertyLossBroughtForward(selfAssessment))
 
     liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(incomeTaxRelief = Some(incomeTaxRelief)))
+  }
+
+  private def cappedPropertyLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {
+    val lossBoughtForwardCap = selfAssessment.ukProperties.map(_.adjustedProfit).sum
+    val lossBoughtForward = selfAssessment.ukProperties.map(_.lossBroughtForward).sum
+
+    lossBoughtForward.min(lossBoughtForwardCap)
   }
 }

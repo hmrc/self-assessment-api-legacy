@@ -57,7 +57,7 @@ trait SelfEmploymentSugar {
                                                 profitFromUkProperties = profitFromUkProperties)
   }
 
-  def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0, lossBroughtForward: BigDecimal = 0) =
+  def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0) =
     SelfEmploymentIncome(sourceId = BSONObjectID.generate.stringify, taxableProfit = taxableProfit, profit = profit)
 
   def aTaxBandAllocation(taxableAmount: BigDecimal, taxBand: TaxBand) = TaxBandAllocation(amount = taxableAmount, taxBand = taxBand)

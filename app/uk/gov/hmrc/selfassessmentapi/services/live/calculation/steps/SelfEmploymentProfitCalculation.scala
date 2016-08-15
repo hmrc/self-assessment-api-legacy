@@ -16,21 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.Depreciation
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, MongoSelfEmployment, SelfEmploymentIncome}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, SelfEmploymentIncome}
 
 object SelfEmploymentProfitCalculation extends CalculationStep {
-
-  private val annualInvestmentAllowance = 200000
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
 
     val profitFromSelfEmployments = selfAssessment.selfEmployments.map { selfEmployment =>
-      val adjustedProfit = positiveOrZero(profitIncreases(selfEmployment) - profitReductions(selfEmployment))
-      val lossBroughtForward = capAt(selfEmployment.lossBroughtForward, adjustedProfit)
-      val outstandingBusinessIncome = valueOrZero(selfEmployment.adjustments.flatMap(_.outstandingBusinessIncome))
-      val taxableProfit = adjustedProfit - lossBroughtForward + outstandingBusinessIncome
-      val profit = roundDown(taxableProfit + lossBroughtForward)
+      val profit = roundDown(selfEmployment.adjustedProfits + selfEmployment.outstandingBusinessIncome)
+      val taxableProfit = roundDown(positiveOrZero(profit - selfEmployment.lossBroughtForward))
 
       SelfEmploymentIncome(sourceId = selfEmployment.sourceId, taxableProfit = roundDown(taxableProfit), profit = profit)
     }
@@ -38,26 +32,5 @@ object SelfEmploymentProfitCalculation extends CalculationStep {
     liability.copy(profitFromSelfEmployments = profitFromSelfEmployments)
   }
 
-  private def profitIncreases(selfEmployment: MongoSelfEmployment): BigDecimal = {
-    val income = Some(selfEmployment.incomes.map(_.amount).sum)
-    val balancingCharges = Some(selfEmployment.balancingCharges.map(_.amount).sum)
-    val goodsAndServices = Some(selfEmployment.goodsAndServicesOwnUse.map(_.amount).sum)
-    val adjustments = selfEmployment.adjustments.map { a =>
-      sum(a.basisAdjustment, a.accountingAdjustment, a.averagingAdjustment)
-    }
 
-    sum(income, balancingCharges, goodsAndServices, adjustments)
-  }
-
-  private def profitReductions(selfEmployment: MongoSelfEmployment): BigDecimal = {
-    val expenses = Some(selfEmployment.expenses.filterNot(_.`type` == Depreciation).map(_.amount).sum)
-    val allowances = selfEmployment.allowances.map { a =>
-      sum(capAt(a.annualInvestmentAllowance, annualInvestmentAllowance), a.capitalAllowanceMainPool, a.capitalAllowanceSpecialRatePool, a.restrictedCapitalAllowance, a.businessPremisesRenovationAllowance, a.enhancedCapitalAllowance, a.allowancesOnSales)
-    }
-    val adjustments = selfEmployment.adjustments.map { a =>
-      sum(a.includedNonTaxableProfits, a.overlapReliefUsed)
-    }
-
-    sum(expenses, allowances, adjustments)
-  }
 }

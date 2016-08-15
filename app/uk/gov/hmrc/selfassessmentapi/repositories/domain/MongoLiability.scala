@@ -130,7 +130,7 @@ case class EmploymentIncome(sourceId: SourceId, pay: BigDecimal, benefitsAndExpe
 
 case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal)
 
-case class UkPropertyIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal)
+case class UkPropertyIncome(sourceId: SourceId, profit: BigDecimal)
 
 case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math {
 

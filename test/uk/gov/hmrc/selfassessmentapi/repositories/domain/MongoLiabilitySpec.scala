@@ -43,7 +43,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           DividendsFromUKSources("divId1", totalDividend = 100)
         ),
         profitFromUkProperties = Seq(
-          UkPropertyIncome("property1", profit = 2000, taxableProfit = 2000)
+          UkPropertyIncome("property1", profit = 2000)
         ),
         totalAllowancesAndReliefs = Some(20),
         totalIncomeReceived = Some(1000),
@@ -64,7 +64,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
                 uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome("seId2", taxableProfit = 20, profit = 40)
               ),
               ukProperties = Seq(
-                UkPropertyIncome("property1", profit = 2000, taxableProfit = 2000)
+                UkPropertyIncome("property1", profit = 2000)
               )
             ),
             savings = SavingsIncomes(

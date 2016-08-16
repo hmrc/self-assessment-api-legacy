@@ -57,14 +57,14 @@ trait SelfEmploymentSugar {
                                                 profitFromUkProperties = profitFromUkProperties)
   }
 
-  def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0, lossBroughtForward: BigDecimal = 0) =
+  def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0) =
     SelfEmploymentIncome(sourceId = BSONObjectID.generate.stringify, taxableProfit = taxableProfit, profit = profit)
 
   def aTaxBandAllocation(taxableAmount: BigDecimal, taxBand: TaxBand) = TaxBandAllocation(amount = taxableAmount, taxBand = taxBand)
 
   def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) = MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
 
-  def aUkPropertyIncome(taxableProfit: BigDecimal, profit: BigDecimal): UkPropertyIncome = UkPropertyIncome(generateSaUtr().utr, taxableProfit, profit)
+  def aUkPropertyIncome(profit: BigDecimal): UkPropertyIncome = UkPropertyIncome(generateSaUtr().utr, profit)
 
   private def now = DateTime.now(DateTimeZone.UTC)
 }

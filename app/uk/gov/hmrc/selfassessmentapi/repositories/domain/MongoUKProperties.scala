@@ -24,7 +24,7 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class MongoUKPropertiesIncomeSummary(summaryId: SummaryId,
                                           `type`: IncomeType,
@@ -187,6 +187,11 @@ case class MongoUKProperties(id: BSONObjectID,
   def allowancesTotal = allowances.map(_.total).getOrElse(BigDecimal(0))
 
   def lossBroughtForward = adjustments.flatMap(_.lossBroughtForward).getOrElse(BigDecimal(0))
+
+  def adjustedProfit = {
+    PositiveOrZero(Total(incomes) + Total(balancingCharges) + Total(privateUseAdjustment) -
+      Total(expenses) - allowancesTotal - rentARoomReliefAmount)
+  }
 
   def toUKProperties = UKProperty(
     id = Some(sourceId),

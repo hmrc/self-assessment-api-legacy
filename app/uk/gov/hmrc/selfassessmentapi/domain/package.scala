@@ -23,7 +23,6 @@ import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.UkCountryCodes.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.AmountHolder
 
-
 package object domain {
 
   type SourceId = String
@@ -42,11 +41,22 @@ package object domain {
   def maxAmountValidator(fieldName: String, maxAmount: BigDecimal) = Reads.of[BigDecimal].filter(ValidationError(s"$fieldName cannot be greater than $maxAmount",
     MAX_MONETARY_AMOUNT))(_ <= maxAmount)
 
+  object CapAt {
+    def apply(n: Option[BigDecimal], cap: BigDecimal): Option[BigDecimal] = n map {
+      case x if x > cap => cap
+      case x => x
+    }
+  }
+
   object Sum {
     def apply(value: Option[BigDecimal]*): BigDecimal = value.flatten.sum
   }
 
   object Total {
     def apply(value: Seq[AmountHolder]): BigDecimal = value.map(_.amount).sum
+  }
+
+  object PositiveOrZero {
+    def apply(n: BigDecimal): BigDecimal = if (n > 0) n else 0
   }
 }

@@ -43,7 +43,7 @@ class UKPropertyProfitCalculationSpec extends UnitSpec with SelfEmploymentSugar 
         rentARoomRelief = Some(500))))
 
       UKPropertyProfitCalculation.run(selfAssessment, aLiability()).profitFromUkProperties should contain theSameElementsAs
-        Seq(UkPropertyIncome("ukpropertyone", profit = 1000, taxableProfit = 1000))
+        Seq(UkPropertyIncome("ukpropertyone", profit = 1000))
     }
 
     "compute taxableProfit profits for UK properties as adjustedProfit - lossBroughtForward" in {
@@ -52,7 +52,7 @@ class UKPropertyProfitCalculationSpec extends UnitSpec with SelfEmploymentSugar 
         adjustments = Some(Adjustments(lossBroughtForward = Some(200))))))
 
       UKPropertyProfitCalculation.run(selfAssessment, aLiability()).profitFromUkProperties should contain theSameElementsAs
-        Seq(UkPropertyIncome("ukpropertyone", profit = 500, taxableProfit = 300))
+        Seq(UkPropertyIncome("ukpropertyone", profit = 500))
     }
 
     "ensure minimum value for the UK property profit is zero" in {
@@ -61,7 +61,7 @@ class UKPropertyProfitCalculationSpec extends UnitSpec with SelfEmploymentSugar 
         expenses = Seq(expense(ExpenseType.PremisesRunningCosts, 1000)))))
 
       UKPropertyProfitCalculation.run(selfAssessment, aLiability()).profitFromUkProperties should contain theSameElementsAs
-        Seq(UkPropertyIncome("ukpropertyone", profit = 0, taxableProfit = 0))
+        Seq(UkPropertyIncome("ukpropertyone", profit = 0))
     }
 
     "computed profits should be rounded down to the nearest pound" in {
@@ -71,7 +71,7 @@ class UKPropertyProfitCalculationSpec extends UnitSpec with SelfEmploymentSugar 
         adjustments = Some(Adjustments(lossBroughtForward = Some(200.22))))))
 
       UKPropertyProfitCalculation.run(selfAssessment, aLiability()).profitFromUkProperties should contain theSameElementsAs
-        Seq(UkPropertyIncome("ukpropertyone", profit = 900, taxableProfit = 700))
+        Seq(UkPropertyIncome("ukpropertyone", profit = 900))
     }
   }
 }

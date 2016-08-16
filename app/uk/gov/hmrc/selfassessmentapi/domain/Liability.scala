@@ -188,8 +188,8 @@ object Liability {
   private def exampleUkPropertiesIncomes = {
     FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.UKProperties) match {
       case true => Seq(
-        UkPropertyIncome("property1", profit = 2000, taxableProfit = 1800),
-        UkPropertyIncome("property2", profit = 1500, taxableProfit = 1500)
+        UkPropertyIncome("property1", profit = 2000),
+        UkPropertyIncome("property2", profit = 1500)
       )
 
       case false => Seq()

@@ -47,7 +47,7 @@ trait SelfEmploymentSugar extends UnitSpecsSugar {
   def goodsAndServices(amount: BigDecimal) = MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
 
-  def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0, lossBroughtForward: BigDecimal = 0) =
+  def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0) =
     SelfEmploymentIncome(sourceId = BSONObjectID.generate.stringify, taxableProfit = taxableProfit, profit = profit)
 
   def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) = MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)

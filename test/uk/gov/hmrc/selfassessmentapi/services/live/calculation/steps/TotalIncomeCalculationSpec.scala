@@ -39,8 +39,8 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
         DividendsFromUKSources("dividend1", 1000),
         DividendsFromUKSources("dividend2", 2000)
       ), profitFromUkProperties = Seq(
-        UkPropertyIncome("property1", 2000, 2000),
-        UkPropertyIncome("property2", 1500, 1800)
+        UkPropertyIncome("property1", 2000),
+        UkPropertyIncome("property2", 1800)
       ))
 
       TotalIncomeCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(nonSavingsIncomeReceived = Some(4375), totalIncomeReceived = Some(7625))
@@ -97,7 +97,7 @@ class TotalIncomeCalculationSpec extends UnitSpec with SelfEmploymentSugar {
 
     "calculate total income if there is a UK property source" in {
 
-      val liability =  aLiability(profitFromUkProperties = Seq(UkPropertyIncome("property1", profit = 1000, taxableProfit = 800)))
+      val liability =  aLiability(profitFromUkProperties = Seq(UkPropertyIncome("property1", profit = 1000)))
 
       val updatedLiability = TotalIncomeCalculation.run(SelfAssessment(), liability)
       updatedLiability.totalIncomeReceived shouldBe Some(1000)

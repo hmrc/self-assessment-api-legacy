@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.Total
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 object UKPropertyProfitCalculation extends CalculationStep with Math {
@@ -25,15 +24,7 @@ object UKPropertyProfitCalculation extends CalculationStep with Math {
   }
 
   def ukPropertyIncomes(selfAssessment: SelfAssessment): Seq[UkPropertyIncome] = {
-    selfAssessment.ukProperties.map { property =>
-      UkPropertyIncome(property.sourceId, profit = roundDown(adjustedProfit(property)),
-        taxableProfit = positiveOrZero(roundDown(adjustedProfit(property) - property.lossBroughtForward)))
-    }
-  }
-
-  def adjustedProfit(property: MongoUKProperties): BigDecimal = {
-    positiveOrZero(Total(property.incomes) + Total(property.balancingCharges) + Total(property.privateUseAdjustment) -
-      Total(property.expenses) - property.allowancesTotal - property.rentARoomReliefAmount)
+    selfAssessment.ukProperties.map { property => UkPropertyIncome(property.sourceId, roundDown(property.adjustedProfit)) }
   }
 
 }

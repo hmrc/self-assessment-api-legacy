@@ -60,8 +60,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |          ],
            |          "ukProperties": [
            |            {
-           |              "profit": 2450,
-           |              "taxableProfit": 2200
+           |              "profit": 2450
            |            }
            |          ]
            |        },

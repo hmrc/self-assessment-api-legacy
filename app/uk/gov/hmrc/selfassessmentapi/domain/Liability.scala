@@ -37,6 +37,7 @@ case class NonSavingsIncomes(employment: Seq[EmploymentIncome], selfEmployment: 
 
 object NonSavingsIncomes {
   implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
+  implicit val furnishedHolidayLettingIncomeFormats = Json.format[FurnishedHolidayLettingIncome]
   implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
   implicit val ukPropertyIncomeFormats = Json.format[UkPropertyIncome]
   implicit val format = Json.format[NonSavingsIncomes]

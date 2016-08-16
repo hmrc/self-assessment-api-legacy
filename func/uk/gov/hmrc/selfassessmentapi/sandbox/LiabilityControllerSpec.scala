@@ -28,6 +28,16 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |         {"sourceId": "employment-1", "pay": 1000, "benefitsAndExpenses": 500, "allowableExpenses": 250, "total": 1250},
           |         {"sourceId": "employment-2", "pay": 2000, "benefitsAndExpenses": 1000, "allowableExpenses": 500, "total": 2500}
           |       ],
+          |       "furnishedHolidayLettings": [
+          |         {
+          |           "profit": 8200,
+          |           "sourceId": "furnished-holiday-letting-1"
+          |         },
+          |         {
+          |           "profit": 25000,
+          |           "sourceId": "furnished-holiday-letting-2"
+          |         }
+          |       ],
           |       "selfEmployment": [
           |         {"sourceId": "self-employment-1", "taxableProfit": 8200, "profit": 10000},
           |         {"sourceId": "self-employment-2", "taxableProfit": 25000, "profit": 28000}

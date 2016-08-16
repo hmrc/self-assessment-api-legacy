@@ -118,7 +118,7 @@ case class MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(summaryId: S
 
   val arrayName = MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary.arrayName
 
-  def toGoodsAndServicesOwnUse = PrivateUseAdjustment(id = Some(summaryId), amount = amount)
+  def toPrivateUseAdjustment = PrivateUseAdjustment(id = Some(summaryId), amount = amount)
 
   def toBsonDocument = BSONDocument(
     "summaryId" -> summaryId,

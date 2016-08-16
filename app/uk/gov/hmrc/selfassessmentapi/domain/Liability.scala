@@ -18,7 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, SelfEmploymentIncome, UkPropertyIncome}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, FurnishedHolidayLettingIncome, SelfEmploymentIncome, UkPropertyIncome}
+
 
 case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, totalInterest: BigDecimal)
 
@@ -32,7 +33,7 @@ object DividendsFromUKSources {
   implicit val format = Json.format[DividendsFromUKSources]
 }
 
-case class NonSavingsIncomes(employment: Seq[EmploymentIncome], selfEmployment: Seq[SelfEmploymentIncome], ukProperties: Seq[UkPropertyIncome])
+case class NonSavingsIncomes(employment: Seq[EmploymentIncome], selfEmployment: Seq[SelfEmploymentIncome], ukProperties: Seq[UkPropertyIncome], furnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome])
 
 object NonSavingsIncomes {
   implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
@@ -103,7 +104,8 @@ object Liability {
           nonSavings = NonSavingsIncomes(
             employment = exampleEmploymentIncomes,
             selfEmployment = exampleSelfEmploymentIncomes,
-            ukProperties = exampleUkPropertiesIncomes
+            ukProperties = exampleUkPropertiesIncomes,
+            furnishedHolidayLettings = exampleFurnishedHolidayLettingIncomes
           ),
           savings = SavingsIncomes(
             fromUKBanksAndBuildingSocieties = exampleInterestFromUKBanksAndBuildingSocieties
@@ -155,6 +157,17 @@ object Liability {
         Seq(
           EmploymentIncome("employment-1", 1000, 500, 250, 1250),
           EmploymentIncome("employment-2", 2000, 1000, 500, 2500)
+        )
+      case false => Seq()
+    }
+  }
+
+  private def exampleFurnishedHolidayLettingIncomes = {
+    FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.FurnishedHolidayLettings) match {
+      case true =>
+        Seq(
+          FurnishedHolidayLettingIncome("furnished-holiday-letting-1", 8200),
+          FurnishedHolidayLettingIncome("furnished-holiday-letting-2", 25000)
         )
       case false => Seq()
     }

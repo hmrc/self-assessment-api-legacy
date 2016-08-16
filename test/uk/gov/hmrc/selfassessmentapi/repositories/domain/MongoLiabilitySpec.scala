@@ -84,7 +84,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           totalIncomeOnWhichTaxIsDue = 4000
         ),
         incomeTaxCalculations = IncomeTaxCalculations(Nil, Nil, Nil, 0),
-        taxDeducted = TaxDeducted(0, 0),
+        taxDeducted = TaxDeducted(0, 0, 0),
         totalTaxDue = 0,
         totalTaxOverpaid = 0
       )
@@ -147,12 +147,13 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           aTaxBandAllocation(1000, NilTaxBand)
         ),
         taxDeducted = Some(MongoTaxDeducted(
-          interestFromUk = 1000
+          interestFromUk = 1000,
+          deductionFromUkProperties = 500
         ))
       )
       val result = liability.toLiability
       result.totalTaxDue shouldBe 0
-      result.totalTaxOverpaid shouldBe 1000
+      result.totalTaxOverpaid shouldBe 1500
     }
   }
 

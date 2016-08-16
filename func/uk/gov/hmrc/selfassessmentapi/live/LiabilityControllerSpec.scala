@@ -170,9 +170,10 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |    },
            |    "taxDeducted": {
            |      "interestFromUk": 600,
-           |      "total": 600
+           |      "deductionFromUkProperties": 1000,
+           |      "total": 1600
            |    },
-           |    "totalTaxDue": 39954,
+           |    "totalTaxDue": 38954,
            |    "totalTaxOverpaid": 0
            |}
         """.stripMargin
@@ -229,6 +230,10 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .when()
         .post(s"/$saUtr/$taxYear/uk-properties/%sourceId%/incomes", Some(toJson(domain.ukproperty.Income.example().copy(amount = 15000))))
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(s"/$saUtr/$taxYear/uk-properties/%sourceId%/taxes-paid", Some(toJson(domain.ukproperty.TaxPaid.example())))
         .thenAssertThat()
         .statusIs(201)
         .when()

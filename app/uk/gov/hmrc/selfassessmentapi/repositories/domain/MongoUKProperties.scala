@@ -142,7 +142,7 @@ object MongoUKPropertiesPrivateUseAdjustmentSummary {
   }
 }
 
-case class MongoUKPropertiesTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary {
+case class MongoUKPropertiesTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary with AmountHolder {
 
   val arrayName = MongoUKPropertiesTaxPaidSummary.arrayName
 
@@ -192,6 +192,8 @@ case class MongoUKProperties(id: BSONObjectID,
     PositiveOrZero(Total(incomes) + Total(balancingCharges) + Total(privateUseAdjustment) -
       Total(expenses) - allowancesTotal - rentARoomReliefAmount)
   }
+
+  def taxPaid = taxesPaid.map(_.amount).sum
 
   def toUKProperties = UKProperty(
     id = Some(sourceId),

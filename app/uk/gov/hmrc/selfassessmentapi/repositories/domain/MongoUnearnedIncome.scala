@@ -139,8 +139,9 @@ case class MongoUnearnedIncome(id: BSONObjectID,
                                dividends: Seq[MongoUnearnedIncomesDividendSummary] = Nil,
                                benefits: Seq[MongoUnearnedIncomesBenefitSummary] = Nil) extends SourceMetadata {
 
-  def toUnearnedIncome = UnearnedIncome(
-    id = Some(sourceId))
+  def toUnearnedIncome = UnearnedIncome(id = Some(sourceId))
+
+  def taxedSavingsInterest = savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
 }
 
 object MongoUnearnedIncome {

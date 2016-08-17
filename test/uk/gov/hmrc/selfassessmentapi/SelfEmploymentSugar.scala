@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{DividendType, FromUKCompanies}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{TaxBandAllocation, _}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 trait SelfEmploymentSugar {
 
@@ -65,6 +66,12 @@ trait SelfEmploymentSugar {
   def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) = MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
 
   def aUkPropertyIncome(profit: BigDecimal): UkPropertyIncome = UkPropertyIncome(generateSaUtr().utr, profit)
+
+  def aUkPropertyTaxPaidSummary(amount: BigDecimal) = MongoUKPropertiesTaxPaidSummary(BSONObjectID.generate.stringify, amount)
+
+  def aSelfAssessment(employments: Seq[MongoEmployment] = Nil, selfEmployments: Seq[MongoSelfEmployment] = Nil,
+                      unearnedIncomes: Seq[MongoUnearnedIncome] = Nil, ukProperties: Seq[MongoUKProperties] = Nil) =
+    SelfAssessment(employments, selfEmployments, unearnedIncomes, ukProperties)
 
   private def now = DateTime.now(DateTimeZone.UTC)
 }

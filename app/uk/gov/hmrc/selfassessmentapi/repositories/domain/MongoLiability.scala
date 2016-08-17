@@ -79,7 +79,7 @@ case class MongoLiability(id: BSONObjectID,
 
   private lazy val totalIncomeTax = (nonSavingsTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
 
-  private lazy val totalTaxDeducted = taxDeducted.map(_.interestFromUk).getOrElse(BigDecimal(0))
+  private lazy val totalTaxDeducted = taxDeducted.map(_.totalTaxDeducted).getOrElse(BigDecimal(0))
 
   private lazy val totalTaxDue = totalIncomeTax - totalTaxDeducted
 
@@ -116,8 +116,9 @@ case class MongoLiability(id: BSONObjectID,
       taxDeducted = taxDeducted.map(taxDeducted =>
         TaxDeducted(
           interestFromUk = taxDeducted.interestFromUk,
-          total = totalTaxDeducted)
-      ).getOrElse(TaxDeducted(0, 0)),
+          deductionFromUkProperties = taxDeducted.deductionFromUkProperties,
+          total = taxDeducted.totalTaxDeducted)
+      ).getOrElse(TaxDeducted(0, 0, 0)),
       totalTaxDue = if (totalTaxDue > 0) totalTaxDue else 0,
       totalTaxOverpaid = if (totalTaxDue < 0) totalTaxDue.abs else 0
     )
@@ -148,7 +149,9 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
 
 case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None, incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None)
 
-case class MongoTaxDeducted(interestFromUk: BigDecimal)
+case class MongoTaxDeducted(interestFromUk: BigDecimal, deductionFromUkProperties: BigDecimal) {
+  def totalTaxDeducted = interestFromUk + deductionFromUkProperties
+}
 
 object MongoLiability {
 

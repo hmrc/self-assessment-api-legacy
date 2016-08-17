@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.selfassessmentapi.domain.{EmploymentIncome => _, SelfEmploymentIncome => _, _ }
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
 import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar {
+class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar with JsonSpec {
 
   "MongoLiability.toLiability" should {
 
@@ -32,8 +32,8 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar {
           EmploymentIncome(sourceId = "eId2", pay =  200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
         ),
         profitFromSelfEmployments = Seq(
-          SelfEmploymentIncome(sourceId = "seId1", taxableProfit = 10, profit = 20, lossBroughtForward = 15),
-          SelfEmploymentIncome(sourceId = "seId2", taxableProfit = 20, profit = 40, lossBroughtForward = 30)
+          SelfEmploymentIncome(sourceId = "seId1", taxableProfit = 10, profit = 20),
+          SelfEmploymentIncome(sourceId = "seId2", taxableProfit = 20, profit = 40)
         ),
         interestFromUKBanksAndBuildingSocieties = Seq(
           InterestFromUKBanksAndBuildingSocieties(sourceId = "interestId1", totalInterest = 20),
@@ -42,9 +42,11 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar {
         dividendsFromUKSources = Seq(
           DividendsFromUKSources("divId1", totalDividend = 100)
         ),
+        profitFromUkProperties = Seq(
+          UkPropertyIncome("property1", profit = 2000)
+        ),
         totalAllowancesAndReliefs = Some(20),
         totalIncomeReceived = Some(1000),
-        totalTaxableIncome = Some(2000),
         allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(3000), incomeTaxRelief = Some(2000)),
         totalIncomeOnWhichTaxIsDue = Some(4000)
       )
@@ -54,12 +56,15 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar {
           incomes = IncomeFromSources(
             nonSavings = NonSavingsIncomes(
               employment = Seq(
-                uk.gov.hmrc.selfassessmentapi.domain.EmploymentIncome(sourceId = "eId1", pay =  100, benefitsAndExpenses = 50, allowableExpenses = 50, total = 100),
-                uk.gov.hmrc.selfassessmentapi.domain.EmploymentIncome(sourceId = "eId2", pay =  200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
+                uk.gov.hmrc.selfassessmentapi.repositories.domain.EmploymentIncome(sourceId = "eId1", pay =  100, benefitsAndExpenses = 50, allowableExpenses = 50, total = 100),
+                uk.gov.hmrc.selfassessmentapi.repositories.domain.EmploymentIncome(sourceId = "eId2", pay =  200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
               ),
               selfEmployment = Seq(
-                uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncome("seId1", taxableProfit = 10, profit = 20),
-                uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncome("seId2", taxableProfit = 20, profit = 40)
+                uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome("seId1", taxableProfit = 10, profit = 20),
+                uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome("seId2", taxableProfit = 20, profit = 40)
+              ),
+              ukProperties = Seq(
+                UkPropertyIncome("property1", profit = 2000)
               )
             ),
             savings = SavingsIncomes(
@@ -79,7 +84,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar {
           totalIncomeOnWhichTaxIsDue = 4000
         ),
         incomeTaxCalculations = IncomeTaxCalculations(Nil, Nil, Nil, 0),
-        taxDeducted = TaxDeducted(0, Nil, 0),
+        taxDeducted = TaxDeducted(0, 0, Nil, 0),
         totalTaxDue = 0,
         totalTaxOverpaid = 0
       )
@@ -143,13 +148,14 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar {
         ),
         taxDeducted = Some(MongoTaxDeducted(
           interestFromUk = 1000,
+          deductionFromUkProperties = 500,
           ukTaxPAid = 0,
           ukTaxesPaidForEmployments = Nil
         ))
       )
       val result = liability.toLiability
       result.totalTaxDue shouldBe 0
-      result.totalTaxOverpaid shouldBe 1000
+      result.totalTaxOverpaid shouldBe 1500
     }
   }
 
@@ -169,4 +175,15 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar {
   }
 
   private def aTaxBandSummary(taxBand: String, taxableAmount: BigDecimal, chargedAt: String, tax: BigDecimal) = TaxBandSummary(taxBand, taxableAmount, chargedAt, tax)
+
+  "format" should {
+    "round trip LiabilityResult json" in {
+      val calculationError: LiabilityResult =
+        CalculationError.create(generateSaUtr(), taxYear, Seq(Error(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID, "Some error message")))
+      val mongoLiability: LiabilityResult = MongoLiability.create(generateSaUtr(), taxYear)
+      roundTripJson(calculationError)
+      roundTripJson(mongoLiability)
+
+    }
+  }
 }

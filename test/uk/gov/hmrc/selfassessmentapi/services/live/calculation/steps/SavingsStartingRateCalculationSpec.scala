@@ -70,9 +70,14 @@ class SavingsStartingRateCalculationSpec extends UnitSpec with SelfAssessmentSug
 
   private def savingsStartingRateFor(nonSavingsIncomeReceived: BigDecimal, totalDeductions: BigDecimal) = {
     val liability = aLiability().copy(
-      nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived),
-      totalAllowancesAndReliefs = Some(totalDeductions)
+        nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived),
+        totalAllowancesAndReliefs = Some(totalDeductions)
     )
-    SavingsStartingRateCalculation.run(SelfAssessment(), liability).allowancesAndReliefs.savingsStartingRate.get
+    SavingsStartingRateCalculation
+      .run(SelfAssessment(), liability)
+      .getLiabilityOrFail
+      .allowancesAndReliefs
+      .savingsStartingRate
+      .get
   }
 }

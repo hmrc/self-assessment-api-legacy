@@ -21,16 +21,17 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType.BalancingChargeType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.domain.{Sum, Total, _}
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
                                             `type`: IncomeType,
-                                            amount: BigDecimal) extends MongoSummary {
+                                            amount: BigDecimal) extends MongoSummary with AmountHolder {
   val arrayName = MongoSelfEmploymentIncomeSummary.arrayName
 
   def toIncome: Income =
@@ -94,7 +95,7 @@ object MongoSelfEmploymentExpenseSummary {
 
 case class MongoSelfEmploymentBalancingChargeSummary(summaryId: SummaryId,
                                                      `type`: BalancingChargeType,
-                                                     amount: BigDecimal) extends MongoSummary {
+                                                     amount: BigDecimal) extends MongoSummary with AmountHolder {
   val arrayName = MongoSelfEmploymentBalancingChargeSummary.arrayName
 
   def toBalancingCharge =
@@ -124,7 +125,7 @@ object MongoSelfEmploymentBalancingChargeSummary {
   }
 }
 
-case class MongoSelfEmploymentGoodsAndServicesOwnUseSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary {
+case class MongoSelfEmploymentGoodsAndServicesOwnUseSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary with AmountHolder {
 
   val arrayName = MongoSelfEmploymentGoodsAndServicesOwnUseSummary.arrayName
 
@@ -187,6 +188,27 @@ case class MongoSelfEmployment(id: BSONObjectID,
                                expenses: Seq[MongoSelfEmploymentExpenseSummary] = Nil,
                                balancingCharges: Seq[MongoSelfEmploymentBalancingChargeSummary] = Nil,
                                goodsAndServicesOwnUse: Seq[MongoSelfEmploymentGoodsAndServicesOwnUseSummary] = Nil) extends SourceMetadata {
+
+  def adjustedProfits: BigDecimal = PositiveOrZero(profitIncreases - profitReductions)
+
+  private def profitIncreases: BigDecimal = {
+    val adjustments = this.adjustments.map { a =>
+      Sum(a.basisAdjustment, a.accountingAdjustment, a.averagingAdjustment)
+    }.getOrElse(BigDecimal(0))
+
+    Total(incomes) + Total(balancingCharges) + Total(goodsAndServicesOwnUse) + adjustments
+  }
+
+  private def profitReductions: BigDecimal = {
+    val expenses = Some(this.expenses.filterNot(_.`type` == domain.selfemployment.ExpenseType.Depreciation).map(_.amount).sum)
+    val allowances = this.allowances.map(_.total)
+    val adjustments = this.adjustments.map { a => Sum(a.includedNonTaxableProfits, a.overlapReliefUsed) }
+
+    Sum(expenses, allowances, adjustments)
+  }
+
+  def outstandingBusinessIncome = adjustments.flatMap(_.outstandingBusinessIncome).getOrElse(BigDecimal(0))
+  def lossBroughtForward = adjustments.flatMap(_.lossBroughtForward).getOrElse(BigDecimal(0))
 
   def toSelfEmployment = SelfEmployment(
     id = Some(sourceId),

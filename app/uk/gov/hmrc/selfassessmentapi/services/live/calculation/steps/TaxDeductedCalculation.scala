@@ -16,12 +16,19 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{CalculationError, MongoLiability, MongoTaxDeducted, MongoUkTaxPaidForEmployment}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object TaxDeductedCalculation extends CalculationStep {
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
+    calculateInterestFromUk(selfAssessment, liability)
+      .fold(identity, calculateUkTaxPaidForEmployments(selfAssessment, _))
+  }
+
+  private[calculation] def calculateInterestFromUk(selfAssessment: SelfAssessment,
+                                                   liability: MongoLiability): LiabilityResult = {
     val totalTaxedInterest = selfAssessment.unearnedIncomes.map { unearnedIncome =>
       unearnedIncome.savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
     }.sum
@@ -29,7 +36,15 @@ object TaxDeductedCalculation extends CalculationStep {
     val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
     val interestFromUk = roundUp(grossedUpInterest - totalTaxedInterest)
 
-    val (initialUkTaxesPaid, initialAccUkTaxPaid) = (Seq[MongoUkTaxPaidForEmployment](), BigDecimal(0))
+    liability.copy(taxDeducted = liability.taxDeducted match {
+      case None => Some(MongoTaxDeducted(interestFromUk = interestFromUk))
+      case Some(mongoTaxDeducted) => Some(mongoTaxDeducted.copy(interestFromUk = interestFromUk))
+    })
+  }
+
+  private[calculation] def calculateUkTaxPaidForEmployments(selfAssessment: SelfAssessment,
+                                                            liability: MongoLiability): LiabilityResult = {
+    val (initialUkTaxesPaid, initialAccUkTaxPaid) = (Seq.empty[MongoUkTaxPaidForEmployment], BigDecimal(0))
 
     val (ukTaxesPaidForEmployments, totalUkTaxesPaid) =
       selfAssessment.employments.foldLeft((initialUkTaxesPaid, initialAccUkTaxPaid)) {
@@ -41,18 +56,23 @@ object TaxDeductedCalculation extends CalculationStep {
 
     val isValidTaxPaid = ukTaxesPaidForEmployments.isEmpty || ukTaxesPaidForEmployments.exists(_.ukTaxPaid >= 0)
 
-    liability.copy(taxDeducted =
-                     if (isValidTaxPaid)
-                       Some(
-                           MongoTaxDeducted(interestFromUk = interestFromUk,
-                                            ukTaxPAid = if (totalUkTaxesPaid <= 0) 0 else roundUp(totalUkTaxesPaid),
-                                            ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
-                     else None,
-                   calculationError =
-                     if (isValidTaxPaid) None
-                     else
-                       Some(
-                           CalculationError(INVALID_EMPLOYMENT_TAX_PAID,
-                                            "Tax Paid from your Employment(s) should not be negative")))
+    if (isValidTaxPaid) {
+      val ukTaxPaid = if (totalUkTaxesPaid <= 0) BigDecimal(0) else roundUp(totalUkTaxesPaid)
+
+      liability.copy(taxDeducted = liability.taxDeducted match {
+        case None =>
+          Some(MongoTaxDeducted(ukTaxPAid = ukTaxPaid, ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
+        case Some(mongoTaxDeducted) =>
+          Some(mongoTaxDeducted.copy(ukTaxPAid = ukTaxPaid, ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
+      })
+    } else {
+      val invalidEmploymentsErrors = ukTaxesPaidForEmployments
+        .filter(_.ukTaxPaid < 0)
+        .map(mongoUkTaxPaidForEmployment =>
+              Error(INVALID_EMPLOYMENT_TAX_PAID,
+                    s"The UK tax paid for employment with source id ${mongoUkTaxPaidForEmployment.sourceId} should not be negative"))
+
+      CalculationError.create(liability.saUtr, liability.taxYear, invalidEmploymentsErrors)
+    }
   }
 }

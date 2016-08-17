@@ -17,11 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, TaxBand}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability, TaxBand}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object SavingsIncomeTaxCalculation extends CalculationStep {
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
 
     val personalSavingsAllowance = liability.allowancesAndReliefs.personalSavingsAllowance.getOrElse(throw PropertyNotComputedException("personalSavingsAllowance"))
     

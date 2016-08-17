@@ -21,7 +21,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.{BalancingCharges, Expenses, GoodsAndServicesOwnUses, Incomes}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfEmploymentIncome => _, _}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
 import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentRepository
 

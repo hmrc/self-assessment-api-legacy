@@ -16,18 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-object TotalAllowancesAndReliefsCalculation extends CalculationStep {
-
+object UKPropertyProfitCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-
-    val incomeTaxRelief = liability.allowancesAndReliefs.incomeTaxRelief.getOrElse(throw PropertyNotComputedException("incomeTaxRelief"))
-
-    val personalAllowance = liability.allowancesAndReliefs.personalAllowance.getOrElse(throw PropertyNotComputedException("personalAllowance"))
-
-    val totalDeductions = incomeTaxRelief + personalAllowance
-
-    liability.copy(totalAllowancesAndReliefs = Some(totalDeductions), deductionsRemaining = Some(totalDeductions))
+    liability.copy(profitFromUkProperties = ukPropertyIncomes(selfAssessment))
   }
+
+  def ukPropertyIncomes(selfAssessment: SelfAssessment): Seq[UkPropertyIncome] = {
+    selfAssessment.ukProperties.map { property => UkPropertyIncome(property.sourceId, roundDown(property.adjustedProfit)) }
+  }
+
 }

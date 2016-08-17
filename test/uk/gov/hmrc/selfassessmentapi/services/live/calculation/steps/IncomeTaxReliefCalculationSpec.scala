@@ -16,37 +16,114 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome
-import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi._
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Adjustments
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
-class IncomeTaxReliefCalculationSpec extends UnitSpec with SelfAssessmentSugar {
+class IncomeTaxReliefCalculationSpec
+    extends UnitSpec
+    with SelfAssessmentSugar
+    with SelfEmploymentSugar
+    with UkPropertySugar {
 
-  "run" should {
+  "income tax relief" should {
 
-    "calculate income tax relief if there is no income from self employments" in {
+    "be the rounded up the sum of loss brought forward for each self employment" in {
+      val selfEmploymentOne =
+        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+                               adjustments = Some(Adjustments(lossBroughtForward = Some(100.14))))
+      val selfEmploymentTwo =
+        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+                               adjustments = Some(Adjustments(lossBroughtForward = Some(200.59))))
 
-      incomeTaxReliefFor(profitFromSelfEmployments = Nil) shouldBe 0
+      incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo), ukProperties = Nil) shouldBe 301
     }
 
-    "calculate income tax relief if there is income from one self employment" in {
+    "cap the loss brought forward at the adjusted profit for each self employment" in {
+      val selfEmploymentOne = aSelfEmployment().copy(incomes =
+                                                       Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+                                                     adjustments = Some(Adjustments(lossBroughtForward = Some(10000))))
+      val selfEmploymentTwo = aSelfEmployment().copy(incomes =
+                                                       Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+                                                     adjustments = Some(Adjustments(lossBroughtForward = Some(500))))
 
-      incomeTaxReliefFor(profitFromSelfEmployments = Seq(aSelfEmploymentIncome(lossBroughtForward = 100))) shouldBe 100
+      incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo), ukProperties = Nil) shouldBe 1500
     }
 
-    "calculate income tax relief if there is income from multiple self employments" in {
+    "be the rounded up sum of all loss brought forward for all UK properties" in {
+      val ukPropertyOne =
+        aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 1000)),
+                           adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(100.12))))
+      val ukPropertyTwo =
+        aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 1000)),
+                           adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(400.45))))
 
-      incomeTaxReliefFor(profitFromSelfEmployments = Seq(
-        aSelfEmploymentIncome(lossBroughtForward = 100),
-        aSelfEmploymentIncome(lossBroughtForward = 199.99),
-        aSelfEmploymentIncome(lossBroughtForward = 0.01)
-      )) shouldBe 300
+      incomeTaxReliefFor(selfEmployments = Nil, ukProperties = Seq(ukPropertyOne, ukPropertyTwo)) shouldBe 501
+    }
+
+    "cap the loss brought forward at the adjusted profit for all UK properties" in {
+      val ukPropertyOne =
+        aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 1000)),
+                           adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(10000))))
+      val ukPropertyTwo =
+        aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 1000)),
+                           adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(400.45))))
+
+      incomeTaxReliefFor(selfEmployments = Nil, ukProperties = Seq(ukPropertyOne, ukPropertyTwo)) shouldBe 2000
+    }
+
+    "be the rounded up the sum of all loss brought for all income sources" in {
+      val selfEmploymentOne =
+        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+                               adjustments = Some(Adjustments(lossBroughtForward = Some(100.14))))
+      val selfEmploymentTwo =
+        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+                               adjustments = Some(Adjustments(lossBroughtForward = Some(200.59))))
+      val ukPropertyOne =
+        aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 1000)),
+                           adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(100.12))))
+      val ukPropertyTwo =
+        aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 1000)),
+                           adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(400.45))))
+
+      incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo),
+                         ukProperties = Seq(ukPropertyOne, ukPropertyTwo)) shouldBe 802
+    }
+
+    "be capped at the total adjusted profit" in {
+      val selfEmploymentOne =
+        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 200)),
+                               adjustments = Some(Adjustments(lossBroughtForward = Some(100.14))))
+      val selfEmploymentTwo =
+        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 100)),
+                               adjustments = Some(Adjustments(lossBroughtForward = Some(200.59))))
+      val ukPropertyOne =
+        aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 200)),
+                           adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(100.12))))
+      val ukPropertyTwo =
+        aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 300)),
+                           adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(400.45))))
+
+      incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo),
+                         ukProperties = Seq(ukPropertyOne, ukPropertyTwo)) shouldBe 701
+    }
+
+    "income tax relief is 0 if there are no losses brought forward" in {
+      incomeTaxReliefFor(selfEmployments = Seq.empty, ukProperties = Seq.empty) shouldBe 0
     }
   }
 
-  private def incomeTaxReliefFor(profitFromSelfEmployments: Seq[SelfEmploymentIncome]) = {
-    IncomeTaxReliefCalculation.run(
-      selfAssessment = SelfAssessment(),
-      liability = aLiability(profitFromSelfEmployments = profitFromSelfEmployments)
-    ).allowancesAndReliefs.incomeTaxRelief.get
+  private def incomeTaxReliefFor(selfEmployments: Seq[MongoSelfEmployment],
+                                 ukProperties: Seq[MongoUKProperties]): BigDecimal = {
+    IncomeTaxReliefCalculation
+      .run(
+          selfAssessment = SelfAssessment(selfEmployments = selfEmployments, ukProperties = ukProperties),
+          liability = aLiability()
+      )
+      .getLiabilityOrFail
+      .allowancesAndReliefs
+      .incomeTaxRelief
+      .get
   }
 }

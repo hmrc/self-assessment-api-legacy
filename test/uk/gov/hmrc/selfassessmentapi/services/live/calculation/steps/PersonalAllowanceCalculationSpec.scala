@@ -81,9 +81,14 @@ class PersonalAllowanceCalculationSpec extends UnitSpec with SelfAssessmentSugar
 
   private def personalAllowanceFor(totalIncomeReceived: BigDecimal, incomeTaxRelief: BigDecimal = 0) = {
     val liability = aLiability().copy(
-      totalIncomeReceived = Some(totalIncomeReceived),
-      allowancesAndReliefs = AllowancesAndReliefs(incomeTaxRelief = Some(incomeTaxRelief))
+        totalIncomeReceived = Some(totalIncomeReceived),
+        allowancesAndReliefs = AllowancesAndReliefs(incomeTaxRelief = Some(incomeTaxRelief))
     )
-    PersonalAllowanceCalculation.run(SelfAssessment(), liability).allowancesAndReliefs.personalAllowance.get
+    PersonalAllowanceCalculation
+      .run(SelfAssessment(), liability)
+      .getLiabilityOrFail
+      .allowancesAndReliefs
+      .personalAllowance
+      .get
   }
 }

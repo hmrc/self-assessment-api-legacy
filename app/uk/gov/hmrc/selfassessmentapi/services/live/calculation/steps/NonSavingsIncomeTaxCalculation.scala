@@ -16,16 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 
 object NonSavingsIncomeTaxCalculation extends CalculationStep {
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
 
-    val nonSavingsIncomeReceived = liability.nonSavingsIncomeReceived.getOrElse(throw PropertyNotComputedException("nonSavingsIncomeReceived"))
+    val nonSavingsIncomeReceived =
+      liability.nonSavingsIncomeReceived.getOrElse(throw PropertyNotComputedException("nonSavingsIncomeReceived"))
 
-    val deductions = liability.deductionsRemaining.getOrElse(throw PropertyNotComputedException("deductionsRemaining"))
+    val deductions =
+      liability.deductionsRemaining.getOrElse(throw PropertyNotComputedException("deductionsRemaining"))
 
     val (taxableProfit, deductionsRemaining) = applyDeductions(nonSavingsIncomeReceived, deductions)
 
@@ -35,6 +37,7 @@ object NonSavingsIncomeTaxCalculation extends CalculationStep {
       TaxBandState(taxBand = AdditionalHigherTaxBand, available = AdditionalHigherTaxBand.width)
     )
 
-    liability.copy(deductionsRemaining = Some(deductionsRemaining), nonSavingsIncome = allocateToTaxBands(taxableProfit, taxBands))
+    liability.copy(deductionsRemaining = Some(deductionsRemaining),
+      nonSavingsIncome = allocateToTaxBands(taxableProfit, taxBands))
   }
 }

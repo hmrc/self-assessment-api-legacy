@@ -26,41 +26,41 @@ class NonSavingsIncomeTaxCalculationSpec extends UnitSpec with SelfAssessmentSug
 
     "calculate tax for nonSavingsIncomeReceived lesser than 32000" in {
       nonSavingsIncomeTaxFor(nonSavingsIncomeReceived = 31999) shouldBe Seq(
-        TaxBandAllocation(31999, BasicTaxBand),
-        TaxBandAllocation(0, HigherTaxBand),
-        TaxBandAllocation(0, AdditionalHigherTaxBand)
+          TaxBandAllocation(31999, BasicTaxBand),
+          TaxBandAllocation(0, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand)
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived equal to 32000" in {
       nonSavingsIncomeTaxFor(nonSavingsIncomeReceived = 32000) shouldBe Seq(
-        TaxBandAllocation(32000, BasicTaxBand),
-        TaxBandAllocation(0, HigherTaxBand),
-        TaxBandAllocation(0, AdditionalHigherTaxBand)
+          TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(0, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand)
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived greater than 32000 but lesser than 150000" in {
       nonSavingsIncomeTaxFor(nonSavingsIncomeReceived = 60000) shouldBe Seq(
-        TaxBandAllocation(32000, BasicTaxBand),
-        TaxBandAllocation(28000, HigherTaxBand),
-        TaxBandAllocation(0, AdditionalHigherTaxBand)
+          TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(28000, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand)
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived equal to 150000" in {
       nonSavingsIncomeTaxFor(nonSavingsIncomeReceived = 150000) shouldBe Seq(
-        TaxBandAllocation(32000, BasicTaxBand),
-        TaxBandAllocation(118000, HigherTaxBand),
-        TaxBandAllocation(0, AdditionalHigherTaxBand)
+          TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(118000, HigherTaxBand),
+          TaxBandAllocation(0, AdditionalHigherTaxBand)
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived  greater than 150000" in {
       nonSavingsIncomeTaxFor(nonSavingsIncomeReceived = 300000) shouldBe Seq(
-        TaxBandAllocation(32000, BasicTaxBand),
-        TaxBandAllocation(118000, HigherTaxBand),
-        TaxBandAllocation(150000, AdditionalHigherTaxBand)
+          TaxBandAllocation(32000, BasicTaxBand),
+          TaxBandAllocation(118000, HigherTaxBand),
+          TaxBandAllocation(150000, AdditionalHigherTaxBand)
       )
     }
   }
@@ -69,67 +69,67 @@ class NonSavingsIncomeTaxCalculationSpec extends UnitSpec with SelfAssessmentSug
 
     "calculate tax for nonSavingsIncomeReceived lesser than 32000" in {
       nonSavingsIncomeTaxAndDeductionsFor(nonSavingsIncomeReceived = 33999, totalDeductions = 2000) shouldBe result(
-        nonSavingsIncome = Seq(
-          TaxBandAllocation(31999, BasicTaxBand),
-          TaxBandAllocation(0, HigherTaxBand),
-          TaxBandAllocation(0, AdditionalHigherTaxBand)
-        ),
-        deductionsRemaining = 0
+          nonSavingsIncome = Seq(
+              TaxBandAllocation(31999, BasicTaxBand),
+              TaxBandAllocation(0, HigherTaxBand),
+              TaxBandAllocation(0, AdditionalHigherTaxBand)
+          ),
+          deductionsRemaining = 0
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived equal to 32000" in {
       nonSavingsIncomeTaxAndDeductionsFor(nonSavingsIncomeReceived = 34000, totalDeductions = 2000) shouldBe result(
-        nonSavingsIncome = Seq(
-          TaxBandAllocation(32000, BasicTaxBand),
-          TaxBandAllocation(0, HigherTaxBand),
-          TaxBandAllocation(0, AdditionalHigherTaxBand)
-        ),
-        deductionsRemaining = 0
+          nonSavingsIncome = Seq(
+              TaxBandAllocation(32000, BasicTaxBand),
+              TaxBandAllocation(0, HigherTaxBand),
+              TaxBandAllocation(0, AdditionalHigherTaxBand)
+          ),
+          deductionsRemaining = 0
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived greater than 32000 but lesser than 150000" in {
       nonSavingsIncomeTaxAndDeductionsFor(nonSavingsIncomeReceived = 62000, totalDeductions = 2000) shouldBe result(
-        nonSavingsIncome = Seq(
-          TaxBandAllocation(32000, BasicTaxBand),
-          TaxBandAllocation(28000, HigherTaxBand),
-          TaxBandAllocation(0, AdditionalHigherTaxBand)
-        ),
-        deductionsRemaining = 0
+          nonSavingsIncome = Seq(
+              TaxBandAllocation(32000, BasicTaxBand),
+              TaxBandAllocation(28000, HigherTaxBand),
+              TaxBandAllocation(0, AdditionalHigherTaxBand)
+          ),
+          deductionsRemaining = 0
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived equal to 150000" in {
       nonSavingsIncomeTaxAndDeductionsFor(nonSavingsIncomeReceived = 152000, totalDeductions = 2000) shouldBe result(
-        nonSavingsIncome = Seq(
-          TaxBandAllocation(32000, BasicTaxBand),
-          TaxBandAllocation(118000, HigherTaxBand),
-          TaxBandAllocation(0, AdditionalHigherTaxBand)
-        ),
-        deductionsRemaining = 0
+          nonSavingsIncome = Seq(
+              TaxBandAllocation(32000, BasicTaxBand),
+              TaxBandAllocation(118000, HigherTaxBand),
+              TaxBandAllocation(0, AdditionalHigherTaxBand)
+          ),
+          deductionsRemaining = 0
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived greater than 150000" in {
       nonSavingsIncomeTaxAndDeductionsFor(nonSavingsIncomeReceived = 302000, totalDeductions = 2000) shouldBe result(
-        nonSavingsIncome = Seq(
-          TaxBandAllocation(32000, BasicTaxBand),
-          TaxBandAllocation(118000, HigherTaxBand),
-          TaxBandAllocation(150000, AdditionalHigherTaxBand)
-        ),
-        deductionsRemaining = 0
+          nonSavingsIncome = Seq(
+              TaxBandAllocation(32000, BasicTaxBand),
+              TaxBandAllocation(118000, HigherTaxBand),
+              TaxBandAllocation(150000, AdditionalHigherTaxBand)
+          ),
+          deductionsRemaining = 0
       )
     }
 
     "calculate tax for nonSavingsIncomeReceived lesser than deductions" in {
       nonSavingsIncomeTaxAndDeductionsFor(nonSavingsIncomeReceived = 1500, totalDeductions = 2000) shouldBe result(
-        nonSavingsIncome = Seq(
-          TaxBandAllocation(0, BasicTaxBand),
-          TaxBandAllocation(0, HigherTaxBand),
-          TaxBandAllocation(0, AdditionalHigherTaxBand)
-        ),
-        deductionsRemaining = 500
+          nonSavingsIncome = Seq(
+              TaxBandAllocation(0, BasicTaxBand),
+              TaxBandAllocation(0, HigherTaxBand),
+              TaxBandAllocation(0, AdditionalHigherTaxBand)
+          ),
+          deductionsRemaining = 500
       )
     }
 
@@ -142,15 +142,15 @@ class NonSavingsIncomeTaxCalculationSpec extends UnitSpec with SelfAssessmentSug
 
   private def nonSavingsIncomeTaxFor(nonSavingsIncomeReceived: BigDecimal) = {
     val liability = aLiability().copy(nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived))
-    NonSavingsIncomeTaxCalculation.run(SelfAssessment(), liability).nonSavingsIncome
+    NonSavingsIncomeTaxCalculation.run(SelfAssessment(), liability).getLiabilityOrFail.nonSavingsIncome
   }
 
   private def nonSavingsIncomeTaxAndDeductionsFor(nonSavingsIncomeReceived: BigDecimal, totalDeductions: BigDecimal) = {
     val liability = aLiability().copy(
-      nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived),
-      deductionsRemaining = Some(totalDeductions)
+        nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived),
+        deductionsRemaining = Some(totalDeductions)
     )
-    val liabilityAfterCalculation = NonSavingsIncomeTaxCalculation.run(SelfAssessment(), liability)
+    val liabilityAfterCalculation = NonSavingsIncomeTaxCalculation.run(SelfAssessment(), liability).getLiabilityOrFail
 
     result(liabilityAfterCalculation.nonSavingsIncome, liabilityAfterCalculation.deductionsRemaining.get)
   }

@@ -31,7 +31,11 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |       "selfEmployment": [
           |         {"sourceId": "self-employment-1", "taxableProfit": 8200, "profit": 10000},
           |         {"sourceId": "self-employment-2", "taxableProfit": 25000, "profit": 28000}
-          |       ]
+          |       ],
+          |       "ukProperties": [
+          |            {"sourceId": "property1", "profit": 2000},
+          |            {"sourceId": "property2", "profit": 1500}
+          |          ]
           |     },
           |     "savings": {
           |       "fromUKBanksAndBuildingSocieties": [
@@ -77,13 +81,14 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |  },
           |  "taxDeducted": {
           |      "interestFromUk": 0,
+          |       "deductionFromUkProperties": 0,
           |      "fromEmployments":[
           |        {"sourceId":"employment-1","taxPaid":4000},
           |        {"sourceId":"employment-2","taxPaid":5000}
           |      ],
           |      "total": 0
           |  },
-          |  "totalTaxDue": 25796.95,
+          |  "totalTaxDue": 16796.95,
           |  "totalTaxOverpaid": 0
           |}
         """.stripMargin)

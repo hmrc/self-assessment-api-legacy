@@ -16,14 +16,30 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object IncomeTaxReliefCalculation extends CalculationStep {
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
+    liability.copy(
+        allowancesAndReliefs =
+          liability.allowancesAndReliefs.copy(incomeTaxRelief = Some(incomeTaxRelief(selfAssessment))))
+  }
 
-    val incomeTaxRelief = roundUp(liability.profitFromSelfEmployments.map(_.lossBroughtForward).sum)
+  def incomeTaxRelief(selfAssessment: SelfAssessment): BigDecimal = {
+    selfEmploymentLossBroughtForward(selfAssessment) + ukPropertiesLossBroughtForward(selfAssessment)
+  }
 
-    liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(incomeTaxRelief = Some(incomeTaxRelief)))
+  private def ukPropertiesLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {
+    roundUp(
+        capAt(selfAssessment.ukProperties.map(_.lossBroughtForward).sum,
+              selfAssessment.ukProperties.map(_.adjustedProfit).sum))
+  }
+
+  private def selfEmploymentLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {
+    roundUp(selfAssessment.selfEmployments.map { selfEmployment =>
+      capAt(selfEmployment.lossBroughtForward, selfEmployment.adjustedProfits)
+    }.sum)
   }
 }

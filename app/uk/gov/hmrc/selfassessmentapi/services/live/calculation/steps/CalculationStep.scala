@@ -17,10 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-trait CalculationStep extends Math {
+trait CalculationStep {
 
-  def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability
+  def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult
 
   protected def applyDeductions(amount: BigDecimal, deductions: BigDecimal): (BigDecimal, BigDecimal) = {
     (positiveOrZero(amount - deductions), positiveOrZero(deductions - amount))
@@ -41,6 +42,7 @@ case class TaxBandState(taxBand: TaxBand, available: BigDecimal) {
   def allocate(income: BigDecimal): BigDecimal = if (income < available) income else available
 }
 
-case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),selfEmployments: Seq[MongoSelfEmployment] = Seq(), unearnedIncomes: Seq[MongoUnearnedIncome] = Seq())
+case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),selfEmployments: Seq[MongoSelfEmployment] = Seq(),
+                          unearnedIncomes: Seq[MongoUnearnedIncome] = Seq(), ukProperties: Seq[MongoUKProperties] = Seq())
 
 case class PropertyNotComputedException(property: String) extends IllegalStateException(s"Cannot run calculation step as required property $property has not been computed yet")

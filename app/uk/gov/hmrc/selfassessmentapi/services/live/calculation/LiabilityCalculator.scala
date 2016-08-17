@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{CalculationError, LiabilityResult, MongoLiability}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
 class LiabilityCalculator {
@@ -26,6 +26,7 @@ class LiabilityCalculator {
     SelfEmploymentProfitCalculation,
     UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
     DividendsFromUKSourcesCalculation,
+    UKPropertyProfitCalculation,
     TotalIncomeCalculation,
     IncomeTaxReliefCalculation,
     PersonalAllowanceCalculation,
@@ -39,18 +40,25 @@ class LiabilityCalculator {
     TaxDeductedCalculation
   )
 
-  def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    val (successLiabilities: Stream[MongoLiability], errorLiabilities: Stream[MongoLiability]) =
-      runSteps(selfAssessment, liability)
+  def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
+    val (successLiabilities, errorLiabilities) = runSteps(selfAssessment, liability)
 
     if (errorLiabilities.isEmpty) successLiabilities.last else errorLiabilities.head
   }
 
   private[calculation] def runSteps(selfAssessment: SelfAssessment,
-                                    liability: MongoLiability): (Stream[MongoLiability], Stream[MongoLiability]) = {
-    val (successLiabilities, errorLiabilities) = calculationSteps.toStream
-      .scanLeft(liability)((accLiability, step) => step.run(selfAssessment, accLiability))
-      .span(_.calculationError.isEmpty)
+                                    liability: MongoLiability): (Stream[LiabilityResult], Stream[LiabilityResult]) = {
+    val (successLiabilities, errorLiabilities) =
+      calculationSteps.toStream
+        .scanLeft(liability: LiabilityResult)((accLiability, step) =>
+          accLiability match {
+            case calculationError: CalculationError => calculationError
+            case liability: MongoLiability => step.run(selfAssessment, liability)
+          })
+        .span {
+          case _: MongoLiability => true
+          case _: CalculationError => false
+        }
     (successLiabilities, errorLiabilities)
   }
 }

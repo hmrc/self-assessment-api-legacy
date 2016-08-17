@@ -26,90 +26,113 @@
                 <cell>Description</cell>
             </headings>
             <rows>
+                <row>
+                    <cell>
                 taxableProfit (under each nonSavings Income source)
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses
                     + goods used for own use minus (allowable expenses + capital allowances)
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 profit (under each nonSavings Income source)
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 taxableProfit plus losses brought forward.
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 totalInterest (under each savings Income source)
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 totalInterest is Grossed-up Taxed Interest plus Untaxed Interest.
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 totalDividend (under each dividends income source)
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 totalDividend is sum of all dividends from UK sources.
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 incomeTaxRelief (under deductions)
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 incomeTaxRelief is Sum of all losses brought forward.
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 personalAllowance (under deductions)
-            </rows>
-            <rows>
-                personalAllowance is annual personal allowance the tax payer is entitled to, which is usually standard £11,000.
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
+                This is the annual personal allowance the taxpayer is entitled to. This is currently a maximum of £11,000 for the tax year.
+                Note, Personal Allowance may be reduced/tapered dependent on the value of total income.
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 totalIncomeOnWhichTaxIsDue
-            </rows>
-            <rows>
-                totalIncomeOnWhichTaxIsDue is total income on which tax is due which is Total Income Received minus Total deductions.
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
+                This is the total income on which tax is due after reliefs and allowances have been deducted (Total Income Received minus Total deductions).
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 taxBand (under incomeTaxCalculations)
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 To indicate whether the calculation is for basic rate band or higher rate band or additional higher rate band.
                 In Savings and Dividends income case, the tax band also includes the Starting Rate Band and Nil Rate bands.
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 taxableAmount (under incomeTaxCalculations)
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 Total Taxable Income on which the rate band and tax rate is applied.
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 chargedAt (under incomeTaxCalculations)
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 Tax percentage that is applied depending upon the band.
-            </rows>
-            <rows>
-                tax (under incomeTaxCalculations)
-            </rows>
-            <rows>
-                Calculated tax value i.e. taxable amount * charged at
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 interestFromUk (under taxDeducted)
-            </rows>
-            <rows>
-                Grossed-up Taxed interest that tax payer received minus taxed interest
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
+                Grossed-up Taxed interest that the tax payer received minus taxed interest
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 totalTaxDue
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 Total Income Tax minus Total Tax Deductions (if it is positive)
-            </rows>
-            <rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell>
                 totalTaxOverpaid
-            </rows>
-            <rows>
+                    </cell>
+                    <cell>
                 Total Income Tax minus Total Tax Deductions (if it is negative)
+                    </cell>
+                </row>
             </rows>
         </table>
     </section>

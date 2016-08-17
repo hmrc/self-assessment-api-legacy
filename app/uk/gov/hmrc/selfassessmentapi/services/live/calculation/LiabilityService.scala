@@ -18,10 +18,14 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.LiabilityCalculationError
+import uk.gov.hmrc.selfassessmentapi.controllers.{LiabilityCalculationError, LiabilityError}
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoLiability, MongoSelfEmployment, MongoUnearnedIncome}
+import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
@@ -32,43 +36,48 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                        selfEmploymentRepo: SelfEmploymentMongoRepository,
                        unearnedIncomeRepo: UnearnedIncomeMongoRepository,
                        liabilityRepo: LiabilityMongoRepository,
-                       liabilityCalculator: LiabilityCalculator) {
+                       ukPropertiesRepo: UKPropertiesMongoRepository,
+                       liabilityCalculator: LiabilityCalculator,
+                       featureSwitch: FeatureSwitch) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[LiabilityCalculationError, Liability]]] = {
     liabilityRepo
       .findBy(saUtr, taxYear)
-      .map(_.map { mongoLiability =>
-        mongoLiability.calculationError match {
-          case Some(error) => Left(LiabilityCalculationError(error.code, error.message))
-          case None => Right(mongoLiability.toLiability)
-        }
+      .map(_.map {
+        case calculationError: CalculationError =>
+          Left(LiabilityCalculationError(calculationError.errors.map(error =>
+                        LiabilityError(error.code, error.message))))
+        case liability: MongoLiability => Right(liability.toLiability)
       })
   }
 
-  def calculate(saUtr: SaUtr, taxYear: TaxYear): Future[LiabilityId] = {
+  def calculate(saUtr: SaUtr, taxYear: TaxYear): Future[Either[CalculationErrorId, LiabilityId]] = {
     for {
+      employments <- if (isSourceEnabled(Employments)) employmentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoEmployment]())
+      selfEmployments <- if (isSourceEnabled(SelfEmployments)) selfEmploymentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoSelfEmployment]())
+      unearnedIncomes <- if (isSourceEnabled(UnearnedIncomes)) unearnedIncomeRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUnearnedIncome]())
+      ukProperties <- if (isSourceEnabled(UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUKProperties]())
       emptyLiability <- liabilityRepo.save(MongoLiability.create(saUtr, taxYear))
-      employments <- if (isSourceEnabled(Employments)) employmentRepo.findAll(saUtr, taxYear)
-                    else Future.successful(Seq[MongoEmployment]())
-      selfEmployments <- if (isSourceEnabled(SelfEmployments)) selfEmploymentRepo.findAll(saUtr, taxYear)
-                        else Future.successful(Seq[MongoSelfEmployment]())
-      unearnedIncomes <- if (isSourceEnabled(UnearnedIncomes)) unearnedIncomeRepo.findAll(saUtr, taxYear)
-                        else Future.successful(Seq[MongoUnearnedIncome]())
-      liability <- liabilityRepo.save(
-                      calculateLiability(emptyLiability, employments, selfEmployments, unearnedIncomes))
-    } yield liability.liabilityId
+      liabilityResult = calculateLiability(emptyLiability, employments, selfEmployments, ukProperties, unearnedIncomes)
+      liability <- liabilityRepo.save(liabilityResult)
+    } yield
+      liability match {
+        case calculationError: CalculationError => Left(calculationError.calculationErrorId)
+        case liability: MongoLiability => Right(liability.liabilityId)
+      }
   }
 
-  private[calculation] def isSourceEnabled(sourceType: SourceType) =
-    FeatureSwitch(AppContext.featureSwitch).isEnabled(sourceType)
+  private[calculation] def isSourceEnabled(sourceType: SourceType) = featureSwitch.isEnabled(sourceType)
 
   private def calculateLiability(liability: MongoLiability,
                                  employments: Seq[MongoEmployment],
                                  selfEmployments: Seq[MongoSelfEmployment],
-                                 unearnedIncomes: Seq[MongoUnearnedIncome]): MongoLiability = {
+                                 ukProperties: Seq[MongoUKProperties],
+                                 unearnedIncomes: Seq[MongoUnearnedIncome]): LiabilityResult = {
     liabilityCalculator.calculate(SelfAssessment(employments = employments,
                                                  selfEmployments = selfEmployments,
-                                                 unearnedIncomes = unearnedIncomes),
+                                                 unearnedIncomes = unearnedIncomes,
+                                                 ukProperties = ukProperties),
                                   liability)
   }
 }
@@ -79,7 +88,9 @@ object LiabilityService {
                                                   SelfEmploymentRepository(),
                                                   UnearnedIncomeRepository(),
                                                   LiabilityRepository(),
-                                                  LiabilityCalculator())
+                                                  UKPropertiesRepository(),
+                                                  LiabilityCalculator(),
+                                                  FeatureSwitch(AppContext.featureSwitch))
 
   def apply() = service
 }

@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
 
 object TotalIncomeCalculation extends CalculationStep {
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
 
     val sumIncomeFromEmployments = liability.incomeFromEmployments.map(_.total).sum
-    val (profitsFromSelfEmployment, taxableProfits) = liability.profitFromSelfEmployments.map(income => (income.profit, income.taxableProfit)).unzip
-    val nonSavingsIncomeReceived = profitsFromSelfEmployment.sum  + sumIncomeFromEmployments
+    val (profitsFromSelfEmployment, _) = liability.profitFromSelfEmployments.map(income => (income.profit, income.taxableProfit)).unzip
+    val ukPropertyIncomeReceived = liability.profitFromUkProperties.map(_.profit).sum
+    val nonSavingsIncomeReceived = profitsFromSelfEmployment.sum  + sumIncomeFromEmployments + ukPropertyIncomeReceived
     val savingsIncomeReceived = liability.interestFromUKBanksAndBuildingSocieties.map(_.totalInterest).sum
     val dividendsIncomeReceived = liability.dividendsFromUKSources.map(_.totalDividend).sum
     val totalIncomeReceived = nonSavingsIncomeReceived + savingsIncomeReceived + dividendsIncomeReceived
 
-    liability.copy(nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived), totalIncomeReceived = Some(totalIncomeReceived), totalTaxableIncome = Some(taxableProfits.sum))
+    liability.copy(nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived), totalIncomeReceived = Some(totalIncomeReceived))
   }
 }

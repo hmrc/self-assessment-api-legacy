@@ -17,11 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.DividendsFromUKSources
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object DividendsFromUKSourcesCalculation extends CalculationStep {
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
     val dividendsFromUKSources = calculateDividendsFromUKSources(selfAssessment)
     liability.copy(dividendsFromUKSources = dividendsFromUKSources)
   }

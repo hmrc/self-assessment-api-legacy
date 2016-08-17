@@ -220,7 +220,7 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfAssessmentSugar 
       savingsStartingRate = Some(0)
     )
 
-    SavingsIncomeTaxCalculation.run(SelfAssessment(), liability)
+    SavingsIncomeTaxCalculation.run(SelfAssessment(), liability).getLiabilityOrFail
   }
 
   private def savingsIncomeTaxFor(interestFromUKBanks: BigDecimal, remainingDeductions: BigDecimal = 0, savingsStartingRate: BigDecimal = 0, personalSavingsAllowance: BigDecimal = 0,
@@ -238,6 +238,6 @@ class SavingsIncomeTaxCalculationSpec extends UnitSpec with SelfAssessmentSugar 
       )
     )
 
-    SavingsIncomeTaxCalculation.run(SelfAssessment(), liability).savingsIncome
+    SavingsIncomeTaxCalculation.run(SelfAssessment(), liability).getLiabilityOrFail.savingsIncome
   }
 }

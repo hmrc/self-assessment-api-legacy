@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{BasicTaxBand, HigherTaxBand, TaxBandRangeCheck}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object PersonalSavingsAllowanceCalculation extends CalculationStep {
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
     val personalSavingsAllowance = liability.totalIncomeOnWhichTaxIsDue.map {
       totalIncomeOnWhichTaxIsDue =>
         if (totalIncomeOnWhichTaxIsDue < 1) 0

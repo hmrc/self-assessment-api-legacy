@@ -24,7 +24,7 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 case class MongoLiability(id: BSONObjectID,
                           liabilityId: LiabilityId,
@@ -37,7 +37,6 @@ case class MongoLiability(id: BSONObjectID,
                           dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
                           totalIncomeReceived: Option[BigDecimal] = None,
                           nonSavingsIncomeReceived: Option[BigDecimal] = None,
-                          totalTaxableIncome: Option[BigDecimal] = None,
                           totalAllowancesAndReliefs: Option[BigDecimal] = None,
                           deductionsRemaining: Option[BigDecimal] = None,
                           totalIncomeOnWhichTaxIsDue: Option[BigDecimal] = None,
@@ -46,10 +45,11 @@ case class MongoLiability(id: BSONObjectID,
                           dividendsIncome: Seq[TaxBandAllocation] = Nil,
                           allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
                           taxDeducted: Option[MongoTaxDeducted] = None,
-                          calculationError: Option[CalculationError] = None) extends Math {
+                          profitFromUkProperties: Seq[UkPropertyIncome] = Nil)
+    extends LiabilityResult {
 
-  private lazy val dividendsTaxes = dividendsIncome.map {
-    bandAllocation => bandAllocation.taxBand match {
+  private lazy val dividendsTaxes = dividendsIncome.map { bandAllocation =>
+    bandAllocation.taxBand match {
       case NilTaxBand => bandAllocation.toTaxBandSummary(0)
       case BasicTaxBand => bandAllocation.toTaxBandSummary(7.5)
       case HigherTaxBand => bandAllocation.toTaxBandSummary(32.5)
@@ -58,8 +58,8 @@ case class MongoLiability(id: BSONObjectID,
     }
   }
 
-  private lazy val savingsTaxes = savingsIncome.map {
-    bandAllocation => bandAllocation.taxBand match {
+  private lazy val savingsTaxes = savingsIncome.map { bandAllocation =>
+    bandAllocation.taxBand match {
       case NilTaxBand => bandAllocation.toTaxBandSummary(0)
       case SavingsStartingTaxBand => bandAllocation.toTaxBandSummary(0)
       case BasicTaxBand => bandAllocation.toTaxBandSummary(20)
@@ -69,8 +69,8 @@ case class MongoLiability(id: BSONObjectID,
     }
   }
 
-  private lazy val nonSavingsTaxes = nonSavingsIncome.map {
-    bandAllocation => bandAllocation.taxBand match {
+  private lazy val nonSavingsTaxes = nonSavingsIncome.map { bandAllocation =>
+    bandAllocation.taxBand match {
       case BasicTaxBand => bandAllocation.toTaxBandSummary(20)
       case HigherTaxBand => bandAllocation.toTaxBandSummary(40)
       case AdditionalHigherTaxBand => bandAllocation.toTaxBandSummary(45)
@@ -80,69 +80,75 @@ case class MongoLiability(id: BSONObjectID,
 
   private lazy val totalIncomeTax = (nonSavingsTaxes ++ savingsTaxes ++ dividendsTaxes).map(_.tax).sum
 
-  private lazy val totalTaxDeducted = taxDeducted.map(taxDeducted => taxDeducted.interestFromUk + taxDeducted.ukTaxPAid).getOrElse(BigDecimal(0))
+  private lazy val totalTaxDeducted = taxDeducted.map(_.totalTaxDeducted).getOrElse(BigDecimal(0))
 
   private lazy val totalTaxDue = totalIncomeTax - totalTaxDeducted
 
   def toLiability =
     Liability(
-      income = IncomeSummary(
-        incomes = IncomeFromSources(
-          nonSavings = NonSavingsIncomes(
-            employment = incomeFromEmployments.map(_.toEmploymentIncome),
-            selfEmployment = profitFromSelfEmployments.map(_.toSelfEmploymentIncome)
+        income =
+          IncomeSummary(
+              incomes = IncomeFromSources(
+                  nonSavings =
+                    NonSavingsIncomes(
+                        employment = incomeFromEmployments,
+                        selfEmployment = profitFromSelfEmployments,
+                        ukProperties = profitFromUkProperties
+                    ),
+                  savings = SavingsIncomes(
+                      fromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties
+                  ),
+                  dividends = DividendsIncomes(
+                      fromUKSources = dividendsFromUKSources
+                  ),
+                  total = totalIncomeReceived.getOrElse(0)
+              ),
+              deductions = Some(
+                  Deductions(
+                      incomeTaxRelief = allowancesAndReliefs.incomeTaxRelief.getOrElse(0),
+                      personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
+                      total = sum(allowancesAndReliefs.incomeTaxRelief, allowancesAndReliefs.personalAllowance)
+                  )),
+              totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
           ),
-          savings = SavingsIncomes(
-            fromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties
-          ),
-          dividends = DividendsIncomes(
-            fromUKSources = dividendsFromUKSources
-          ),
-          total = totalIncomeReceived.getOrElse(0)
+        incomeTaxCalculations = IncomeTaxCalculations(
+            nonSavings = nonSavingsTaxes,
+            savings = savingsTaxes,
+            dividends = dividendsTaxes,
+            total = totalIncomeTax
         ),
-        deductions = Some(Deductions(
-          incomeTaxRelief = allowancesAndReliefs.incomeTaxRelief.getOrElse(0),
-          personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
-          total = sum(allowancesAndReliefs.incomeTaxRelief, allowancesAndReliefs.personalAllowance)
-        )),
-        totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
-      ),
-      incomeTaxCalculations = IncomeTaxCalculations(
-        nonSavings = nonSavingsTaxes,
-        savings = savingsTaxes,
-        dividends = dividendsTaxes,
-        total = totalIncomeTax
-      ),
-      taxDeducted = taxDeducted.map(taxDeducted =>
-        TaxDeducted(
-          interestFromUk = taxDeducted.interestFromUk,
-          fromEmployments = taxDeducted.ukTaxesPaidForEmployments.map(ukTaxPaidForEmployment =>
-            UkTaxPaidForEmployment(
-              ukTaxPaidForEmployment.sourceId,
-              ukTaxPaidForEmployment.ukTaxPaid)),
-          total = totalTaxDeducted)
-      ).getOrElse(TaxDeducted(0, Nil, 0)),
-      totalTaxDue = if (totalTaxDue > 0) totalTaxDue else 0,
-      totalTaxOverpaid = if (totalTaxDue < 0) totalTaxDue.abs else 0
+        taxDeducted = taxDeducted
+          .map(taxDeducted =>
+                TaxDeducted(interestFromUk = taxDeducted.interestFromUk,
+                            deductionFromUkProperties = taxDeducted.deductionFromUkProperties,
+                            fromEmployments = taxDeducted.ukTaxesPaidForEmployments.map(ukTaxPaidForEmployment =>
+                                  UkTaxPaidForEmployment(ukTaxPaidForEmployment.sourceId,
+                                                         ukTaxPaidForEmployment.ukTaxPaid)),
+                            total = totalTaxDeducted))
+          .getOrElse(TaxDeducted(0, 0, Nil, 0)),
+        totalTaxDue = if (totalTaxDue > 0) totalTaxDue else 0,
+        totalTaxOverpaid = if (totalTaxDue < 0) totalTaxDue.abs else 0
     )
 
   def totalSavingsIncome = interestFromUKBanksAndBuildingSocieties.map(_.totalInterest).sum
 }
 
+case class EmploymentIncome(sourceId: SourceId,
+                            pay: BigDecimal,
+                            benefitsAndExpenses: BigDecimal,
+                            allowableExpenses: BigDecimal,
+                            total: BigDecimal)
 
-case class EmploymentIncome(sourceId: SourceId, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses : BigDecimal, total: BigDecimal) {
+case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal)
 
-  def toEmploymentIncome = uk.gov.hmrc.selfassessmentapi.domain.EmploymentIncome(sourceId, pay, benefitsAndExpenses, allowableExpenses, total)
-}
+case class UkPropertyIncome(sourceId: SourceId, profit: BigDecimal)
 
-case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal, lossBroughtForward: BigDecimal) {
+case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) {
 
-  def toSelfEmploymentIncome = uk.gov.hmrc.selfassessmentapi.domain.SelfEmploymentIncome(sourceId, taxableProfit, profit)
-}
+  import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math {
-
-  def toTaxBandSummary(chargedAt: BigDecimal) = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"$chargedAt%", tax(chargedAt))
+  def toTaxBandSummary(chargedAt: BigDecimal) =
+    uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"$chargedAt%", tax(chargedAt))
 
   def tax(chargedAt: BigDecimal): BigDecimal = roundDown(amount * chargedAt / 100)
 
@@ -154,13 +160,43 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
   }
 }
 
-case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None, incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None)
+case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None,
+                                personalSavingsAllowance: Option[BigDecimal] = None,
+                                incomeTaxRelief: Option[BigDecimal] = None,
+                                savingsStartingRate: Option[BigDecimal] = None)
 
 case class MongoUkTaxPaidForEmployment(sourceId: SourceId, ukTaxPaid: BigDecimal)
 
-case class MongoTaxDeducted(interestFromUk: BigDecimal, ukTaxPAid: BigDecimal, ukTaxesPaidForEmployments: Seq[MongoUkTaxPaidForEmployment])
+case class MongoTaxDeducted(interestFromUk: BigDecimal = 0,
+                            deductionFromUkProperties: BigDecimal = 0,
+                            ukTaxPAid: BigDecimal = 0,
+                            ukTaxesPaidForEmployments: Seq[MongoUkTaxPaidForEmployment] = Nil) {
+  def totalTaxDeducted = interestFromUk + deductionFromUkProperties + ukTaxPAid
+}
 
-case class CalculationError(code: ErrorCode, message: String)
+case class Error(code: ErrorCode, message: String)
+
+object Error {
+  implicit val errorFormat = Json.format[Error]
+}
+
+case class CalculationError(id: BSONObjectID,
+                            calculationErrorId: CalculationErrorId,
+                            saUtr: SaUtr,
+                            taxYear: TaxYear,
+                            errors: Seq[Error])
+    extends LiabilityResult
+
+object CalculationError {
+
+  implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
+  implicit val calculationErrorFormats = Json.format[CalculationError]
+
+  def create(saUtr: SaUtr, taxYear: TaxYear, errors: Seq[Error]): CalculationError = {
+    val id = BSONObjectID.generate
+    CalculationError(id = id, calculationErrorId = id.stringify, saUtr = saUtr, taxYear = taxYear, errors = errors)
+  }
+}
 
 object MongoLiability {
 
@@ -168,23 +204,52 @@ object MongoLiability {
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
   implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
+  implicit val ukPropertyIncomeFormats = Json.format[UkPropertyIncome]
   implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
   implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
   implicit val ukTaxPaidForEmploymentFormats = Json.format[MongoUkTaxPaidForEmployment]
   implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]
-  implicit val calculationErrorFormats = Json.format[CalculationError]
   implicit val liabilityFormats = Json.format[MongoLiability]
 
   def create(saUtr: SaUtr, taxYear: TaxYear): MongoLiability = {
     val id = BSONObjectID.generate
     MongoLiability(
-      id = id,
-      liabilityId = id.stringify,
-      saUtr = saUtr,
-      taxYear = taxYear,
-      createdDateTime = DateTime.now(DateTimeZone.UTC)
+        id = id,
+        liabilityId = id.stringify,
+        saUtr = saUtr,
+        taxYear = taxYear,
+        createdDateTime = DateTime.now(DateTimeZone.UTC)
     )
   }
 }
 
+sealed trait LiabilityResult {
 
+  def fold[X](fError: CalculationError => X, fLiability: MongoLiability => X) = this match {
+    case c: CalculationError => fError(c)
+    case l: MongoLiability => fLiability(l)
+  }
+}
+
+object LiabilityResult {
+
+  import CalculationError.calculationErrorFormats
+  import MongoLiability.liabilityFormats
+
+  implicit val liabilityResultFormat = Json.format[LiabilityResult]
+
+  def unapply(liabilityResult: LiabilityResult): Option[(String, JsValue)] = {
+    val (prod: Product, sub) = liabilityResult match {
+      case o: MongoLiability => (o, Json.toJson(o)(liabilityFormats))
+      case o: CalculationError => (o, Json.toJson(o)(calculationErrorFormats))
+    }
+    Some(prod.productPrefix -> sub)
+  }
+
+  def apply(`class`: String, data: JsValue): LiabilityResult = {
+    (`class` match {
+      case "MongoLiability" => Json.fromJson[MongoLiability](data)(liabilityFormats)
+      case "CalculationError" => Json.fromJson[CalculationError](data)(calculationErrorFormats)
+    }).get
+  }
+}

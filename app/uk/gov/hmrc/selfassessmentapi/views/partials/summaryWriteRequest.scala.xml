@@ -12,16 +12,12 @@
     @if(summaryType.fieldDescriptions.nonEmpty) {
     <table>
         <headings>
-            <cell>Source</cell>
             <cell>Name</cell>
             <cell>Type</cell>
             <cell>Description</cell>
-            <cell>Optional</cell>
         </headings>
         <rows>
-            @summaryType.fieldDescriptions.map { cur =>
-               @fieldDescription(cur)
-            }
+            @summaryType.fieldDescriptions.map(fd => fieldDescriptionShort(fd))
         </rows>
     </table>
     }

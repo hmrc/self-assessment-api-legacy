@@ -17,58 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import org.joda.time.{DateTime, DateTimeZone}
-import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{DividendType, FromUKCompanies}
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.{EmploymentIncome => _, SelfEmploymentIncome => _, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{DividendsFromUKSources, ErrorCode, InterestFromUKBanksAndBuildingSocieties, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{TaxBandAllocation, _}
 
 trait SelfAssessmentSugar {
 
   this: UnitSpec =>
-
-  def aSelfEmployment(id: SourceId = BSONObjectID.generate.stringify,
-                      saUtr: SaUtr = generateSaUtr(),
-                      taxYear: TaxYear = taxYear) =
-    MongoSelfEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now, now.toLocalDate)
-
-  def anEmployment(id: SourceId = BSONObjectID.generate.stringify,
-                   saUtr: SaUtr = generateSaUtr(),
-                   taxYear: TaxYear = taxYear) = MongoEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now)
-
-  def anEmploymentUkTaxPaidSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, amount: BigDecimal) =
-    MongoEmploymentUkTaxPaidSummary(summaryId, amount)
-
-  def anUnearnedIncomes(id: SourceId = BSONObjectID.generate.stringify,
-                        saUtr: SaUtr = generateSaUtr(),
-                        taxYear: TaxYear = taxYear) =
-    MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
-
-  def anUnearnedInterestIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify,
-                                      `type`: SavingsIncomeType = InterestFromBanksUntaxed,
-                                      amount: BigDecimal) =
-    MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
-
-  def anUnearnedDividendIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify,
-                                      `type`: DividendType = FromUKCompanies,
-                                      amount: BigDecimal) =
-    MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
-
-  def income(`type`: IncomeType, amount: BigDecimal) =
-    MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
-
-  def expense(`type`: ExpenseType, amount: BigDecimal) =
-    MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
-
-  def balancingCharge(`type`: BalancingChargeType, amount: BigDecimal) =
-    MongoSelfEmploymentBalancingChargeSummary(BSONObjectID.generate.stringify, `type`, amount)
-
-  def goodsAndServices(amount: BigDecimal) =
-    MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
   def aLiability(saUtr: SaUtr = generateSaUtr(),
                  taxYear: TaxYear = taxYear,
@@ -78,7 +33,8 @@ trait SelfAssessmentSugar {
                  dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
                  deductionsRemaining: Option[BigDecimal] = Some(0),
                  personalSavingsAllowance: Option[BigDecimal] = None,
-                 savingsStartingRate: Option[BigDecimal] = None): MongoLiability = {
+                 savingsStartingRate: Option[BigDecimal] = None,
+                 profitFromUkProperties: Seq[UkPropertyIncome] = Nil): MongoLiability = {
 
     MongoLiability
       .create(saUtr, taxYear)
@@ -88,25 +44,25 @@ trait SelfAssessmentSugar {
             dividendsFromUKSources = dividendsFromUKSources,
             deductionsRemaining = deductionsRemaining,
             allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance,
-                                                        savingsStartingRate = savingsStartingRate))
+                                                        savingsStartingRate = savingsStartingRate),
+            profitFromUkProperties = profitFromUkProperties)
   }
 
-  def aLiabilityCalculationError(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear): MongoLiability = {
-    aLiability(saUtr, taxYear).copy(
-        calculationError = Some(CalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
-                                                 "Tax Paid from your Employment(s) should not be negative")))
+  def aLiabilityCalculationError(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear): CalculationError = {
+    CalculationError.create(
+        saUtr,
+        taxYear,
+        Seq(Error(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID, "Tax Paid from your Employment(s) should not be negative")))
   }
-
-  def aSelfEmploymentIncome(profit: BigDecimal = 0,
-                            taxableProfit: BigDecimal = 0,
-                            lossBroughtForward: BigDecimal = 0) =
-    SelfEmploymentIncome(sourceId = BSONObjectID.generate.stringify,
-                         taxableProfit = taxableProfit,
-                         profit = profit,
-                         lossBroughtForward = lossBroughtForward)
 
   def aTaxBandAllocation(taxableAmount: BigDecimal, taxBand: TaxBand) =
     TaxBandAllocation(amount = taxableAmount, taxBand = taxBand)
 
-  private def now = DateTime.now(DateTimeZone.UTC)
+  def now = DateTime.now(DateTimeZone.UTC)
+
+  implicit class LiabilityExtractor(val liabilityResult: LiabilityResult) {
+    def getLiabilityOrFail =
+      liabilityResult.fold(calculationError => fail(s"Liability calculation failed with: $calculationError"), identity)
+  }
+
 }

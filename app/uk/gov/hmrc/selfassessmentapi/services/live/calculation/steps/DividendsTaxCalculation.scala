@@ -17,14 +17,15 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiability, TaxBand}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability, TaxBand}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 
 object DividendsTaxCalculation extends CalculationStep {
 
   private val dividendAllowance = 5000
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
 
     val deductions = liability.deductionsRemaining.getOrElse(throw PropertyNotComputedException("deductionsRemaining"))
 

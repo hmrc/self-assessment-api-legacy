@@ -34,7 +34,7 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
   private val liabilityService = LiabilityService()
 
   override def requestLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    liabilityService.calculate(utr, taxYear) map { liabilityId =>
+    liabilityService.calculate(utr, taxYear) map { _ =>
       val links = Set(
           HalLink("self", liabilityHref(utr, taxYear))
       )

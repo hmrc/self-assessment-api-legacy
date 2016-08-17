@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.DividendsFromUKSources
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType._
-import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{UnearnedIncomesSugar, UnitSpec}
 
-class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessmentSugar {
+class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncomesSugar {
 
   "run" should {
 
@@ -28,7 +28,8 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessment
 
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(dividendsFromUKSources = Seq())
+      DividendsFromUKSourcesCalculation.run(SelfAssessment(), liability).getLiabilityOrFail shouldBe liability.copy(
+          dividendsFromUKSources = Seq())
     }
 
     "calculate rounded down dividends when there are multiple dividends from uk sources from multiple unearned income source" in {
@@ -44,9 +45,12 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessment
 
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes1, unearnedIncomes2)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes1, unearnedIncomes2)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes1.sourceId, BigDecimal(3001)),
-          DividendsFromUKSources(sourceId = unearnedIncomes2.sourceId, BigDecimal(7001)))
+            DividendsFromUKSources(sourceId = unearnedIncomes2.sourceId, BigDecimal(7001)))
     }
 
     "calculate dividends when there is one uk dividend from a single unearned income source" in {
@@ -54,7 +58,10 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessment
       val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendUK))
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(1000)))
     }
 
@@ -64,7 +71,10 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessment
       val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendUK1, dividendUK2))
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(3000)))
     }
 
@@ -73,7 +83,10 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessment
       val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendUK))
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(1000)))
     }
 
@@ -83,17 +96,22 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessment
       val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendUK1, dividendUK2))
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(3001)))
     }
-
 
     "calculate dividends when there is one other uk dividends from a single unearned income source" in {
       val dividendOther = anUnearnedDividendIncomeSummary("dividendOther", OtherFromUKCompanies, 1000)
       val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendOther))
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(1000)))
     }
 
@@ -103,17 +121,22 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessment
       val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendOther1, dividendOther2))
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(3000)))
     }
-
 
     "calculate rounded down dividends when there is one other uk dividends from a single unearned income source" in {
       val dividendOther = anUnearnedDividendIncomeSummary("dividendOther", OtherFromUKCompanies, 1000.50)
       val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendOther))
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(1000)))
     }
 
@@ -123,7 +146,10 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with SelfAssessment
       val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendOther1, dividendOther2))
       val liability = aLiability()
 
-      DividendsFromUKSourcesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability).dividendsFromUKSources shouldBe
+      DividendsFromUKSourcesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail
+        .dividendsFromUKSources shouldBe
         Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(3001)))
     }
 

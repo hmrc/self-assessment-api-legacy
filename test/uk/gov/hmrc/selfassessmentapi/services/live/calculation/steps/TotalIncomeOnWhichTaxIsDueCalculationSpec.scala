@@ -25,31 +25,33 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfAssess
     "calculate total income on which tax is due" in {
 
       val liability = aLiability().copy(
-        totalIncomeReceived = Some(100),
-        totalAllowancesAndReliefs = Some(50)
+          totalIncomeReceived = Some(100),
+          totalAllowancesAndReliefs = Some(50)
       )
 
-      TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeOnWhichTaxIsDue = Some(50))
+      TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability).getLiabilityOrFail shouldBe liability
+        .copy(totalIncomeOnWhichTaxIsDue = Some(50))
     }
 
     "return zero if totalIncomeReceived is less than totalDeductions" in {
 
       val liability = aLiability().copy(
-        totalIncomeReceived = Some(100),
-        totalAllowancesAndReliefs = Some(200)
+          totalIncomeReceived = Some(100),
+          totalAllowancesAndReliefs = Some(200)
       )
 
-      TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(totalIncomeOnWhichTaxIsDue = Some(0))
+      TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability).getLiabilityOrFail shouldBe liability
+        .copy(totalIncomeOnWhichTaxIsDue = Some(0))
     }
 
     "throw exception if totalIncomeReceived is None" in {
 
       val liability = aLiability().copy(
-        totalIncomeReceived = None,
-        totalAllowancesAndReliefs = Some(200)
+          totalIncomeReceived = None,
+          totalAllowancesAndReliefs = Some(200)
       )
 
-      intercept[IllegalStateException]{
+      intercept[IllegalStateException] {
         TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability)
       }
     }
@@ -57,11 +59,11 @@ class TotalIncomeOnWhichTaxIsDueCalculationSpec extends UnitSpec with SelfAssess
     "throw exception if deductions is None" in {
 
       val liability = aLiability().copy(
-        totalIncomeReceived = Some(100),
-        totalAllowancesAndReliefs = None
+          totalIncomeReceived = Some(100),
+          totalAllowancesAndReliefs = None
       )
 
-      intercept[IllegalStateException]{
+      intercept[IllegalStateException] {
         TotalIncomeOnWhichTaxIsDueCalculation.run(SelfAssessment(), liability)
       }
     }

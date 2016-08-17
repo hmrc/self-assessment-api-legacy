@@ -34,7 +34,6 @@ case class Expense(id: Option[SummaryId] = None,
 
 object Expense extends JsonMarshaller[Expense] {
 
-
   implicit val writes = Json.writes[Expense]
   implicit val reads: Reads[Expense] = (
     Reads.pure(None) and

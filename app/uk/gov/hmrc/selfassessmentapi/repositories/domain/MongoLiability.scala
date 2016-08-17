@@ -32,6 +32,7 @@ case class MongoLiability(id: BSONObjectID,
                           createdDateTime: DateTime,
                           incomeFromEmployments: Seq[EmploymentIncome] = Nil,
                           profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
+                          incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil,
                           interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil,
                           dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
                           totalIncomeReceived: Option[BigDecimal] = None,
@@ -89,7 +90,8 @@ case class MongoLiability(id: BSONObjectID,
           nonSavings = NonSavingsIncomes(
             employment = incomeFromEmployments,
             selfEmployment = profitFromSelfEmployments,
-            ukProperties = profitFromUkProperties
+            ukProperties = profitFromUkProperties,
+            furnishedHolidayLettings = incomeFromFurnishedHolidayLettings
           ),
           savings = SavingsIncomes(
             fromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties
@@ -129,6 +131,8 @@ case class MongoLiability(id: BSONObjectID,
 
 case class EmploymentIncome(sourceId: SourceId, pay: BigDecimal, benefitsAndExpenses: BigDecimal, allowableExpenses : BigDecimal, total: BigDecimal)
 
+case class FurnishedHolidayLettingIncome(sourceId: String, profit: BigDecimal)
+
 case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, profit: BigDecimal)
 
 case class UkPropertyIncome(sourceId: SourceId, profit: BigDecimal)
@@ -164,6 +168,7 @@ object MongoLiability {
   implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
   implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
   implicit val ukPropertyIncomeFormats = Json.format[UkPropertyIncome]
+  implicit val furnishedHolidayLettingIncomeFormats = Json.format[FurnishedHolidayLettingIncome]
   implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
   implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
   implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]

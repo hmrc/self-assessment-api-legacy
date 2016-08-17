@@ -35,6 +35,10 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           SelfEmploymentIncome(sourceId = "seId1", taxableProfit = 10, profit = 20),
           SelfEmploymentIncome(sourceId = "seId2", taxableProfit = 20, profit = 40)
         ),
+        incomeFromFurnishedHolidayLettings = Seq(
+          FurnishedHolidayLettingIncome(sourceId = "fhlId1", profit = 20),
+          FurnishedHolidayLettingIncome(sourceId = "fhlId2", profit = 40)
+        ),
         interestFromUKBanksAndBuildingSocieties = Seq(
           InterestFromUKBanksAndBuildingSocieties(sourceId = "interestId1", totalInterest = 20),
           InterestFromUKBanksAndBuildingSocieties(sourceId = "interestId2", totalInterest = 40)
@@ -56,15 +60,19 @@ class MongoLiabilitySpec extends UnitSpec with SelfEmploymentSugar {
           incomes = IncomeFromSources(
             nonSavings = NonSavingsIncomes(
               employment = Seq(
-                uk.gov.hmrc.selfassessmentapi.repositories.domain.EmploymentIncome(sourceId = "eId1", pay =  100, benefitsAndExpenses = 50, allowableExpenses = 50, total = 100),
-                uk.gov.hmrc.selfassessmentapi.repositories.domain.EmploymentIncome(sourceId = "eId2", pay =  200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
+                EmploymentIncome(sourceId = "eId1", pay =  100, benefitsAndExpenses = 50, allowableExpenses = 50, total = 100),
+                EmploymentIncome(sourceId = "eId2", pay =  200, benefitsAndExpenses = 100, allowableExpenses = 100, total = 200)
               ),
               selfEmployment = Seq(
-                uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome("seId1", taxableProfit = 10, profit = 20),
-                uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome("seId2", taxableProfit = 20, profit = 40)
+                SelfEmploymentIncome("seId1", taxableProfit = 10, profit = 20),
+                SelfEmploymentIncome("seId2", taxableProfit = 20, profit = 40)
               ),
               ukProperties = Seq(
                 UkPropertyIncome("property1", profit = 2000)
+              ),
+              furnishedHolidayLettings = Seq(
+                FurnishedHolidayLettingIncome("fhlId1", 20),
+                FurnishedHolidayLettingIncome("fhlId2", 40)
               )
             ),
             savings = SavingsIncomes(

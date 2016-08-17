@@ -41,11 +41,11 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar with SelfEmploymen
   private val selfEmploymentRepo = mock[SelfEmploymentMongoRepository]
   private val unearnedIncomeRepo = mock[UnearnedIncomeMongoRepository]
   private val ukPropertyRepo = mock[UKPropertiesMongoRepository]
+  private val furnishedHolidayLettingsRepo = mock[FurnishedHolidayLettingsMongoRepository]
   private val selfAssessmentRepo = mock[SelfAssessmentMongoRepository]
   private val liabilityCalculator = mock[LiabilityCalculator]
   private val featureSwitch = mock[FeatureSwitch]
-  private val service = new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo,
-    liabilityRepo, ukPropertyRepo, selfAssessmentRepo, liabilityCalculator, featureSwitch)
+  private val service = new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, furnishedHolidayLettingsRepo , liabilityRepo, ukPropertyRepo, selfAssessmentRepo, liabilityCalculator, featureSwitch)
 
   "calculate" should {
 

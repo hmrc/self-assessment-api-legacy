@@ -28,8 +28,10 @@ import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LiabilityService(employmentRepo: EmploymentMongoRepository, selfEmploymentRepo: SelfEmploymentMongoRepository, unearnedIncomeRepo: UnearnedIncomeMongoRepository,
-                       liabilityRepo: LiabilityMongoRepository, ukPropertiesRepo: UKPropertiesMongoRepository, selfAssessmentRepository: SelfAssessmentMongoRepository, liabilityCalculator: LiabilityCalculator, featureSwitch: FeatureSwitch) {
+class LiabilityService(employmentRepo: EmploymentMongoRepository, selfEmploymentRepo: SelfEmploymentMongoRepository,
+                       unearnedIncomeRepo: UnearnedIncomeMongoRepository, furnishedHolidayLettingsRepo: FurnishedHolidayLettingsMongoRepository,
+                       liabilityRepo: LiabilityMongoRepository, ukPropertiesRepo: UKPropertiesMongoRepository,
+                       selfAssessmentRepository: SelfAssessmentMongoRepository, liabilityCalculator: LiabilityCalculator, featureSwitch: FeatureSwitch) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Liability]] = {
     liabilityRepo.findBy(saUtr, taxYear).map(_.map(_.toLiability))
@@ -41,10 +43,12 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository, selfEmployment
       employments <- if (isSourceEnabled(Employments)) employmentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoEmployment]())
       selfEmployments <- if (isSourceEnabled(SelfEmployments)) selfEmploymentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoSelfEmployment]())
       unearnedIncomes <- if (isSourceEnabled(UnearnedIncomes)) unearnedIncomeRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUnearnedIncome]())
-      ukProperties <-  if (isSourceEnabled(UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUKProperties]())
+      ukProperties <- if (isSourceEnabled(UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUKProperties]())
       taxYearProperties <- selfAssessmentRepository.findTaxYearProperties(saUtr, taxYear)
+      furnishedHolidayLettings <- if (isSourceEnabled(FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoFurnishedHolidayLettings]())
       liability <- liabilityRepo.save(liabilityCalculator.calculate(SelfAssessment(employments = employments,
-        selfEmployments = selfEmployments, unearnedIncomes = unearnedIncomes, ukProperties = ukProperties, taxYearProperties = taxYearProperties), emptyLiability))
+        selfEmployments = selfEmployments, unearnedIncomes = unearnedIncomes, taxYearProperties = taxYearProperties, ukProperties = ukProperties,
+        furnishedHolidayLettings = furnishedHolidayLettings), emptyLiability))
     } yield liability.liabilityId
   }
 
@@ -54,7 +58,8 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository, selfEmployment
 object LiabilityService {
 
   private lazy val service = new LiabilityService(EmploymentRepository(), SelfEmploymentRepository(),
-    UnearnedIncomeRepository(), LiabilityRepository(), UKPropertiesRepository(), SelfAssessmentRepository(), LiabilityCalculator(),  FeatureSwitch(AppContext.featureSwitch))
+    UnearnedIncomeRepository(), FurnishedHolidayLettingsRepository(), LiabilityRepository(),  UKPropertiesRepository(),
+    SelfAssessmentRepository(),LiabilityCalculator(), FeatureSwitch(AppContext.featureSwitch))
 
   def apply() = service
 }

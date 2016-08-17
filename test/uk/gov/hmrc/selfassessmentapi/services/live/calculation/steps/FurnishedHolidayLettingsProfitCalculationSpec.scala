@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.{FurnishedHolidayLettingsSugar, UnitSpec}
 
 class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with FurnishedHolidayLettingsSugar {
 
-  private val liability = MongoLiability.create(generateSaUtr(), taxYear)
+  private val liability = aLiability()
 
   private val furnishedHolidayLettingId = "furnishedHolidayLettingId"
 

@@ -77,6 +77,21 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
       ))
     }
 
+    "loss brought forward must be capped at adjusted profits" in {
+
+      val selfAssessment = SelfAssessment(selfEmployments = Seq(
+        aSelfEmployment(selfEmploymentId).copy(
+          adjustments = Some(Adjustments(
+            outstandingBusinessIncome = Some(5000.32),
+            lossBroughtForward = Some(20000)
+          ))
+        )))
+
+      val profitFromSelfEmployments = SelfEmploymentProfitCalculation.run(selfAssessment, liability).profitFromSelfEmployments
+      profitFromSelfEmployments.head.taxableProfit shouldBe 5000
+      profitFromSelfEmployments.head.profit shouldBe 5000
+    }
+
     "subtract all expenses apart from depreciation from profit" in {
 
       val selfAssessment = SelfAssessment(selfEmployments = Seq(

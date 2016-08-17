@@ -104,7 +104,8 @@ case class MongoLiability(id: BSONObjectID,
         deductions = Some(Deductions(
           incomeTaxRelief = allowancesAndReliefs.incomeTaxRelief.getOrElse(0),
           personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
-          total = sum(allowancesAndReliefs.incomeTaxRelief, allowancesAndReliefs.personalAllowance)
+          retirementAnnuityContract = allowancesAndReliefs.retirementAnnuityContract.getOrElse(0),
+          total = sum(allowancesAndReliefs.incomeTaxRelief, allowancesAndReliefs.personalAllowance, allowancesAndReliefs.retirementAnnuityContract)
         )),
         totalIncomeOnWhichTaxIsDue = totalIncomeOnWhichTaxIsDue.getOrElse(0)
       ),
@@ -136,6 +137,8 @@ case class SelfEmploymentIncome(sourceId: SourceId, taxableProfit: BigDecimal, p
 
 case class UkPropertyIncome(sourceId: SourceId, profit: BigDecimal)
 
+
+
 case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math {
 
   def toTaxBandSummary(chargedAt: BigDecimal) = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"$chargedAt%", tax(chargedAt))
@@ -150,7 +153,9 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) extends Math 
   }
 }
 
-case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None, incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None)
+case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None, personalSavingsAllowance: Option[BigDecimal] = None,
+                                incomeTaxRelief: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None,
+                                retirementAnnuityContract: Option[BigDecimal] = None)
 
 case class MongoTaxDeducted(interestFromUk: BigDecimal, deductionFromUkProperties: BigDecimal) {
   def totalTaxDeducted = interestFromUk + deductionFromUkProperties

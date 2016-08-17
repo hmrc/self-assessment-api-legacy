@@ -21,8 +21,11 @@ import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
@@ -39,11 +42,14 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar with SelfEmploymen
   private val unearnedIncomeRepo = mock[UnearnedIncomeMongoRepository]
   private val ukPropertyRepo = mock[UKPropertiesMongoRepository]
   private val furnishedHolidayLettingsRepo = mock[FurnishedHolidayLettingsMongoRepository]
+  private val selfAssessmentRepo = mock[SelfAssessmentMongoRepository]
   private val liabilityCalculator = mock[LiabilityCalculator]
   private val featureSwitch = mock[FeatureSwitch]
-  private val service = new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, furnishedHolidayLettingsRepo , liabilityRepo, ukPropertyRepo, liabilityCalculator, featureSwitch)
+  private val service = new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, furnishedHolidayLettingsRepo , liabilityRepo, ukPropertyRepo, selfAssessmentRepo, liabilityCalculator, featureSwitch)
 
   "calculate" should {
+
+    when(selfAssessmentRepo.findTaxYearProperties(any[SaUtr], any[TaxYear])).thenReturn(Future.successful(None))
 
     // Stub save and calculate methods to return the same item they are given.
     when(liabilityRepo.save(any[MongoLiability])).thenAnswer(new Answer[Future[MongoLiability]] {

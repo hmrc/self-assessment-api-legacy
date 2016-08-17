@@ -61,4 +61,5 @@ trait SelfEmploymentSugar extends UnitSpecsSugar {
                       unearnedIncomes: Seq[MongoUnearnedIncome] = Nil, ukProperties: Seq[MongoUKProperties] = Nil) =
     SelfAssessment(employments, selfEmployments, unearnedIncomes, ukProperties)
 
+  def aTaxYearProperty = MongoTaxYearProperties(BSONObjectID.generate, generateSaUtr(), taxYear, now, now)
 }

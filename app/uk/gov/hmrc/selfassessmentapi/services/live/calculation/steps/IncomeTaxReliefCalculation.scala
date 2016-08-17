@@ -25,8 +25,16 @@ object IncomeTaxReliefCalculation extends CalculationStep {
   }
 
   def incomeTaxRelief(selfAssessment: SelfAssessment): BigDecimal = {
-    capAt(roundUp(selfAssessment.selfEmployments.map(_.lossBroughtForward).sum
-      + selfAssessment.ukProperties.map(_.lossBroughtForward).sum),
-      roundUp(selfAssessment.selfEmployments.map(_.adjustedProfits).sum + selfAssessment.ukProperties.map(_.adjustedProfit).sum))
+    selfEmploymentLossBroughtForward(selfAssessment) + ukPropertiesLossBroughtForward(selfAssessment)
+  }
+
+  private def ukPropertiesLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {
+    roundUp(capAt(selfAssessment.ukProperties.map(_.lossBroughtForward).sum, selfAssessment.ukProperties.map(_.adjustedProfit).sum))
+  }
+
+  private def selfEmploymentLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {
+    roundUp(selfAssessment.selfEmployments.map { selfEmployment =>
+      capAt(selfEmployment.lossBroughtForward, selfEmployment.adjustedProfits)
+    }.sum)
   }
 }

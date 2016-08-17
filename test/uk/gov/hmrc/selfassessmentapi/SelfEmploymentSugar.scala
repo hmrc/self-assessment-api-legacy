@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain._
@@ -26,6 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{DividendType, FromUKCompanies}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 trait SelfEmploymentSugar extends UnitSpecsSugar {
 

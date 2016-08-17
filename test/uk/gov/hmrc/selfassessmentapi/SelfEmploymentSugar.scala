@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
+import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain._
@@ -53,4 +54,11 @@ trait SelfEmploymentSugar extends UnitSpecsSugar {
   def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) = MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
 
   def aUkPropertyIncome(profit: BigDecimal): UkPropertyIncome = UkPropertyIncome(generateSaUtr().utr, profit)
+
+  def aUkPropertyTaxPaidSummary(amount: BigDecimal) = MongoUKPropertiesTaxPaidSummary(BSONObjectID.generate.stringify, amount)
+
+  def aSelfAssessment(employments: Seq[MongoEmployment] = Nil, selfEmployments: Seq[MongoSelfEmployment] = Nil,
+                      unearnedIncomes: Seq[MongoUnearnedIncome] = Nil, ukProperties: Seq[MongoUKProperties] = Nil) =
+    SelfAssessment(employments, selfEmployments, unearnedIncomes, ukProperties)
+
 }

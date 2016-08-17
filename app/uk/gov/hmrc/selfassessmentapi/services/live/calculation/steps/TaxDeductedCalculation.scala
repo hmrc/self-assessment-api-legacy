@@ -21,11 +21,19 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoTaxDeducted, Mong
 
 object TaxDeductedCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    val totalTaxedInterest = selfAssessment.unearnedIncomes.map { unearnedIncome =>
-      unearnedIncome.savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
-    }.sum
+    liability.copy(taxDeducted = Some(MongoTaxDeducted(
+      interestFromUk = calculateInterestDeducted(selfAssessment),
+      deductionFromUkProperties = taxDeductedForUkProperties(selfAssessment))))
+  }
+
+  private def calculateInterestDeducted(selfAssessment: SelfAssessment): BigDecimal = {
+    val totalTaxedInterest = selfAssessment.unearnedIncomes.map(_.taxedSavingsInterest).sum
     val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
-    val totalTaxDeducted = roundUp(grossedUpInterest - totalTaxedInterest)
-    liability.copy(taxDeducted = Some(MongoTaxDeducted(interestFromUk = totalTaxDeducted)))
+
+    roundUp(grossedUpInterest - totalTaxedInterest)
+  }
+
+  private def taxDeductedForUkProperties(selfAssessment: SelfAssessment): BigDecimal = {
+    roundUp(selfAssessment.ukProperties.map(_.taxPaid).sum)
   }
 }

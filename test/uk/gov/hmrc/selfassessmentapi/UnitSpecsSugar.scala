@@ -28,12 +28,12 @@ trait UnitSpecsSugar {
 
   def aLiability(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, incomeFromEmployments: Seq[EmploymentIncome] = Nil, profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
                  interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil, dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
-                 deductionsRemaining: Option[BigDecimal] = Some(0), personalSavingsAllowance: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None,
-                 profitFromUkProperties: Seq[UkPropertyIncome] = Nil, incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil): MongoLiability = {
+                 deductionsRemaining: Option[BigDecimal] = Some(0), personalSavingsAllowance: Option[BigDecimal] = None, retirementAnnuityContract: Option[BigDecimal] = None,
+                 savingsStartingRate: Option[BigDecimal] = None, profitFromUkProperties: Seq[UkPropertyIncome] = Nil, incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil): MongoLiability = {
 
     MongoLiability.create(saUtr, taxYear).copy( incomeFromEmployments = incomeFromEmployments, profitFromSelfEmployments = profitFromSelfEmployments, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
       dividendsFromUKSources = dividendsFromUKSources, deductionsRemaining = deductionsRemaining,
-      allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance, savingsStartingRate = savingsStartingRate),
+      allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance, savingsStartingRate = savingsStartingRate, retirementAnnuityContract = retirementAnnuityContract),
       profitFromUkProperties = profitFromUkProperties, incomeFromFurnishedHolidayLettings = incomeFromFurnishedHolidayLettings)
   }
 

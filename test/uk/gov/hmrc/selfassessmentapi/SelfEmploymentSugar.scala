@@ -50,11 +50,12 @@ trait SelfEmploymentSugar {
 
   def aLiability(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, incomeFromEmployments: Seq[EmploymentIncome] = Nil, profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
                  interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil, dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
-                 deductionsRemaining: Option[BigDecimal] = Some(0), personalSavingsAllowance: Option[BigDecimal] = None, savingsStartingRate: Option[BigDecimal] = None, profitFromUkProperties: Seq[UkPropertyIncome] = Nil): MongoLiability = {
+                 deductionsRemaining: Option[BigDecimal] = Some(0), personalSavingsAllowance: Option[BigDecimal] = None, retirementAnnuityContract: Option[BigDecimal] = None,
+                 savingsStartingRate: Option[BigDecimal] = None, profitFromUkProperties: Seq[UkPropertyIncome] = Nil): MongoLiability = {
 
     MongoLiability.create(saUtr, taxYear).copy( incomeFromEmployments = incomeFromEmployments, profitFromSelfEmployments = profitFromSelfEmployments, interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
                                                 dividendsFromUKSources = dividendsFromUKSources, deductionsRemaining = deductionsRemaining,
-                                                allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance, savingsStartingRate = savingsStartingRate),
+                                                allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance, savingsStartingRate = savingsStartingRate, retirementAnnuityContract = retirementAnnuityContract),
                                                 profitFromUkProperties = profitFromUkProperties)
   }
 
@@ -72,6 +73,8 @@ trait SelfEmploymentSugar {
   def aSelfAssessment(employments: Seq[MongoEmployment] = Nil, selfEmployments: Seq[MongoSelfEmployment] = Nil,
                       unearnedIncomes: Seq[MongoUnearnedIncome] = Nil, ukProperties: Seq[MongoUKProperties] = Nil) =
     SelfAssessment(employments, selfEmployments, unearnedIncomes, ukProperties)
+
+  def aTaxYearProperty = MongoTaxYearProperties(BSONObjectID.generate, generateSaUtr(), taxYear, now, now)
 
   private def now = DateTime.now(DateTimeZone.UTC)
 }

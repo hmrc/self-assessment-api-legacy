@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import org.scalatest.prop.TableDrivenPropertyChecks
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Error, MongoTaxDeducted, MongoUkTaxPaidForEmployment}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiabilityCalculationError, MongoTaxDeducted, MongoUkTaxPaidForEmployment}
 import uk.gov.hmrc.selfassessmentapi.{EmploymentSugar, UnitSpec}
 
 class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec
@@ -34,7 +34,7 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec
       TaxDeductedFromUkTaxPaidForEmploymentsCalculation
         .run(SelfAssessment(employments = Nil), liability)
         .getLiabilityOrFail shouldBe liability.copy(
-          taxDeducted = Some(MongoTaxDeducted(interestFromUk = 0, ukTaxPAid = 0, ukTaxesPaidForEmployments = Nil)))
+          taxDeducted = Some(MongoTaxDeducted(interestFromUk = 0, ukTaxPaid = 0, ukTaxesPaidForEmployments = Nil)))
     }
 
     "return a calculation error identifying the sources if none of the sum of the UK tax paid for a given employment is positive" in {
@@ -53,9 +53,9 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec
         .fold(identity, liability => fail(s"Expected a calculation error instead of the valid liability $liability"))
 
       calculationError.errors should contain theSameElementsAs Seq(
-          Error(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
+        MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
                 s"The UK tax paid for employment with source id ${employment1.sourceId} should not be negative"),
-          Error(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
+        MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
                 s"The UK tax paid for employment with source id ${employment2.sourceId} should not be negative"))
     }
 
@@ -75,7 +75,7 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec
         .getLiabilityOrFail shouldBe liability.copy(
           taxDeducted = Some(
               MongoTaxDeducted(interestFromUk = 0,
-                               ukTaxPAid = 0,
+                               ukTaxPaid = 0,
                                ukTaxesPaidForEmployments =
                                  Seq(MongoUkTaxPaidForEmployment(employment1.sourceId, -1047.32),
                                      MongoUkTaxPaidForEmployment(employment2.sourceId, 500.32)))))
@@ -97,7 +97,7 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec
         .getLiabilityOrFail shouldBe liability.copy(
           taxDeducted = Some(
               MongoTaxDeducted(interestFromUk = 0,
-                               ukTaxPAid = 453,
+                               ukTaxPaid = 453,
                                ukTaxesPaidForEmployments =
                                  Seq(MongoUkTaxPaidForEmployment(employment1.sourceId, -147.32),
                                      MongoUkTaxPaidForEmployment(employment2.sourceId, 600.32)))))

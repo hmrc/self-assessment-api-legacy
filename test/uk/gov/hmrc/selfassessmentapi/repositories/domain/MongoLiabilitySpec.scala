@@ -183,7 +183,7 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar with JsonSpec
               MongoTaxDeducted(
                   interestFromUk = 1000,
                   deductionFromUkProperties = 500,
-                  ukTaxPAid = 0,
+                  ukTaxPaid = 0,
                   ukTaxesPaidForEmployments = Nil
               ))
       )
@@ -213,12 +213,17 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar with JsonSpec
   private def aTaxBandSummary(taxBand: String, taxableAmount: BigDecimal, chargedAt: String, tax: BigDecimal) =
     TaxBandSummary(taxBand, taxableAmount, chargedAt, tax)
 
-  "format" should {
-    "round trip LiabilityResult json" in {
-      val calculationError: LiabilityResult = CalculationError
-        .create(generateSaUtr(), taxYear, Seq(Error(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID, "Some error message")))
-      val mongoLiability: LiabilityResult = MongoLiability.create(generateSaUtr(), taxYear)
+  "format LiabilityResult" should {
+
+    "round trip MongoLiabilityCalculationError json" in {
+      val calculationError: LiabilityResult = MongoLiabilityCalculationErrors
+        .create(generateSaUtr(), taxYear, Seq(MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID, "Some error message")))
       roundTripJson(calculationError)
+
+    }
+
+    "round trip MongoLiability json" in {
+      val mongoLiability: LiabilityResult = MongoLiability.create(generateSaUtr(), taxYear)
       roundTripJson(mongoLiability)
 
     }

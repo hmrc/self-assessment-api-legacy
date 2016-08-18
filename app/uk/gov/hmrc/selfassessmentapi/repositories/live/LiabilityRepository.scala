@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{CalculationError, LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.LiabilityResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -43,15 +43,13 @@ class LiabilityMongoRepository(implicit mongo: () => DB)
                                                               idFormat = ReactiveMongoFormats.objectIdFormats) {
 
   override def indexes: Seq[Index] =
-    Seq(Index(Seq(("data.saUtr", Ascending), ("data.taxYear", Ascending)), name = Some("ui_utr_taxyear"), unique = true))
+    Seq(
+        Index(Seq(("data.saUtr", Ascending), ("data.taxYear", Ascending)),
+              name = Some("ui_utr_taxyear"),
+              unique = true))
 
   def save[T <: LiabilityResult](liabilityResult: T): Future[T] = {
-    val selector = liabilityResult match {
-      case liability: MongoLiability =>
-        BSONDocument("data.saUtr" -> liability.saUtr.value, "data.taxYear" -> liability.taxYear.value)
-      case calculationError: CalculationError =>
-        BSONDocument("data.saUtr" -> calculationError.saUtr.value, "data.taxYear" -> calculationError.taxYear.value)
-    }
+    val selector = BSONDocument("data.saUtr" -> liabilityResult.saUtr.value, "data.taxYear" -> liabilityResult.taxYear.value)
     collection.update(selector, liabilityResult, upsert = true).map(_ => liabilityResult)
   }
 

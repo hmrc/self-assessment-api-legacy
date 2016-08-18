@@ -20,7 +20,7 @@ import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{TaxBandAllocation, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 trait SelfAssessmentSugar {
@@ -54,11 +54,11 @@ trait SelfAssessmentSugar {
             incomeFromFurnishedHolidayLettings = incomeFromFurnishedHolidayLettings)
   }
 
-  def aLiabilityCalculationError(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear): CalculationError = {
-    CalculationError.create(
+  def aLiabilityCalculationError(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear): MongoLiabilityCalculationErrors = {
+    MongoLiabilityCalculationErrors.create(
         saUtr,
         taxYear,
-        Seq(Error(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID, "Tax Paid from your Employment(s) should not be negative")))
+        Seq(MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID, "Tax Paid from your Employment(s) should not be negative")))
   }
 
   def aTaxBandAllocation(taxableAmount: BigDecimal, taxBand: TaxBand) =

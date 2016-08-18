@@ -88,7 +88,7 @@ class TaxDeductedFromInterestFromUkCalculationSpec
         TaxDeductedFromInterestFromUkCalculation
           .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
           .getLiabilityOrFail shouldBe liability.copy(taxDeducted =
-              Some(MongoTaxDeducted(interestFromUk = interestFromUk, ukTaxPAid = 0, ukTaxesPaidForEmployments = Nil)))
+              Some(MongoTaxDeducted(interestFromUk = interestFromUk, ukTaxPaid = 0, ukTaxesPaidForEmployments = Nil)))
       }
     }
   }

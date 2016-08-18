@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{CalculationError, LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability, MongoLiabilityCalculationErrors}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
 class LiabilityCalculator {
@@ -61,12 +61,12 @@ class LiabilityCalculator {
     val (successLiabilities, errorLiabilities) = calculationSteps.toStream
       .scanLeft(liability: LiabilityResult)((accLiability, step) =>
             accLiability match {
-          case calculationError: CalculationError => calculationError
+          case calculationError: MongoLiabilityCalculationErrors => calculationError
           case liability: MongoLiability => step.run(selfAssessment, liability)
       })
       .span {
         case _: MongoLiability => true
-        case _: CalculationError => false
+        case _: MongoLiabilityCalculationErrors => false
       }
     (successLiabilities, errorLiabilities)
   }

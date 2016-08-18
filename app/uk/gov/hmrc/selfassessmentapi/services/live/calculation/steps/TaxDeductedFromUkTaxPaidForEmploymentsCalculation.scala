@@ -39,18 +39,18 @@ object TaxDeductedFromUkTaxPaidForEmploymentsCalculation extends CalculationStep
 
       liability.copy(taxDeducted = liability.taxDeducted match {
         case None =>
-          Some(MongoTaxDeducted(ukTaxPAid = ukTaxPaid, ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
+          Some(MongoTaxDeducted(ukTaxPaid = ukTaxPaid, ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
         case Some(mongoTaxDeducted) =>
-          Some(mongoTaxDeducted.copy(ukTaxPAid = ukTaxPaid, ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
+          Some(mongoTaxDeducted.copy(ukTaxPaid = ukTaxPaid, ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
       })
     } else {
       val invalidEmploymentsErrors = ukTaxesPaidForEmployments
         .filter(_.ukTaxPaid < 0)
         .map(mongoUkTaxPaidForEmployment =>
-              Error(INVALID_EMPLOYMENT_TAX_PAID,
+              MongoLiabilityCalculationError(INVALID_EMPLOYMENT_TAX_PAID,
                     s"The UK tax paid for employment with source id ${mongoUkTaxPaidForEmployment.sourceId} should not be negative"))
 
-      CalculationError.create(liability.saUtr, liability.taxYear, invalidEmploymentsErrors)
+      MongoLiabilityCalculationErrors.create(liability.saUtr, liability.taxYear, invalidEmploymentsErrors)
     }
   }
 }

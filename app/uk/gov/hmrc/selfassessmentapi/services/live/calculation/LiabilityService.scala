@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.{LiabilityCalculationError, LiabilityError}
+import uk.gov.hmrc.selfassessmentapi.controllers.{LiabilityCalculationError, LiabilityCalculationErrors}
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoLiability, MongoSelfEmployment, MongoUnearnedIncome, _}
@@ -39,18 +39,17 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                        liabilityCalculator: LiabilityCalculator,
                        featureSwitch: FeatureSwitch) {
 
-  def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[LiabilityCalculationError, Liability]]] = {
+  def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[LiabilityCalculationErrors, Liability]]] = {
     liabilityRepo
       .findBy(saUtr, taxYear)
       .map(_.map {
-        case calculationError: CalculationError =>
-          Left(LiabilityCalculationError(calculationError.errors.map(error =>
-                        LiabilityError(error.code, error.message))))
+        case calculationError: MongoLiabilityCalculationErrors =>
+          Left(LiabilityCalculationErrors(calculationError.errors.map(error => LiabilityCalculationError(error.code, error.message))))
         case liability: MongoLiability => Right(liability.toLiability)
       })
   }
 
-  def calculate(saUtr: SaUtr, taxYear: TaxYear): Future[Either[CalculationErrorId, LiabilityId]] = {
+  def calculate(saUtr: SaUtr, taxYear: TaxYear): Future[Either[LiabilityCalculationErrorId, LiabilityId]] = {
     for {
       employments <- if (isSourceEnabled(Employments)) employmentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoEmployment]())
       selfEmployments <- if (isSourceEnabled(SelfEmployments)) selfEmploymentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoSelfEmployment]())
@@ -63,7 +62,7 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       liability <- liabilityRepo.save(liabilityResult)
     } yield
       liability match {
-        case calculationError: CalculationError => Left(calculationError.calculationErrorId)
+        case calculationError: MongoLiabilityCalculationErrors => Left(calculationError.liabilityCalculationErrorId)
         case liability: MongoLiability => Right(liability.liabilityId)
       }
   }

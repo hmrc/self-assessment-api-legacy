@@ -28,8 +28,8 @@ import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 case class MongoLiability(id: BSONObjectID,
                           liabilityId: LiabilityId,
-                          saUtr: SaUtr,
-                          taxYear: TaxYear,
+                          override val saUtr: SaUtr,
+                          override val taxYear: TaxYear,
                           createdDateTime: DateTime,
                           incomeFromEmployments: Seq[EmploymentIncome] = Nil,
                           profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
@@ -173,32 +173,36 @@ case class MongoUkTaxPaidForEmployment(sourceId: SourceId, ukTaxPaid: BigDecimal
 
 case class MongoTaxDeducted(interestFromUk: BigDecimal = 0,
                             deductionFromUkProperties: BigDecimal = 0,
-                            ukTaxPAid: BigDecimal = 0,
+                            ukTaxPaid: BigDecimal = 0,
                             ukTaxesPaidForEmployments: Seq[MongoUkTaxPaidForEmployment] = Nil) {
-  def totalTaxDeducted = interestFromUk + deductionFromUkProperties + ukTaxPAid
+  def totalTaxDeducted = interestFromUk + deductionFromUkProperties + ukTaxPaid
 }
 
-case class Error(code: ErrorCode, message: String)
+case class MongoLiabilityCalculationError(code: ErrorCode, message: String)
 
-object Error {
-  implicit val errorFormat = Json.format[Error]
+object MongoLiabilityCalculationError {
+  implicit val calculationErrorFormats = Json.format[MongoLiabilityCalculationError]
 }
 
-case class CalculationError(id: BSONObjectID,
-                            calculationErrorId: CalculationErrorId,
-                            saUtr: SaUtr,
-                            taxYear: TaxYear,
-                            errors: Seq[Error])
+case class MongoLiabilityCalculationErrors(id: BSONObjectID,
+                                           liabilityCalculationErrorId: LiabilityCalculationErrorId,
+                                           override val saUtr: SaUtr,
+                                           override val taxYear: TaxYear,
+                                           errors: Seq[MongoLiabilityCalculationError])
     extends LiabilityResult
 
-object CalculationError {
+object MongoLiabilityCalculationErrors {
 
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
-  implicit val calculationErrorFormats = Json.format[CalculationError]
+  implicit val calculationErrorsFormats = Json.format[MongoLiabilityCalculationErrors]
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, errors: Seq[Error]): CalculationError = {
+  def create(saUtr: SaUtr, taxYear: TaxYear, errors: Seq[MongoLiabilityCalculationError]): MongoLiabilityCalculationErrors = {
     val id = BSONObjectID.generate
-    CalculationError(id = id, calculationErrorId = id.stringify, saUtr = saUtr, taxYear = taxYear, errors = errors)
+    MongoLiabilityCalculationErrors(id = id,
+                                   liabilityCalculationErrorId = id.stringify,
+                                   saUtr = saUtr,
+                                   taxYear = taxYear,
+                                   errors = errors)
   }
 }
 
@@ -230,15 +234,18 @@ object MongoLiability {
 
 sealed trait LiabilityResult {
 
-  def fold[X](fError: CalculationError => X, fLiability: MongoLiability => X) = this match {
-    case c: CalculationError => fError(c)
+  def saUtr: SaUtr
+  def taxYear: TaxYear
+
+  def fold[X](fError: MongoLiabilityCalculationErrors => X, fLiability: MongoLiability => X) = this match {
+    case c: MongoLiabilityCalculationErrors => fError(c)
     case l: MongoLiability => fLiability(l)
   }
 }
 
 object LiabilityResult {
 
-  import CalculationError.calculationErrorFormats
+  import MongoLiabilityCalculationErrors.calculationErrorsFormats
   import MongoLiability.liabilityFormats
 
   implicit val liabilityResultFormat = Json.format[LiabilityResult]
@@ -246,7 +253,7 @@ object LiabilityResult {
   def unapply(liabilityResult: LiabilityResult): Option[(String, JsValue)] = {
     val (prod: Product, sub) = liabilityResult match {
       case o: MongoLiability => (o, Json.toJson(o)(liabilityFormats))
-      case o: CalculationError => (o, Json.toJson(o)(calculationErrorFormats))
+      case o: MongoLiabilityCalculationErrors => (o, Json.toJson(o)(calculationErrorsFormats))
     }
     Some(prod.productPrefix -> sub)
   }
@@ -254,7 +261,8 @@ object LiabilityResult {
   def apply(`class`: String, data: JsValue): LiabilityResult = {
     (`class` match {
       case "MongoLiability" => Json.fromJson[MongoLiability](data)(liabilityFormats)
-      case "CalculationError" => Json.fromJson[CalculationError](data)(calculationErrorFormats)
+      case "MongoLiabilityCalculationErrors" =>
+        Json.fromJson[MongoLiabilityCalculationErrors](data)(calculationErrorsFormats)
     }).get
   }
 }

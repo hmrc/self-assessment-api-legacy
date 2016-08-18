@@ -4,11 +4,13 @@ import play.api.libs.json.Json.toJson
 import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
 import uk.gov.hmrc.selfassessmentapi.domain.employment.UkTaxPaid
+import uk.gov.hmrc.selfassessmentapi.domain
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome}
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
@@ -85,9 +87,10 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |      "deductions": {
            |        "incomeTaxRelief": 20250,
            |        "personalAllowance": 371,
-           |        "total": 20621
+           |        "retirementAnnuityContract": 14235,
+           |        "total": 34856
            |      },
-           |      "totalIncomeOnWhichTaxIsDue": 120887
+           |      "totalIncomeOnWhichTaxIsDue": 106652
            |    },
            |    "incomeTaxCalculations": {
            |      "nonSavings": [
@@ -99,9 +102,9 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |        },
            |        {
            |          "chargedAt": "40%",
-           |          "tax": 33154,
+           |          "tax": 27460,
            |          "taxBand": "higherRate",
-           |          "taxableAmount": 82887
+           |          "taxableAmount": 68652
            |        },
            |        {
            |          "chargedAt": "45%",
@@ -168,7 +171,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |          "taxableAmount": 0
            |        }
            |      ],
-           |      "total": 40554
+           |      "total": 34860
            |    },
            |    "taxDeducted": {
            |      "interestFromUk": 600,
@@ -179,7 +182,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
            |      ],
            |      "total": 9600
            |    },
-           |    "totalTaxDue": 30954,
+           |    "totalTaxDue": 38634,
            |    "totalTaxOverpaid": 0
            |}
         """.stripMargin
@@ -246,7 +249,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .post(s"/$saUtr/$taxYear/unearned-incomes/%sourceId%/savings", Some(toJson(SavingsIncome.example().copy(amount = 1600))))
         .thenAssertThat()
         .statusIs(201)
-       .when()
+        .when()
         .post(s"/$saUtr/$taxYear/unearned-incomes/%sourceId%/dividends", Some(toJson(Dividend.example().copy(amount = 1000))))
         .thenAssertThat()
         .statusIs(201)
@@ -266,6 +269,10 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .post(s"/$saUtr/$taxYear/uk-properties/%sourceId%/taxes-paid", Some(toJson(domain.ukproperty.TaxPaid.example())))
         .thenAssertThat()
         .statusIs(201)
+        .when()
+        .put(s"/$saUtr/$taxYear", Some(toJson(TaxYearProperties.example().copy(charitableGivings = None, blindPerson = None, studentLoan = None, taxRefundedOrSetOff = None, childBenefit = None))))
+        .thenAssertThat()
+        .statusIs(200)
         .when()
         .post(s"/$saUtr/$taxYear/liability")
         .thenAssertThat()

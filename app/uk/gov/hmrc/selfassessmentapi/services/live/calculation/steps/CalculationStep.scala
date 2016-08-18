@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
@@ -43,6 +44,7 @@ case class TaxBandState(taxBand: TaxBand, available: BigDecimal) {
 }
 
 case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),selfEmployments: Seq[MongoSelfEmployment] = Seq(),
-                          unearnedIncomes: Seq[MongoUnearnedIncome] = Seq(), ukProperties: Seq[MongoUKProperties] = Seq())
+                          unearnedIncomes: Seq[MongoUnearnedIncome] = Seq(), ukProperties: Seq[MongoUKProperties] = Seq(),
+                          taxYearProperties: Option[TaxYearProperties] = None, furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Seq())
 
 case class PropertyNotComputedException(property: String) extends IllegalStateException(s"Cannot run calculation step as required property $property has not been computed yet")

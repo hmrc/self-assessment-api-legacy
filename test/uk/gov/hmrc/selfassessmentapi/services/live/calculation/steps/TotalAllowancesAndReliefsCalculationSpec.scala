@@ -23,15 +23,11 @@ class TotalAllowancesAndReliefsCalculationSpec extends UnitSpec with SelfAssessm
 
   "run" should {
 
-    "calculate total allowances and reliefs by summing income tax relief and the personal allowance" in {
+    "calculate total allowances and reliefs by summing income tax relief, personal allowance and retirement annuity contract" in {
 
-      val liability = aLiability().copy(
-          allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000), incomeTaxRelief = Some(1400)))
+      val liability = aLiability().copy(allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000), incomeTaxRelief = Some(1400), retirementAnnuityContract = Some(20000)))
 
-      TotalAllowancesAndReliefsCalculation
-        .run(SelfAssessment(), liability)
-        .getLiabilityOrFail
-        .deductionsRemaining shouldBe Some(6400)
+      TotalAllowancesAndReliefsCalculation.run(SelfAssessment(), liability).getLiabilityOrFail.deductionsRemaining shouldBe Some(26400)
     }
   }
 }

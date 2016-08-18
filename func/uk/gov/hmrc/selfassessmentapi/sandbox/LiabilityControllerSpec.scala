@@ -28,14 +28,20 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |         {"sourceId": "employment-1", "pay": 1000, "benefitsAndExpenses": 500, "allowableExpenses": 250, "total": 1250},
           |         {"sourceId": "employment-2", "pay": 2000, "benefitsAndExpenses": 1000, "allowableExpenses": 500, "total": 2500}
           |       ],
+          |       "furnishedHolidayLettings": [
+          |         {
+          |           "profit": 8200,
+          |           "sourceId": "furnished-holiday-letting-1"
+          |         },
+          |         {
+          |           "profit": 25000,
+          |           "sourceId": "furnished-holiday-letting-2"
+          |         }
+          |       ],
           |       "selfEmployment": [
           |         {"sourceId": "self-employment-1", "taxableProfit": 8200, "profit": 10000},
           |         {"sourceId": "self-employment-2", "taxableProfit": 25000, "profit": 28000}
-          |       ],
-          |       "ukProperties": [
-          |            {"sourceId": "property1", "profit": 2000},
-          |            {"sourceId": "property2", "profit": 1500}
-          |          ]
+          |       ]
           |     },
           |     "savings": {
           |       "fromUKBanksAndBuildingSocieties": [
@@ -54,7 +60,8 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
           |   "deductions": {
           |     "incomeTaxRelief": 5000,
           |     "personalAllowance": 9440,
-          |     "total": 14440
+          |     "retirementAnnuityContract": 10000,
+          |     "total": 24440
           |   },
           |   "totalIncomeOnWhichTaxIsDue": 80000
           |  },

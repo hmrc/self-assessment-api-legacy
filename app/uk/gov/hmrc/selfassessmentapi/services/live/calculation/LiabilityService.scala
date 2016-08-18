@@ -26,19 +26,19 @@ import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType,
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LiabilityService(employmentRepo: EmploymentMongoRepository,
-                       selfEmploymentRepo: SelfEmploymentMongoRepository,
-                       unearnedIncomeRepo: UnearnedIncomeMongoRepository,
-                       liabilityRepo: LiabilityMongoRepository,
-                       ukPropertiesRepo: UKPropertiesMongoRepository,
-                       liabilityCalculator: LiabilityCalculator,
-                       featureSwitch: FeatureSwitch) {
+class LiabilityService(employmentRepo: EmploymentMongoRepository, selfEmploymentRepo: SelfEmploymentMongoRepository,
+                       unearnedIncomeRepo: UnearnedIncomeMongoRepository, furnishedHolidayLettingsRepo: FurnishedHolidayLettingsMongoRepository,
+                       liabilityRepo: LiabilityMongoRepository, ukPropertiesRepo: UKPropertiesMongoRepository,
+                       selfAssessmentRepository: SelfAssessmentMongoRepository, liabilityCalculator: LiabilityCalculator, featureSwitch: FeatureSwitch) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[LiabilityCalculationError, Liability]]] = {
     liabilityRepo
@@ -57,8 +57,10 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       selfEmployments <- if (isSourceEnabled(SelfEmployments)) selfEmploymentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoSelfEmployment]())
       unearnedIncomes <- if (isSourceEnabled(UnearnedIncomes)) unearnedIncomeRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUnearnedIncome]())
       ukProperties <- if (isSourceEnabled(UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUKProperties]())
+      taxYearProperties <- selfAssessmentRepository.findTaxYearProperties(saUtr, taxYear)
+      furnishedHolidayLettings <- if (isSourceEnabled(FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoFurnishedHolidayLettings]())
       emptyLiability <- liabilityRepo.save(MongoLiability.create(saUtr, taxYear))
-      liabilityResult = calculateLiability(emptyLiability, employments, selfEmployments, ukProperties, unearnedIncomes)
+      liabilityResult = calculateLiability(emptyLiability, employments, selfEmployments, ukProperties, unearnedIncomes, furnishedHolidayLettings)
       liability <- liabilityRepo.save(liabilityResult)
     } yield
       liability match {
@@ -73,7 +75,8 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                                  employments: Seq[MongoEmployment],
                                  selfEmployments: Seq[MongoSelfEmployment],
                                  ukProperties: Seq[MongoUKProperties],
-                                 unearnedIncomes: Seq[MongoUnearnedIncome]): LiabilityResult = {
+                                 unearnedIncomes: Seq[MongoUnearnedIncome],
+                                 furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings]): LiabilityResult = {
     liabilityCalculator.calculate(SelfAssessment(employments = employments,
                                                  selfEmployments = selfEmployments,
                                                  unearnedIncomes = unearnedIncomes,
@@ -87,6 +90,7 @@ object LiabilityService {
   private lazy val service = new LiabilityService(EmploymentRepository(),
                                                   SelfEmploymentRepository(),
                                                   UnearnedIncomeRepository(),
+    FurnishedHolidayLettingsRepository(),
                                                   LiabilityRepository(),
                                                   UKPropertiesRepository(),
                                                   LiabilityCalculator(),

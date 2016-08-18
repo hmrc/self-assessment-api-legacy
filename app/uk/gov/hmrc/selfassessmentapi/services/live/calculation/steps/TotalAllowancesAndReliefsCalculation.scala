@@ -26,7 +26,9 @@ object TotalAllowancesAndReliefsCalculation extends CalculationStep {
 
     val personalAllowance = liability.allowancesAndReliefs.personalAllowance.getOrElse(throw PropertyNotComputedException("personalAllowance"))
 
-    val totalDeductions = incomeTaxRelief + personalAllowance
+    val retirementAnnuityPayments = liability.allowancesAndReliefs.retirementAnnuityContract.getOrElse(throw PropertyNotComputedException("retirementAnnuity"))
+
+    val totalDeductions = incomeTaxRelief + personalAllowance + retirementAnnuityPayments
 
     liability.copy(totalAllowancesAndReliefs = Some(totalDeductions), deductionsRemaining = Some(totalDeductions))
   }

@@ -18,7 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, SelfEmploymentIncome, UkPropertyIncome}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, FurnishedHolidayLettingIncome, SelfEmploymentIncome, UkPropertyIncome}
+
 
 case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, totalInterest: BigDecimal)
 
@@ -32,10 +33,11 @@ object DividendsFromUKSources {
   implicit val format = Json.format[DividendsFromUKSources]
 }
 
-case class NonSavingsIncomes(employment: Seq[EmploymentIncome], selfEmployment: Seq[SelfEmploymentIncome], ukProperties: Seq[UkPropertyIncome])
+case class NonSavingsIncomes(employment: Seq[EmploymentIncome], selfEmployment: Seq[SelfEmploymentIncome], ukProperties: Seq[UkPropertyIncome], furnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome])
 
 object NonSavingsIncomes {
   implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
+  implicit val furnishedHolidayLettingIncomeFormats = Json.format[FurnishedHolidayLettingIncome]
   implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
   implicit val ukPropertyIncomeFormats = Json.format[UkPropertyIncome]
   implicit val format = Json.format[NonSavingsIncomes]
@@ -59,7 +61,7 @@ object IncomeFromSources {
   implicit val format = Json.format[IncomeFromSources]
 }
 
-case class Deductions(incomeTaxRelief: BigDecimal, personalAllowance: BigDecimal, total: BigDecimal) {
+case class Deductions(incomeTaxRelief: BigDecimal, personalAllowance: BigDecimal, retirementAnnuityContract: BigDecimal, total: BigDecimal) {
   require(total >= incomeTaxRelief, "totalDeductions must be greater than or equal to incomeTaxRelief at all times")
 }
 
@@ -109,7 +111,8 @@ object Liability {
           nonSavings = NonSavingsIncomes(
             employment = exampleEmploymentIncomes,
             selfEmployment = exampleSelfEmploymentIncomes,
-            ukProperties = exampleUkPropertiesIncomes
+            ukProperties = exampleUkPropertiesIncomes,
+            furnishedHolidayLettings = exampleFurnishedHolidayLettingIncomes
           ),
           savings = SavingsIncomes(
             fromUKBanksAndBuildingSocieties = exampleInterestFromUKBanksAndBuildingSocieties
@@ -122,7 +125,8 @@ object Liability {
         deductions = Some(Deductions(
           incomeTaxRelief = BigDecimal(5000),
           personalAllowance = BigDecimal(9440),
-          total = BigDecimal(14440)
+          retirementAnnuityContract = BigDecimal(10000),
+          total = BigDecimal(24440)
         )),
         totalIncomeOnWhichTaxIsDue = BigDecimal(80000)
       ),
@@ -155,7 +159,7 @@ object Liability {
           UkTaxPaidForEmployment("employment-2", 5000)),
         total = 0
       ),
-      totalTaxDue = 16796.95,
+      totalTaxDue = 25796.95,
       totalTaxOverpaid = 0
     )
 
@@ -165,6 +169,17 @@ object Liability {
         Seq(
           EmploymentIncome("employment-1", 1000, 500, 250, 1250),
           EmploymentIncome("employment-2", 2000, 1000, 500, 2500)
+        )
+      case false => Seq()
+    }
+  }
+
+  private def exampleFurnishedHolidayLettingIncomes = {
+    FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.FurnishedHolidayLettings) match {
+      case true =>
+        Seq(
+          FurnishedHolidayLettingIncome("furnished-holiday-letting-1", 8200),
+          FurnishedHolidayLettingIncome("furnished-holiday-letting-2", 25000)
         )
       case false => Seq()
     }

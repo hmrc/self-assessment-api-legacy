@@ -31,7 +31,10 @@ case class TaxYearProperties(id: Option[String] = None, pensionContributions: Op
                              blindPerson: Option[BlindPerson] = None,
                              studentLoan: Option[StudentLoan] = None,
                              taxRefundedOrSetOff: Option[TaxRefundedOrSetOff] = None,
-                             childBenefit: Option[ChildBenefit] = None)
+                             childBenefit: Option[ChildBenefit] = None) {
+
+  def retirementAnnuityContract = pensionContributions.map(_.retirementAnnuityContract).sum
+}
 
 object TaxYearProperties extends JsonMarshaller[TaxYearProperties] {
 

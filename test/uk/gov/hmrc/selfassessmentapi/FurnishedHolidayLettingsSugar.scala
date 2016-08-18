@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLoc
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
-trait FurnishedHolidayLettingsSugar extends UnitSpecsSugar {
+trait FurnishedHolidayLettingsSugar extends SelfAssessmentSugar {
 
   this: UnitSpec =>
 

@@ -26,7 +26,6 @@ import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
@@ -46,19 +45,20 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar with SelfEmploymen
   private val selfAssessmentRepo = mock[SelfAssessmentMongoRepository]
   private val liabilityCalculator = mock[LiabilityCalculator]
   private val featureSwitch = mock[FeatureSwitch]
-  private val service = new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, furnishedHolidayLettingsRepo , liabilityRepo, ukPropertyRepo, selfAssessmentRepo, liabilityCalculator, featureSwitch)
+  private val service = new LiabilityService(employmentRepo,
+                                             selfEmploymentRepo,
+                                             unearnedIncomeRepo,
+                                             furnishedHolidayLettingsRepo,
+                                             liabilityRepo,
+                                             ukPropertyRepo,
+                                             selfAssessmentRepo,
+                                             liabilityCalculator,
+                                             featureSwitch)
 
   "calculate" should {
 
     when(selfAssessmentRepo.findTaxYearProperties(any[SaUtr], any[TaxYear])).thenReturn(Future.successful(None))
 
-    // Stub save and calculate methods to return the same item they are given.
-    when(liabilityRepo.save(any[MongoLiability])).thenAnswer(new Answer[Future[MongoLiability]] {
-      override def answer(invocation: InvocationOnMock): Future[MongoLiability] = {
-        val arg = invocation.getArguments.head.asInstanceOf[MongoLiability]
-        Future.successful(arg)
-      }
-    })
     // Stub save and calculate methods to return the same item they are given.
     when(liabilityRepo.save(any[LiabilityResult])).thenAnswer(new Answer[Future[LiabilityResult]] {
       override def answer(invocation: InvocationOnMock): Future[LiabilityResult] = {
@@ -67,24 +67,20 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar with SelfEmploymen
       }
     })
 
-    when(liabilityCalculator.calculate(any[SelfAssessment], any[MongoLiability])).thenAnswer(new Answer[MongoLiability] {
-      override def answer(invocation: InvocationOnMock): MongoLiability = {
-        invocation.getArguments.last.asInstanceOf[MongoLiability]
-      }
-    })
-    when(liabilityCalculator.calculate(any[SelfAssessment], any[MongoLiability])).thenAnswer(new Answer[LiabilityResult] {
-      override def answer(invocation: InvocationOnMock): LiabilityResult = {
-        invocation.getArguments.last.asInstanceOf[LiabilityResult]
-      }
-    })
+    when(liabilityCalculator.calculate(any[SelfAssessment], any[MongoLiability]))
+      .thenAnswer(new Answer[LiabilityResult] {
+        override def answer(invocation: InvocationOnMock): LiabilityResult = {
+          invocation.getArguments.last.asInstanceOf[LiabilityResult]
+        }
+      })
 
     "not get employment sources from repository when Employment source is switched on" in {
-        when(featureSwitch.isEnabled(Employments)).thenReturn(true)
-        when(employmentRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+      when(featureSwitch.isEnabled(Employments)).thenReturn(true)
+      when(employmentRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
 
-        await(service.calculate(saUtr, taxYear))
+      await(service.calculate(saUtr, taxYear))
 
-        verify(employmentRepo).findAll(saUtr, taxYear)
+      verify(employmentRepo).findAll(saUtr, taxYear)
     }
 
     "not get employment sources from repository when Employment source is switched off" in {

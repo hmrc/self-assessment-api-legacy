@@ -17,9 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import org.joda.time.{DateTime, DateTimeZone}
+import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{DividendsFromUKSources, ErrorCode, InterestFromUKBanksAndBuildingSocieties, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{TaxBandAllocation, _}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 trait SelfAssessmentSugar {
 
@@ -33,8 +35,10 @@ trait SelfAssessmentSugar {
                  dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
                  deductionsRemaining: Option[BigDecimal] = Some(0),
                  personalSavingsAllowance: Option[BigDecimal] = None,
+                 retirementAnnuityContract: Option[BigDecimal] = None,
                  savingsStartingRate: Option[BigDecimal] = None,
-                 profitFromUkProperties: Seq[UkPropertyIncome] = Nil): MongoLiability = {
+                 profitFromUkProperties: Seq[UkPropertyIncome] = Nil,
+                 incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil): MongoLiability = {
 
     MongoLiability
       .create(saUtr, taxYear)
@@ -44,8 +48,10 @@ trait SelfAssessmentSugar {
             dividendsFromUKSources = dividendsFromUKSources,
             deductionsRemaining = deductionsRemaining,
             allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance,
-                                                        savingsStartingRate = savingsStartingRate),
-            profitFromUkProperties = profitFromUkProperties)
+                                                        savingsStartingRate = savingsStartingRate,
+                                                        retirementAnnuityContract = retirementAnnuityContract),
+            profitFromUkProperties = profitFromUkProperties,
+            incomeFromFurnishedHolidayLettings = incomeFromFurnishedHolidayLettings)
   }
 
   def aLiabilityCalculationError(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear): CalculationError = {
@@ -64,5 +70,20 @@ trait SelfAssessmentSugar {
     def getLiabilityOrFail =
       liabilityResult.fold(calculationError => fail(s"Liability calculation failed with: $calculationError"), identity)
   }
+
+  def aTaxYearProperty = MongoTaxYearProperties(BSONObjectID.generate, generateSaUtr(), taxYear, now, now)
+
+  def aSelfAssessment(employments: Seq[MongoEmployment] = Nil,
+                      selfEmployments: Seq[MongoSelfEmployment] = Nil,
+                      unearnedIncomes: Seq[MongoUnearnedIncome] = Nil,
+                      ukProperties: Seq[MongoUKProperties] = Nil,
+                      taxYearProperties: Option[TaxYearProperties] = None,
+                      furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Nil) =
+    SelfAssessment(employments,
+                   selfEmployments,
+                   unearnedIncomes,
+                   ukProperties,
+                   taxYearProperties,
+                   furnishedHolidayLettings)
 
 }

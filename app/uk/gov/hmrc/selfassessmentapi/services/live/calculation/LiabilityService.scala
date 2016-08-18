@@ -20,25 +20,24 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.{LiabilityCalculationError, LiabilityError}
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoLiability, MongoSelfEmployment, MongoUnearnedIncome}
-import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoLiability, MongoSelfEmployment, MongoUnearnedIncome, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
+import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LiabilityService(employmentRepo: EmploymentMongoRepository, selfEmploymentRepo: SelfEmploymentMongoRepository,
-                       unearnedIncomeRepo: UnearnedIncomeMongoRepository, furnishedHolidayLettingsRepo: FurnishedHolidayLettingsMongoRepository,
-                       liabilityRepo: LiabilityMongoRepository, ukPropertiesRepo: UKPropertiesMongoRepository,
-                       selfAssessmentRepository: SelfAssessmentMongoRepository, liabilityCalculator: LiabilityCalculator, featureSwitch: FeatureSwitch) {
+class LiabilityService(employmentRepo: EmploymentMongoRepository,
+                       selfEmploymentRepo: SelfEmploymentMongoRepository,
+                       unearnedIncomeRepo: UnearnedIncomeMongoRepository,
+                       furnishedHolidayLettingsRepo: FurnishedHolidayLettingsMongoRepository,
+                       liabilityRepo: LiabilityMongoRepository,
+                       ukPropertiesRepo: UKPropertiesMongoRepository,
+                       selfAssessmentRepository: SelfAssessmentMongoRepository,
+                       liabilityCalculator: LiabilityCalculator,
+                       featureSwitch: FeatureSwitch) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[LiabilityCalculationError, Liability]]] = {
     liabilityRepo
@@ -90,9 +89,10 @@ object LiabilityService {
   private lazy val service = new LiabilityService(EmploymentRepository(),
                                                   SelfEmploymentRepository(),
                                                   UnearnedIncomeRepository(),
-    FurnishedHolidayLettingsRepository(),
+                                                  FurnishedHolidayLettingsRepository(),
                                                   LiabilityRepository(),
                                                   UKPropertiesRepository(),
+                                                  SelfAssessmentRepository(),
                                                   LiabilityCalculator(),
                                                   FeatureSwitch(AppContext.featureSwitch))
 

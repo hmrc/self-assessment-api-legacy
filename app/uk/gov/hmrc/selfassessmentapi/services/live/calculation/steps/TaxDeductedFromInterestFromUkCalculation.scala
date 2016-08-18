@@ -16,16 +16,23 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-object UKPropertyProfitCalculation extends CalculationStep {
+object TaxDeductedFromInterestFromUkCalculation extends CalculationStep {
+
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-    liability.copy(profitFromUkProperties = ukPropertyIncomes(selfAssessment))
-  }
+    val totalTaxedInterest = selfAssessment.unearnedIncomes.map { unearnedIncome =>
+      unearnedIncome.savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
+    }.sum
 
-  def ukPropertyIncomes(selfAssessment: SelfAssessment): Seq[UkPropertyIncome] = {
-    selfAssessment.ukProperties.map { property => UkPropertyIncome(property.sourceId, roundDown(property.adjustedProfit)) }
-  }
+    val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
+    val interestFromUk = roundUp(grossedUpInterest - totalTaxedInterest)
 
+    liability.copy(taxDeducted = liability.taxDeducted match {
+      case None => Some(MongoTaxDeducted(interestFromUk = interestFromUk))
+      case Some(mongoTaxDeducted) => Some(mongoTaxDeducted.copy(interestFromUk = interestFromUk))
+    })
+  }
 }

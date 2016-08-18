@@ -35,231 +35,255 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSu
 
     "add all incomes, balancingCharges, goodsAndServices and adjustments to profit" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 1200.01),
-            income(IncomeType.Other, 799.99)
-          ),
-          balancingCharges = Seq(
-            balancingCharge(BalancingChargeType.BPRA, 10),
-            balancingCharge(BalancingChargeType.Other, 20)
-          ),
-          goodsAndServicesOwnUse = Seq(
-            goodsAndServices(50)
-          ),
-          adjustments = Some(Adjustments(
-            basisAdjustment = Some(200),
-            accountingAdjustment = Some(100),
-            averagingAdjustment = Some(50)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 1200.01),
+                      income(IncomeType.Other, 799.99)
+                  ),
+                  balancingCharges = Seq(
+                      balancingCharge(BalancingChargeType.BPRA, 10),
+                      balancingCharge(BalancingChargeType.Other, 20)
+                  ),
+                  goodsAndServicesOwnUse = Seq(
+                      goodsAndServices(50)
+                  ),
+                  adjustments = Some(Adjustments(
+                          basisAdjustment = Some(200),
+                          accountingAdjustment = Some(100),
+                          averagingAdjustment = Some(50)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 2430, profit = 2430)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 2430, profit = 2430)
+          ))
     }
 
     "add outstandingBusinessIncome to profit" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 2000)
-          ),
-          adjustments = Some(Adjustments(
-            outstandingBusinessIncome = Some(3000)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 2000)
+                  ),
+                  adjustments = Some(Adjustments(
+                          outstandingBusinessIncome = Some(3000)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 5000, profit = 5000)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 5000, profit = 5000)
+          ))
     }
 
     "loss brought forward must be capped at adjusted profits" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          adjustments = Some(Adjustments(
-            outstandingBusinessIncome = Some(5000.32),
-            lossBroughtForward = Some(20000)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  adjustments = Some(Adjustments(
+                          outstandingBusinessIncome = Some(5000.32),
+                          lossBroughtForward = Some(20000)
+                      ))
+              )))
 
-      val profitFromSelfEmployments = SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail.profitFromSelfEmployments
+      val profitFromSelfEmployments =
+        SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail.profitFromSelfEmployments
       profitFromSelfEmployments.head.taxableProfit shouldBe 5000
       profitFromSelfEmployments.head.profit shouldBe 5000
     }
 
     "subtract all expenses apart from depreciation from profit" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 2000)
-          ),
-          expenses = Seq(
-            expense(ExpenseType.AdminCosts, 100),
-            expense(ExpenseType.BadDebt, 50.01),
-            expense(ExpenseType.CISPayments, 49.99),
-            expense(ExpenseType.Depreciation, 1000000)
-          )
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 2000)
+                  ),
+                  expenses = Seq(
+                      expense(ExpenseType.AdminCosts, 100),
+                      expense(ExpenseType.BadDebt, 50.01),
+                      expense(ExpenseType.CISPayments, 49.99),
+                      expense(ExpenseType.Depreciation, 1000000)
+                  )
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1800, profit = 1800)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1800, profit = 1800)
+          ))
     }
 
     "subtract all allowances from profit" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 2000)
-          ),
-          allowances = Some(Allowances(
-            annualInvestmentAllowance = Some(50),
-            capitalAllowanceMainPool = Some(10),
-            capitalAllowanceSpecialRatePool = Some(10),
-            restrictedCapitalAllowance = Some(10),
-            businessPremisesRenovationAllowance = Some(10),
-            enhancedCapitalAllowance = Some(4.99),
-            allowancesOnSales = Some(5.01)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 2000)
+                  ),
+                  allowances = Some(
+                      Allowances(
+                          annualInvestmentAllowance = Some(50),
+                          capitalAllowanceMainPool = Some(10),
+                          capitalAllowanceSpecialRatePool = Some(10),
+                          restrictedCapitalAllowance = Some(10),
+                          businessPremisesRenovationAllowance = Some(10),
+                          enhancedCapitalAllowance = Some(4.99),
+                          allowancesOnSales = Some(5.01)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900)
+          ))
     }
 
     "round down profit and taxableProfit to the nearest pound" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 1299.01)
-          ),
-          allowances = Some(Allowances(
-            annualInvestmentAllowance = Some(0.02)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 1299.01)
+                  ),
+                  allowances = Some(Allowances(
+                          annualInvestmentAllowance = Some(0.02)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1298, profit = 1298)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1298, profit = 1298)
+          ))
     }
 
     "subtract adjustments from profit" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 2000)
-          ),
-          adjustments = Some(Adjustments(
-            includedNonTaxableProfits = Some(50),
-            basisAdjustment = Some(-15),
-            overlapReliefUsed = Some(10),
-            averagingAdjustment = Some(-25)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 2000)
+                  ),
+                  adjustments = Some(
+                      Adjustments(
+                          includedNonTaxableProfits = Some(50),
+                          basisAdjustment = Some(-15),
+                          overlapReliefUsed = Some(10),
+                          averagingAdjustment = Some(-25)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900)
+          ))
     }
 
     "cap annualInvestmentAllowance at 200000" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 230000)
-          ),
-          allowances = Some(Allowances(
-            annualInvestmentAllowance = Some(230000)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 230000)
+                  ),
+                  allowances = Some(Allowances(
+                          annualInvestmentAllowance = Some(230000)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 30000, profit = 30000)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 30000, profit = 30000)
+          ))
     }
 
     "subtract lossBroughtForward from taxable profit, but not the profit" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 2000)
-          ),
-          adjustments = Some(Adjustments(
-            lossBroughtForward = Some(1000.49)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 2000)
+                  ),
+                  adjustments = Some(Adjustments(
+                          lossBroughtForward = Some(1000.49)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 999, profit = 2000)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 999, profit = 2000)
+          ))
     }
 
     "return zero as taxable profit if lossBroughtForward is greater than adjusted profit" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 2000)
-          ),
-          adjustments = Some(Adjustments(
-            lossBroughtForward = Some(3000)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 2000)
+                  ),
+                  adjustments = Some(Adjustments(
+                          lossBroughtForward = Some(3000)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 2000)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 2000)
+          ))
     }
 
     "return zero as profit and ignore lossBroughtForward if expenses are bigger than incomes (loss)" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment(selfEmploymentId).copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 2000)
-          ),
-          expenses = Seq(
-            expense(ExpenseType.AdminCosts, 4000)
-          ),
-          adjustments = Some(Adjustments(
-            lossBroughtForward = Some(1000)
-          ))
-        )))
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment(selfEmploymentId).copy(
+                  incomes = Seq(
+                      income(IncomeType.Turnover, 2000)
+                  ),
+                  expenses = Seq(
+                      expense(ExpenseType.AdminCosts, 4000)
+                  ),
+                  adjustments = Some(Adjustments(
+                          lossBroughtForward = Some(1000)
+                      ))
+              )))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 0)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 0, profit = 0)
+          ))
     }
 
     "calculate profit for multiple self employments" in {
 
-      val selfAssessment = SelfAssessment(selfEmployments = Seq(
-        aSelfEmployment("se1").copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 1200)
-          )),
-        aSelfEmployment("se2").copy(
-          incomes = Seq(
-            income(IncomeType.Turnover, 800)
+      val selfAssessment = SelfAssessment(
+          selfEmployments = Seq(
+              aSelfEmployment("se1").copy(incomes = Seq(
+                      income(IncomeType.Turnover, 1200)
+                  )),
+              aSelfEmployment("se2").copy(incomes = Seq(
+                      income(IncomeType.Turnover, 800)
+                  ))
           ))
-      ))
 
-      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(profitFromSelfEmployments = Seq(
-        SelfEmploymentIncome("se1", taxableProfit = 1200, profit = 1200),
-        SelfEmploymentIncome("se2", taxableProfit = 800, profit = 800)
-      ))
+      SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
+          profitFromSelfEmployments = Seq(
+              SelfEmploymentIncome("se1", taxableProfit = 1200, profit = 1200),
+              SelfEmploymentIncome("se2", taxableProfit = 800, profit = 800)
+          ))
     }
   }
 }

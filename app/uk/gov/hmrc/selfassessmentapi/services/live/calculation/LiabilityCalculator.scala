@@ -22,24 +22,26 @@ import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 class LiabilityCalculator {
 
   private val calculationSteps = Seq(
-    EmploymentIncomeCalculation,
-    SelfEmploymentProfitCalculation,
-    FurnishedHolidayLettingsProfitCalculation,
-    UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
-    DividendsFromUKSourcesCalculation,
-    UKPropertyProfitCalculation,
-    TotalIncomeCalculation,
-    IncomeTaxReliefCalculation,
-    PersonalAllowanceCalculation,
-    RetirementAnnuityContractCalculation,
-    TotalAllowancesAndReliefsCalculation,
-    TotalIncomeOnWhichTaxIsDueCalculation,
-    PersonalSavingsAllowanceCalculation,
-    SavingsStartingRateCalculation,
-    NonSavingsIncomeTaxCalculation,
-    SavingsIncomeTaxCalculation,
-    DividendsTaxCalculation,
-    TaxDeductedCalculation
+      EmploymentIncomeCalculation,
+      SelfEmploymentProfitCalculation,
+      FurnishedHolidayLettingsProfitCalculation,
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
+      DividendsFromUKSourcesCalculation,
+      UkPropertyProfitCalculation,
+      TotalIncomeCalculation,
+      IncomeTaxReliefCalculation,
+      PersonalAllowanceCalculation,
+      RetirementAnnuityContractCalculation,
+      TotalAllowancesAndReliefsCalculation,
+      TotalIncomeOnWhichTaxIsDueCalculation,
+      PersonalSavingsAllowanceCalculation,
+      SavingsStartingRateCalculation,
+      NonSavingsIncomeTaxCalculation,
+      SavingsIncomeTaxCalculation,
+      DividendsTaxCalculation,
+      TaxDeductedFromInterestFromUkCalculation,
+      TaxDeductedFromUkTaxPaidForEmploymentsCalculation,
+      TaxDeductedForUkPropertiesCalculation
   )
 
   def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
@@ -48,19 +50,24 @@ class LiabilityCalculator {
     if (errorLiabilities.isEmpty) successLiabilities.last else errorLiabilities.head
   }
 
+  /**
+    * Run the the steps lazily until an error occurs. Fails fast with the first error that occurs.
+    * @param selfAssessment
+    * @param liability
+    * @return a tuple (successLiabilities, errorLiabilities) of the successful liabilities computed so far and the error liabilities (with the single liability calculation error)
+    */
   private[calculation] def runSteps(selfAssessment: SelfAssessment,
                                     liability: MongoLiability): (Stream[LiabilityResult], Stream[LiabilityResult]) = {
-    val (successLiabilities, errorLiabilities) =
-      calculationSteps.toStream
-        .scanLeft(liability: LiabilityResult)((accLiability, step) =>
-          accLiability match {
-            case calculationError: CalculationError => calculationError
-            case liability: MongoLiability => step.run(selfAssessment, liability)
-          })
-        .span {
-          case _: MongoLiability => true
-          case _: CalculationError => false
-        }
+    val (successLiabilities, errorLiabilities) = calculationSteps.toStream
+      .scanLeft(liability: LiabilityResult)((accLiability, step) =>
+            accLiability match {
+          case calculationError: CalculationError => calculationError
+          case liability: MongoLiability => step.run(selfAssessment, liability)
+      })
+      .span {
+        case _: MongoLiability => true
+        case _: CalculationError => false
+      }
     (successLiabilities, errorLiabilities)
   }
 }

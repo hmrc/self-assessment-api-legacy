@@ -22,7 +22,9 @@ import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 object IncomeTaxReliefCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-    liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(incomeTaxRelief = Some(incomeTaxRelief(selfAssessment))))
+    liability.copy(
+        allowancesAndReliefs =
+          liability.allowancesAndReliefs.copy(incomeTaxRelief = Some(incomeTaxRelief(selfAssessment))))
   }
 
   def incomeTaxRelief(selfAssessment: SelfAssessment): BigDecimal = {
@@ -30,7 +32,9 @@ object IncomeTaxReliefCalculation extends CalculationStep {
   }
 
   private def ukPropertiesLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {
-    roundUp(capAt(selfAssessment.ukProperties.map(_.lossBroughtForward).sum, selfAssessment.ukProperties.map(_.adjustedProfit).sum))
+    roundUp(
+        capAt(selfAssessment.ukProperties.map(_.lossBroughtForward).sum,
+              selfAssessment.ukProperties.map(_.adjustedProfit).sum))
   }
 
   private def selfEmploymentLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {

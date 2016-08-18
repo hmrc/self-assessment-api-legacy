@@ -28,23 +28,28 @@ trait CalculationStep {
     (positiveOrZero(amount - deductions), positiveOrZero(deductions - amount))
   }
 
-  protected def allocateToTaxBands(income: BigDecimal, taxBands: Seq[TaxBandState]): Seq[TaxBandAllocation] = taxBands match {
-
-    case taxBand :: otherBands =>
-      val allocatedToThisBand = taxBand allocate income
-      Seq(TaxBandAllocation(allocatedToThisBand, taxBand.taxBand)) ++ allocateToTaxBands(income - allocatedToThisBand, otherBands)
-
-    case Nil => Nil
-  }
+  protected def allocateToTaxBands(income: BigDecimal, taxBands: Seq[TaxBandState]): Seq[TaxBandAllocation] =
+    taxBands match {
+      case taxBand :: otherBands =>
+        val allocatedToThisBand = taxBand allocate income
+        Seq(TaxBandAllocation(allocatedToThisBand, taxBand.taxBand)) ++ allocateToTaxBands(
+            income - allocatedToThisBand,
+            otherBands)
+      case Nil => Nil
+    }
 }
 
 case class TaxBandState(taxBand: TaxBand, available: BigDecimal) {
-
   def allocate(income: BigDecimal): BigDecimal = if (income < available) income else available
 }
 
-case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),selfEmployments: Seq[MongoSelfEmployment] = Seq(),
-                          unearnedIncomes: Seq[MongoUnearnedIncome] = Seq(), ukProperties: Seq[MongoUKProperties] = Seq(),
-                          taxYearProperties: Option[TaxYearProperties] = None, furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Seq())
+case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),
+                          selfEmployments: Seq[MongoSelfEmployment] = Seq(),
+                          unearnedIncomes: Seq[MongoUnearnedIncome] = Seq(),
+                          ukProperties: Seq[MongoUKProperties] = Seq(),
+                          taxYearProperties: Option[TaxYearProperties] = None,
+                          furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Seq())
 
-case class PropertyNotComputedException(property: String) extends IllegalStateException(s"Cannot run calculation step as required property $property has not been computed yet")
+case class PropertyNotComputedException(property: String)
+    extends IllegalStateException(
+        s"Cannot run calculation step as required property $property has not been computed yet")

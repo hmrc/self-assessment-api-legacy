@@ -16,15 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{FurnishedHolidayLettingIncome, MongoFurnishedHolidayLettings, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{FurnishedHolidayLettingIncome, LiabilityResult, MongoFurnishedHolidayLettings, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object FurnishedHolidayLettingsProfitCalculation extends CalculationStep {
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
 
-    liability.copy(incomeFromFurnishedHolidayLettings = selfAssessment.furnishedHolidayLettings.map { furnishedHolidayLetting =>
-      val adjustedProfit = positiveOrZero(profitIncreases(furnishedHolidayLetting) - profitReductions(furnishedHolidayLetting))
-      FurnishedHolidayLettingIncome(sourceId = furnishedHolidayLetting.sourceId, profit = roundDown(adjustedProfit))
+    liability.copy(incomeFromFurnishedHolidayLettings = selfAssessment.furnishedHolidayLettings.map {
+      furnishedHolidayLetting =>
+        val adjustedProfit =
+          positiveOrZero(profitIncreases(furnishedHolidayLetting) - profitReductions(furnishedHolidayLetting))
+        FurnishedHolidayLettingIncome(sourceId = furnishedHolidayLetting.sourceId, profit = roundDown(adjustedProfit))
     })
   }
 

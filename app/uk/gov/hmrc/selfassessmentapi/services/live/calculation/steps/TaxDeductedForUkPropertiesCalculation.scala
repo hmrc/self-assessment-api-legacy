@@ -16,24 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability, SelfEmploymentIncome}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-object SelfEmploymentProfitCalculation extends CalculationStep {
+object TaxDeductedForUkPropertiesCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-
-    val profitFromSelfEmployments = selfAssessment.selfEmployments.map { selfEmployment =>
-      val profit = roundDown(selfEmployment.adjustedProfits + selfEmployment.outstandingBusinessIncome)
-      val taxableProfit =
-        roundDown(positiveOrZero(profit - capAt(selfEmployment.lossBroughtForward, selfEmployment.adjustedProfits)))
-
-      SelfEmploymentIncome(sourceId = selfEmployment.sourceId,
-                           taxableProfit = roundDown(taxableProfit),
-                           profit = profit)
-    }
-
-    liability.copy(profitFromSelfEmployments = profitFromSelfEmployments)
+    val deductionFromUkProperties = roundUp(selfAssessment.ukProperties.map(_.taxPaid).sum)
+    liability.copy(taxDeducted = liability.taxDeducted match {
+      case None => Some(MongoTaxDeducted(deductionFromUkProperties = deductionFromUkProperties))
+      case Some(mongoTaxDeducted) => Some(mongoTaxDeducted.copy(deductionFromUkProperties = deductionFromUkProperties))
+    })
   }
-
 }

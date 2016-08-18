@@ -17,33 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-object TaxDeductedCalculation extends CalculationStep {
+object TaxDeductedFromUkTaxPaidForEmploymentsCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-    calculateInterestFromUk(selfAssessment, liability)
-      .fold(identity, calculateUkTaxPaidForEmployments(selfAssessment, _))
-  }
-
-  private[calculation] def calculateInterestFromUk(selfAssessment: SelfAssessment,
-                                                   liability: MongoLiability): LiabilityResult = {
-    val totalTaxedInterest = selfAssessment.unearnedIncomes.map { unearnedIncome =>
-      unearnedIncome.savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
-    }.sum
-
-    val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
-    val interestFromUk = roundUp(grossedUpInterest - totalTaxedInterest)
-
-    liability.copy(taxDeducted = liability.taxDeducted match {
-      case None => Some(MongoTaxDeducted(interestFromUk = interestFromUk))
-      case Some(mongoTaxDeducted) => Some(mongoTaxDeducted.copy(interestFromUk = interestFromUk))
-    })
-  }
-
-  private[calculation] def calculateUkTaxPaidForEmployments(selfAssessment: SelfAssessment,
-                                                            liability: MongoLiability): LiabilityResult = {
     val (initialUkTaxesPaid, initialAccUkTaxPaid) = (Seq.empty[MongoUkTaxPaidForEmployment], BigDecimal(0))
 
     val (ukTaxesPaidForEmployments, totalUkTaxesPaid) =

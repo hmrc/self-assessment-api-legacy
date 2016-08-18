@@ -24,8 +24,10 @@ trait UkPropertySugar extends SelfAssessmentSugar {
 
   this: UnitSpec =>
 
-  def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) =
-    MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
+  def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) = MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
 
   def aUkPropertyIncome(profit: BigDecimal): UkPropertyIncome = UkPropertyIncome(generateSaUtr().utr, profit)
+
+  def aUkPropertyTaxPaidSummary(amount: BigDecimal) = MongoUKPropertiesTaxPaidSummary(BSONObjectID.generate.stringify, amount)
+
 }

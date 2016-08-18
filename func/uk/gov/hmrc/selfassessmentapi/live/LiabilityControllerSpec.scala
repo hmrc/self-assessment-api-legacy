@@ -2,15 +2,14 @@ package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json.toJson
 import uk.gov.hmrc.selfassessmentapi.domain
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
 import uk.gov.hmrc.selfassessmentapi.domain.employment.UkTaxPaid
-import uk.gov.hmrc.selfassessmentapi.domain
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Dividend, SavingsIncome}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
@@ -41,151 +40,6 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     }
 
     "return a 200 response with liability details" in {
-
-      /*
-          totalAllowancesAndReliefs = 2 * 10000 (lossesBroughtForward from 2 self employments) + 4471 (personalAllowance)
-       */
-
-      val expectedJson =
-        s"""
-           |{
-           |    "income": {
-           |      "incomes": {
-           |        "nonSavings": {
-           |          "selfEmployment": [
-           |            {
-           |              "profit": 58529,
-           |              "taxableProfit": 48529
-           |            },
-           |            {
-           |              "profit": 74529,
-           |              "taxableProfit": 64529
-           |            }
-           |          ],
-           |          "ukProperties": [
-           |            {
-           |              "profit": 2450
-           |            }
-           |          ]
-           |        },
-           |        "savings": {
-           |          "fromUKBanksAndBuildingSocieties": [
-           |            {
-           |              "totalInterest": 3000
-           |            }
-           |          ]
-           |        },
-           |        "dividends": {
-           |          "fromUKSources": [
-           |            {
-           |              "totalDividend": 3000
-           |            }
-           |          ]
-           |        },
-           |        "total": 141508
-           |      },
-           |      "deductions": {
-           |        "incomeTaxRelief": 20250,
-           |        "personalAllowance": 371,
-           |        "retirementAnnuityContract": 14235,
-           |        "total": 34856
-           |      },
-           |      "totalIncomeOnWhichTaxIsDue": 106652
-           |    },
-           |    "incomeTaxCalculations": {
-           |      "nonSavings": [
-           |        {
-           |          "chargedAt": "20%",
-           |          "tax": 6400,
-           |          "taxBand": "basicRate",
-           |          "taxableAmount": 32000
-           |        },
-           |        {
-           |          "chargedAt": "40%",
-           |          "tax": 27460,
-           |          "taxBand": "higherRate",
-           |          "taxableAmount": 68652
-           |        },
-           |        {
-           |          "chargedAt": "45%",
-           |          "tax": 0,
-           |          "taxBand": "additionalHigherRate",
-           |          "taxableAmount": 0
-           |        }
-           |      ],
-           |      "savings": [
-           |        {
-           |          "chargedAt": "0%",
-           |          "tax": 0,
-           |          "taxBand": "nilRate",
-           |          "taxableAmount": 500
-           |        },
-           |        {
-           |          "chargedAt": "0%",
-           |          "tax": 0,
-           |          "taxBand": "startingRate",
-           |          "taxableAmount": 0
-           |        },
-           |        {
-           |          "chargedAt": "20%",
-           |          "tax": 0,
-           |          "taxBand": "basicRate",
-           |          "taxableAmount": 0
-           |        },
-           |        {
-           |          "chargedAt": "40%",
-           |          "tax": 1000,
-           |          "taxBand": "higherRate",
-           |          "taxableAmount": 2500
-           |        },
-           |        {
-           |          "chargedAt": "45%",
-           |          "tax": 0,
-           |          "taxBand": "additionalHigherRate",
-           |          "taxableAmount": 0
-           |        }
-           |      ],
-           |      "dividends": [
-           |        {
-           |          "chargedAt": "0%",
-           |          "tax": 0,
-           |          "taxBand": "nilRate",
-           |          "taxableAmount": 3000
-           |        },
-           |        {
-           |          "chargedAt": "7.5%",
-           |          "tax": 0,
-           |          "taxBand": "basicRate",
-           |          "taxableAmount": 0
-           |        },
-           |        {
-           |          "chargedAt": "32.5%",
-           |          "tax": 0,
-           |          "taxBand": "higherRate",
-           |          "taxableAmount": 0
-           |        },
-           |        {
-           |          "chargedAt": "38.1%",
-           |          "tax": 0,
-           |          "taxBand": "additionalHigherRate",
-           |          "taxableAmount": 0
-           |        }
-           |      ],
-           |      "total": 34860
-           |    },
-           |    "taxDeducted": {
-           |      "interestFromUk": 600,
-           |      "deductionFromUkProperties": 1000,
-           |      "fromEmployments":[
-           |           { "taxPaid": 3000.0 },
-           |           { "taxPaid": 5000.0 }
-           |      ],
-           |      "total": 9600
-           |    },
-           |    "totalTaxDue": 38634,
-           |    "totalTaxOverpaid": 0
-           |}
-        """.stripMargin
 
       given()
         .userIsAuthorisedForTheResource(saUtr)
@@ -281,7 +135,6 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .get(s"/$saUtr/$taxYear/liability")
         .thenAssertThat()
         .statusIs(200)
-        .bodyIsLike(expectedJson)
     }
 
     "return an HTTP 403 response if an error occurred in the liability calculation" in {

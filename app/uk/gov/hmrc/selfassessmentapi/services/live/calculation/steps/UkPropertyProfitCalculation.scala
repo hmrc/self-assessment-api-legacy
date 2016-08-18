@@ -15,22 +15,17 @@
  */
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
+
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-object RetirementAnnuityContractCalculation extends CalculationStep {
+object UkPropertyProfitCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-    val allowancesAndReliefs =
-      liability.allowancesAndReliefs.copy(retirementAnnuityContract = Some(calculateAnnuityContract(selfAssessment)))
-
-    liability.copy(allowancesAndReliefs = allowancesAndReliefs)
+    liability.copy(profitFromUkProperties = ukPropertyIncomes(selfAssessment))
   }
 
-  private def calculateAnnuityContract(selfAssessment: SelfAssessment): BigDecimal = {
-    val annuityContract = for {
-      taxProperties <- selfAssessment.taxYearProperties
-    } yield roundUp(taxProperties.retirementAnnuityContract)
-
-    annuityContract.sum
+  def ukPropertyIncomes(selfAssessment: SelfAssessment): Seq[UkPropertyIncome] = {
+    selfAssessment.ukProperties.map { property => UkPropertyIncome(property.sourceId, roundDown(property.adjustedProfit)) }
   }
+
 }

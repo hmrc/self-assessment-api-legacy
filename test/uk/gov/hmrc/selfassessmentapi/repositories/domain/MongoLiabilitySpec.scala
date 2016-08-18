@@ -228,4 +228,10 @@ class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar with JsonSpec
 
     }
   }
+
+  "TaxBandAllocation.tax" should {
+    "round down the tax due to the nearest penny" in {
+      TaxBandAllocation(300.3333, TaxBand.BasicTaxBand).tax(20) shouldBe 60.06
+    }
+  }
 }

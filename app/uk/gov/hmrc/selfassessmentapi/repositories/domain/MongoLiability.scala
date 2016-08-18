@@ -258,8 +258,8 @@ object LiabilityResult {
     Some(prod.productPrefix -> sub)
   }
 
-  def apply(`class`: String, data: JsValue): LiabilityResult = {
-    (`class` match {
+  def apply(className: String, data: JsValue): LiabilityResult = {
+    (className match {
       case "MongoLiability" => Json.fromJson[MongoLiability](data)(liabilityFormats)
       case "MongoLiabilityCalculationErrors" =>
         Json.fromJson[MongoLiabilityCalculationErrors](data)(calculationErrorsFormats)

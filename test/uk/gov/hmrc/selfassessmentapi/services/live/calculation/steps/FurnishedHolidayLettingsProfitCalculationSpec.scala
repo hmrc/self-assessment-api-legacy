@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Adjustments, Allowances}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.{FurnishedHolidayLettingsSugar, UnitSpec}
 
-class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with FurnishedHolidayLettingsSugar {
+class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
 
   private val liability = aLiability()
 
@@ -39,19 +41,19 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with Furnis
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            income(1200.01),
-            income(799.99)
+            anIncome(1200.01),
+            anIncome(799.99)
           ),
           expenses = Seq(
-            expense(200, FinancialCosts),
-            expense(200, ProfessionalFees)
+            anExpense(200, FinancialCosts),
+            anExpense(200, ProfessionalFees)
           ),
           balancingCharges = Seq(
-            balancingCharge(10),
-            balancingCharge(20)
+            aBalancingCharge(10),
+            aBalancingCharge(20)
           ),
           privateUseAdjustment = Seq(
-            privateUseAdjustment(50)
+            aPrivateUseAdjustment(50)
           )
         )
       ))
@@ -66,13 +68,13 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with Furnis
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            income(2000)
+            anIncome(2000)
           ),
           expenses = Seq(
-            expense(100, FinancialCosts),
-            expense(50.01, ProfessionalFees),
-            expense(49.99, PremisesRunningCosts),
-            expense(50, Other)
+            anExpense(100, FinancialCosts),
+            anExpense(50.01, ProfessionalFees),
+            anExpense(49.99, PremisesRunningCosts),
+            anExpense(50, Other)
           )
         )))
 
@@ -86,7 +88,7 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with Furnis
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            income(2000)
+            anIncome(2000)
           ),
           allowances = Some(Allowances(
             capitalAllowance = Some(10)
@@ -103,7 +105,7 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with Furnis
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            income(1299.01)
+            anIncome(1299.01)
           ),
           allowances = Some(Allowances(
             capitalAllowance = Some(0.02)
@@ -120,10 +122,10 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with Furnis
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            income(2000)
+            anIncome(2000)
           ),
           expenses = Seq(
-            expense(4000, FinancialCosts)
+            anExpense(4000, FinancialCosts)
           ),
           adjustments = Some(Adjustments(
             lossBroughtForward = Some(1000)
@@ -140,11 +142,11 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with Furnis
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting("se1").copy(
           incomes = Seq(
-            income(1200)
+            anIncome(1200)
           )),
         aFurnishedHolidayLetting("se2").copy(
           incomes = Seq(
-            income(800)
+            anIncome(800)
           ))
       ))
 

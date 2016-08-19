@@ -23,25 +23,24 @@ import uk.gov.hmrc.selfassessmentapi.domain.employment.ExpenseType.{apply => _, 
 import uk.gov.hmrc.selfassessmentapi.domain.employment.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
-trait EmploymentSugar extends SelfAssessmentSugar {
-
-  this: UnitSpec =>
+object EmploymentSugar {
 
   def anEmployment(id: SourceId = BSONObjectID.generate.stringify,
                    saUtr: SaUtr = generateSaUtr(),
                    taxYear: TaxYear = taxYear) = MongoEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
-  def anEmploymentUkTaxPaidSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, amount: BigDecimal) =
+  def anUkTaxPaidSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, amount: BigDecimal) =
     MongoEmploymentUkTaxPaidSummary(summaryId, amount)
 
-  def employmentIncome(`type`: IncomeType, amount: BigDecimal) =
+  def anIncome(`type`: IncomeType, amount: BigDecimal) =
     MongoEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def employmentExpense(`type`: ExpenseType, amount: BigDecimal) =
+  def anExpense(`type`: ExpenseType, amount: BigDecimal) =
     MongoEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def benefit(`type`: BenefitType, amount: BigDecimal) =
+  def aBenefit(`type`: BenefitType, amount: BigDecimal) =
     MongoEmploymentBenefitSummary(BSONObjectID.generate.stringify, `type`, amount)
 
 }

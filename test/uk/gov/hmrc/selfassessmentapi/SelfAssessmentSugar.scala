@@ -23,9 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
-trait SelfAssessmentSugar {
-
-  this: UnitSpec =>
+object SelfAssessmentSugar extends UnitSpec {
 
   def aLiability(saUtr: SaUtr = generateSaUtr(),
                  taxYear: TaxYear = taxYear,

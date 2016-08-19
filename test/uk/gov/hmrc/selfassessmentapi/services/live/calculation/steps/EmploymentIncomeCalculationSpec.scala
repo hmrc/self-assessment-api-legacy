@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.EmploymentSugar._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.employment.{BenefitType, ExpenseType, IncomeType}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, MongoLiability}
-import uk.gov.hmrc.selfassessmentapi.{EmploymentSugar, UnitSpec}
 
-class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
+class EmploymentIncomeCalculationSpec extends UnitSpec {
 
   private val liability = MongoLiability.create(generateSaUtr(), taxYear)
   private val employmentId1 = "e1"
@@ -33,30 +35,30 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
       val selfAssessment = SelfAssessment(
           employments = Seq(anEmployment(employmentId1).copy(
                                 incomes = Seq(
-                                    employmentIncome(IncomeType.Salary, 1000),
-                                    employmentIncome(IncomeType.Other, 500)
+                                    anIncome(IncomeType.Salary, 1000),
+                                    anIncome(IncomeType.Other, 500)
                                 ),
                                 benefits = Seq(
-                                    benefit(BenefitType.Accommodation, 100),
-                                    benefit(BenefitType.Other, 400)
+                                    aBenefit(BenefitType.Accommodation, 100),
+                                    aBenefit(BenefitType.Other, 400)
                                 ),
                                 expenses = Seq(
-                                    employmentExpense(ExpenseType.TravelAndSubsistence, 100),
-                                    employmentExpense(ExpenseType.ProfessionalFees, 200)
+                                    anExpense(ExpenseType.TravelAndSubsistence, 100),
+                                    anExpense(ExpenseType.ProfessionalFees, 200)
                                 )
                             ),
                             anEmployment(employmentId2).copy(
                                 incomes = Seq(
-                                    employmentIncome(IncomeType.Salary, 2000),
-                                    employmentIncome(IncomeType.Other, 1000)
+                                    anIncome(IncomeType.Salary, 2000),
+                                    anIncome(IncomeType.Other, 1000)
                                 ),
                                 benefits = Seq(
-                                    benefit(BenefitType.CompanyVehicle, 100),
-                                    benefit(BenefitType.ExpensesPayments, 400)
+                                    aBenefit(BenefitType.CompanyVehicle, 100),
+                                    aBenefit(BenefitType.ExpensesPayments, 400)
                                 ),
                                 expenses = Seq(
-                                    employmentExpense(ExpenseType.TravelAndSubsistence, 500),
-                                    employmentExpense(ExpenseType.ProfessionalFees, 1000)
+                                    anExpense(ExpenseType.TravelAndSubsistence, 500),
+                                    anExpense(ExpenseType.ProfessionalFees, 1000)
                                 )
                             )))
 
@@ -71,16 +73,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      employmentIncome(IncomeType.Salary, 1000),
-                      employmentIncome(IncomeType.Other, 500)
+                      anIncome(IncomeType.Salary, 1000),
+                      anIncome(IncomeType.Other, 500)
                   ),
                   benefits = Seq(
-                      benefit(BenefitType.Accommodation, 100),
-                      benefit(BenefitType.Other, 400)
+                      aBenefit(BenefitType.Accommodation, 100),
+                      aBenefit(BenefitType.Other, 400)
                   ),
                   expenses = Seq(
-                      employmentExpense(ExpenseType.TravelAndSubsistence, 100),
-                      employmentExpense(ExpenseType.ProfessionalFees, 200)
+                      anExpense(ExpenseType.TravelAndSubsistence, 100),
+                      anExpense(ExpenseType.ProfessionalFees, 200)
                   )
               )))
 
@@ -94,16 +96,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      employmentIncome(IncomeType.Salary, 100),
-                      employmentIncome(IncomeType.Other, 200)
+                      anIncome(IncomeType.Salary, 100),
+                      anIncome(IncomeType.Other, 200)
                   ),
                   benefits = Seq(
-                      benefit(BenefitType.Accommodation, 10),
-                      benefit(BenefitType.Other, 40)
+                      aBenefit(BenefitType.Accommodation, 10),
+                      aBenefit(BenefitType.Other, 40)
                   ),
                   expenses = Seq(
-                      employmentExpense(ExpenseType.TravelAndSubsistence, 200),
-                      employmentExpense(ExpenseType.ProfessionalFees, 400)
+                      anExpense(ExpenseType.TravelAndSubsistence, 200),
+                      anExpense(ExpenseType.ProfessionalFees, 400)
                   )
               )))
 
@@ -117,16 +119,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      employmentIncome(IncomeType.Salary, 1000.90),
-                      employmentIncome(IncomeType.Other, 500.75)
+                      anIncome(IncomeType.Salary, 1000.90),
+                      anIncome(IncomeType.Other, 500.75)
                   ),
                   benefits = Seq(
-                      benefit(BenefitType.Accommodation, 100.10),
-                      benefit(BenefitType.Other, 400.20)
+                      aBenefit(BenefitType.Accommodation, 100.10),
+                      aBenefit(BenefitType.Other, 400.20)
                   ),
                   expenses = Seq(
-                      employmentExpense(ExpenseType.TravelAndSubsistence, 100.10),
-                      employmentExpense(ExpenseType.ProfessionalFees, 200.40)
+                      anExpense(ExpenseType.TravelAndSubsistence, 100.10),
+                      anExpense(ExpenseType.ProfessionalFees, 200.40)
                   )
               )))
 

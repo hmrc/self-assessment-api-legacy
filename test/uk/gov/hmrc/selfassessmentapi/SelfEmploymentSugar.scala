@@ -23,34 +23,25 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
-trait SelfEmploymentSugar extends SelfAssessmentSugar {
-
-  this: UnitSpec =>
+object SelfEmploymentSugar {
 
   def aSelfEmployment(id: SourceId = BSONObjectID.generate.stringify,
                       saUtr: SaUtr = generateSaUtr(),
                       taxYear: TaxYear = taxYear) =
     MongoSelfEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now, now.toLocalDate)
 
-  def selfEmploymentIncome(`type`: IncomeType, amount: BigDecimal) =
+  def anIncome(`type`: IncomeType, amount: BigDecimal) =
     MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def selfEmploymentExpense(`type`: ExpenseType, amount: BigDecimal) =
+  def anExpense(`type`: ExpenseType, amount: BigDecimal) =
     MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def income(`type`: IncomeType, amount: BigDecimal) =
-    MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
-
-  def expense(`type`: ExpenseType, amount: BigDecimal) =
-    MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
-
-  def balancingCharge(`type`: BalancingChargeType, amount: BigDecimal) =
+  def aBalancingCharge(`type`: BalancingChargeType, amount: BigDecimal) =
     MongoSelfEmploymentBalancingChargeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def goodsAndServices(amount: BigDecimal) =
+  def aGoodsAndServices(amount: BigDecimal) =
     MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
-  def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0) =
-    SelfEmploymentIncome(sourceId = BSONObjectID.generate.stringify, taxableProfit = taxableProfit, profit = profit)
 }

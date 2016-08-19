@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
-class RetirementAnnuityContractCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+
+class RetirementAnnuityContractCalculationSpec extends UnitSpec {
   "run" should {
     "compute the sum of the retirement annuity contributions, overseas pensions and employer pension contributions" in {
       val selfAssessment = SelfAssessment(

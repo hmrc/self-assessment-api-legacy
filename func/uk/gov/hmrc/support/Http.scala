@@ -13,33 +13,40 @@ import scala.concurrent.{Await, Future}
 
 object Http {
 
-  def get(url: String)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
+  def get(url: String)(implicit hc: HeaderCarrier, timeout: FiniteDuration): HttpResponse = perform(url) { request =>
     request.get()
   }
 
-  def post[A](url: String, body: A, headers: Seq[(String, String)] = Seq.empty)(implicit writes: Writes[A], hc: HeaderCarrier): HttpResponse = perform(url) { request =>
+  def post[A](url: String, body: A, headers: Seq[(String, String)] = Seq.empty)
+             (implicit writes: Writes[A], hc: HeaderCarrier, timeout: FiniteDuration): HttpResponse = perform(url) { request =>
     request.post(Json.toJson(body))
   }
 
-  def postJson(url: String, body: JsValue, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
+  def postJson(url: String, body: JsValue, headers: Seq[(String, String)] = Seq.empty)
+              (implicit hc: HeaderCarrier, timeout: FiniteDuration): HttpResponse = perform(url) { request =>
     request.post(body)
   }
 
-  def putJson(url: String, body: JsValue, headers: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
+  def putJson(url: String, body: JsValue, headers: Seq[(String, String)] = Seq.empty)
+             (implicit hc: HeaderCarrier, timeout: FiniteDuration): HttpResponse = perform(url) { request =>
     request.put(body)
   }
 
-  def postEmpty(url: String)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
+  def postEmpty(url: String)
+               (implicit hc: HeaderCarrier, timeout: FiniteDuration): HttpResponse = perform(url) { request =>
     request.post(Results.EmptyContent())
   }
 
-  def delete(url: String)(implicit hc: HeaderCarrier): HttpResponse = perform(url) { request =>
+  def delete(url: String)
+            (implicit hc: HeaderCarrier, timeout: FiniteDuration): HttpResponse = perform(url) { request =>
     request.delete()
   }
 
-  private def perform(url: String)( fun: WSRequestHolder => Future[WSResponse])(implicit hc: HeaderCarrier): WSHttpResponse =
-    await(fun(WS.url(url).withHeaders(hc.headers: _*).withRequestTimeout(20000)).map(new WSHttpResponse(_)))
+  private def perform(url: String)(fun: WSRequestHolder => Future[WSResponse])
+                     (implicit hc: HeaderCarrier, timeout: FiniteDuration): WSHttpResponse =
+    await(fun(WS.url(url).withHeaders(hc.headers: _*).withRequestTimeout(timeout.toMillis.toInt)).map(new WSHttpResponse(_)))
 
-  private def await[A](future: Future[A]) = Await.result(future, Duration(5, SECONDS))
+  private def await[A](future: Future[A])
+                      (implicit timeout: FiniteDuration) = Await.result(future, timeout)
 
 }

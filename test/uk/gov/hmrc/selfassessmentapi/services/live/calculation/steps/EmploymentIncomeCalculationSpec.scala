@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.EmploymentSugar._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.employment.{BenefitType, ExpenseType, IncomeType}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, MongoLiability}
-import uk.gov.hmrc.selfassessmentapi.{EmploymentSugar, UnitSpec}
 
-class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
+class EmploymentIncomeCalculationSpec extends UnitSpec {
 
   private val liability = MongoLiability.create(generateSaUtr(), taxYear)
   private val employmentId1 = "e1"
@@ -33,30 +35,30 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
       val selfAssessment = SelfAssessment(
           employments = Seq(anEmployment(employmentId1).copy(
                                 incomes = Seq(
-                                    employmentIncome(IncomeType.Salary, 1000),
-                                    employmentIncome(IncomeType.Other, 500)
+                                    income(IncomeType.Salary, 1000),
+                                    income(IncomeType.Other, 500)
                                 ),
                                 benefits = Seq(
                                     benefit(BenefitType.Accommodation, 100),
                                     benefit(BenefitType.Other, 400)
                                 ),
                                 expenses = Seq(
-                                    employmentExpense(ExpenseType.TravelAndSubsistence, 100),
-                                    employmentExpense(ExpenseType.ProfessionalFees, 200)
+                                    expense(ExpenseType.TravelAndSubsistence, 100),
+                                    expense(ExpenseType.ProfessionalFees, 200)
                                 )
                             ),
                             anEmployment(employmentId2).copy(
                                 incomes = Seq(
-                                    employmentIncome(IncomeType.Salary, 2000),
-                                    employmentIncome(IncomeType.Other, 1000)
+                                    income(IncomeType.Salary, 2000),
+                                    income(IncomeType.Other, 1000)
                                 ),
                                 benefits = Seq(
                                     benefit(BenefitType.CompanyVehicle, 100),
                                     benefit(BenefitType.ExpensesPayments, 400)
                                 ),
                                 expenses = Seq(
-                                    employmentExpense(ExpenseType.TravelAndSubsistence, 500),
-                                    employmentExpense(ExpenseType.ProfessionalFees, 1000)
+                                    expense(ExpenseType.TravelAndSubsistence, 500),
+                                    expense(ExpenseType.ProfessionalFees, 1000)
                                 )
                             )))
 
@@ -71,16 +73,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      employmentIncome(IncomeType.Salary, 1000),
-                      employmentIncome(IncomeType.Other, 500)
+                      income(IncomeType.Salary, 1000),
+                      income(IncomeType.Other, 500)
                   ),
                   benefits = Seq(
                       benefit(BenefitType.Accommodation, 100),
                       benefit(BenefitType.Other, 400)
                   ),
                   expenses = Seq(
-                      employmentExpense(ExpenseType.TravelAndSubsistence, 100),
-                      employmentExpense(ExpenseType.ProfessionalFees, 200)
+                      expense(ExpenseType.TravelAndSubsistence, 100),
+                      expense(ExpenseType.ProfessionalFees, 200)
                   )
               )))
 
@@ -94,16 +96,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      employmentIncome(IncomeType.Salary, 100),
-                      employmentIncome(IncomeType.Other, 200)
+                      income(IncomeType.Salary, 100),
+                      income(IncomeType.Other, 200)
                   ),
                   benefits = Seq(
                       benefit(BenefitType.Accommodation, 10),
                       benefit(BenefitType.Other, 40)
                   ),
                   expenses = Seq(
-                      employmentExpense(ExpenseType.TravelAndSubsistence, 200),
-                      employmentExpense(ExpenseType.ProfessionalFees, 400)
+                      expense(ExpenseType.TravelAndSubsistence, 200),
+                      expense(ExpenseType.ProfessionalFees, 400)
                   )
               )))
 
@@ -117,16 +119,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      employmentIncome(IncomeType.Salary, 1000.90),
-                      employmentIncome(IncomeType.Other, 500.75)
+                      income(IncomeType.Salary, 1000.90),
+                      income(IncomeType.Other, 500.75)
                   ),
                   benefits = Seq(
                       benefit(BenefitType.Accommodation, 100.10),
                       benefit(BenefitType.Other, 400.20)
                   ),
                   expenses = Seq(
-                      employmentExpense(ExpenseType.TravelAndSubsistence, 100.10),
-                      employmentExpense(ExpenseType.ProfessionalFees, 200.40)
+                      expense(ExpenseType.TravelAndSubsistence, 100.10),
+                      expense(ExpenseType.ProfessionalFees, 200.40)
                   )
               )))
 

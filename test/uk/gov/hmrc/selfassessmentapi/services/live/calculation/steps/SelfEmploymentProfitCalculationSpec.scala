@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.SelfEmploymentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
-class SelfEmploymentProfitCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class SelfEmploymentProfitCalculationSpec extends UnitSpec {
 
   private val liability = MongoLiability.create(generateSaUtr(), taxYear)
 

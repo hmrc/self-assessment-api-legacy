@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Adjustments, Allowances}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.{FurnishedHolidayLettingsSugar, UnitSpec}
 
-class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec with FurnishedHolidayLettingsSugar {
+class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
 
   private val liability = aLiability()
 

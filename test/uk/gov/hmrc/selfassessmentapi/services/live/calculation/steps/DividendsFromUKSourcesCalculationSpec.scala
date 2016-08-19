@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.DividendsFromUKSources
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType._
-import uk.gov.hmrc.selfassessmentapi.{UnearnedIncomesSugar, UnitSpec}
 
-class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncomesSugar {
+class DividendsFromUKSourcesCalculationSpec extends UnitSpec {
 
   "run" should {
 
@@ -40,8 +42,8 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
       val dividendUK2 = anUnearnedDividendIncomeSummary("dividendUK2", FromUKCompanies, 3000.50)
       val dividendOther2 = anUnearnedDividendIncomeSummary("dividendOtherUK2", OtherFromUKCompanies, 4000.999)
 
-      val unearnedIncomes1 = anUnearnedIncomes().copy(dividends = Seq(dividendUK1, dividendOther1))
-      val unearnedIncomes2 = anUnearnedIncomes().copy(dividends = Seq(dividendUK2, dividendOther2))
+      val unearnedIncomes1 = income().copy(dividends = Seq(dividendUK1, dividendOther1))
+      val unearnedIncomes2 = income().copy(dividends = Seq(dividendUK2, dividendOther2))
 
       val liability = aLiability()
 
@@ -55,7 +57,7 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
 
     "calculate dividends when there is one uk dividend from a single unearned income source" in {
       val dividendUK = anUnearnedDividendIncomeSummary("dividendUK", FromUKCompanies, 1000)
-      val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendUK))
+      val unearnedIncomes = income().copy(dividends = Seq(dividendUK))
       val liability = aLiability()
 
       DividendsFromUKSourcesCalculation
@@ -68,7 +70,7 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
     "calculate dividends when there are multiple uk dividends from a single unearned income source" in {
       val dividendUK1 = anUnearnedDividendIncomeSummary("dividendUK1", FromUKCompanies, 1000)
       val dividendUK2 = anUnearnedDividendIncomeSummary("dividendUK2", FromUKCompanies, 2000)
-      val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendUK1, dividendUK2))
+      val unearnedIncomes = income().copy(dividends = Seq(dividendUK1, dividendUK2))
       val liability = aLiability()
 
       DividendsFromUKSourcesCalculation
@@ -80,7 +82,7 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
 
     "calculate round down dividends when there is one uk dividends from a single unearned income source" in {
       val dividendUK = anUnearnedDividendIncomeSummary("dividendUK", FromUKCompanies, 1000.50)
-      val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendUK))
+      val unearnedIncomes = income().copy(dividends = Seq(dividendUK))
       val liability = aLiability()
 
       DividendsFromUKSourcesCalculation
@@ -93,7 +95,7 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
     "calculate round down dividends when there are uk dividends from a single unearned income source" in {
       val dividendUK1 = anUnearnedDividendIncomeSummary("dividendUK1", FromUKCompanies, 1000.90)
       val dividendUK2 = anUnearnedDividendIncomeSummary("dividendUK2", FromUKCompanies, 2000.99)
-      val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendUK1, dividendUK2))
+      val unearnedIncomes = income().copy(dividends = Seq(dividendUK1, dividendUK2))
       val liability = aLiability()
 
       DividendsFromUKSourcesCalculation
@@ -105,7 +107,7 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
 
     "calculate dividends when there is one other uk dividends from a single unearned income source" in {
       val dividendOther = anUnearnedDividendIncomeSummary("dividendOther", OtherFromUKCompanies, 1000)
-      val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendOther))
+      val unearnedIncomes = income().copy(dividends = Seq(dividendOther))
       val liability = aLiability()
 
       DividendsFromUKSourcesCalculation
@@ -118,7 +120,7 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
     "calculate dividends when there are multiple other uk dividends from a single unearned income source" in {
       val dividendOther1 = anUnearnedDividendIncomeSummary("dividendOther1", OtherFromUKCompanies, 1000)
       val dividendOther2 = anUnearnedDividendIncomeSummary("dividendOther2", OtherFromUKCompanies, 2000)
-      val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendOther1, dividendOther2))
+      val unearnedIncomes = income().copy(dividends = Seq(dividendOther1, dividendOther2))
       val liability = aLiability()
 
       DividendsFromUKSourcesCalculation
@@ -130,7 +132,7 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
 
     "calculate rounded down dividends when there is one other uk dividends from a single unearned income source" in {
       val dividendOther = anUnearnedDividendIncomeSummary("dividendOther", OtherFromUKCompanies, 1000.50)
-      val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendOther))
+      val unearnedIncomes = income().copy(dividends = Seq(dividendOther))
       val liability = aLiability()
 
       DividendsFromUKSourcesCalculation
@@ -143,7 +145,7 @@ class DividendsFromUKSourcesCalculationSpec extends UnitSpec with UnearnedIncome
     "calculate rounded down dividends when there are multiple other uk dividends from a single unearned income source" in {
       val dividendOther1 = anUnearnedDividendIncomeSummary("dividendOther1", OtherFromUKCompanies, 1000.50)
       val dividendOther2 = anUnearnedDividendIncomeSummary("dividendOther2", OtherFromUKCompanies, 2000.99)
-      val unearnedIncomes = anUnearnedIncomes().copy(dividends = Seq(dividendOther1, dividendOther2))
+      val unearnedIncomes = income().copy(dividends = Seq(dividendOther1, dividendOther2))
       val liability = aLiability()
 
       DividendsFromUKSourcesCalculation

@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
-import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class MongoLiabilitySpec extends UnitSpec with SelfAssessmentSugar with JsonSpec {
+class MongoLiabilitySpec extends UnitSpec with JsonSpec {
 
   "MongoLiability.toLiability" should {
 

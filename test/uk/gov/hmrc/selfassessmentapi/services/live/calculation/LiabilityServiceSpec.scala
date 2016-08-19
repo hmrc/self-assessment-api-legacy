@@ -22,6 +22,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
@@ -29,11 +30,10 @@ import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 
 import scala.concurrent.Future
 
-class LiabilityServiceSpec extends UnitSpec with MockitoSugar with SelfEmploymentSugar {
+class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
 
   private val saUtr = generateSaUtr()
   private val liabilityRepo = mock[LiabilityMongoRepository]

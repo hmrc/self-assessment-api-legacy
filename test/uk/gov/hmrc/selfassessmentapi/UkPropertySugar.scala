@@ -19,15 +19,12 @@ package uk.gov.hmrc.selfassessmentapi
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
-trait UkPropertySugar extends SelfAssessmentSugar {
-
-  this: UnitSpec =>
+object UkPropertySugar {
 
   def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) = MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
 
-  def aUkPropertyIncome(profit: BigDecimal): UkPropertyIncome = UkPropertyIncome(generateSaUtr().utr, profit)
-
-  def aUkPropertyTaxPaidSummary(amount: BigDecimal) = MongoUKPropertiesTaxPaidSummary(BSONObjectID.generate.stringify, amount)
+  def taxPaidSummary(amount: BigDecimal) = MongoUKPropertiesTaxPaidSummary(BSONObjectID.generate.stringify, amount)
 
 }

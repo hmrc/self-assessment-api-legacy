@@ -22,14 +22,13 @@ import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{apply =
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
-trait UnearnedIncomesSugar extends SelfAssessmentSugar {
+object UnearnedIncomesSugar {
 
-  this: UnitSpec =>
-
-  def anUnearnedIncomes(id: SourceId = BSONObjectID.generate.stringify,
-                        saUtr: SaUtr = generateSaUtr(),
-                        taxYear: TaxYear = taxYear) =
+  def income(id: SourceId = BSONObjectID.generate.stringify,
+             saUtr: SaUtr = generateSaUtr(),
+             taxYear: TaxYear = taxYear) =
     MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
   def anUnearnedInterestIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify,

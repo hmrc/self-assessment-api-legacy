@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.{UkPropertySugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.UkPropertySugar._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{Adjustments, Allowances, ExpenseType, IncomeType}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
-class UkPropertyProfitCalculationSpec extends UnitSpec with UkPropertySugar {
+class UkPropertyProfitCalculationSpec extends UnitSpec {
 
   "run" should {
     def income(incomeType: IncomeType, amount: BigDecimal) = MongoUKPropertiesIncomeSummary("", incomeType, amount)

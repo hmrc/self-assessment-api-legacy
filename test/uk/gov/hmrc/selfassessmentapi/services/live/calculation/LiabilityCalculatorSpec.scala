@@ -21,12 +21,12 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.EmploymentSugar._
+import uk.gov.hmrc.selfassessmentapi.SelfEmploymentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
 
-class LiabilityCalculatorSpec
-    extends UnitSpec
-    with EmploymentSugar
-    with SelfEmploymentSugar
-    with UnearnedIncomesSugar {
+class LiabilityCalculatorSpec extends UnitSpec {
 
   "calculate" should {
 
@@ -202,13 +202,13 @@ class LiabilityCalculatorSpec
 
     "run the liability calculation steps until a calculation error occurs" in {
 
-      val ukTaxPaidSummary1 = anEmploymentUkTaxPaidSummary("ukTaxPaid1", -812.45)
-      val ukTaxPaidSummary2 = anEmploymentUkTaxPaidSummary("ukTaxPaid2", 234.87)
+      val ukTaxPaidSummary1 = ukTaxPaidSummary("ukTaxPaid1", -812.45)
+      val ukTaxPaidSummary2 = ukTaxPaidSummary("ukTaxPaid2", 234.87)
       val employments = anEmployment().copy(ukTaxPaid = Seq(ukTaxPaidSummary1, ukTaxPaidSummary2))
 
       val selfAssessment =
         SelfAssessment(selfEmployments =
-                         Seq(aSelfEmployment().copy(incomes = Seq(selfEmploymentIncome(IncomeType.Turnover, 20000)))),
+                         Seq(aSelfEmployment().copy(incomes = Seq(SelfEmploymentSugar.income(IncomeType.Turnover, 20000)))),
                        employments = Seq(employments))
 
       val (_, errorLiabilities) =
@@ -224,11 +224,11 @@ class LiabilityCalculatorSpec
 
     val selfAssessment = SelfAssessment(
         selfEmployments = Seq(
-            aSelfEmployment().copy(incomes = Seq(selfEmploymentIncome(IncomeType.Turnover, nonSavingsIncome)))
+            aSelfEmployment().copy(incomes = Seq(SelfEmploymentSugar.income(IncomeType.Turnover, nonSavingsIncome)))
         ),
         unearnedIncomes = Seq(
-            anUnearnedIncomes().copy(savings = Seq(anUnearnedInterestIncomeSummary(amount = savingsIncome))),
-            anUnearnedIncomes().copy(dividends = Seq(anUnearnedDividendIncomeSummary(amount = dividendsIncome)))
+            UnearnedIncomesSugar.income().copy(savings = Seq(anUnearnedInterestIncomeSummary(amount = savingsIncome))),
+            UnearnedIncomesSugar.income().copy(dividends = Seq(anUnearnedDividendIncomeSummary(amount = dividendsIncome)))
         )
     )
 

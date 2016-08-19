@@ -17,14 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor4}
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoTaxDeducted, MongoUnearnedIncomesSavingsIncomeSummary}
-import uk.gov.hmrc.selfassessmentapi.{UnearnedIncomesSugar, UnitSpec}
 
-class TaxDeductedFromInterestFromUkCalculationSpec
-    extends UnitSpec
-    with TableDrivenPropertyChecks
-    with UnearnedIncomesSugar {
+class TaxDeductedFromInterestFromUkCalculationSpec extends UnitSpec with TableDrivenPropertyChecks {
 
   "run" should {
 
@@ -82,7 +81,7 @@ class TaxDeductedFromInterestFromUkCalculationSpec
                           MongoUnearnedIncomesSavingsIncomeSummary,
                           BigDecimal]): Unit = {
       forAll(inputs) { (interest1, interest2, interest3, interestFromUk) =>
-        val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(interest1, interest2, interest3))
+        val unearnedIncomes = income().copy(savings = Seq(interest1, interest2, interest3))
         val liability = aLiability()
 
         TaxDeductedFromInterestFromUkCalculation

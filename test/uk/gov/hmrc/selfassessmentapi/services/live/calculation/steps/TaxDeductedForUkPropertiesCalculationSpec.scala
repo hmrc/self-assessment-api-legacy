@@ -17,10 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import org.scalatest.prop.TableDrivenPropertyChecks
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UkPropertySugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
-import uk.gov.hmrc.selfassessmentapi.{UkPropertySugar, UnitSpec}
 
-class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrivenPropertyChecks with UkPropertySugar {
+class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrivenPropertyChecks {
 
   "run" should {
 
@@ -28,7 +30,7 @@ class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrive
       val liability = aLiability()
 
       TaxDeductedForUkPropertiesCalculation
-        .run(aSelfAssessment(ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(aUkPropertyTaxPaidSummary(500))))),
+        .run(aSelfAssessment(ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(taxPaidSummary(500))))),
              liability)
         .getLiabilityOrFail shouldBe
         liability.copy(taxDeducted = Some(MongoTaxDeducted(deductionFromUkProperties = 500)))
@@ -39,7 +41,7 @@ class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrive
 
       TaxDeductedForUkPropertiesCalculation
         .run(aSelfAssessment(
-                 ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(aUkPropertyTaxPaidSummary(500.22))))),
+                 ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(taxPaidSummary(500.22))))),
              liability)
         .getLiabilityOrFail shouldBe
         liability.copy(taxDeducted = Some(MongoTaxDeducted(deductionFromUkProperties = 501)))

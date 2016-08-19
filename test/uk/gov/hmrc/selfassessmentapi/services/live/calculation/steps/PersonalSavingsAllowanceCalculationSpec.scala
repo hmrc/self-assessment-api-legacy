@@ -17,13 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 import uk.gov.hmrc.selfassessmentapi.Generators._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
-class PersonalSavingsAllowanceCalculationSpec
-    extends UnitSpec
-    with SelfAssessmentSugar
-    with GeneratorDrivenPropertyChecks {
+class PersonalSavingsAllowanceCalculationSpec extends UnitSpec with GeneratorDrivenPropertyChecks {
 
   "run" should {
 

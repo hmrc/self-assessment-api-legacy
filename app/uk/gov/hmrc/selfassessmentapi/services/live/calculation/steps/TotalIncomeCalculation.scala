@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
 
 object TotalIncomeCalculation extends CalculationStep {
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
 
     val sumIncomeFromEmployments = liability.incomeFromEmployments.map(_.total).sum
     val (profitsFromSelfEmployment, _) = liability.profitFromSelfEmployments.map(income => (income.profit, income.taxableProfit)).unzip

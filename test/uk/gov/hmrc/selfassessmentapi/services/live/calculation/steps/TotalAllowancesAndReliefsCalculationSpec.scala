@@ -17,17 +17,23 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.AllowancesAndReliefs
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class TotalAllowancesAndReliefsCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class TotalAllowancesAndReliefsCalculationSpec extends UnitSpec with SelfAssessmentSugar {
 
   "run" should {
 
     "calculate total allowances and reliefs by summing income tax relief, personal allowance and retirement annuity contract" in {
 
-      val liability = aLiability().copy(allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000), incomeTaxRelief = Some(1400), retirementAnnuityContract = Some(20000)))
+      val liability = aLiability().copy(
+          allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(5000),
+                                                      incomeTaxRelief = Some(1400),
+                                                      retirementAnnuityContract = Some(20000)))
 
-      TotalAllowancesAndReliefsCalculation.run(SelfAssessment(), liability).deductionsRemaining shouldBe Some(26400)
+      TotalAllowancesAndReliefsCalculation
+        .run(SelfAssessment(), liability)
+        .getLiabilityOrFail
+        .deductionsRemaining shouldBe Some(26400)
     }
   }
 }

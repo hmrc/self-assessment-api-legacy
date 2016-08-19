@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 
-class SavingsStartingRateCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class SavingsStartingRateCalculationSpec extends UnitSpec with SelfAssessmentSugar {
 
   "run" should {
 
@@ -70,9 +70,14 @@ class SavingsStartingRateCalculationSpec extends UnitSpec with SelfEmploymentSug
 
   private def savingsStartingRateFor(nonSavingsIncomeReceived: BigDecimal, totalDeductions: BigDecimal) = {
     val liability = aLiability().copy(
-      nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived),
-      totalAllowancesAndReliefs = Some(totalDeductions)
+        nonSavingsIncomeReceived = Some(nonSavingsIncomeReceived),
+        totalAllowancesAndReliefs = Some(totalDeductions)
     )
-    SavingsStartingRateCalculation.run(SelfAssessment(), liability).allowancesAndReliefs.savingsStartingRate.get
+    SavingsStartingRateCalculation
+      .run(SelfAssessment(), liability)
+      .getLiabilityOrFail
+      .allowancesAndReliefs
+      .savingsStartingRate
+      .get
   }
 }

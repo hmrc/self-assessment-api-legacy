@@ -17,12 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
 import uk.gov.hmrc.selfassessmentapi.Generators._
 
 class PersonalSavingsAllowanceCalculationSpec
     extends UnitSpec
-    with SelfEmploymentSugar
+    with SelfAssessmentSugar
     with GeneratorDrivenPropertyChecks {
 
   "run" should {
@@ -31,31 +31,29 @@ class PersonalSavingsAllowanceCalculationSpec
       val liability = aLiability().copy(totalIncomeOnWhichTaxIsDue = Some(0))
       val result = PersonalSavingsAllowanceCalculation.run(SelfAssessment(), liability)
 
-      result.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(0))
+      result.getLiabilityOrFail.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(0))
     }
 
-    "calculate the personal savings allowance for the basic tax band" in forAll(
-        basicTaxBandAmountGen) { amount =>
+    "calculate the personal savings allowance for the basic tax band" in forAll(basicTaxBandAmountGen) { amount =>
       val liability = aLiability().copy(totalIncomeOnWhichTaxIsDue = Some(amount))
       val result = PersonalSavingsAllowanceCalculation.run(SelfAssessment(), liability)
 
-      result.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(1000))
+      result.getLiabilityOrFail.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(1000))
     }
 
-    "calculate the personal savings allowance for the higher tax band" in forAll(
-      higherTaxBandAmountGen) { amount =>
+    "calculate the personal savings allowance for the higher tax band" in forAll(higherTaxBandAmountGen) { amount =>
       val liability = aLiability().copy(totalIncomeOnWhichTaxIsDue = Some(amount))
       val result = PersonalSavingsAllowanceCalculation.run(SelfAssessment(), liability)
 
-      result.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(500))
+      result.getLiabilityOrFail.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(500))
     }
 
     "calculate the personal savings allowance for the additional higher tax band" in forAll(
-      additionalHigherTaxBandAmountGen) { amount =>
+        additionalHigherTaxBandAmountGen) { amount =>
       val liability = aLiability().copy(totalIncomeOnWhichTaxIsDue = Some(amount))
       val result = PersonalSavingsAllowanceCalculation.run(SelfAssessment(), liability)
 
-      result.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(0))
+      result.getLiabilityOrFail.allowancesAndReliefs.personalSavingsAllowance shouldEqual Some(BigDecimal(0))
     }
   }
 

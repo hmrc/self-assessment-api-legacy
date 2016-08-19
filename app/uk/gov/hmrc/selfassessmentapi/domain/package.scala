@@ -28,6 +28,7 @@ package object domain {
   type SourceId = String
   type SummaryId = String
   type LiabilityId = String
+  type LiabilityCalculationErrorId = String
   type ValidationErrors = Seq[(JsPath, Seq[ValidationError])]
 
   def lengthValidator = Reads.of[String].filter(ValidationError("field length exceeded the max 100 chars", MAX_FIELD_LENGTH_EXCEEDED))(_.length <= 100)

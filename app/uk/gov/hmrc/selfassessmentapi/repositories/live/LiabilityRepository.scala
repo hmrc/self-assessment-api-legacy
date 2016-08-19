@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.LiabilityResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,24 +36,24 @@ object LiabilityRepository extends MongoDbConnection {
   def apply() = repository
 }
 
-class LiabilityMongoRepository(implicit mongo: () => DB) extends ReactiveRepository[MongoLiability, BSONObjectID](
-  "liabilities",
-  mongo,
-  domainFormat = MongoLiability.liabilityFormats,
-  idFormat = ReactiveMongoFormats.objectIdFormats) {
+class LiabilityMongoRepository(implicit mongo: () => DB)
+    extends ReactiveRepository[LiabilityResult, BSONObjectID]("liabilities",
+                                                              mongo,
+                                                              domainFormat = LiabilityResult.liabilityResultFormat,
+                                                              idFormat = ReactiveMongoFormats.objectIdFormats) {
 
-  override def indexes: Seq[Index] = Seq(
-    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("ui_utr_taxyear"), unique = true))
+  override def indexes: Seq[Index] =
+    Seq(
+        Index(Seq(("data.saUtr", Ascending), ("data.taxYear", Ascending)),
+              name = Some("ui_utr_taxyear"),
+              unique = true))
 
-  def save(liability: MongoLiability): Future[MongoLiability] = {
-    val selector = BSONDocument("saUtr" -> liability.saUtr.value, "taxYear" -> liability.taxYear.value)
-    collection
-      .update(selector, liability, upsert = true)
-      .map(_ => liability)
+  def save[T <: LiabilityResult](liabilityResult: T): Future[T] = {
+    val selector = BSONDocument("data.saUtr" -> liabilityResult.saUtr.value, "data.taxYear" -> liabilityResult.taxYear.value)
+    collection.update(selector, liabilityResult, upsert = true).map(_ => liabilityResult)
   }
 
-  def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[MongoLiability]] = {
-    find("saUtr" -> saUtr.value, "taxYear" -> taxYear.value)
-      .map(_.headOption)
+  def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[LiabilityResult]] = {
+    find("data.saUtr" -> saUtr.value, "data.taxYear" -> taxYear.value).map(_.headOption)
   }
 }

@@ -16,22 +16,23 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.DividendsFromUKSources
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-object DividendsFromUKSourcesCalculation extends CalculationStep {
+object TaxDeductedFromInterestFromUkCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-    val dividendsFromUKSources = calculateDividendsFromUKSources(selfAssessment)
-    liability.copy(dividendsFromUKSources = dividendsFromUKSources)
-  }
+    val totalTaxedInterest = selfAssessment.unearnedIncomes.map { unearnedIncome =>
+      unearnedIncome.savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
+    }.sum
 
-  private def calculateDividendsFromUKSources(selfAssessment: SelfAssessment) = {
-    selfAssessment.unearnedIncomes.map { unearnedIncome =>
-      val totalDividends = unearnedIncome.dividends.map(_.amount).sum
-      DividendsFromUKSources(unearnedIncome.sourceId, roundDown(totalDividends))
-    }
-  }
+    val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
+    val interestFromUk = roundUp(grossedUpInterest - totalTaxedInterest)
 
+    liability.copy(taxDeducted = liability.taxDeducted match {
+      case None => Some(MongoTaxDeducted(interestFromUk = interestFromUk))
+      case Some(mongoTaxDeducted) => Some(mongoTaxDeducted.copy(interestFromUk = interestFromUk))
+    })
+  }
 }

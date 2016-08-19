@@ -22,44 +22,35 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{DividendType, FromUKCompanies}
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
-trait SelfEmploymentSugar extends UnitSpecsSugar {
+trait SelfEmploymentSugar extends SelfAssessmentSugar {
 
   this: UnitSpec =>
 
-  def aSelfEmployment(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear) = MongoSelfEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now, now.toLocalDate)
+  def aSelfEmployment(id: SourceId = BSONObjectID.generate.stringify,
+                      saUtr: SaUtr = generateSaUtr(),
+                      taxYear: TaxYear = taxYear) =
+    MongoSelfEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now, now.toLocalDate)
 
-  def anUnearnedIncomes(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear) = MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
+  def selfEmploymentIncome(`type`: IncomeType, amount: BigDecimal) =
+    MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def anUnearnedInterestIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, `type`: SavingsIncomeType = InterestFromBanksUntaxed, amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
+  def selfEmploymentExpense(`type`: ExpenseType, amount: BigDecimal) =
+    MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def anUnearnedDividendIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, `type`: DividendType = FromUKCompanies, amount: BigDecimal) = MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
+  def income(`type`: IncomeType, amount: BigDecimal) =
+    MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def income(`type`: IncomeType, amount: BigDecimal) = MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
+  def expense(`type`: ExpenseType, amount: BigDecimal) =
+    MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def expense(`type`: ExpenseType, amount: BigDecimal) = MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
+  def balancingCharge(`type`: BalancingChargeType, amount: BigDecimal) =
+    MongoSelfEmploymentBalancingChargeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def balancingCharge(`type`: BalancingChargeType, amount: BigDecimal) = MongoSelfEmploymentBalancingChargeSummary(BSONObjectID.generate.stringify, `type`, amount)
-
-  def goodsAndServices(amount: BigDecimal) = MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
-
+  def goodsAndServices(amount: BigDecimal) =
+    MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
   def aSelfEmploymentIncome(profit: BigDecimal = 0, taxableProfit: BigDecimal = 0) =
     SelfEmploymentIncome(sourceId = BSONObjectID.generate.stringify, taxableProfit = taxableProfit, profit = profit)
-
-  def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) = MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
-
-  def aUkPropertyIncome(profit: BigDecimal): UkPropertyIncome = UkPropertyIncome(generateSaUtr().utr, profit)
-
-  def aUkPropertyTaxPaidSummary(amount: BigDecimal) = MongoUKPropertiesTaxPaidSummary(BSONObjectID.generate.stringify, amount)
-
-  def aSelfAssessment(employments: Seq[MongoEmployment] = Nil, selfEmployments: Seq[MongoSelfEmployment] = Nil,
-                      unearnedIncomes: Seq[MongoUnearnedIncome] = Nil, ukProperties: Seq[MongoUKProperties] = Nil) =
-    SelfAssessment(employments, selfEmployments, unearnedIncomes, ukProperties)
-
-  def aTaxYearProperty = MongoTaxYearProperties(BSONObjectID.generate, generateSaUtr(), taxYear, now, now)
 }

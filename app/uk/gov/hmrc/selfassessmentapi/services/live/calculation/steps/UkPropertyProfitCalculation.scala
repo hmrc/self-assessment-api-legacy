@@ -17,9 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-object UKPropertyProfitCalculation extends CalculationStep with Math {
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+object UkPropertyProfitCalculation extends CalculationStep {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
     liability.copy(profitFromUkProperties = ukPropertyIncomes(selfAssessment))
   }
 

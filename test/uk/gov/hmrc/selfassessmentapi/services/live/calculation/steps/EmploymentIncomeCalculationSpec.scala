@@ -30,102 +30,108 @@ class EmploymentIncomeCalculationSpec extends UnitSpec with EmploymentSugar {
 
     "calculate total employment income from multiple employment sources" in {
 
-      val selfAssessment = SelfAssessment(employments = Seq(
-        anEmployment(employmentId1).copy(
-          incomes = Seq(
-            income(IncomeType.Salary, 1000),
-            income(IncomeType.Other, 500)
-          ),
-          benefits = Seq(
-            benefit(BenefitType.Accommodation, 100),
-            benefit(BenefitType.Other, 400)
-          ),
-          expenses = Seq(
-            expense(ExpenseType.TravelAndSubsistence, 100),
-            expense(ExpenseType.ProfessionalFees, 200)
-          )
-        ),
-        anEmployment(employmentId2).copy(
-          incomes = Seq(
-            income(IncomeType.Salary, 2000),
-            income(IncomeType.Other, 1000)
-          ),
-          benefits = Seq(
-            benefit(BenefitType.CompanyVehicle, 100),
-            benefit(BenefitType.ExpensesPayments, 400)
-          ),
-          expenses = Seq(
-            expense(ExpenseType.TravelAndSubsistence, 500),
-            expense(ExpenseType.ProfessionalFees, 1000)
-          )
-        )))
+      val selfAssessment = SelfAssessment(
+          employments = Seq(anEmployment(employmentId1).copy(
+                                incomes = Seq(
+                                    employmentIncome(IncomeType.Salary, 1000),
+                                    employmentIncome(IncomeType.Other, 500)
+                                ),
+                                benefits = Seq(
+                                    benefit(BenefitType.Accommodation, 100),
+                                    benefit(BenefitType.Other, 400)
+                                ),
+                                expenses = Seq(
+                                    employmentExpense(ExpenseType.TravelAndSubsistence, 100),
+                                    employmentExpense(ExpenseType.ProfessionalFees, 200)
+                                )
+                            ),
+                            anEmployment(employmentId2).copy(
+                                incomes = Seq(
+                                    employmentIncome(IncomeType.Salary, 2000),
+                                    employmentIncome(IncomeType.Other, 1000)
+                                ),
+                                benefits = Seq(
+                                    benefit(BenefitType.CompanyVehicle, 100),
+                                    benefit(BenefitType.ExpensesPayments, 400)
+                                ),
+                                expenses = Seq(
+                                    employmentExpense(ExpenseType.TravelAndSubsistence, 500),
+                                    employmentExpense(ExpenseType.ProfessionalFees, 1000)
+                                )
+                            )))
 
-      EmploymentIncomeCalculation.run(selfAssessment, liability).incomeFromEmployments shouldBe Seq(EmploymentIncome(employmentId1, 1500, 500, 300, 1700), EmploymentIncome(employmentId2, 3000, 500, 1500, 2000))
+      EmploymentIncomeCalculation.run(selfAssessment, liability).getLiabilityOrFail.incomeFromEmployments shouldBe Seq(
+          EmploymentIncome(employmentId1, 1500, 500, 300, 1700),
+          EmploymentIncome(employmentId2, 3000, 500, 1500, 2000))
     }
 
     "calculate total employment income from a single employment sources" in {
 
-      val selfAssessment = SelfAssessment(employments = Seq(
-        anEmployment(employmentId1).copy(
-          incomes = Seq(
-            income(IncomeType.Salary, 1000),
-            income(IncomeType.Other, 500)
-          ),
-          benefits = Seq(
-            benefit(BenefitType.Accommodation, 100),
-            benefit(BenefitType.Other, 400)
-          ),
-          expenses = Seq(
-            expense(ExpenseType.TravelAndSubsistence, 100),
-            expense(ExpenseType.ProfessionalFees, 200)
-          )
-        )))
+      val selfAssessment = SelfAssessment(
+          employments = Seq(
+              anEmployment(employmentId1).copy(
+                  incomes = Seq(
+                      employmentIncome(IncomeType.Salary, 1000),
+                      employmentIncome(IncomeType.Other, 500)
+                  ),
+                  benefits = Seq(
+                      benefit(BenefitType.Accommodation, 100),
+                      benefit(BenefitType.Other, 400)
+                  ),
+                  expenses = Seq(
+                      employmentExpense(ExpenseType.TravelAndSubsistence, 100),
+                      employmentExpense(ExpenseType.ProfessionalFees, 200)
+                  )
+              )))
 
-      EmploymentIncomeCalculation.run(selfAssessment, liability).incomeFromEmployments shouldBe Seq(EmploymentIncome(employmentId1, 1500, 500, 300, 1700))
+      EmploymentIncomeCalculation.run(selfAssessment, liability).getLiabilityOrFail.incomeFromEmployments shouldBe Seq(
+          EmploymentIncome(employmentId1, 1500, 500, 300, 1700))
     }
 
     "calculate total employment income when expenses exceeds combined value of incomes and benefits" in {
 
-      val selfAssessment = SelfAssessment(employments = Seq(
-        anEmployment(employmentId1).copy(
-          incomes = Seq(
-            income(IncomeType.Salary, 100),
-            income(IncomeType.Other, 200)
-          ),
-          benefits = Seq(
-            benefit(BenefitType.Accommodation, 10),
-            benefit(BenefitType.Other, 40)
-          ),
-          expenses = Seq(
-            expense(ExpenseType.TravelAndSubsistence, 200),
-            expense(ExpenseType.ProfessionalFees, 400)
-          )
-        )))
+      val selfAssessment = SelfAssessment(
+          employments = Seq(
+              anEmployment(employmentId1).copy(
+                  incomes = Seq(
+                      employmentIncome(IncomeType.Salary, 100),
+                      employmentIncome(IncomeType.Other, 200)
+                  ),
+                  benefits = Seq(
+                      benefit(BenefitType.Accommodation, 10),
+                      benefit(BenefitType.Other, 40)
+                  ),
+                  expenses = Seq(
+                      employmentExpense(ExpenseType.TravelAndSubsistence, 200),
+                      employmentExpense(ExpenseType.ProfessionalFees, 400)
+                  )
+              )))
 
-      EmploymentIncomeCalculation.run(selfAssessment, liability).incomeFromEmployments shouldBe Seq(EmploymentIncome(employmentId1, 300, 50, 350, 0))
+      EmploymentIncomeCalculation.run(selfAssessment, liability).getLiabilityOrFail.incomeFromEmployments shouldBe Seq(
+          EmploymentIncome(employmentId1, 300, 50, 350, 0))
     }
 
     "calculate and round down total employment income" in {
 
-      val selfAssessment = SelfAssessment(employments = Seq(
-        anEmployment(employmentId1).copy(
-          incomes = Seq(
-            income(IncomeType.Salary, 1000.90),
-            income(IncomeType.Other, 500.75)
-          ),
-          benefits = Seq(
-            benefit(BenefitType.Accommodation, 100.10),
-            benefit(BenefitType.Other, 400.20)
-          ),
-          expenses = Seq(
-            expense(ExpenseType.TravelAndSubsistence, 100.10),
-            expense(ExpenseType.ProfessionalFees, 200.40)
-          )
-        )))
+      val selfAssessment = SelfAssessment(
+          employments = Seq(
+              anEmployment(employmentId1).copy(
+                  incomes = Seq(
+                      employmentIncome(IncomeType.Salary, 1000.90),
+                      employmentIncome(IncomeType.Other, 500.75)
+                  ),
+                  benefits = Seq(
+                      benefit(BenefitType.Accommodation, 100.10),
+                      benefit(BenefitType.Other, 400.20)
+                  ),
+                  expenses = Seq(
+                      employmentExpense(ExpenseType.TravelAndSubsistence, 100.10),
+                      employmentExpense(ExpenseType.ProfessionalFees, 200.40)
+                  )
+              )))
 
-      EmploymentIncomeCalculation.run(selfAssessment, liability).incomeFromEmployments shouldBe Seq(EmploymentIncome(employmentId1, 1501.65, 500.30, 300.50, 1701))
+      EmploymentIncomeCalculation.run(selfAssessment, liability).getLiabilityOrFail.incomeFromEmployments shouldBe Seq(
+          EmploymentIncome(employmentId1, 1501.65, 500.30, 300.50, 1701))
     }
-
-
   }
 }

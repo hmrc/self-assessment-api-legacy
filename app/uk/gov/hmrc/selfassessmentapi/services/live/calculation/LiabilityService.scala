@@ -18,48 +18,82 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
+import uk.gov.hmrc.selfassessmentapi.controllers.{LiabilityCalculationError, LiabilityCalculationErrors}
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
-import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoLiability, MongoSelfEmployment, MongoUnearnedIncome, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
+import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class LiabilityService(employmentRepo: EmploymentMongoRepository, selfEmploymentRepo: SelfEmploymentMongoRepository,
-                       unearnedIncomeRepo: UnearnedIncomeMongoRepository, furnishedHolidayLettingsRepo: FurnishedHolidayLettingsMongoRepository,
-                       liabilityRepo: LiabilityMongoRepository, ukPropertiesRepo: UKPropertiesMongoRepository,
-                       selfAssessmentRepository: SelfAssessmentMongoRepository, liabilityCalculator: LiabilityCalculator, featureSwitch: FeatureSwitch) {
+class LiabilityService(employmentRepo: EmploymentMongoRepository,
+                       selfEmploymentRepo: SelfEmploymentMongoRepository,
+                       unearnedIncomeRepo: UnearnedIncomeMongoRepository,
+                       furnishedHolidayLettingsRepo: FurnishedHolidayLettingsMongoRepository,
+                       liabilityRepo: LiabilityMongoRepository,
+                       ukPropertiesRepo: UKPropertiesMongoRepository,
+                       selfAssessmentRepository: SelfAssessmentMongoRepository,
+                       liabilityCalculator: LiabilityCalculator,
+                       featureSwitch: FeatureSwitch) {
 
-  def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Liability]] = {
-    liabilityRepo.findBy(saUtr, taxYear).map(_.map(_.toLiability))
+  def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[LiabilityCalculationErrors, Liability]]] = {
+    liabilityRepo
+      .findBy(saUtr, taxYear)
+      .map(_.map {
+        case calculationError: MongoLiabilityCalculationErrors =>
+          Left(LiabilityCalculationErrors(calculationError.errors.map(error => LiabilityCalculationError(error.code, error.message))))
+        case liability: MongoLiability => Right(liability.toLiability)
+      })
   }
 
-  def calculate(saUtr: SaUtr, taxYear: TaxYear): Future[LiabilityId] = {
+  def calculate(saUtr: SaUtr, taxYear: TaxYear): Future[Either[LiabilityCalculationErrorId, LiabilityId]] = {
     for {
-      emptyLiability <- liabilityRepo.save(MongoLiability.create(saUtr, taxYear))
       employments <- if (isSourceEnabled(Employments)) employmentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoEmployment]())
       selfEmployments <- if (isSourceEnabled(SelfEmployments)) selfEmploymentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoSelfEmployment]())
       unearnedIncomes <- if (isSourceEnabled(UnearnedIncomes)) unearnedIncomeRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUnearnedIncome]())
       ukProperties <- if (isSourceEnabled(UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUKProperties]())
       taxYearProperties <- selfAssessmentRepository.findTaxYearProperties(saUtr, taxYear)
       furnishedHolidayLettings <- if (isSourceEnabled(FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoFurnishedHolidayLettings]())
-      liability <- liabilityRepo.save(liabilityCalculator.calculate(SelfAssessment(employments = employments,
-        selfEmployments = selfEmployments, unearnedIncomes = unearnedIncomes, taxYearProperties = taxYearProperties, ukProperties = ukProperties,
-        furnishedHolidayLettings = furnishedHolidayLettings), emptyLiability))
-    } yield liability.liabilityId
+      emptyLiability <- liabilityRepo.save(MongoLiability.create(saUtr, taxYear))
+      liabilityResult = calculateLiability(emptyLiability, employments, selfEmployments, ukProperties, unearnedIncomes, furnishedHolidayLettings)
+      liability <- liabilityRepo.save(liabilityResult)
+    } yield
+      liability match {
+        case calculationError: MongoLiabilityCalculationErrors => Left(calculationError.liabilityCalculationErrorId)
+        case liability: MongoLiability => Right(liability.liabilityId)
+      }
   }
 
   private[calculation] def isSourceEnabled(sourceType: SourceType) = featureSwitch.isEnabled(sourceType)
+
+  private def calculateLiability(liability: MongoLiability,
+                                 employments: Seq[MongoEmployment],
+                                 selfEmployments: Seq[MongoSelfEmployment],
+                                 ukProperties: Seq[MongoUKProperties],
+                                 unearnedIncomes: Seq[MongoUnearnedIncome],
+                                 furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings]): LiabilityResult = {
+    liabilityCalculator.calculate(SelfAssessment(employments = employments,
+                                                 selfEmployments = selfEmployments,
+                                                 unearnedIncomes = unearnedIncomes,
+                                                 ukProperties = ukProperties),
+                                  liability)
+  }
 }
 
 object LiabilityService {
 
-  private lazy val service = new LiabilityService(EmploymentRepository(), SelfEmploymentRepository(),
-    UnearnedIncomeRepository(), FurnishedHolidayLettingsRepository(), LiabilityRepository(),  UKPropertiesRepository(),
-    SelfAssessmentRepository(),LiabilityCalculator(), FeatureSwitch(AppContext.featureSwitch))
+  private lazy val service = new LiabilityService(EmploymentRepository(),
+                                                  SelfEmploymentRepository(),
+                                                  UnearnedIncomeRepository(),
+                                                  FurnishedHolidayLettingsRepository(),
+                                                  LiabilityRepository(),
+                                                  UKPropertiesRepository(),
+                                                  SelfAssessmentRepository(),
+                                                  LiabilityCalculator(),
+                                                  FeatureSwitch(AppContext.featureSwitch))
 
   def apply() = service
 }

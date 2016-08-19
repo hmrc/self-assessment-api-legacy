@@ -20,8 +20,16 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Adjustments
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec, domain}
+import uk.gov.hmrc.selfassessmentapi._
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Adjustments
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
-class IncomeTaxReliefCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class IncomeTaxReliefCalculationSpec
+    extends UnitSpec
+    with SelfAssessmentSugar
+    with SelfEmploymentSugar
+    with UkPropertySugar {
 
   "income tax relief" should {
 
@@ -96,6 +104,6 @@ class IncomeTaxReliefCalculationSpec extends UnitSpec with SelfEmploymentSugar {
     IncomeTaxReliefCalculation.run(
       selfAssessment = SelfAssessment(selfEmployments = selfEmployments, ukProperties = ukProperties),
       liability = aLiability()
-    ).allowancesAndReliefs.incomeTaxRelief.get
+    ) .getLiabilityOrFail.allowancesAndReliefs.incomeTaxRelief.get
   }
 }

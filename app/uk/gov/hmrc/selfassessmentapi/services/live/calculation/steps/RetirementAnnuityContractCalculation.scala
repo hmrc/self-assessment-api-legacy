@@ -15,12 +15,13 @@
  */
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object RetirementAnnuityContractCalculation extends CalculationStep {
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    val allowancesAndReliefs = liability.allowancesAndReliefs.copy(
-      retirementAnnuityContract = Some(calculateAnnuityContract(selfAssessment)))
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
+    val allowancesAndReliefs =
+      liability.allowancesAndReliefs.copy(retirementAnnuityContract = Some(calculateAnnuityContract(selfAssessment)))
 
     liability.copy(allowancesAndReliefs = allowancesAndReliefs)
   }

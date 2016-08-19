@@ -17,9 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math
 
-sealed trait TaxBand extends Math {
+sealed trait TaxBand {
   def name: String
   def lowerBound: BigDecimal
   def upperBound: Option[BigDecimal]

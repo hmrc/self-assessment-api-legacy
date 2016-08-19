@@ -17,29 +17,29 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 import scala.math.BigDecimal.RoundingMode
 
-trait Math {
+object Math {
 
-  protected def sum(values: Option[BigDecimal]*): BigDecimal = values.flatten.sum
+  def sum(values: Option[BigDecimal]*): BigDecimal = values.flatten.sum
 
-  protected def valueOrZero(maybeValue: Option[BigDecimal]): BigDecimal = maybeValue.getOrElse(0)
+  def valueOrZero(maybeValue: Option[BigDecimal]): BigDecimal = maybeValue.getOrElse(0)
 
-  protected def positiveOrZero(n: BigDecimal): BigDecimal = n match {
+  def positiveOrZero(n: BigDecimal): BigDecimal = n match {
     case x if x > 0 => x
     case _ => 0
   }
 
-  protected def capAt(n: Option[BigDecimal], cap: BigDecimal): Option[BigDecimal] = n map {
+  def capAt(n: Option[BigDecimal], cap: BigDecimal): Option[BigDecimal] = n map {
     case x if x > cap => cap
     case x => x
   }
 
-  protected def capAt(n: BigDecimal, cap: BigDecimal): BigDecimal = {
+  def capAt(n: BigDecimal, cap: BigDecimal): BigDecimal = {
     capAt(Some(n), cap).get
   }
 
-  protected def roundDown(n: BigDecimal): BigDecimal = n.setScale(0, RoundingMode.DOWN)
+  def roundDown(n: BigDecimal): BigDecimal = n.setScale(0, RoundingMode.DOWN)
 
-  protected def roundDownToNearest(n: BigDecimal, v: Int): BigDecimal = roundDown(n / v) * v
+  def roundDownToNearest(n: BigDecimal, v: Int): BigDecimal = roundDown(n / v) * v
 
-  protected def roundUp(n: BigDecimal): BigDecimal = n.setScale(0, RoundingMode.UP)
+  def roundUp(n: BigDecimal): BigDecimal = n.setScale(0, RoundingMode.UP)
 }

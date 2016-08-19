@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object PersonalAllowanceCalculation extends CalculationStep {
 
@@ -24,7 +25,7 @@ object PersonalAllowanceCalculation extends CalculationStep {
 
   private val taperingThreshold = BigDecimal(100000)
 
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
+  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
 
     val totalIncomeReceived = liability.totalIncomeReceived.getOrElse(throw PropertyNotComputedException("totalIncomeReceived"))
 

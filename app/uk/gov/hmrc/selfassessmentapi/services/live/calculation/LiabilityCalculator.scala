@@ -16,34 +16,59 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability, MongoLiabilityCalculationErrors}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
 class LiabilityCalculator {
 
   private val calculationSteps = Seq(
-    EmploymentIncomeCalculation,
-    SelfEmploymentProfitCalculation,
-    FurnishedHolidayLettingsProfitCalculation,
-    UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
-    DividendsFromUKSourcesCalculation,
-    UKPropertyProfitCalculation,
-    TotalIncomeCalculation,
-    IncomeTaxReliefCalculation,
-    PersonalAllowanceCalculation,
-    RetirementAnnuityContractCalculation,
-    TotalAllowancesAndReliefsCalculation,
-    TotalIncomeOnWhichTaxIsDueCalculation,
-    PersonalSavingsAllowanceCalculation,
-    SavingsStartingRateCalculation,
-    NonSavingsIncomeTaxCalculation,
-    SavingsIncomeTaxCalculation,
-    DividendsTaxCalculation,
-    TaxDeductedCalculation
+      EmploymentIncomeCalculation,
+      SelfEmploymentProfitCalculation,
+      FurnishedHolidayLettingsProfitCalculation,
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
+      DividendsFromUKSourcesCalculation,
+      UkPropertyProfitCalculation,
+      TotalIncomeCalculation,
+      IncomeTaxReliefCalculation,
+      PersonalAllowanceCalculation,
+      RetirementAnnuityContractCalculation,
+      TotalAllowancesAndReliefsCalculation,
+      TotalIncomeOnWhichTaxIsDueCalculation,
+      PersonalSavingsAllowanceCalculation,
+      SavingsStartingRateCalculation,
+      NonSavingsIncomeTaxCalculation,
+      SavingsIncomeTaxCalculation,
+      DividendsTaxCalculation,
+      TaxDeductedFromInterestFromUkCalculation,
+      TaxDeductedFromUkTaxPaidForEmploymentsCalculation,
+      TaxDeductedForUkPropertiesCalculation
   )
 
-  def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): MongoLiability = {
-    calculationSteps.foldLeft(liability)((liability, step) => step.run(selfAssessment, liability))
+  def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
+    val (successLiabilities, errorLiabilities) = runSteps(selfAssessment, liability)
+
+    if (errorLiabilities.isEmpty) successLiabilities.last else errorLiabilities.head
+  }
+
+  /**
+    * Run the the steps lazily until an error occurs. Fails fast with the first error that occurs.
+    * @param selfAssessment
+    * @param liability
+    * @return a tuple (successLiabilities, errorLiabilities) of the successful liabilities computed so far and the error liabilities (with the single liability calculation error)
+    */
+  private[calculation] def runSteps(selfAssessment: SelfAssessment,
+                                    liability: MongoLiability): (Stream[LiabilityResult], Stream[LiabilityResult]) = {
+    val (successLiabilities, errorLiabilities) = calculationSteps.toStream
+      .scanLeft(liability: LiabilityResult)((accLiability, step) =>
+            accLiability match {
+          case calculationError: MongoLiabilityCalculationErrors => calculationError
+          case liability: MongoLiability => step.run(selfAssessment, liability)
+      })
+      .span {
+        case _: MongoLiability => true
+        case _: MongoLiabilityCalculationErrors => false
+      }
+    (successLiabilities, errorLiabilities)
   }
 }
 

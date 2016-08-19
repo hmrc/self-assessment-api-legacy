@@ -22,14 +22,27 @@ import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
 class RetirementAnnuityContractCalculationSpec extends UnitSpec with SelfEmploymentSugar {
   "run" should {
     "compute the sum of the retirement annuity contributions, overseas pensions and employer pension contributions" in {
-      val selfAssessment = SelfAssessment(taxYearProperties = Some(aTaxYearProperty.copy(pensionContributions =
-        Some(PensionContribution(retirementAnnuity = Some(500), overseasPension = Some(500), employerScheme = Some(500)))).toTaxYearProperties))
+      val selfAssessment = SelfAssessment(
+          taxYearProperties = Some(
+              aTaxYearProperty
+                .copy(pensionContributions = Some(PensionContribution(retirementAnnuity = Some(500),
+                                                                      overseasPension = Some(500),
+                                                                      employerScheme = Some(500))))
+                .toTaxYearProperties))
 
-      RetirementAnnuityContractCalculation.run(selfAssessment, aLiability()).allowancesAndReliefs.retirementAnnuityContract shouldBe Some(1500)
+      RetirementAnnuityContractCalculation
+        .run(selfAssessment, aLiability())
+        .getLiabilityOrFail
+        .allowancesAndReliefs
+        .retirementAnnuityContract shouldBe Some(1500)
     }
 
     "return 0 when are no pension contributions" in {
-      RetirementAnnuityContractCalculation.run(SelfAssessment(), aLiability()).allowancesAndReliefs.retirementAnnuityContract shouldBe Some(0)
+      RetirementAnnuityContractCalculation
+        .run(SelfAssessment(), aLiability())
+        .getLiabilityOrFail
+        .allowancesAndReliefs
+        .retirementAnnuityContract shouldBe Some(0)
     }
   }
 }

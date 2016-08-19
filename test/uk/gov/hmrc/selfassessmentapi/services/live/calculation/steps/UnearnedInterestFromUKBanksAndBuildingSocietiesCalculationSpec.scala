@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.InterestFromUKBanksAndBuildingSocieties
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.{UnearnedIncomesSugar, UnitSpec}
 
-class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends UnitSpec with SelfEmploymentSugar {
+class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends UnitSpec with UnearnedIncomesSugar {
 
   "run" should {
 
@@ -28,7 +28,9 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
 
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(), liability) shouldBe liability.copy(interestFromUKBanksAndBuildingSocieties = Seq())
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(), liability)
+        .getLiabilityOrFail shouldBe liability.copy(interestFromUKBanksAndBuildingSocieties = Seq())
     }
 
     "calculate rounded down interest when there are multiple interest of both taxed and unTaxed from uk banks and building societies from multiple unearned income source" in {
@@ -44,20 +46,25 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
 
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes1, unearnedIncomes2)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes1.sourceId, BigDecimal(326)),
-          InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes2.sourceId, BigDecimal(777))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes1, unearnedIncomes2)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(
+            interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes1.sourceId, BigDecimal(326)),
+                  InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes2.sourceId, BigDecimal(777))))
     }
-
-
 
     "calculate interest when there is one taxed interest from uk banks and building societies from a single unearned income source" in {
       val taxedInterest = anUnearnedInterestIncomeSummary("taxedInterest", InterestFromBanksTaxed, 100)
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest))
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(125))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(125))))
     }
 
     "calculate interest when there are multiple taxed interest from uk banks and building societies from a single unearned income source" in {
@@ -66,8 +73,11 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, taxedInterest2))
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(375))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(375))))
     }
 
     "calculate round down interest when there is one taxed interest from uk banks and building societies from a single unearned income source" in {
@@ -75,8 +85,11 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest))
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(125))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(125))))
     }
 
     "calculate round down interest when there are multiple taxed interest from uk banks and building societies from a single unearned income source" in {
@@ -85,18 +98,23 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, taxedInterest2))
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(377))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(377))))
     }
-
 
     "calculate interest when there is one unTaxed interest from uk banks and building societies from a single unearned income source" in {
       val unTaxedInterest = anUnearnedInterestIncomeSummary("unTaxedInterest", InterestFromBanksUntaxed, 100)
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(unTaxedInterest))
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(100))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(100))))
     }
 
     "calculate interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned income source" in {
@@ -105,18 +123,23 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, taxedInterest2))
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(300))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(300))))
     }
-
 
     "calculate rounded down interest when there is one unTaxed interest from uk banks and building societies from a single unearned income source" in {
       val unTaxedInterest = anUnearnedInterestIncomeSummary("unTaxedInterest", InterestFromBanksUntaxed, 100.50)
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(unTaxedInterest))
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(100))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(100))))
     }
 
     "calculate rounded down interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned income source" in {
@@ -125,8 +148,11 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
       val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, taxedInterest2))
       val liability = aLiability()
 
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation.run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability) shouldBe
-        liability.copy(interestFromUKBanksAndBuildingSocieties = Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(301))))
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
+        .run(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes)), liability)
+        .getLiabilityOrFail shouldBe
+        liability.copy(interestFromUKBanksAndBuildingSocieties =
+              Seq(InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes.sourceId, BigDecimal(301))))
     }
 
   }

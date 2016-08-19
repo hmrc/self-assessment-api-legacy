@@ -21,6 +21,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Adjustments
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 trait FurnishedHolidayLettingsSugar extends SelfAssessmentSugar {
@@ -36,4 +37,6 @@ trait FurnishedHolidayLettingsSugar extends SelfAssessmentSugar {
   def balancingCharge(amount: BigDecimal) = MongoFurnishedHolidayLettingsBalancingChargeSummary(BSONObjectID.generate.stringify, amount)
 
   def privateUseAdjustment(amount: BigDecimal) = MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(BSONObjectID.generate.stringify, amount)
+
+  def adjustments(lossBroughtForward: BigDecimal) = Adjustments(lossBroughtForward = Some(lossBroughtForward))
 }

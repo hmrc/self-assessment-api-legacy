@@ -16,20 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.EEA
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Adjustments
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec, domain}
-import uk.gov.hmrc.selfassessmentapi._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Adjustments
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec, domain, _}
 
 class IncomeTaxReliefCalculationSpec
     extends UnitSpec
     with SelfAssessmentSugar
     with SelfEmploymentSugar
-    with UkPropertySugar {
+    with UkPropertySugar
+    with FurnishedHolidayLettingsSugar {
 
   "income tax relief" should {
 
@@ -92,7 +90,16 @@ class IncomeTaxReliefCalculationSpec
       val ukPropertyTwo = aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 300)),
         adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(400.45))))
 
-      incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo), ukProperties = Seq(ukPropertyOne, ukPropertyTwo)) shouldBe 701
+      val furnishedHolidaysLettings =
+        Seq(aFurnishedHolidayLetting().copy(incomes = Seq(income(100)), adjustments = Some(adjustments(lossBroughtForward = 50))),
+         aFurnishedHolidayLetting().copy(incomes = Seq(income(350), income(50), income(100)), adjustments = Some(adjustments(lossBroughtForward = 200))),
+         aFurnishedHolidayLetting(propertyLocation = EEA).copy(incomes = Seq(income(50), income(50)), adjustments = Some(adjustments(lossBroughtForward = 500))),
+         aFurnishedHolidayLetting(propertyLocation = EEA).copy(incomes = Seq(income(500)), adjustments = Some(adjustments(lossBroughtForward = 450)))
+      )
+
+      incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo),
+        furnishedHolidayLettings = furnishedHolidaysLettings,
+        ukProperties = Seq(ukPropertyOne, ukPropertyTwo)) shouldBe 1551
     }
 
     "income tax relief is 0 if there are no losses brought forward" in {
@@ -100,9 +107,10 @@ class IncomeTaxReliefCalculationSpec
     }
   }
 
-  private def incomeTaxReliefFor(selfEmployments: Seq[MongoSelfEmployment], ukProperties: Seq[MongoUKProperties]): BigDecimal = {
+  private def incomeTaxReliefFor(selfEmployments: Seq[MongoSelfEmployment] = Nil, ukProperties: Seq[MongoUKProperties] = Nil,
+                                 furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Nil): BigDecimal = {
     IncomeTaxReliefCalculation.run(
-      selfAssessment = SelfAssessment(selfEmployments = selfEmployments, ukProperties = ukProperties),
+      selfAssessment = SelfAssessment(selfEmployments = selfEmployments, ukProperties = ukProperties, furnishedHolidayLettings = furnishedHolidayLettings),
       liability = aLiability()
     ) .getLiabilityOrFail.allowancesAndReliefs.incomeTaxRelief.get
   }

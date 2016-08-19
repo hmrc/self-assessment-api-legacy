@@ -28,6 +28,6 @@ trait UkPropertySugar extends SelfAssessmentSugar {
 
   def aUkPropertyIncome(profit: BigDecimal): UkPropertyIncome = UkPropertyIncome(generateSaUtr().utr, profit)
 
-  def aUkPropertyTaxPaidSummary(amount: BigDecimal) = MongoUKPropertiesTaxPaidSummary(BSONObjectID.generate.stringify, amount)
+  def aUkPropertyTaxPaidSummary(id: String = BSONObjectID.generate.stringify, amount: BigDecimal) = MongoUKPropertiesTaxPaidSummary(id, amount)
 
 }

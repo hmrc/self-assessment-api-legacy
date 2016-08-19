@@ -32,5 +32,5 @@ object TaxPaid extends JsonMarshaller[TaxPaid] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (TaxPaid.apply _)
 
-  override def example(id: Option[SummaryId]) = TaxPaid(id, BigDecimal(1000))
+  override def example(id: Option[SummaryId] = None) = TaxPaid(id, BigDecimal(1000))
 }

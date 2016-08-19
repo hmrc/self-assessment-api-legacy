@@ -35,30 +35,30 @@ class EmploymentIncomeCalculationSpec extends UnitSpec {
       val selfAssessment = SelfAssessment(
           employments = Seq(anEmployment(employmentId1).copy(
                                 incomes = Seq(
-                                    income(IncomeType.Salary, 1000),
-                                    income(IncomeType.Other, 500)
+                                    anIncome(IncomeType.Salary, 1000),
+                                    anIncome(IncomeType.Other, 500)
                                 ),
                                 benefits = Seq(
-                                    benefit(BenefitType.Accommodation, 100),
-                                    benefit(BenefitType.Other, 400)
+                                    aBenefit(BenefitType.Accommodation, 100),
+                                    aBenefit(BenefitType.Other, 400)
                                 ),
                                 expenses = Seq(
-                                    expense(ExpenseType.TravelAndSubsistence, 100),
-                                    expense(ExpenseType.ProfessionalFees, 200)
+                                    anExpense(ExpenseType.TravelAndSubsistence, 100),
+                                    anExpense(ExpenseType.ProfessionalFees, 200)
                                 )
                             ),
                             anEmployment(employmentId2).copy(
                                 incomes = Seq(
-                                    income(IncomeType.Salary, 2000),
-                                    income(IncomeType.Other, 1000)
+                                    anIncome(IncomeType.Salary, 2000),
+                                    anIncome(IncomeType.Other, 1000)
                                 ),
                                 benefits = Seq(
-                                    benefit(BenefitType.CompanyVehicle, 100),
-                                    benefit(BenefitType.ExpensesPayments, 400)
+                                    aBenefit(BenefitType.CompanyVehicle, 100),
+                                    aBenefit(BenefitType.ExpensesPayments, 400)
                                 ),
                                 expenses = Seq(
-                                    expense(ExpenseType.TravelAndSubsistence, 500),
-                                    expense(ExpenseType.ProfessionalFees, 1000)
+                                    anExpense(ExpenseType.TravelAndSubsistence, 500),
+                                    anExpense(ExpenseType.ProfessionalFees, 1000)
                                 )
                             )))
 
@@ -73,16 +73,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      income(IncomeType.Salary, 1000),
-                      income(IncomeType.Other, 500)
+                      anIncome(IncomeType.Salary, 1000),
+                      anIncome(IncomeType.Other, 500)
                   ),
                   benefits = Seq(
-                      benefit(BenefitType.Accommodation, 100),
-                      benefit(BenefitType.Other, 400)
+                      aBenefit(BenefitType.Accommodation, 100),
+                      aBenefit(BenefitType.Other, 400)
                   ),
                   expenses = Seq(
-                      expense(ExpenseType.TravelAndSubsistence, 100),
-                      expense(ExpenseType.ProfessionalFees, 200)
+                      anExpense(ExpenseType.TravelAndSubsistence, 100),
+                      anExpense(ExpenseType.ProfessionalFees, 200)
                   )
               )))
 
@@ -96,16 +96,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      income(IncomeType.Salary, 100),
-                      income(IncomeType.Other, 200)
+                      anIncome(IncomeType.Salary, 100),
+                      anIncome(IncomeType.Other, 200)
                   ),
                   benefits = Seq(
-                      benefit(BenefitType.Accommodation, 10),
-                      benefit(BenefitType.Other, 40)
+                      aBenefit(BenefitType.Accommodation, 10),
+                      aBenefit(BenefitType.Other, 40)
                   ),
                   expenses = Seq(
-                      expense(ExpenseType.TravelAndSubsistence, 200),
-                      expense(ExpenseType.ProfessionalFees, 400)
+                      anExpense(ExpenseType.TravelAndSubsistence, 200),
+                      anExpense(ExpenseType.ProfessionalFees, 400)
                   )
               )))
 
@@ -119,16 +119,16 @@ class EmploymentIncomeCalculationSpec extends UnitSpec {
           employments = Seq(
               anEmployment(employmentId1).copy(
                   incomes = Seq(
-                      income(IncomeType.Salary, 1000.90),
-                      income(IncomeType.Other, 500.75)
+                      anIncome(IncomeType.Salary, 1000.90),
+                      anIncome(IncomeType.Other, 500.75)
                   ),
                   benefits = Seq(
-                      benefit(BenefitType.Accommodation, 100.10),
-                      benefit(BenefitType.Other, 400.20)
+                      aBenefit(BenefitType.Accommodation, 100.10),
+                      aBenefit(BenefitType.Other, 400.20)
                   ),
                   expenses = Seq(
-                      expense(ExpenseType.TravelAndSubsistence, 100.10),
-                      expense(ExpenseType.ProfessionalFees, 200.40)
+                      anExpense(ExpenseType.TravelAndSubsistence, 100.10),
+                      anExpense(ExpenseType.ProfessionalFees, 200.40)
                   )
               )))
 

@@ -30,7 +30,7 @@ class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrive
       val liability = aLiability()
 
       TaxDeductedForUkPropertiesCalculation
-        .run(aSelfAssessment(ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(taxPaidSummary(500))))),
+        .run(aSelfAssessment(ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(aTaxPaidSummary(500))))),
              liability)
         .getLiabilityOrFail shouldBe
         liability.copy(taxDeducted = Some(MongoTaxDeducted(deductionFromUkProperties = 500)))
@@ -41,7 +41,7 @@ class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrive
 
       TaxDeductedForUkPropertiesCalculation
         .run(aSelfAssessment(
-                 ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(taxPaidSummary(500.22))))),
+                 ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(aTaxPaidSummary(500.22))))),
              liability)
         .getLiabilityOrFail shouldBe
         liability.copy(taxDeducted = Some(MongoTaxDeducted(deductionFromUkProperties = 501)))

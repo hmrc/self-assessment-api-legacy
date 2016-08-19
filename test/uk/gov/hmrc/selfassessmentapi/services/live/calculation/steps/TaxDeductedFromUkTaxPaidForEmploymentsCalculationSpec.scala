@@ -37,10 +37,10 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec extends UnitSpec wit
     }
 
     "return a calculation error identifying the sources if none of the sum of the UK tax paid for a given employment is positive" in {
-      val employment1UkTaxPaidSummary1 = ukTaxPaidSummary("ukTaxPaid1", -112.45)
-      val employment1ukTaxPaidSummary2 = ukTaxPaidSummary("ukTaxPaid2", -34.87)
-      val employment2UkTaxPaidSummary1 = ukTaxPaidSummary("ukTaxPaid1", -299.45)
-      val employment2ukTaxPaidSummary2 = ukTaxPaidSummary("ukTaxPaid2", -300.87)
+      val employment1UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -34.87)
+      val employment2UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -299.45)
+      val employment2ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -300.87)
       val employment1 =
         anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
       val employment2 =
@@ -59,10 +59,10 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec extends UnitSpec wit
     }
 
     "cap the UK tax paid at zero if the total tax paid is not positive" in {
-      val employment1UkTaxPaidSummary1 = ukTaxPaidSummary("ukTaxPaid1", -112.45)
-      val employment1ukTaxPaidSummary2 = ukTaxPaidSummary("ukTaxPaid2", -934.87)
-      val employment2UkTaxPaidSummary1 = ukTaxPaidSummary("ukTaxPaid1", 199.45)
-      val employment2ukTaxPaidSummary2 = ukTaxPaidSummary("ukTaxPaid2", 300.87)
+      val employment1UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -934.87)
+      val employment2UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", 199.45)
+      val employment2ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", 300.87)
       val employment1 =
         anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
       val employment2 =
@@ -81,10 +81,10 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec extends UnitSpec wit
     }
 
     "calculate the tax deducted as the rounded up sum of UK tax paid across all employments" in {
-      val employment1UkTaxPaidSummary1 = ukTaxPaidSummary("ukTaxPaid1", -112.45)
-      val employment1ukTaxPaidSummary2 = ukTaxPaidSummary("ukTaxPaid2", -34.87)
-      val employment2UkTaxPaidSummary1 = ukTaxPaidSummary("ukTaxPaid1", 299.45)
-      val employment2ukTaxPaidSummary2 = ukTaxPaidSummary("ukTaxPaid2", 300.87)
+      val employment1UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -34.87)
+      val employment2UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", 299.45)
+      val employment2ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", 300.87)
       val employment1 =
         anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
       val employment2 =

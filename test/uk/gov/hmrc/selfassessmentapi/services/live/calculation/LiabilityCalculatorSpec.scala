@@ -202,13 +202,13 @@ class LiabilityCalculatorSpec extends UnitSpec {
 
     "run the liability calculation steps until a calculation error occurs" in {
 
-      val ukTaxPaidSummary1 = ukTaxPaidSummary("ukTaxPaid1", -812.45)
-      val ukTaxPaidSummary2 = ukTaxPaidSummary("ukTaxPaid2", 234.87)
+      val ukTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -812.45)
+      val ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", 234.87)
       val employments = anEmployment().copy(ukTaxPaid = Seq(ukTaxPaidSummary1, ukTaxPaidSummary2))
 
       val selfAssessment =
         SelfAssessment(selfEmployments =
-                         Seq(aSelfEmployment().copy(incomes = Seq(SelfEmploymentSugar.income(IncomeType.Turnover, 20000)))),
+                         Seq(aSelfEmployment().copy(incomes = Seq(SelfEmploymentSugar.anIncome(IncomeType.Turnover, 20000)))),
                        employments = Seq(employments))
 
       val (_, errorLiabilities) =
@@ -224,11 +224,11 @@ class LiabilityCalculatorSpec extends UnitSpec {
 
     val selfAssessment = SelfAssessment(
         selfEmployments = Seq(
-            aSelfEmployment().copy(incomes = Seq(SelfEmploymentSugar.income(IncomeType.Turnover, nonSavingsIncome)))
+            aSelfEmployment().copy(incomes = Seq(SelfEmploymentSugar.anIncome(IncomeType.Turnover, nonSavingsIncome)))
         ),
         unearnedIncomes = Seq(
-            UnearnedIncomesSugar.income().copy(savings = Seq(anUnearnedInterestIncomeSummary(amount = savingsIncome))),
-            UnearnedIncomesSugar.income().copy(dividends = Seq(anUnearnedDividendIncomeSummary(amount = dividendsIncome)))
+            UnearnedIncomesSugar.anIncome().copy(savings = Seq(aSavingsIncome(amount = savingsIncome))),
+            UnearnedIncomesSugar.anIncome().copy(dividends = Seq(aDividendIncome(amount = dividendsIncome)))
         )
     )
 

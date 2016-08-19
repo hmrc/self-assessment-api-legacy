@@ -41,15 +41,15 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 1200.01),
-                      income(IncomeType.Other, 799.99)
+                      anIncome(IncomeType.Turnover, 1200.01),
+                      anIncome(IncomeType.Other, 799.99)
                   ),
                   balancingCharges = Seq(
-                      balancingCharge(BalancingChargeType.BPRA, 10),
-                      balancingCharge(BalancingChargeType.Other, 20)
+                      aBalancingCharge(BalancingChargeType.BPRA, 10),
+                      aBalancingCharge(BalancingChargeType.Other, 20)
                   ),
                   goodsAndServicesOwnUse = Seq(
-                      goodsAndServices(50)
+                      aGoodsAndServices(50)
                   ),
                   adjustments = Some(Adjustments(
                           basisAdjustment = Some(200),
@@ -70,7 +70,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 2000)
+                      anIncome(IncomeType.Turnover, 2000)
                   ),
                   adjustments = Some(Adjustments(
                           outstandingBusinessIncome = Some(3000)
@@ -106,13 +106,13 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 2000)
+                      anIncome(IncomeType.Turnover, 2000)
                   ),
                   expenses = Seq(
-                      expense(ExpenseType.AdminCosts, 100),
-                      expense(ExpenseType.BadDebt, 50.01),
-                      expense(ExpenseType.CISPayments, 49.99),
-                      expense(ExpenseType.Depreciation, 1000000)
+                      anExpense(ExpenseType.AdminCosts, 100),
+                      anExpense(ExpenseType.BadDebt, 50.01),
+                      anExpense(ExpenseType.CISPayments, 49.99),
+                      anExpense(ExpenseType.Depreciation, 1000000)
                   )
               )))
 
@@ -128,7 +128,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 2000)
+                      anIncome(IncomeType.Turnover, 2000)
                   ),
                   allowances = Some(
                       Allowances(
@@ -154,7 +154,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 1299.01)
+                      anIncome(IncomeType.Turnover, 1299.01)
                   ),
                   allowances = Some(Allowances(
                           annualInvestmentAllowance = Some(0.02)
@@ -173,7 +173,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 2000)
+                      anIncome(IncomeType.Turnover, 2000)
                   ),
                   adjustments = Some(
                       Adjustments(
@@ -196,7 +196,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 230000)
+                      anIncome(IncomeType.Turnover, 230000)
                   ),
                   allowances = Some(Allowances(
                           annualInvestmentAllowance = Some(230000)
@@ -215,7 +215,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 2000)
+                      anIncome(IncomeType.Turnover, 2000)
                   ),
                   adjustments = Some(Adjustments(
                           lossBroughtForward = Some(1000.49)
@@ -234,7 +234,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 2000)
+                      anIncome(IncomeType.Turnover, 2000)
                   ),
                   adjustments = Some(Adjustments(
                           lossBroughtForward = Some(3000)
@@ -253,10 +253,10 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
           selfEmployments = Seq(
               aSelfEmployment(selfEmploymentId).copy(
                   incomes = Seq(
-                      income(IncomeType.Turnover, 2000)
+                      anIncome(IncomeType.Turnover, 2000)
                   ),
                   expenses = Seq(
-                      expense(ExpenseType.AdminCosts, 4000)
+                      anExpense(ExpenseType.AdminCosts, 4000)
                   ),
                   adjustments = Some(Adjustments(
                           lossBroughtForward = Some(1000)
@@ -274,10 +274,10 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
       val selfAssessment = SelfAssessment(
           selfEmployments = Seq(
               aSelfEmployment("se1").copy(incomes = Seq(
-                      income(IncomeType.Turnover, 1200)
+                      anIncome(IncomeType.Turnover, 1200)
                   )),
               aSelfEmployment("se2").copy(incomes = Seq(
-                      income(IncomeType.Turnover, 800)
+                      anIncome(IncomeType.Turnover, 800)
                   ))
           ))
 

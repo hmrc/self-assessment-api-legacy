@@ -30,10 +30,10 @@ class IncomeTaxReliefCalculationSpec extends UnitSpec {
 
     "be the rounded up the sum of loss brought forward for each self employment" in {
       val selfEmploymentOne =
-        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+        aSelfEmployment().copy(incomes = Seq(anIncome(domain.selfemployment.IncomeType.Turnover, 1000)),
                                adjustments = Some(Adjustments(lossBroughtForward = Some(100.14))))
       val selfEmploymentTwo =
-        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+        aSelfEmployment().copy(incomes = Seq(anIncome(domain.selfemployment.IncomeType.Turnover, 1000)),
                                adjustments = Some(Adjustments(lossBroughtForward = Some(200.59))))
 
       incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo), ukProperties = Nil) shouldBe 301
@@ -41,10 +41,10 @@ class IncomeTaxReliefCalculationSpec extends UnitSpec {
 
     "cap the loss brought forward at the adjusted profit for each self employment" in {
       val selfEmploymentOne = aSelfEmployment().copy(incomes =
-                                                       Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+                                                       Seq(anIncome(domain.selfemployment.IncomeType.Turnover, 1000)),
                                                      adjustments = Some(Adjustments(lossBroughtForward = Some(10000))))
       val selfEmploymentTwo = aSelfEmployment().copy(incomes =
-                                                       Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+                                                       Seq(anIncome(domain.selfemployment.IncomeType.Turnover, 1000)),
                                                      adjustments = Some(Adjustments(lossBroughtForward = Some(500))))
 
       incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo), ukProperties = Nil) shouldBe 1500
@@ -74,10 +74,10 @@ class IncomeTaxReliefCalculationSpec extends UnitSpec {
 
     "be the rounded up the sum of all loss brought for all income sources" in {
       val selfEmploymentOne =
-        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+        aSelfEmployment().copy(incomes = Seq(anIncome(domain.selfemployment.IncomeType.Turnover, 1000)),
                                adjustments = Some(Adjustments(lossBroughtForward = Some(100.14))))
       val selfEmploymentTwo =
-        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 1000)),
+        aSelfEmployment().copy(incomes = Seq(anIncome(domain.selfemployment.IncomeType.Turnover, 1000)),
                                adjustments = Some(Adjustments(lossBroughtForward = Some(200.59))))
       val ukPropertyOne =
         aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 1000)),
@@ -92,10 +92,10 @@ class IncomeTaxReliefCalculationSpec extends UnitSpec {
 
     "be capped at the total adjusted profit" in {
       val selfEmploymentOne =
-        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 200)),
+        aSelfEmployment().copy(incomes = Seq(anIncome(domain.selfemployment.IncomeType.Turnover, 200)),
                                adjustments = Some(Adjustments(lossBroughtForward = Some(100.14))))
       val selfEmploymentTwo =
-        aSelfEmployment().copy(incomes = Seq(income(domain.selfemployment.IncomeType.Turnover, 100)),
+        aSelfEmployment().copy(incomes = Seq(anIncome(domain.selfemployment.IncomeType.Turnover, 100)),
                                adjustments = Some(Adjustments(lossBroughtForward = Some(200.59))))
       val ukPropertyOne =
         aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 200)),

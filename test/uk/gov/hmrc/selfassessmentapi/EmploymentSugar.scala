@@ -31,16 +31,16 @@ object EmploymentSugar {
                    saUtr: SaUtr = generateSaUtr(),
                    taxYear: TaxYear = taxYear) = MongoEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
-  def ukTaxPaidSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, amount: BigDecimal) =
+  def anUkTaxPaidSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, amount: BigDecimal) =
     MongoEmploymentUkTaxPaidSummary(summaryId, amount)
 
-  def income(`type`: IncomeType, amount: BigDecimal) =
+  def anIncome(`type`: IncomeType, amount: BigDecimal) =
     MongoEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def expense(`type`: ExpenseType, amount: BigDecimal) =
+  def anExpense(`type`: ExpenseType, amount: BigDecimal) =
     MongoEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def benefit(`type`: BenefitType, amount: BigDecimal) =
+  def aBenefit(`type`: BenefitType, amount: BigDecimal) =
     MongoEmploymentBenefitSummary(BSONObjectID.generate.stringify, `type`, amount)
 
 }

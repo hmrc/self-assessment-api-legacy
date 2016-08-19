@@ -26,18 +26,18 @@ import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
 object UnearnedIncomesSugar {
 
-  def income(id: SourceId = BSONObjectID.generate.stringify,
-             saUtr: SaUtr = generateSaUtr(),
-             taxYear: TaxYear = taxYear) =
+  def anIncome(id: SourceId = BSONObjectID.generate.stringify,
+               saUtr: SaUtr = generateSaUtr(),
+               taxYear: TaxYear = taxYear) =
     MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
-  def anUnearnedInterestIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify,
-                                      `type`: SavingsIncomeType = InterestFromBanksUntaxed,
-                                      amount: BigDecimal) =
+  def aSavingsIncome(summaryId: SummaryId = BSONObjectID.generate.stringify,
+                     `type`: SavingsIncomeType = InterestFromBanksUntaxed,
+                     amount: BigDecimal) =
     MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
 
-  def anUnearnedDividendIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify,
-                                      `type`: DividendType = FromUKCompanies,
-                                      amount: BigDecimal) =
+  def aDividendIncome(summaryId: SummaryId = BSONObjectID.generate.stringify,
+                      `type`: DividendType = FromUKCompanies,
+                      amount: BigDecimal) =
     MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
 }

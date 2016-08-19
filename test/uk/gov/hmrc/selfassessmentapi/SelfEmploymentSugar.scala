@@ -32,16 +32,16 @@ object SelfEmploymentSugar {
                       taxYear: TaxYear = taxYear) =
     MongoSelfEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now, now.toLocalDate)
 
-  def income(`type`: IncomeType, amount: BigDecimal) =
+  def anIncome(`type`: IncomeType, amount: BigDecimal) =
     MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def expense(`type`: ExpenseType, amount: BigDecimal) =
+  def anExpense(`type`: ExpenseType, amount: BigDecimal) =
     MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def balancingCharge(`type`: BalancingChargeType, amount: BigDecimal) =
+  def aBalancingCharge(`type`: BalancingChargeType, amount: BigDecimal) =
     MongoSelfEmploymentBalancingChargeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def goodsAndServices(amount: BigDecimal) =
+  def aGoodsAndServices(amount: BigDecimal) =
     MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
 }

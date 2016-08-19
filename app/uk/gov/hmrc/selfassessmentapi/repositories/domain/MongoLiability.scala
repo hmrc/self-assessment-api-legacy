@@ -154,7 +154,7 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) {
   def toTaxBandSummary(chargedAt: BigDecimal) =
     uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"$chargedAt%", tax(chargedAt))
 
-  def tax(chargedAt: BigDecimal): BigDecimal = roundDown(amount * chargedAt / 100)
+  def tax(chargedAt: BigDecimal): BigDecimal = roundDownToPennies(amount * chargedAt / 100)
 
   def available: BigDecimal = positiveOrZero(taxBand.width - amount)
 

@@ -42,4 +42,6 @@ object Math {
   def roundDownToNearest(n: BigDecimal, v: Int): BigDecimal = roundDown(n / v) * v
 
   def roundUp(n: BigDecimal): BigDecimal = n.setScale(0, RoundingMode.UP)
+
+  def roundDownToPennies(n: BigDecimal): BigDecimal = n.setScale(2, RoundingMode.FLOOR)
 }

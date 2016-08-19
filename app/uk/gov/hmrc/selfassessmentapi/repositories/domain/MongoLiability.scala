@@ -23,6 +23,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
@@ -123,12 +124,12 @@ case class MongoLiability(id: BSONObjectID,
         taxDeducted = taxDeducted
           .map(taxDeducted =>
                 TaxDeducted(interestFromUk = taxDeducted.interestFromUk,
-                            deductionFromUkProperties = taxDeducted.deductionFromUkProperties,
+                            fromUkProperties = taxDeducted.deductionFromUkProperties,
                             fromEmployments = taxDeducted.ukTaxesPaidForEmployments.map(ukTaxPaidForEmployment =>
                                   UkTaxPaidForEmployment(ukTaxPaidForEmployment.sourceId,
                                                          ukTaxPaidForEmployment.ukTaxPaid)),
                             total = taxDeducted.totalTaxDeducted))
-          .getOrElse(TaxDeducted(0, 0, Nil, 0)),
+          .getOrElse(TaxDeducted(0, Nil, Nil, 0)),
         totalTaxDue = if (totalTaxDue > 0) totalTaxDue else 0,
         totalTaxOverpaid = if (totalTaxDue < 0) totalTaxDue.abs else 0
     )
@@ -153,7 +154,7 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) {
   def toTaxBandSummary(chargedAt: BigDecimal) =
     uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"$chargedAt%", tax(chargedAt))
 
-  def tax(chargedAt: BigDecimal): BigDecimal = roundDown(amount * chargedAt / 100)
+  def tax(chargedAt: BigDecimal): BigDecimal = roundDownToPennies(amount * chargedAt / 100)
 
   def available: BigDecimal = positiveOrZero(taxBand.width - amount)
 
@@ -172,10 +173,12 @@ case class AllowancesAndReliefs(personalAllowance: Option[BigDecimal] = None,
 case class MongoUkTaxPaidForEmployment(sourceId: SourceId, ukTaxPaid: BigDecimal)
 
 case class MongoTaxDeducted(interestFromUk: BigDecimal = 0,
-                            deductionFromUkProperties: BigDecimal = 0,
+                            totalDeductionFromUkProperties: BigDecimal = 0,
+                            deductionFromUkProperties: Seq[TaxPaid] = Nil,
                             ukTaxPaid: BigDecimal = 0,
                             ukTaxesPaidForEmployments: Seq[MongoUkTaxPaidForEmployment] = Nil) {
-  def totalTaxDeducted = interestFromUk + deductionFromUkProperties + ukTaxPaid
+
+  def totalTaxDeducted = interestFromUk + totalDeductionFromUkProperties + ukTaxPaid
 }
 
 case class MongoLiabilityCalculationError(code: ErrorCode, message: String)

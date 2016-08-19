@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.domain
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, FurnishedHolidayLettingIncome, SelfEmploymentIncome, UkPropertyIncome}
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
 
 case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, totalInterest: BigDecimal)
 
@@ -107,7 +108,7 @@ object UkTaxPaidForEmployment {
 }
 
 case class TaxDeducted(interestFromUk: BigDecimal,
-                       deductionFromUkProperties: BigDecimal,
+                       fromUkProperties: Seq[TaxPaid],
                        fromEmployments: Seq[UkTaxPaidForEmployment],
                        total: BigDecimal)
 
@@ -174,7 +175,7 @@ object Liability {
         ),
         taxDeducted = TaxDeducted(
             interestFromUk = 0,
-            deductionFromUkProperties = 0,
+            fromUkProperties = Nil,
             fromEmployments = exampleUkTaxPaidForEmployment,
             total = 0
         ),

@@ -16,16 +16,30 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object TaxDeductedForUkPropertiesCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-    val deductionFromUkProperties = roundUp(selfAssessment.ukProperties.map(_.taxPaid).sum)
+    val totalDeductionFromUkProperties = totalTaxDeductedForUkProperties(selfAssessment)
+    val deductionsPerUkProperty = taxDeductedPerUkProperty(selfAssessment)
+
     liability.copy(taxDeducted = liability.taxDeducted match {
-      case None => Some(MongoTaxDeducted(deductionFromUkProperties = deductionFromUkProperties))
-      case Some(mongoTaxDeducted) => Some(mongoTaxDeducted.copy(deductionFromUkProperties = deductionFromUkProperties))
+      case None => Some(MongoTaxDeducted(totalDeductionFromUkProperties = totalDeductionFromUkProperties, deductionFromUkProperties = deductionsPerUkProperty))
+      case Some(mongoTaxDeducted) => Some(mongoTaxDeducted.copy(totalDeductionFromUkProperties = totalDeductionFromUkProperties, deductionFromUkProperties = deductionsPerUkProperty))
     })
+  }
+
+  private def totalTaxDeductedForUkProperties(selfAssessment: SelfAssessment): BigDecimal = {
+    roundUp(selfAssessment.ukProperties.map(_.taxPaid).sum)
+  }
+
+  private def taxDeductedPerUkProperty(selfAssessment: SelfAssessment): Seq[TaxPaid] = {
+    for {
+      property <- selfAssessment.ukProperties
+      taxPaid <- property.taxesPaid
+    } yield taxPaid.toTaxPaid
   }
 }

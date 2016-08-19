@@ -193,7 +193,9 @@ case class MongoUKProperties(id: BSONObjectID,
       Total(expenses) - allowancesTotal - rentARoomReliefAmount)
   }
 
-  def taxPaid = taxesPaid.map(_.amount).sum
+  def taxPaid = Total(taxesPaid)
+
+  def taxPaidPerProperty = taxesPaid.map(_.toTaxPaid)
 
   def toUKProperties = UKProperty(
     id = Some(sourceId),

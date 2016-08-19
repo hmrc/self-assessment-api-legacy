@@ -19,8 +19,9 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.FurnishedHolidayLettingsMath._
 
-object IncomeTaxReliefCalculation extends CalculationStep with FurnishedHolidayLettingsMath {
+object IncomeTaxReliefCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
     liability.copy(

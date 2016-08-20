@@ -44,13 +44,13 @@ object TaxDeductedFromUkTaxPaidForEmploymentsCalculation extends CalculationStep
           Some(mongoTaxDeducted.copy(ukTaxPaid = ukTaxPaid, ukTaxesPaidForEmployments = ukTaxesPaidForEmployments))
       })
     } else {
-      val invalidEmploymentsErrors = ukTaxesPaidForEmployments
-        .filter(_.ukTaxPaid < 0)
-        .map(mongoUkTaxPaidForEmployment =>
-              MongoLiabilityCalculationError(INVALID_EMPLOYMENT_TAX_PAID,
-                    s"The UK tax paid for employment with source id ${mongoUkTaxPaidForEmployment.sourceId} should not be negative"))
-
-      MongoLiabilityCalculationErrors.create(liability.saUtr, liability.taxYear, invalidEmploymentsErrors)
+      MongoLiabilityCalculationErrors.create(
+          liability.saUtr,
+          liability.taxYear,
+          Seq(
+              MongoLiabilityCalculationError(
+                  INVALID_EMPLOYMENT_TAX_PAID,
+                  s"The UK tax paid must be non-negative for at least one employment source")))
     }
   }
 }

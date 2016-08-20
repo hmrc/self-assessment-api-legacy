@@ -1,6 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json.toJson
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
 import uk.gov.hmrc.selfassessmentapi.domain.employment.UkTaxPaid
 import uk.gov.hmrc.support.BaseFunctionalSpec
@@ -47,6 +48,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     }
 
     "return an HTTP 403 response if an error occurred in the liability calculation" in {
+
       given()
         .userIsAuthorisedForTheResource(saUtr)
         .when()
@@ -69,6 +71,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
         .get(s"/$saUtr/$taxYear/liability")
         .thenAssertThat()
         .statusIs(403)
+        .bodyIsError(ErrorCode.LIABILITY_CALCULATION_ERROR.toString)
     }
   }
 }

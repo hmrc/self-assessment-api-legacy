@@ -19,7 +19,11 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            | 		"ukRegisteredPension": 1000.45,
            | 		"retirementAnnuity": 1000.0,
            | 		"employerScheme": 12000.05,
-           | 		"overseasPension": 1234.43
+           | 		"overseasPension": 1234.43,
+           |    "pensionSavings": {
+           |      "excessOfAnnualAllowance": 200,
+           |      "taxPaidByPensionScheme": 123.23
+           |    }
            | 	},
            |   "charitableGivings": {
            |     "giftAidPayments": {

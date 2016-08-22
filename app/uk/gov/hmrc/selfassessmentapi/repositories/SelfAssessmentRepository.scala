@@ -96,6 +96,7 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
 
   def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Unit] = {
     val now = DateTime.now(DateTimeZone.UTC)
+
     val pensionContributionModifiers:BSONDocument =
       taxYearProperties.pensionContributions
         .map(pensionContributions =>
@@ -107,7 +108,11 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
                     "ukRegisteredPension" -> pensionContributions.ukRegisteredPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
                     "retirementAnnuity" -> pensionContributions.retirementAnnuity.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
                     "employerScheme" -> pensionContributions.employerScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                    "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull))))))
+                    "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                    "pensionSavings" -> BSONDocument(Seq(
+                      "excessOfAnnualAllowance" -> pensionContributions.pensionSavings.map(_.excessOfAnnualAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull),
+                      "taxPaidByPensionScheme" -> pensionContributions.pensionSavings.map(_.taxPaidByPensionScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull)
+                    )))))))
         .getOrElse(BSONDocument(
           lastModifiedDateTimeModfier(now),
           "pensionContributions" -> BSONNull))

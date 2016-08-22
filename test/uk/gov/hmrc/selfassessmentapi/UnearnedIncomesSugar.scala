@@ -22,23 +22,22 @@ import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType.{apply =
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
-trait UnearnedIncomesSugar extends SelfAssessmentSugar {
+object UnearnedIncomesSugar {
 
-  this: UnitSpec =>
-
-  def anUnearnedIncomes(id: SourceId = BSONObjectID.generate.stringify,
-                        saUtr: SaUtr = generateSaUtr(),
-                        taxYear: TaxYear = taxYear) =
+  def anIncome(id: SourceId = BSONObjectID.generate.stringify,
+               saUtr: SaUtr = generateSaUtr(),
+               taxYear: TaxYear = taxYear) =
     MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
-  def anUnearnedInterestIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify,
-                                      `type`: SavingsIncomeType = InterestFromBanksUntaxed,
-                                      amount: BigDecimal) =
+  def aSavingsIncome(summaryId: SummaryId = BSONObjectID.generate.stringify,
+                     `type`: SavingsIncomeType = InterestFromBanksUntaxed,
+                     amount: BigDecimal) =
     MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
 
-  def anUnearnedDividendIncomeSummary(summaryId: SummaryId = BSONObjectID.generate.stringify,
-                                      `type`: DividendType = FromUKCompanies,
-                                      amount: BigDecimal) =
+  def aDividendIncome(summaryId: SummaryId = BSONObjectID.generate.stringify,
+                      `type`: DividendType = FromUKCompanies,
+                      amount: BigDecimal) =
     MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
 }

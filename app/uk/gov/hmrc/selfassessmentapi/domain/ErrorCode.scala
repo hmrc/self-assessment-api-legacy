@@ -40,6 +40,7 @@ object ErrorCode extends Enumeration {
   UNDEFINED_REQUIRED_ELEMENT,
   ONLY_PENSION_CONTRIBUTIONS_SUPPORTED,
   INVALID_EMPLOYMENT_TAX_PAID,
+  LIABILITY_CALCULATION_ERROR,
   INVALID_TYPE = Value
 
   implicit val format = EnumJson.enumFormat(ErrorCode, Some("ErrorCode is invalid"))

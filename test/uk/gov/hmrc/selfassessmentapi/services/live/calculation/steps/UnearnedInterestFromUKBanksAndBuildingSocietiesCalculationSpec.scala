@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.InterestFromUKBanksAndBuildingSocieties
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.{UnearnedIncomesSugar, UnitSpec}
 
-class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends UnitSpec with UnearnedIncomesSugar {
+class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends UnitSpec {
 
   "run" should {
 
@@ -35,14 +37,14 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
 
     "calculate rounded down interest when there are multiple interest of both taxed and unTaxed from uk banks and building societies from multiple unearned income source" in {
 
-      val taxedInterest1 = anUnearnedInterestIncomeSummary("taxedInterest1", InterestFromBanksTaxed, 100.50)
-      val unTaxedInterest1 = anUnearnedInterestIncomeSummary("unTaxedInterest1", InterestFromBanksUntaxed, 200.50)
+      val taxedInterest1 = aSavingsIncome("taxedInterest1", InterestFromBanksTaxed, 100.50)
+      val unTaxedInterest1 = aSavingsIncome("unTaxedInterest1", InterestFromBanksUntaxed, 200.50)
 
-      val taxedInterest2 = anUnearnedInterestIncomeSummary("taxedInterest2", InterestFromBanksTaxed, 300.99)
-      val unTaxedInterest2 = anUnearnedInterestIncomeSummary("unTaxedInterest2", InterestFromBanksUntaxed, 400.99)
+      val taxedInterest2 = aSavingsIncome("taxedInterest2", InterestFromBanksTaxed, 300.99)
+      val unTaxedInterest2 = aSavingsIncome("unTaxedInterest2", InterestFromBanksUntaxed, 400.99)
 
-      val unearnedIncomes1 = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, unTaxedInterest1))
-      val unearnedIncomes2 = anUnearnedIncomes().copy(savings = Seq(taxedInterest2, unTaxedInterest2))
+      val unearnedIncomes1 = anIncome().copy(savings = Seq(taxedInterest1, unTaxedInterest1))
+      val unearnedIncomes2 = anIncome().copy(savings = Seq(taxedInterest2, unTaxedInterest2))
 
       val liability = aLiability()
 
@@ -56,8 +58,8 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
     }
 
     "calculate interest when there is one taxed interest from uk banks and building societies from a single unearned income source" in {
-      val taxedInterest = anUnearnedInterestIncomeSummary("taxedInterest", InterestFromBanksTaxed, 100)
-      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest))
+      val taxedInterest = aSavingsIncome("taxedInterest", InterestFromBanksTaxed, 100)
+      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest))
       val liability = aLiability()
 
       UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
@@ -68,9 +70,9 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
     }
 
     "calculate interest when there are multiple taxed interest from uk banks and building societies from a single unearned income source" in {
-      val taxedInterest1 = anUnearnedInterestIncomeSummary("taxedInterest1", InterestFromBanksTaxed, 100)
-      val taxedInterest2 = anUnearnedInterestIncomeSummary("taxedInterest2", InterestFromBanksTaxed, 200)
-      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, taxedInterest2))
+      val taxedInterest1 = aSavingsIncome("taxedInterest1", InterestFromBanksTaxed, 100)
+      val taxedInterest2 = aSavingsIncome("taxedInterest2", InterestFromBanksTaxed, 200)
+      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest1, taxedInterest2))
       val liability = aLiability()
 
       UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
@@ -81,8 +83,8 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
     }
 
     "calculate round down interest when there is one taxed interest from uk banks and building societies from a single unearned income source" in {
-      val taxedInterest = anUnearnedInterestIncomeSummary("taxedInterest", InterestFromBanksTaxed, 100.50)
-      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest))
+      val taxedInterest = aSavingsIncome("taxedInterest", InterestFromBanksTaxed, 100.50)
+      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest))
       val liability = aLiability()
 
       UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
@@ -93,9 +95,9 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
     }
 
     "calculate round down interest when there are multiple taxed interest from uk banks and building societies from a single unearned income source" in {
-      val taxedInterest1 = anUnearnedInterestIncomeSummary("taxedInterest1", InterestFromBanksTaxed, 100.90)
-      val taxedInterest2 = anUnearnedInterestIncomeSummary("taxedInterest2", InterestFromBanksTaxed, 200.99)
-      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, taxedInterest2))
+      val taxedInterest1 = aSavingsIncome("taxedInterest1", InterestFromBanksTaxed, 100.90)
+      val taxedInterest2 = aSavingsIncome("taxedInterest2", InterestFromBanksTaxed, 200.99)
+      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest1, taxedInterest2))
       val liability = aLiability()
 
       UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
@@ -106,8 +108,8 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
     }
 
     "calculate interest when there is one unTaxed interest from uk banks and building societies from a single unearned income source" in {
-      val unTaxedInterest = anUnearnedInterestIncomeSummary("unTaxedInterest", InterestFromBanksUntaxed, 100)
-      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(unTaxedInterest))
+      val unTaxedInterest = aSavingsIncome("unTaxedInterest", InterestFromBanksUntaxed, 100)
+      val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest))
       val liability = aLiability()
 
       UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
@@ -118,9 +120,9 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
     }
 
     "calculate interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned income source" in {
-      val taxedInterest1 = anUnearnedInterestIncomeSummary("taxedInterest1", InterestFromBanksUntaxed, 100)
-      val taxedInterest2 = anUnearnedInterestIncomeSummary("taxedInterest2", InterestFromBanksUntaxed, 200)
-      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, taxedInterest2))
+      val taxedInterest1 = aSavingsIncome("taxedInterest1", InterestFromBanksUntaxed, 100)
+      val taxedInterest2 = aSavingsIncome("taxedInterest2", InterestFromBanksUntaxed, 200)
+      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest1, taxedInterest2))
       val liability = aLiability()
 
       UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
@@ -131,8 +133,8 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
     }
 
     "calculate rounded down interest when there is one unTaxed interest from uk banks and building societies from a single unearned income source" in {
-      val unTaxedInterest = anUnearnedInterestIncomeSummary("unTaxedInterest", InterestFromBanksUntaxed, 100.50)
-      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(unTaxedInterest))
+      val unTaxedInterest = aSavingsIncome("unTaxedInterest", InterestFromBanksUntaxed, 100.50)
+      val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest))
       val liability = aLiability()
 
       UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation
@@ -143,9 +145,9 @@ class UnearnedInterestFromUKBanksAndBuildingSocietiesCalculationSpec extends Uni
     }
 
     "calculate rounded down interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned income source" in {
-      val taxedInterest1 = anUnearnedInterestIncomeSummary("taxedInterest1", InterestFromBanksUntaxed, 100.50)
-      val taxedInterest2 = anUnearnedInterestIncomeSummary("taxedInterest2", InterestFromBanksUntaxed, 200.99)
-      val unearnedIncomes = anUnearnedIncomes().copy(savings = Seq(taxedInterest1, taxedInterest2))
+      val taxedInterest1 = aSavingsIncome("taxedInterest1", InterestFromBanksUntaxed, 100.50)
+      val taxedInterest2 = aSavingsIncome("taxedInterest2", InterestFromBanksUntaxed, 200.99)
+      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest1, taxedInterest2))
       val liability = aLiability()
 
       UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation

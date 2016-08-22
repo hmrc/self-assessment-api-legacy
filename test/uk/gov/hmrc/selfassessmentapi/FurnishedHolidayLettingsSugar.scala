@@ -23,20 +23,19 @@ import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLoc
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Adjustments
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
-trait FurnishedHolidayLettingsSugar extends SelfAssessmentSugar {
-
-  this: UnitSpec =>
+object FurnishedHolidayLettingsSugar {
 
   def aFurnishedHolidayLetting(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, propertyLocation: PropertyLocationType = UK) = MongoFurnishedHolidayLettings(BSONObjectID.generate, id, saUtr, taxYear, now, now, propertyLocation)
 
-  def income(amount: BigDecimal, summaryId: SummaryId = BSONObjectID.generate.stringify) = MongoFurnishedHolidayLettingsIncomeSummary(summaryId, amount)
+  def anIncome(amount: BigDecimal, summaryId: SummaryId = BSONObjectID.generate.stringify) = MongoFurnishedHolidayLettingsIncomeSummary(summaryId, amount)
 
-  def expense(amount: BigDecimal, `type`: ExpenseType) = MongoFurnishedHolidayLettingsExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
+  def anExpense(amount: BigDecimal, `type`: ExpenseType) = MongoFurnishedHolidayLettingsExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def balancingCharge(amount: BigDecimal) = MongoFurnishedHolidayLettingsBalancingChargeSummary(BSONObjectID.generate.stringify, amount)
+  def aBalancingCharge(amount: BigDecimal) = MongoFurnishedHolidayLettingsBalancingChargeSummary(BSONObjectID.generate.stringify, amount)
 
-  def privateUseAdjustment(amount: BigDecimal) = MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(BSONObjectID.generate.stringify, amount)
+  def aPrivateUseAdjustment(amount: BigDecimal) = MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(BSONObjectID.generate.stringify, amount)
 
   def adjustments(lossBroughtForward: BigDecimal) = Adjustments(lossBroughtForward = Some(lossBroughtForward))
 }

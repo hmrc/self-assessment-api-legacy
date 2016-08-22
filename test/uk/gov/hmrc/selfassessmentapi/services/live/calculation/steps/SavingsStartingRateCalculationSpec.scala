@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.{SelfAssessmentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
-class SavingsStartingRateCalculationSpec extends UnitSpec with SelfAssessmentSugar {
+class SavingsStartingRateCalculationSpec extends UnitSpec {
 
   "run" should {
 

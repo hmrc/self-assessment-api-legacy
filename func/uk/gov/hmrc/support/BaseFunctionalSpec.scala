@@ -1,5 +1,7 @@
 package uk.gov.hmrc.support
 
+import java.time.Duration
+
 import com.github.tomakehurst.wiremock.client.RequestPatternBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.json.{JSONArray, JSONObject}
@@ -15,7 +17,9 @@ import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes, SummaryType}
 
 import scala.collection.mutable
+import scala.concurrent.duration._
 import scala.util.matching.Regex
+
 
 trait BaseFunctionalSpec extends TestApplication {
 
@@ -338,7 +342,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     assert(path.startsWith("/"), "please provide only a path starting with '/'")
     var addAcceptHeader = true
-    var hc = HeaderCarrier()
+    val hc = HeaderCarrier()
     val url = s"http://localhost:$port$path"
 
     def withoutAcceptHeader() = {
@@ -347,20 +351,20 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     def thenAssertThat() = {
-      if (addAcceptHeader) hc = hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json"))
+      implicit val carrier = if (addAcceptHeader) hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json")) else hc
 
       withClue(s"Request $method ${interpolated(url)}") {
         method match {
-          case "GET" => new Assertions(s"GET@$url", Http.get(interpolated(url))(hc))
-          case "DELETE" => new Assertions(s"DELETE@$url", Http.delete(interpolated(url))(hc))
+          case "GET" => new Assertions(s"GET@$url", Http.get(interpolated(url)))
+          case "DELETE" => new Assertions(s"DELETE@$url", Http.delete(interpolated(url)))
           case "POST" =>
             body match {
-              case Some(jsonBody) => new Assertions(s"POST@$url", Http.postJson(interpolated(url), jsonBody)(hc))
-              case None => new Assertions(s"POST@$url", Http.postEmpty(interpolated(url))(hc))
+              case Some(jsonBody) => new Assertions(s"POST@$url", Http.postJson(interpolated(url), jsonBody))
+              case None => new Assertions(s"POST@$url", Http.postEmpty(interpolated(url)))
             }
           case "PUT" =>
             val jsonBody = body.getOrElse(throw new RuntimeException("Body for PUT must be provided"))
-            new Assertions(s"PUT@$url", Http.putJson(interpolated(url), jsonBody)(hc))
+            new Assertions(s"PUT@$url", Http.putJson(interpolated(url), jsonBody))
         }
       }
     }

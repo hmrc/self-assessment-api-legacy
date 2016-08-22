@@ -21,6 +21,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi.UkPropertySugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.domain.TaxPaidForUkProperty
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
 
 class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrivenPropertyChecks {
@@ -32,11 +33,11 @@ class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrive
 
       TaxDeductedForUkPropertiesCalculation
         .run(aSelfAssessment(
-                 ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(aTaxPaidSummary("property-1", 500))))),
+                 ukProperties = Seq(aUkProperty(id = "property-1").copy(taxesPaid = Seq(aTaxPaidSummary("property-1", 500))))),
              liability)
         .getLiabilityOrFail shouldBe
         liability.copy(
-            taxDeducted = Some(MongoTaxDeducted(deductionFromUkProperties = Seq(TaxPaid(Some("property-1"), 500)),
+            taxDeducted = Some(MongoTaxDeducted(deductionFromUkProperties = Seq(TaxPaidForUkProperty("property-1", 500)),
                                                 totalDeductionFromUkProperties = 500)))
     }
 
@@ -45,11 +46,11 @@ class TaxDeductedForUkPropertiesCalculationSpec extends UnitSpec with TableDrive
 
       TaxDeductedForUkPropertiesCalculation
         .run(
-            aSelfAssessment(ukProperties = Seq(aUkProperty().copy(taxesPaid = Seq(aTaxPaidSummary("property-1", 500.22))))),
+            aSelfAssessment(ukProperties = Seq(aUkProperty(id = "property-1").copy(taxesPaid = Seq(aTaxPaidSummary("property-1", 500.22))))),
             liability)
         .getLiabilityOrFail shouldBe
         liability.copy(
-            taxDeducted = Some(MongoTaxDeducted(deductionFromUkProperties = Seq(TaxPaid(Some("property-1"), 500.22)),
+            taxDeducted = Some(MongoTaxDeducted(deductionFromUkProperties = Seq(TaxPaidForUkProperty("property-1", 500.22)),
                                                 totalDeductionFromUkProperties = 501)))
     }
   }

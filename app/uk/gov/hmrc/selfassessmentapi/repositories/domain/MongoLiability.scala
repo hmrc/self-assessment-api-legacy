@@ -23,7 +23,6 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
@@ -174,7 +173,7 @@ case class MongoUkTaxPaidForEmployment(sourceId: SourceId, ukTaxPaid: BigDecimal
 
 case class MongoTaxDeducted(interestFromUk: BigDecimal = 0,
                             totalDeductionFromUkProperties: BigDecimal = 0,
-                            deductionFromUkProperties: Seq[TaxPaid] = Nil,
+                            deductionFromUkProperties: Seq[TaxPaidForUkProperty] = Nil,
                             ukTaxPaid: BigDecimal = 0,
                             ukTaxesPaidForEmployments: Seq[MongoUkTaxPaidForEmployment] = Nil) {
 

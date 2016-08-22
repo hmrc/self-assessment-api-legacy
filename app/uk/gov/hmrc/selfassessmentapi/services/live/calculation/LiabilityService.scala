@@ -82,7 +82,8 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
     liabilityCalculator.calculate(SelfAssessment(employments = employments,
                                                  selfEmployments = selfEmployments,
                                                  unearnedIncomes = unearnedIncomes,
-                                                 ukProperties = ukProperties),
+                                                 ukProperties = ukProperties,
+                                                 furnishedHolidayLettings = furnishedHolidayLettings),
                                   liability)
   }
 }

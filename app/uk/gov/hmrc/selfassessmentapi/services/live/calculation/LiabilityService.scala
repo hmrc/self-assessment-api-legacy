@@ -44,7 +44,11 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       .findBy(saUtr, taxYear)
       .map(_.map {
         case calculationError: MongoLiabilityCalculationErrors =>
-          Left(LiabilityCalculationErrors(calculationError.errors.map(error => LiabilityCalculationError(error.code, error.message))))
+          Left(
+              LiabilityCalculationErrors(ErrorCode.LIABILITY_CALCULATION_ERROR,
+                                         "Liability calculation error",
+                                         calculationError.errors.map(error =>
+                                               LiabilityCalculationError(error.code, error.message))))
         case liability: MongoLiability => Right(liability.toLiability)
       })
   }

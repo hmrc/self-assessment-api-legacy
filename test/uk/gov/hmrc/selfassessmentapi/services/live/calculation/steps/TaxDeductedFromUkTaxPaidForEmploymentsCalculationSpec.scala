@@ -52,10 +52,8 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec extends UnitSpec wit
         .fold(identity, liability => fail(s"Expected a calculation error instead of the valid liability $liability"))
 
       calculationError.errors should contain theSameElementsAs Seq(
-        MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
-                s"The UK tax paid for employment with source id ${employment1.sourceId} should not be negative"),
-        MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
-                s"The UK tax paid for employment with source id ${employment2.sourceId} should not be negative"))
+          MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
+                                         s"The UK tax paid must be non-negative for at least one employment source"))
     }
 
     "cap the UK tax paid at zero if the total tax paid is not positive" in {

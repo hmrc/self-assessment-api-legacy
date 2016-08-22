@@ -19,7 +19,6 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
 
 class MongoLiabilitySpec extends UnitSpec with JsonSpec {
@@ -184,7 +183,7 @@ class MongoLiabilitySpec extends UnitSpec with JsonSpec {
           taxDeducted = Some(
               MongoTaxDeducted(
                   interestFromUk = 1000,
-                  deductionFromUkProperties = Seq(TaxPaid(Some("property-1"), 500)),
+                  deductionFromUkProperties = Seq(TaxPaidForUkProperty("property-1", 500)),
                   totalDeductionFromUkProperties = 500,
                   ukTaxPaid = 0,
                   ukTaxesPaidForEmployments = Nil

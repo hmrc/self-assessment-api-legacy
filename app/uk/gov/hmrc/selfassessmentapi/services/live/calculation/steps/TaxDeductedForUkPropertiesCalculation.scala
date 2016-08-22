@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
+import uk.gov.hmrc.selfassessmentapi.domain.TaxPaidForUkProperty
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
@@ -36,10 +36,10 @@ object TaxDeductedForUkPropertiesCalculation extends CalculationStep {
     roundUp(selfAssessment.ukProperties.map(_.taxPaid).sum)
   }
 
-  private def taxDeductedPerUkProperty(selfAssessment: SelfAssessment): Seq[TaxPaid] = {
+  private def taxDeductedPerUkProperty(selfAssessment: SelfAssessment): Seq[TaxPaidForUkProperty] = {
     for {
       property <- selfAssessment.ukProperties
       taxPaid <- property.taxesPaid
-    } yield taxPaid.toTaxPaid
+    } yield TaxPaidForUkProperty(property.sourceId, taxPaid.amount)
   }
 }

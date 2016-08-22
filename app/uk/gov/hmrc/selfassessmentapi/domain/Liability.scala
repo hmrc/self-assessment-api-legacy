@@ -19,7 +19,6 @@ package uk.gov.hmrc.selfassessmentapi.domain
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, FurnishedHolidayLettingIncome, SelfEmploymentIncome, UkPropertyIncome}
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
 
 case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, totalInterest: BigDecimal)
 
@@ -107,8 +106,14 @@ object UkTaxPaidForEmployment {
   implicit val format = Json.format[UkTaxPaidForEmployment]
 }
 
+case class TaxPaidForUkProperty(sourceId: String, amount: BigDecimal)
+
+object TaxPaidForUkProperty {
+  implicit val format = Json.format[TaxPaidForUkProperty]
+}
+
 case class TaxDeducted(interestFromUk: BigDecimal,
-                       fromUkProperties: Seq[TaxPaid],
+                       fromUkProperties: Seq[TaxPaidForUkProperty],
                        fromEmployments: Seq[UkTaxPaidForEmployment],
                        total: BigDecimal)
 

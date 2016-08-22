@@ -29,13 +29,13 @@ object FurnishedHolidayLettingsSugar {
 
   def aFurnishedHolidayLetting(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, propertyLocation: PropertyLocationType = UK) = MongoFurnishedHolidayLettings(BSONObjectID.generate, id, saUtr, taxYear, now, now, propertyLocation)
 
-  def anIncome(amount: BigDecimal, summaryId: SummaryId = BSONObjectID.generate.stringify) = MongoFurnishedHolidayLettingsIncomeSummary(summaryId, amount)
+  def fhlIncome(amount: BigDecimal, summaryId: SummaryId = BSONObjectID.generate.stringify) = MongoFurnishedHolidayLettingsIncomeSummary(summaryId, amount)
 
-  def anExpense(amount: BigDecimal, `type`: ExpenseType) = MongoFurnishedHolidayLettingsExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
+  def fhlExpense(amount: BigDecimal, `type`: ExpenseType) = MongoFurnishedHolidayLettingsExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def aBalancingCharge(amount: BigDecimal) = MongoFurnishedHolidayLettingsBalancingChargeSummary(BSONObjectID.generate.stringify, amount)
+  def fhlBalancingCharge(amount: BigDecimal) = MongoFurnishedHolidayLettingsBalancingChargeSummary(BSONObjectID.generate.stringify, amount)
 
-  def aPrivateUseAdjustment(amount: BigDecimal) = MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(BSONObjectID.generate.stringify, amount)
+  def fhlPrivateUseAdjustment(amount: BigDecimal) = MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(BSONObjectID.generate.stringify, amount)
 
-  def adjustments(lossBroughtForward: BigDecimal) = Adjustments(lossBroughtForward = Some(lossBroughtForward))
+  def fhlAdjustments(lossBroughtForward: BigDecimal) = Adjustments(lossBroughtForward = Some(lossBroughtForward))
 }

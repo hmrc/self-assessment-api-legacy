@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar._
+import uk.gov.hmrc.selfassessmentapi.SelfEmploymentSugar._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.UkPropertySugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.EEA
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Adjustments
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec, domain, _}
+import uk.gov.hmrc.selfassessmentapi._
 
-class IncomeTaxReliefCalculationSpec
-    extends UnitSpec
-    with SelfAssessmentSugar
-    with SelfEmploymentSugar
-    with UkPropertySugar
-    with FurnishedHolidayLettingsSugar {
+class IncomeTaxReliefCalculationSpec extends UnitSpec {
 
   "income tax relief" should {
 
@@ -107,11 +107,12 @@ class IncomeTaxReliefCalculationSpec
         aUkProperty().copy(incomes = Seq(MongoUKPropertiesIncomeSummary("", IncomeType.RentIncome, 300)),
                            adjustments = Some(domain.ukproperty.Adjustments(lossBroughtForward = Some(400.45))))
 
+
       val furnishedHolidaysLettings =
-        Seq(aFurnishedHolidayLetting().copy(incomes = Seq(income(100)), adjustments = Some(adjustments(lossBroughtForward = 50))),
-         aFurnishedHolidayLetting().copy(incomes = Seq(income(350), income(50), income(100)), adjustments = Some(adjustments(lossBroughtForward = 200))),
-         aFurnishedHolidayLetting(propertyLocation = EEA).copy(incomes = Seq(income(50), income(50)), adjustments = Some(adjustments(lossBroughtForward = 500))),
-         aFurnishedHolidayLetting(propertyLocation = EEA).copy(incomes = Seq(income(500)), adjustments = Some(adjustments(lossBroughtForward = 450)))
+        Seq(aFurnishedHolidayLetting().copy(incomes = Seq(fhlIncome(100)), adjustments = Some(fhlAdjustments(lossBroughtForward = 50))),
+         aFurnishedHolidayLetting().copy(incomes = Seq(fhlIncome(350), fhlIncome(50), fhlIncome(100)), adjustments = Some(fhlAdjustments(lossBroughtForward = 200))),
+         aFurnishedHolidayLetting(propertyLocation = EEA).copy(incomes = Seq(fhlIncome(50), fhlIncome(50)), adjustments = Some(fhlAdjustments(lossBroughtForward = 500))),
+         aFurnishedHolidayLetting(propertyLocation = EEA).copy(incomes = Seq(fhlIncome(500)), adjustments = Some(fhlAdjustments(lossBroughtForward = 450)))
       )
 
       incomeTaxReliefFor(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo),

@@ -41,19 +41,19 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            anIncome(1200.01),
-            anIncome(799.99)
+            fhlIncome(1200.01),
+            fhlIncome(799.99)
           ),
           expenses = Seq(
-            anExpense(200, FinancialCosts),
-            anExpense(200, ProfessionalFees)
+            fhlExpense(200, FinancialCosts),
+            fhlExpense(200, ProfessionalFees)
           ),
           balancingCharges = Seq(
-            aBalancingCharge(10),
-            aBalancingCharge(20)
+            fhlBalancingCharge(10),
+            fhlBalancingCharge(20)
           ),
           privateUseAdjustment = Seq(
-            aPrivateUseAdjustment(50)
+            fhlPrivateUseAdjustment(50)
           )
         )
       ))
@@ -68,13 +68,13 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            anIncome(2000)
+            fhlIncome(2000)
           ),
           expenses = Seq(
-            anExpense(100, FinancialCosts),
-            anExpense(50.01, ProfessionalFees),
-            anExpense(49.99, PremisesRunningCosts),
-            anExpense(50, Other)
+            fhlExpense(100, FinancialCosts),
+            fhlExpense(50.01, ProfessionalFees),
+            fhlExpense(49.99, PremisesRunningCosts),
+            fhlExpense(50, Other)
           )
         )))
 
@@ -88,7 +88,7 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            anIncome(2000)
+            fhlIncome(2000)
           ),
           allowances = Some(Allowances(
             capitalAllowance = Some(10)
@@ -105,7 +105,7 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            anIncome(1299.01)
+            fhlIncome(1299.01)
           ),
           allowances = Some(Allowances(
             capitalAllowance = Some(0.02)
@@ -122,10 +122,10 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
           incomes = Seq(
-            anIncome(2000)
+            fhlIncome(2000)
           ),
           expenses = Seq(
-            anExpense(4000, FinancialCosts)
+            fhlExpense(4000, FinancialCosts)
           ),
           adjustments = Some(Adjustments(
             lossBroughtForward = Some(1000)
@@ -142,11 +142,11 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
       val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
         aFurnishedHolidayLetting("se1").copy(
           incomes = Seq(
-            anIncome(1200)
+            fhlIncome(1200)
           )),
         aFurnishedHolidayLetting("se2").copy(
           incomes = Seq(
-            anIncome(800)
+            fhlIncome(800)
           ))
       ))
 

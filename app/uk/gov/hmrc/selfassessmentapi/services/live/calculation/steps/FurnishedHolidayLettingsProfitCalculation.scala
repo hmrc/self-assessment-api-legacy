@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{FurnishedHolidayLettingIncome, LiabilityResult, MongoFurnishedHolidayLettings, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{FurnishedHolidayLettingIncome, LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.FurnishedHolidayLettingsMath._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object FurnishedHolidayLettingsProfitCalculation extends CalculationStep {
@@ -29,18 +30,5 @@ object FurnishedHolidayLettingsProfitCalculation extends CalculationStep {
           positiveOrZero(profitIncreases(furnishedHolidayLetting) - profitReductions(furnishedHolidayLetting))
         FurnishedHolidayLettingIncome(sourceId = furnishedHolidayLetting.sourceId, profit = roundDown(adjustedProfit))
     })
-  }
-
-  private def profitIncreases(furnishedHolidayLetting: MongoFurnishedHolidayLettings): BigDecimal = {
-    val income = Some(furnishedHolidayLetting.incomes.map(_.amount).sum)
-    val balancingCharges = Some(furnishedHolidayLetting.balancingCharges.map(_.amount).sum)
-    val privateUseAdjustments = Some(furnishedHolidayLetting.privateUseAdjustment.map(_.amount).sum)
-    sum(income, balancingCharges, privateUseAdjustments)
-  }
-
-  private def profitReductions(selfEmployment: MongoFurnishedHolidayLettings): BigDecimal = {
-    val expenses = Some(selfEmployment.expenses.map(_.amount).sum)
-    val allowances = selfEmployment.allowances.flatMap(_.capitalAllowance)
-    sum(expenses, allowances)
   }
 }

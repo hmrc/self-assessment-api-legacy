@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
+import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
+import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.FurnishedHolidayLettingsMath._
 
 object IncomeTaxReliefCalculation extends CalculationStep {
 
@@ -28,18 +30,36 @@ object IncomeTaxReliefCalculation extends CalculationStep {
   }
 
   def incomeTaxRelief(selfAssessment: SelfAssessment): BigDecimal = {
-    selfEmploymentLossBroughtForward(selfAssessment) + ukPropertiesLossBroughtForward(selfAssessment)
+    selfEmploymentLossBroughtForward(selfAssessment.selfEmployments) +
+    ukPropertiesLossBroughtForward(selfAssessment.ukProperties) +
+    furnishedHolidayLettingsLossBroughtForward(selfAssessment.furnishedHolidayLettings)
   }
 
-  private def ukPropertiesLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {
+  private def ukPropertiesLossBroughtForward(ukProperties: Seq[MongoUKProperties]): BigDecimal = {
     roundUp(
-        capAt(selfAssessment.ukProperties.map(_.lossBroughtForward).sum,
-              selfAssessment.ukProperties.map(_.adjustedProfit).sum))
+        capAt(ukProperties.map(_.lossBroughtForward).sum,
+              ukProperties.map(_.adjustedProfit).sum))
   }
 
-  private def selfEmploymentLossBroughtForward(selfAssessment: SelfAssessment): BigDecimal = {
-    roundUp(selfAssessment.selfEmployments.map { selfEmployment =>
+  private def selfEmploymentLossBroughtForward(selfEmployments: Seq[MongoSelfEmployment]): BigDecimal = {
+    roundUp(selfEmployments.map { selfEmployment =>
       capAt(selfEmployment.lossBroughtForward, selfEmployment.adjustedProfits)
     }.sum)
+  }
+
+  private def furnishedHolidayLettingsLossBroughtForward(lettings: Seq[MongoFurnishedHolidayLettings]) =
+    toMapByPropertyLocation(lettings).map(pair => sumOfLossesBroughtForward(pair._2)).sum
+
+  private def sumOfLossesBroughtForward(lettings: Seq[MongoFurnishedHolidayLettings]) = {
+    val adjustedProfitSum = lettings.map {
+      furnishedHolidayLetting => positiveOrZero(profitIncreases(furnishedHolidayLetting) - profitReductions(furnishedHolidayLetting))
+    }.sum
+    capAt(lettings.map(furnishedHolidayLetting => valueOrZero(furnishedHolidayLetting.adjustments.flatMap(_.lossBroughtForward))).sum, adjustedProfitSum)
+  }
+
+  private def toMapByPropertyLocation(lettings: Seq[MongoFurnishedHolidayLettings]) = {
+    def toMap(map: Map[PropertyLocationType, List[MongoFurnishedHolidayLettings]], element: MongoFurnishedHolidayLettings) =
+      map + (element.propertyLocation -> (element :: map(element.propertyLocation)))
+    lettings.foldLeft(Map[PropertyLocationType, List[MongoFurnishedHolidayLettings]]().withDefaultValue(List()))(toMap)
   }
 }

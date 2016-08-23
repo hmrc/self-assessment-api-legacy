@@ -16,14 +16,34 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution
 
+import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain.{JsonMarshaller, _}
 
+
+case class PensionSaving(excessOfAnnualAllowance: Option[BigDecimal], taxPaidByPensionScheme: Option[BigDecimal])
+
+object PensionSaving extends JsonMarshaller[PensionSaving] {
+  override implicit val writes = Json.writes[PensionSaving]
+
+  override implicit val reads = (
+    (__ \ "excessOfAnnualAllowance").readNullable[BigDecimal](positiveAmountValidator("excessOfAnnualAllowance")) and
+      (__ \ "taxPaidByPensionScheme").readNullable[BigDecimal](positiveAmountValidator("taxPaidByPensionScheme"))
+    ) (PensionSaving.apply _)
+    .filter(ValidationError("taxPaidByPensionScheme can not exist when there is no excessOfAnnualAllowance", ErrorCode.UNDEFINED_REQUIRED_ELEMENT))
+  { savings => if (savings.taxPaidByPensionScheme.isDefined) savings.excessOfAnnualAllowance.isDefined else true }
+    .filter(ValidationError("taxPaidByPensionScheme must not exceed the excessOfAnnualAllowance", ErrorCode.MAXIMUM_AMOUNT_EXCEEDED))
+  { savings => savings.taxPaidByPensionScheme.forall(_ <= savings.excessOfAnnualAllowance.getOrElse(0)) }
+
+  override def example(id: Option[String]): PensionSaving = PensionSaving(Some(200.00), Some(123.23))
+}
+
 case class PensionContribution(ukRegisteredPension: Option[BigDecimal] = None,
                                retirementAnnuity: Option[BigDecimal] = None,
                                employerScheme: Option[BigDecimal] = None,
-                               overseasPension: Option[BigDecimal] = None) {
+                               overseasPension: Option[BigDecimal] = None,
+                               pensionSaving: Option[PensionSaving] = None) {
 
   def retirementAnnuityContract: BigDecimal = {
     Sum(retirementAnnuity, employerScheme, overseasPension)
@@ -38,13 +58,29 @@ object PensionContribution extends JsonMarshaller[PensionContribution] {
     (__ \ "ukRegisteredPension").readNullable[BigDecimal](positiveAmountValidator("ukRegisteredPension")) and
       (__ \ "retirementAnnuity").readNullable[BigDecimal](positiveAmountValidator("retirementAnnuity")) and
       (__ \ "employerScheme").readNullable[BigDecimal](positiveAmountValidator("employerScheme")) and
-      (__ \ "overseasPension").readNullable[BigDecimal](positiveAmountValidator("overseasPension"))
+      (__ \ "overseasPension").readNullable[BigDecimal](positiveAmountValidator("overseasPension")) and
+      (__ \ "pensionSaving").readNullable[PensionSaving]
     ) (PensionContribution.apply _)
+      .filter(ValidationError("pensionSaving may only exist if there is at least one pension contribution", ErrorCode.UNDEFINED_REQUIRED_ELEMENT))
+    {atLeastOneContributionDefined}
+      .filter(ValidationError("excessOfAnnualAllowance may not exceed the sum of all pension contributions", ErrorCode.MAXIMUM_AMOUNT_EXCEEDED))
+    {contribution => contribution.pensionSaving.forall(_.excessOfAnnualAllowance.forall(_ <= sumOfAllContributions(contribution)))}
+
+  private def atLeastOneContributionDefined(contribution: PensionContribution): Boolean = {
+    contribution.ukRegisteredPension.isDefined || contribution.retirementAnnuity.isDefined ||
+      contribution.employerScheme.isDefined || contribution.overseasPension.isDefined
+  }
+
+  private def sumOfAllContributions(contribution: PensionContribution): BigDecimal = {
+    Sum(contribution.ukRegisteredPension, contribution.retirementAnnuity,
+      contribution.employerScheme, contribution.overseasPension)
+  }
 
   override def example(id: Option[String] = None) =
     PensionContribution(
       ukRegisteredPension = Some(1000.45),
       retirementAnnuity = Some(1000.00),
       employerScheme = Some(12000.05),
-      overseasPension = Some(1234.43))
+      overseasPension = Some(1234.43),
+      pensionSaving = Some(PensionSaving.example()))
 }

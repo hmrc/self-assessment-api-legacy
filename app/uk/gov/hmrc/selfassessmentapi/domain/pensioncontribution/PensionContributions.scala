@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution
 
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.domain.{PositiveMonetaryFieldDescription, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.domain.{FieldDescription, ObjectFieldDescription, PositiveMonetaryFieldDescription, TaxYearPropertyType}
 
 case object PensionContributions extends TaxYearPropertyType {
   override val name: String = "pensionContributions"
@@ -32,6 +32,20 @@ case object PensionContributions extends TaxYearPropertyType {
     PositiveMonetaryFieldDescription(name, "ukRegisteredPension", "Payments to registered pension schemes where basic rate tax relief will be claimed by your pension provider", optional = true),
     PositiveMonetaryFieldDescription(name, "retirementAnnuity", "Payments to a retirement annuity contract where basic rate tax relief will not be claimed by your provider", optional = true),
     PositiveMonetaryFieldDescription(name, "employerScheme", "Payments to your employer’s scheme which were not deducted from your pay before tax", optional = true),
-    PositiveMonetaryFieldDescription(name, "overseasPension", "Payments to an overseas pension scheme, which is not UK-registered, which are eligible for tax relief and were not deducted from your pay before tax", optional = true)
+    PositiveMonetaryFieldDescription(name, "overseasPension", "Payments to an overseas pension scheme, which is not UK-registered, which are eligible for tax relief and were not deducted from your pay before tax", optional = true),
+    ObjectFieldDescription(name, "pensionSaving", optional = true, "")
+  )
+}
+
+case object PensionSavings extends TaxYearPropertyType {
+  override val name: String = "pensionSaving"
+  override val example: JsValue = toJson(PensionSaving.example())
+  override val title: String = "Sample pension saving"
+
+  override def description(action: String): String = s"$action a pensionSaving"
+
+  override val fieldDescriptions: Seq[FieldDescription] = Seq(
+    PositiveMonetaryFieldDescription(name, "excessOfAnnualAllowance", "Pension contribution excess to annual allowance made by the taxpayer on which 'Pension Savings Charges' will be calculated", optional = true),
+    PositiveMonetaryFieldDescription(name, "taxPaidByPensionScheme", "Tax paid by the pension scheme which would be negated from the the 'Pension Savings Charges'", optional = true)
   )
 }

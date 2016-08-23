@@ -27,8 +27,8 @@ object TaxDeductedFromInterestFromUkCalculation extends CalculationStep {
       unearnedIncome.savings.filter(_.`type` == InterestFromBanksTaxed).map(_.amount).sum
     }.sum
 
-    val grossedUpInterest = roundDown(totalTaxedInterest * 100 / 80)
-    val interestFromUk = roundUp(grossedUpInterest - totalTaxedInterest)
+    val grossedUpInterest = totalTaxedInterest * 100 / 80
+    val interestFromUk = roundUpToPennies(grossedUpInterest - totalTaxedInterest)
 
     liability.copy(taxDeducted = liability.taxDeducted match {
       case None => Some(MongoTaxDeducted(interestFromUk = interestFromUk))

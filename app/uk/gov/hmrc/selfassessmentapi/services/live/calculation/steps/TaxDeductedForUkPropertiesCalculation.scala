@@ -33,7 +33,7 @@ object TaxDeductedForUkPropertiesCalculation extends CalculationStep {
   }
 
   private def totalTaxDeductedForUkProperties(selfAssessment: SelfAssessment): BigDecimal = {
-    roundUp(selfAssessment.ukProperties.map(_.taxPaid).sum)
+    roundUpToPennies(selfAssessment.ukProperties.map(_.taxPaid).sum)
   }
 
   private def taxDeductedPerUkProperty(selfAssessment: SelfAssessment): Seq[TaxPaidForUkProperty] = {

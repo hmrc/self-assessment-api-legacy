@@ -67,11 +67,11 @@ class TaxDeductedFromInterestFromUkCalculationSpec extends UnitSpec with TableDr
                          (aSavingsIncome("taxedInterest11", InterestFromBanksTaxed, 786.78),
                           aSavingsIncome("taxedInterest12", InterestFromBanksTaxed, 456.76),
                           aSavingsIncome("taxedInterest13", InterestFromBanksTaxed, 2000.56),
-                          BigDecimal(811)),
+                          BigDecimal(811.03)),
                          (aSavingsIncome("taxedInterest14", InterestFromBanksTaxed, 1000.78),
                           aSavingsIncome("taxedInterest15", InterestFromBanksTaxed, 999.22),
                           aSavingsIncome("taxedInterest16", InterestFromBanksTaxed, 3623.67),
-                          BigDecimal(1406)))
+                          BigDecimal(1405.92)))
       checkTableForInterestFromUk(inputs)
     }
 

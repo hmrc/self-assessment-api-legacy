@@ -106,7 +106,7 @@ object UkTaxPaidForEmployment {
   implicit val format = Json.format[UkTaxPaidForEmployment]
 }
 
-case class TaxPaidForUkProperty(sourceId: String, amount: BigDecimal)
+case class TaxPaidForUkProperty(sourceId: String, taxPaid: BigDecimal)
 
 object TaxPaidForUkProperty {
   implicit val format = Json.format[TaxPaidForUkProperty]

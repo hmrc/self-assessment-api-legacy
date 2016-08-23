@@ -62,7 +62,7 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       taxYearProperties <- selfAssessmentRepository.findTaxYearProperties(saUtr, taxYear)
       furnishedHolidayLettings <- if (isSourceEnabled(FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoFurnishedHolidayLettings]())
       emptyLiability <- liabilityRepo.save(MongoLiability.create(saUtr, taxYear))
-      liabilityResult = calculateLiability(emptyLiability, employments, selfEmployments, ukProperties, unearnedIncomes, furnishedHolidayLettings)
+      liabilityResult = calculateLiability(emptyLiability, employments, selfEmployments, ukProperties, unearnedIncomes, furnishedHolidayLettings, taxYearProperties)
       liability <- liabilityRepo.save(liabilityResult)
     } yield
       liability match {
@@ -78,12 +78,14 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                                  selfEmployments: Seq[MongoSelfEmployment],
                                  ukProperties: Seq[MongoUKProperties],
                                  unearnedIncomes: Seq[MongoUnearnedIncome],
-                                 furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings]): LiabilityResult = {
+                                 furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings],
+                                 taxYearProperties: Option[TaxYearProperties]): LiabilityResult = {
     liabilityCalculator.calculate(SelfAssessment(employments = employments,
                                                  selfEmployments = selfEmployments,
                                                  unearnedIncomes = unearnedIncomes,
                                                  ukProperties = ukProperties,
-                                                 furnishedHolidayLettings = furnishedHolidayLettings),
+                                                 furnishedHolidayLettings = furnishedHolidayLettings,
+                                                 taxYearProperties = taxYearProperties),
                                   liability)
   }
 }

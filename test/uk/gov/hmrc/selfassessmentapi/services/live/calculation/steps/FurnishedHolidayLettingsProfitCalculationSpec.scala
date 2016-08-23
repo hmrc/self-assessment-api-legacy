@@ -31,7 +31,7 @@ class FurnishedHolidayLettingsProfitCalculationSpec extends UnitSpec {
 
   "calculate profit for furnished holiday lettings" should {
 
-    "not record any profit if there are no self employments" in {
+    "not record any profit if there are no furnished holiday lettings" in {
 
       FurnishedHolidayLettingsProfitCalculation.run(SelfAssessment(), liability) shouldBe liability
     }

@@ -22,18 +22,18 @@ import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 object SelfEmploymentProfitCalculation extends CalculationStep {
 
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
+    liability.copy(profitFromSelfEmployments = profitFromSelfEmployments(selfAssessment))
+  }
 
-    val profitFromSelfEmployments = selfAssessment.selfEmployments.map { selfEmployment =>
+  private def profitFromSelfEmployments(selfAssessment: SelfAssessment): Seq[SelfEmploymentIncome] = {
+    selfAssessment.selfEmployments.map { selfEmployment =>
       val profit = roundDown(selfEmployment.adjustedProfits + selfEmployment.outstandingBusinessIncome)
       val taxableProfit =
         roundDown(positiveOrZero(profit - capAt(selfEmployment.lossBroughtForward, selfEmployment.adjustedProfits)))
 
       SelfEmploymentIncome(sourceId = selfEmployment.sourceId,
-                           taxableProfit = roundDown(taxableProfit),
-                           profit = profit)
+        taxableProfit = roundDown(taxableProfit),
+        profit = profit)
     }
-
-    liability.copy(profitFromSelfEmployments = profitFromSelfEmployments)
   }
-
 }

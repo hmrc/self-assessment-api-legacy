@@ -33,6 +33,8 @@ class EmploymentIncomeCalculationSpec extends UnitSpec {
     "calculate total employment income from multiple employment sources" in {
 
       val selfAssessment = SelfAssessment(
+
+
           employments = Seq(anEmployment(employmentId1).copy(
                                 incomes = Seq(
                                     anIncome(IncomeType.Salary, 1000),
@@ -88,6 +90,12 @@ class EmploymentIncomeCalculationSpec extends UnitSpec {
 
       EmploymentIncomeCalculation.run(selfAssessment, liability).getLiabilityOrFail.incomeFromEmployments shouldBe Seq(
           EmploymentIncome(employmentId1, 1500, 500, 300, 1700))
+    }
+
+    "calculate total employment income from zero employment sources" in {
+      val selfAssessment = SelfAssessment()
+
+      EmploymentIncomeCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability
     }
 
     "calculate total employment income when expenses exceeds combined value of incomes and benefits" in {

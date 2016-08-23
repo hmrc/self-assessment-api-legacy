@@ -35,7 +35,7 @@ object TaxDeductedFromUkTaxPaidForEmploymentsCalculation extends CalculationStep
     val isValidTaxPaid = ukTaxesPaidForEmployments.isEmpty || ukTaxesPaidForEmployments.exists(_.ukTaxPaid >= 0)
 
     if (isValidTaxPaid) {
-      val ukTaxPaid = if (totalUkTaxesPaid <= 0) BigDecimal(0) else roundUp(totalUkTaxesPaid)
+      val ukTaxPaid = if (totalUkTaxesPaid <= 0) BigDecimal(0) else roundUpToPennies(totalUkTaxesPaid)
 
       liability.copy(taxDeducted = liability.taxDeducted match {
         case None =>

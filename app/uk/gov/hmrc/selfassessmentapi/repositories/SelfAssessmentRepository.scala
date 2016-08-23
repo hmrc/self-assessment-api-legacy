@@ -109,9 +109,9 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
                     "retirementAnnuity" -> pensionContributions.retirementAnnuity.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
                     "employerScheme" -> pensionContributions.employerScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
                     "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                    "pensionSavings" -> BSONDocument(Seq(
-                      "excessOfAnnualAllowance" -> pensionContributions.pensionSavings.map(_.excessOfAnnualAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull),
-                      "taxPaidByPensionScheme" -> pensionContributions.pensionSavings.map(_.taxPaidByPensionScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull)
+                    "pensionSaving" -> BSONDocument(Seq(
+                      "excessOfAnnualAllowance" -> pensionContributions.pensionSaving.map(_.excessOfAnnualAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull),
+                      "taxPaidByPensionScheme" -> pensionContributions.pensionSaving.map(_.taxPaidByPensionScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull)
                     )))))))
         .getOrElse(BSONDocument(
           lastModifiedDateTimeModfier(now),

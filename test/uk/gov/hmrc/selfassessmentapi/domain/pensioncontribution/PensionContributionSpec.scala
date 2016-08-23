@@ -42,9 +42,9 @@ class PensionContributionSpec extends JsonSpec {
         assertValidationError[PensionContribution](
           PensionContribution(overseasPension = Some(testAmount)),
           Map("/overseasPension" -> INVALID_MONETARY_AMOUNT), "Expected invalid overseas pension with more than 2 decimal places")
-        assertValidationError[PensionSavings](PensionSavings(Some(testAmount), None),
+        assertValidationError[PensionSaving](PensionSaving(Some(testAmount), None),
           Map("/excessOfAnnualAllowance" -> INVALID_MONETARY_AMOUNT), "Expected invalid excess of annual allowance with more than 2 decimal places")
-        assertValidationError[PensionSavings](PensionSavings(None, Some(testAmount)),
+        assertValidationError[PensionSaving](PensionSaving(None, Some(testAmount)),
           Map("/taxPaidByPensionScheme" -> INVALID_MONETARY_AMOUNT), "Expected invalid tax paid by pension scheme with more than 2 decimal places")
       }
     }
@@ -63,38 +63,38 @@ class PensionContributionSpec extends JsonSpec {
         assertValidationError[PensionContribution](
           PensionContribution(overseasPension = Some(testAmount)),
           Map("/overseasPension" -> INVALID_MONETARY_AMOUNT), "Expected invalid overseas pension with more than 2 decimal places")
-        assertValidationError[PensionSavings](
-          PensionSavings(Some(testAmount), None),
+        assertValidationError[PensionSaving](
+          PensionSaving(Some(testAmount), None),
           Map("/excessOfAnnualAllowance" -> INVALID_MONETARY_AMOUNT), "Expected invalid excess of annual allowance with more than 2 decimal places")
-        assertValidationError[PensionSavings](
-          PensionSavings(None, Some(testAmount)),
+        assertValidationError[PensionSaving](
+          PensionSaving(None, Some(testAmount)),
           Map("/taxPaidByPensionScheme" -> INVALID_MONETARY_AMOUNT), "Expected invalid tax paid by pension scheme with more than 2 decimal places")
       }
     }
 
-    "reject pensionSavings when there are no pension contributions" in {
+    "reject pensionSaving when there are no pension contributions" in {
       assertValidationError[PensionContribution](
-        PensionContribution(pensionSavings = Some(PensionSavings(excessOfAnnualAllowance = None, taxPaidByPensionScheme = None))),
-        Map("" -> UNDEFINED_REQUIRED_ELEMENT), "pensionSavings may only exist if there is at least one pension contribution")
+        PensionContribution(pensionSaving = Some(PensionSaving(excessOfAnnualAllowance = None, taxPaidByPensionScheme = None))),
+        Map("" -> UNDEFINED_REQUIRED_ELEMENT), "pensionSaving may only exist if there is at least one pension contribution")
     }
 
-    "reject pensionSavings when the sum of pensionSavings exceeds the sum of all other pension contributions" in {
+    "reject pensionSaving when the sum of pensionSaving exceeds the sum of all other pension contributions" in {
       assertValidationError[PensionContribution](
-        PensionContribution(employerScheme = Some(100), pensionSavings = Some(PensionSavings(excessOfAnnualAllowance = Some(500), taxPaidByPensionScheme = Some(500)))),
+        PensionContribution(employerScheme = Some(100), pensionSaving = Some(PensionSaving(excessOfAnnualAllowance = Some(500), taxPaidByPensionScheme = Some(500)))),
         Map("" -> MAXIMUM_AMOUNT_EXCEEDED), "excessOfAnnualAllowance may not exceed the sum of all pension contributions")
     }
   }
 
-  "PensionSavings" should {
+  "PensionSaving" should {
     "reject taxPaidByPensionScheme when excessOfAnnualAllowance is undefined" in {
-      assertValidationError[PensionSavings](
-        PensionSavings(excessOfAnnualAllowance = None, taxPaidByPensionScheme = Some(500)),
+      assertValidationError[PensionSaving](
+        PensionSaving(excessOfAnnualAllowance = None, taxPaidByPensionScheme = Some(500)),
         Map("" -> UNDEFINED_REQUIRED_ELEMENT), "taxPaidByPensionScheme can not exist when there is no excessOfAnnualAllowance")
     }
 
     "reject taxPaidByPensionScheme when its value exceeds the value of the excessOfAnnualAllowance" in {
-      assertValidationError[PensionSavings](
-        PensionSavings(excessOfAnnualAllowance = Some(200), taxPaidByPensionScheme = Some(500)),
+      assertValidationError[PensionSaving](
+        PensionSaving(excessOfAnnualAllowance = Some(200), taxPaidByPensionScheme = Some(500)),
         Map("" -> MAXIMUM_AMOUNT_EXCEEDED), "the value of taxPaidByPensionScheme may not exceed the excessOfAnnualAllowance")
     }
   }

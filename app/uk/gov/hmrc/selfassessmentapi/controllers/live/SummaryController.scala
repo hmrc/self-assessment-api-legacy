@@ -23,27 +23,27 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.SummaryController with SourceTypeSupport {
 
   def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) =
-    FeatureSwitchAction(sourceType, summaryTypeName).async(parse.json) {
+    FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
       request => super.createSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName)
-  }
+    }
 
   def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
-    FeatureSwitchAction(sourceType, summaryTypeName).async {
+    FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
       super.readSummary(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
     }
 
   def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
-    FeatureSwitchAction(sourceType, summaryTypeName).async(parse.json) {
+    FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
       request => super.updateSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
-  }
+    }
 
   def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
-    FeatureSwitchAction(sourceType, summaryTypeName).async {
+    FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
       super.deleteSummary(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
-  }
+    }
 
   def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) =
-    FeatureSwitchAction(sourceType, summaryTypeName).async {
+    FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
       super.listSummaries(saUtr, taxYear, sourceType, sourceId, summaryTypeName)
-  }
+    }
 }

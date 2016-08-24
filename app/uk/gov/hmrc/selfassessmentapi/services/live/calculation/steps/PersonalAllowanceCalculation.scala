@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
+import uk.gov.hmrc.selfassessmentapi.domain.Sum
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiability}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
@@ -31,7 +32,13 @@ object PersonalAllowanceCalculation extends CalculationStep {
 
     val incomeTaxRelief = liability.allowancesAndReliefs.incomeTaxRelief.getOrElse(throw PropertyNotComputedException("incomeTaxRelief"))
 
-    val personalAllowance = roundDownToNearest(totalIncomeReceived - incomeTaxRelief, 2) match {
+    val sumOfPensionContributions : BigDecimal = (for {
+      taxProps <- selfAssessment.taxYearProperties
+      contributions <- taxProps.pensionContributions
+    } yield Sum(contributions.ukRegisteredPension, contributions.retirementAnnuity,
+                contributions.employerScheme, contributions.overseasPension)).getOrElse(0)
+
+    val personalAllowance = roundDownToNearest(totalIncomeReceived - incomeTaxRelief - sumOfPensionContributions, 2) match {
       case income if income <= taperingThreshold => standardAllowance
       case income if income > taperingThreshold => positiveOrZero(standardAllowance - ((income - taperingThreshold) / 2))
     }

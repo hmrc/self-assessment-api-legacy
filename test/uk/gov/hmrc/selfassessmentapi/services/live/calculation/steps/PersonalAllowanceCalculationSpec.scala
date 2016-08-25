@@ -18,6 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
+import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.AllowancesAndReliefs
 
 class PersonalAllowanceCalculationSpec extends UnitSpec {
@@ -59,6 +61,13 @@ class PersonalAllowanceCalculationSpec extends UnitSpec {
       personalAllowanceFor(totalIncomeReceived = 0, incomeTaxRelief = 210000) shouldBe 11000
     }
 
+    "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief - sumOfPensionContributions) < 0" in {
+
+      personalAllowanceFor(totalIncomeReceived = 0, incomeTaxRelief = 210000,
+        taxYearProperties = taxYearPropsWithPensionContribution(ukRegisteredPension = 10000, retirementAnnuity = 10000,
+          employerScheme = 10000, overseasPension = 10000)) shouldBe 11000
+    }
+
     "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief) < 100000" in {
 
       personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 110000) shouldBe 11000
@@ -74,19 +83,42 @@ class PersonalAllowanceCalculationSpec extends UnitSpec {
       personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 90000) shouldBe 6000
     }
 
+    "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief - sumOfPensionContributions) = 110000" in {
+
+      personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 50000,
+        taxYearProperties = taxYearPropsWithPensionContribution(ukRegisteredPension = 10000, retirementAnnuity = 10000,
+          employerScheme = 10000, overseasPension = 10000)) shouldBe 6000
+    }
+
     "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief) > 120000" in {
 
       personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 70000) shouldBe 0
     }
+
+    "calculate personal allowance for (totalIncomeReceived - incomeTaxRelief - sumOfPensionContributions) > 120000" in {
+
+      personalAllowanceFor(totalIncomeReceived = 200000, incomeTaxRelief = 30000,
+        taxYearProperties = taxYearPropsWithPensionContribution(ukRegisteredPension = 10000, retirementAnnuity = 10000,
+          employerScheme = 10000, overseasPension = 10000)) shouldBe 0
+    }
   }
 
-  private def personalAllowanceFor(totalIncomeReceived: BigDecimal, incomeTaxRelief: BigDecimal = 0) = {
+  private def taxYearPropsWithPensionContribution(ukRegisteredPension: BigDecimal = 0, retirementAnnuity: BigDecimal = 0,
+                                                  employerScheme: BigDecimal = 0, overseasPension: BigDecimal = 0) = {
+    Some(TaxYearProperties(pensionContributions =
+      Some(PensionContribution(ukRegisteredPension = Some(ukRegisteredPension),
+                               retirementAnnuity = Some(retirementAnnuity),
+                               employerScheme = Some(employerScheme),
+                               overseasPension =  Some(overseasPension)))))
+  }
+
+  private def personalAllowanceFor(totalIncomeReceived: BigDecimal, incomeTaxRelief: BigDecimal = 0, taxYearProperties: Option[TaxYearProperties] = None) = {
     val liability = aLiability().copy(
         totalIncomeReceived = Some(totalIncomeReceived),
         allowancesAndReliefs = AllowancesAndReliefs(incomeTaxRelief = Some(incomeTaxRelief))
     )
     PersonalAllowanceCalculation
-      .run(SelfAssessment(), liability)
+      .run(SelfAssessment(taxYearProperties = taxYearProperties), liability)
       .getLiabilityOrFail
       .allowancesAndReliefs
       .personalAllowance

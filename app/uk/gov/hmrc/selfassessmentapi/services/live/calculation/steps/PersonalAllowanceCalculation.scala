@@ -32,17 +32,18 @@ object PersonalAllowanceCalculation extends CalculationStep {
 
     val incomeTaxRelief = liability.allowancesAndReliefs.incomeTaxRelief.getOrElse(throw PropertyNotComputedException("incomeTaxRelief"))
 
-    val sumOfPensionContributions : BigDecimal = (for {
-      taxProps <- selfAssessment.taxYearProperties
-      contributions <- taxProps.pensionContributions
-    } yield Sum(contributions.ukRegisteredPension, contributions.retirementAnnuity,
-                contributions.employerScheme, contributions.overseasPension)).getOrElse(0)
-
-    val personalAllowance = roundDownToNearest(totalIncomeReceived - incomeTaxRelief - sumOfPensionContributions, 2) match {
+    val personalAllowance = roundDownToNearest(totalIncomeReceived - incomeTaxRelief - sumOfPensionContributions(selfAssessment), 2) match {
       case income if income <= taperingThreshold => standardAllowance
       case income if income > taperingThreshold => positiveOrZero(standardAllowance - ((income - taperingThreshold) / 2))
     }
 
     liability.copy(allowancesAndReliefs = liability.allowancesAndReliefs.copy(personalAllowance = Some(personalAllowance)))
   }
+
+  private def sumOfPensionContributions(selfAssessment: SelfAssessment): BigDecimal = (for {
+    taxProps <- selfAssessment.taxYearProperties
+    contributions <- taxProps.pensionContributions
+  } yield Sum(contributions.ukRegisteredPension, contributions.retirementAnnuity,
+    contributions.employerScheme, contributions.overseasPension)).getOrElse(0)
+
 }

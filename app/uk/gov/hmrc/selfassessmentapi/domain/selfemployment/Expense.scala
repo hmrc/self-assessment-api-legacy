@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.ExpenseTy
 
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
-  val CoGBought, CISPayments, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,
+  val CoGBought, CISPaymentsToSubcontractors, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,
   AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other = Value
   implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
 }
@@ -41,5 +41,5 @@ object Expense extends JsonMarshaller[Expense] {
       (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
     ) (Expense.apply _)
 
-  override def example(id: Option[SummaryId]) = Expense(id, ExpenseType.CISPayments, BigDecimal(1000))
+  override def example(id: Option[SummaryId]) = Expense(id, ExpenseType.CISPaymentsToSubcontractors, BigDecimal(1000))
 }

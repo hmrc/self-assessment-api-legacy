@@ -111,7 +111,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
                   expenses = Seq(
                       anExpense(ExpenseType.AdminCosts, 100),
                       anExpense(ExpenseType.BadDebt, 50.01),
-                      anExpense(ExpenseType.CISPayments, 49.99),
+                      anExpense(ExpenseType.CISPaymentsToSubcontractors, 49.99),
                       anExpense(ExpenseType.Depreciation, 1000000)
                   )
               )))

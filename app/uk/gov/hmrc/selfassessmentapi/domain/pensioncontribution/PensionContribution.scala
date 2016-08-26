@@ -22,7 +22,7 @@ import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.domain.{JsonMarshaller, _}
 
 
-case class PensionSaving(excessOfAnnualAllowance: Option[BigDecimal], taxPaidByPensionScheme: Option[BigDecimal])
+case class PensionSaving(excessOfAnnualAllowance: Option[BigDecimal] = None, taxPaidByPensionScheme: Option[BigDecimal] = None)
 
 object PensionSaving extends JsonMarshaller[PensionSaving] {
   override implicit val writes = Json.writes[PensionSaving]
@@ -64,11 +64,15 @@ object PensionContribution extends JsonMarshaller[PensionContribution] {
       .filter(ValidationError("pensionSaving may only exist if there is at least one pension contribution", ErrorCode.UNDEFINED_REQUIRED_ELEMENT))
     {atLeastOneContributionDefined}
       .filter(ValidationError("excessOfAnnualAllowance may not exceed the sum of all pension contributions", ErrorCode.MAXIMUM_AMOUNT_EXCEEDED))
-    {contribution => contribution.pensionSaving.forall(_.excessOfAnnualAllowance.forall(_ <= sumOfAllContributions(contribution)))}
+    {excessDoesNotExceedSumOfAllContributions}
 
   private def atLeastOneContributionDefined(contribution: PensionContribution): Boolean = {
     contribution.ukRegisteredPension.isDefined || contribution.retirementAnnuity.isDefined ||
       contribution.employerScheme.isDefined || contribution.overseasPension.isDefined
+  }
+
+  private def excessDoesNotExceedSumOfAllContributions(contribution: PensionContribution): Boolean = {
+    contribution.pensionSaving.forall(_.excessOfAnnualAllowance.forall(_ <= sumOfAllContributions(contribution)))
   }
 
   private def sumOfAllContributions(contribution: PensionContribution): BigDecimal = {

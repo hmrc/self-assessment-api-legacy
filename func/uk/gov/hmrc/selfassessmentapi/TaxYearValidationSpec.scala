@@ -4,7 +4,6 @@ import play.api.libs.json.Json
 import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.support.BaseFunctionalSpec
-import uk.gov.hmrc.support.BaseFunctionalSpec
 
 // FIXME: Refactor into live and sandbox tests
 
@@ -243,4 +242,3 @@ class TaxYearFeatureSwitchOffSpec extends BaseFunctionalSpec {
     }
   }
 }
-

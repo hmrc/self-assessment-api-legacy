@@ -31,7 +31,6 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfAssessment
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-
 object SelfAssessmentRepository extends MongoDbConnection {
   private lazy val repository = new SelfAssessmentMongoRepository
 
@@ -126,11 +125,12 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
     } yield ()
   }
 
-  def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] =
+  def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] = {
     for {
       optionSa <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear).map(_.headOption)
     } yield for {
       sa <- optionSa
       taxYearProperties <- sa.taxYearProperties
     } yield taxYearProperties
+  }
 }

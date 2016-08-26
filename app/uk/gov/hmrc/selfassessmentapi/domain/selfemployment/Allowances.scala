@@ -24,7 +24,6 @@ import uk.gov.hmrc.selfassessmentapi.domain._
 case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
                       capitalAllowanceMainPool: Option[BigDecimal] = None,
                       capitalAllowanceSpecialRatePool: Option[BigDecimal] = None,
-                      restrictedCapitalAllowance: Option[BigDecimal] = None,
                       businessPremisesRenovationAllowance: Option[BigDecimal] = None,
                       enhancedCapitalAllowance: Option[BigDecimal] = None,
                       allowancesOnSales: Option[BigDecimal] = None) {
@@ -33,7 +32,7 @@ case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
   
   def total = {
     Sum(CapAt(annualInvestmentAllowance, maxAnnualInvestmentAllowance), capitalAllowanceMainPool, capitalAllowanceSpecialRatePool,
-      restrictedCapitalAllowance, businessPremisesRenovationAllowance, enhancedCapitalAllowance, allowancesOnSales)
+      businessPremisesRenovationAllowance, enhancedCapitalAllowance, allowancesOnSales)
   }
 }
 
@@ -43,7 +42,6 @@ object Allowances {
     annualInvestmentAllowance = Some(BigDecimal(1000.00)),
     capitalAllowanceMainPool = Some(BigDecimal(150.00)),
     capitalAllowanceSpecialRatePool = Some(BigDecimal(5000.50)),
-    restrictedCapitalAllowance = Some(BigDecimal(400.00)),
     businessPremisesRenovationAllowance = Some(BigDecimal(600.00)),
     enhancedCapitalAllowance = Some(BigDecimal(50.00)),
     allowancesOnSales = Some(BigDecimal(3399.99)))
@@ -54,7 +52,6 @@ object Allowances {
       (__ \ "annualInvestmentAllowance").readNullable[BigDecimal](positiveAmountValidator("annualInvestmentAllowance")) and
       (__ \ "capitalAllowanceMainPool").readNullable[BigDecimal](positiveAmountValidator("capitalAllowanceMainPool")) and
       (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](positiveAmountValidator("capitalAllowanceSpecialRatePool")) and
-      (__ \ "restrictedCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator("restrictedCapitalAllowance")) and
       (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](positiveAmountValidator("businessPremisesRenovationAllowance")) and
       (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator("enhancedCapitalAllowance")) and
       (__ \ "allowancesOnSales").readNullable[BigDecimal](positiveAmountValidator("allowancesOnSales"))

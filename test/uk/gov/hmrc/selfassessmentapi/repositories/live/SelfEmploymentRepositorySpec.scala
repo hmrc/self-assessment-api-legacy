@@ -145,7 +145,6 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
         annualInvestmentAllowance = Some(BigDecimal(10.00)),
         capitalAllowanceMainPool = Some(BigDecimal(20.00)),
         capitalAllowanceSpecialRatePool = Some(BigDecimal(30.00)),
-        restrictedCapitalAllowance = Some(BigDecimal(40.00)),
         businessPremisesRenovationAllowance = Some(BigDecimal(50.00)),
         enhancedCapitalAllowance = Some(BigDecimal(60.00)),
         allowancesOnSales = Some(BigDecimal(70.00)))

@@ -43,7 +43,6 @@ object SourceType {
       PositiveMonetaryFieldDescription(name, "capitalAllowanceSpecialRatePool",
         """Writing down allowance of 8% can be claimed on the final balance of the special rate pool costs.
           |If the final balance before claiming WDA is £1,000 or less, a small pool allowance can be claimed for the full amount instead of the WDA""".stripMargin, optional = true),
-      PositiveMonetaryFieldDescription(name, "restrictedCapitalAllowance", optional = true),
       PositiveMonetaryFieldDescription(name, "businessPremisesRenovationAllowance", "When eligible, BPRA can be claimed for the cost of renovating or repairing unused business premises", optional = true),
       PositiveMonetaryFieldDescription(name, "enhancedCapitalAllowance", "100% capital allowance can be claimed for eligible capital purchases", optional = true),
       PositiveMonetaryFieldDescription(name, "allowancesOnSales",

@@ -135,7 +135,6 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
                           annualInvestmentAllowance = Some(50),
                           capitalAllowanceMainPool = Some(10),
                           capitalAllowanceSpecialRatePool = Some(10),
-                          restrictedCapitalAllowance = Some(10),
                           businessPremisesRenovationAllowance = Some(10),
                           enhancedCapitalAllowance = Some(4.99),
                           allowancesOnSales = Some(5.01)
@@ -144,7 +143,7 @@ class SelfEmploymentProfitCalculationSpec extends UnitSpec {
 
       SelfEmploymentProfitCalculation.run(selfAssessment, liability).getLiabilityOrFail shouldBe liability.copy(
           profitFromSelfEmployments = Seq(
-              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1900, profit = 1900)
+              SelfEmploymentIncome(selfEmploymentId, taxableProfit = 1910, profit = 1910)
           ))
     }
 

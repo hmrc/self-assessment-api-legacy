@@ -19,7 +19,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            | 		"retirementAnnuity": 1000.0,
            | 		"employerScheme": 12000.05,
            | 		"overseasPension": 1234.43,
-           |    "pensionSaving": {
+           |    "pensionSavings": {
            |      "excessOfAnnualAllowance": 200,
            |      "taxPaidByPensionScheme": 123.23
            |    }

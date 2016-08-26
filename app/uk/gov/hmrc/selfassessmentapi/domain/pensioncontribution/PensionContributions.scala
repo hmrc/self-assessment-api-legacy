@@ -33,16 +33,16 @@ case object PensionContributions extends TaxYearPropertyType {
     PositiveMonetaryFieldDescription(name, "retirementAnnuity", "Payments to a retirement annuity contract where basic rate tax relief will not be claimed by your provider", optional = true),
     PositiveMonetaryFieldDescription(name, "employerScheme", "Payments to your employer’s scheme which were not deducted from your pay before tax", optional = true),
     PositiveMonetaryFieldDescription(name, "overseasPension", "Payments to an overseas pension scheme, which is not UK-registered, which are eligible for tax relief and were not deducted from your pay before tax", optional = true),
-    ObjectFieldDescription(name, "pensionSaving", optional = true, "")
+    ObjectFieldDescription(name, "pensionSavings", optional = true, "")
   )
 }
 
 case object PensionSavings extends TaxYearPropertyType {
-  override val name: String = "pensionSaving"
+  override val name: String = "pensionSavings"
   override val example: JsValue = toJson(PensionSaving.example())
-  override val title: String = "Sample pension saving"
+  override val title: String = "Sample pension savings"
 
-  override def description(action: String): String = s"$action a pensionSaving"
+  override def description(action: String): String = s"$action a pensionSavings"
 
   override val fieldDescriptions: Seq[FieldDescription] = Seq(
     PositiveMonetaryFieldDescription(name, "excessOfAnnualAllowance", "Pension contribution excess to annual allowance made by the taxpayer on which 'Pension Savings Charges' will be calculated", optional = true),

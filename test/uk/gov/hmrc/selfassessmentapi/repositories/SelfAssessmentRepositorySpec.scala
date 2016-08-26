@@ -138,7 +138,7 @@ class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       val sa = MongoSelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now(), DateTime.now(), Some(taxYearProps1))
       await(mongoRepository.insert(sa))
       val taxYearProps2 = TaxYearProperties(pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(50000.00),
-        pensionSaving = Some(PensionSaving(Some(500.00), Some(500.00))))))
+        pensionSavings = Some(PensionSaving(Some(500.00), Some(500.00))))))
 
       await(mongoRepository.updateTaxYearProperties(saUtr, taxYear, taxYearProps2))
 

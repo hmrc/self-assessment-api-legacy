@@ -72,20 +72,20 @@ class PensionContributionSpec extends JsonSpec {
       }
     }
 
-    "reject pensionSaving when there are no pension contributions" in {
+    "reject pensionSavings when there are no pension contributions" in {
       assertValidationError[PensionContribution](
-        PensionContribution(pensionSaving = Some(PensionSaving(excessOfAnnualAllowance = None, taxPaidByPensionScheme = None))),
-        Map("" -> UNDEFINED_REQUIRED_ELEMENT), "pensionSaving may only exist if there is at least one pension contribution")
+        PensionContribution(pensionSavings = Some(PensionSaving(excessOfAnnualAllowance = None, taxPaidByPensionScheme = None))),
+        Map("" -> UNDEFINED_REQUIRED_ELEMENT), "pensionSavings may only exist if there is at least one pension contribution")
     }
 
-    "reject pensionSaving when the sum of pensionSaving exceeds the sum of all other pension contributions" in {
+    "reject pensionSavings when the sum of pensionSavings exceeds the sum of all other pension contributions" in {
       assertValidationError[PensionContribution](
-        PensionContribution(employerScheme = Some(100), pensionSaving = Some(PensionSaving(excessOfAnnualAllowance = Some(500), taxPaidByPensionScheme = Some(500)))),
+        PensionContribution(employerScheme = Some(100), pensionSavings = Some(PensionSaving(excessOfAnnualAllowance = Some(500), taxPaidByPensionScheme = Some(500)))),
         Map("" -> MAXIMUM_AMOUNT_EXCEEDED), "excessOfAnnualAllowance may not exceed the sum of all pension contributions")
     }
   }
 
-  "PensionSaving" should {
+  "PensionSavings" should {
     "reject taxPaidByPensionScheme when excessOfAnnualAllowance is undefined" in {
       assertValidationError[PensionSaving](
         PensionSaving(excessOfAnnualAllowance = None, taxPaidByPensionScheme = Some(500)),

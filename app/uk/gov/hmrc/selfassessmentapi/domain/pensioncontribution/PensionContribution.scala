@@ -43,7 +43,7 @@ case class PensionContribution(ukRegisteredPension: Option[BigDecimal] = None,
                                retirementAnnuity: Option[BigDecimal] = None,
                                employerScheme: Option[BigDecimal] = None,
                                overseasPension: Option[BigDecimal] = None,
-                               pensionSaving: Option[PensionSaving] = None) {
+                               pensionSavings: Option[PensionSaving] = None) {
 
   def retirementAnnuityContract: BigDecimal = {
     Sum(retirementAnnuity, employerScheme, overseasPension)
@@ -59,9 +59,9 @@ object PensionContribution extends JsonMarshaller[PensionContribution] {
       (__ \ "retirementAnnuity").readNullable[BigDecimal](positiveAmountValidator("retirementAnnuity")) and
       (__ \ "employerScheme").readNullable[BigDecimal](positiveAmountValidator("employerScheme")) and
       (__ \ "overseasPension").readNullable[BigDecimal](positiveAmountValidator("overseasPension")) and
-      (__ \ "pensionSaving").readNullable[PensionSaving]
+      (__ \ "pensionSavings").readNullable[PensionSaving]
     ) (PensionContribution.apply _)
-      .filter(ValidationError("pensionSaving may only exist if there is at least one pension contribution", ErrorCode.UNDEFINED_REQUIRED_ELEMENT))
+      .filter(ValidationError("pensionSavings may only exist if there is at least one pension contribution", ErrorCode.UNDEFINED_REQUIRED_ELEMENT))
     {atLeastOneContributionDefined}
       .filter(ValidationError("excessOfAnnualAllowance may not exceed the sum of all pension contributions", ErrorCode.MAXIMUM_AMOUNT_EXCEEDED))
     {excessDoesNotExceedSumOfAllContributions}
@@ -72,7 +72,7 @@ object PensionContribution extends JsonMarshaller[PensionContribution] {
   }
 
   private def excessDoesNotExceedSumOfAllContributions(contribution: PensionContribution): Boolean = {
-    contribution.pensionSaving.forall(_.excessOfAnnualAllowance.forall(_ <= sumOfAllContributions(contribution)))
+    contribution.pensionSavings.forall(_.excessOfAnnualAllowance.forall(_ <= sumOfAllContributions(contribution)))
   }
 
   private def sumOfAllContributions(contribution: PensionContribution): BigDecimal = {
@@ -86,5 +86,5 @@ object PensionContribution extends JsonMarshaller[PensionContribution] {
       retirementAnnuity = Some(1000.00),
       employerScheme = Some(12000.05),
       overseasPension = Some(1234.43),
-      pensionSaving = Some(PensionSaving.example()))
+      pensionSavings = Some(PensionSaving.example()))
 }

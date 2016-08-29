@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
-import reactivemongo.bson.BSONDocument
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{RoundDown, TaxBandSummary}
 
-trait MongoSummary {
-  def toBsonDocument: BSONDocument
-  val summaryId: SummaryId
-  val arrayName: String
-  val amount: BigDecimal
+trait IncomeTax {
+  def incomeTax(taxBandSummaries: Seq[TaxBandSummary]): BigDecimal =
+    RoundDown(taxBandSummaries.foldLeft(BigDecimal(0)) { (tax, taxBandSummary) => tax + taxBandSummary.tax})
 }

@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
-import reactivemongo.bson.BSONDocument
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
 
-trait MongoSummary {
-  def toBsonDocument: BSONDocument
-  val summaryId: SummaryId
-  val arrayName: String
-  val amount: BigDecimal
-}
+case class LiabilityCalculationException(errorCode: ErrorCode.Value, message: String) extends RuntimeException(message)

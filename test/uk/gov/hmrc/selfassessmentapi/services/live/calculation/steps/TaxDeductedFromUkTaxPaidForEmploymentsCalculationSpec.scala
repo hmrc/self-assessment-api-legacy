@@ -20,7 +20,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import uk.gov.hmrc.selfassessmentapi.EmploymentSugar._
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.domain.{ErrorCode, UkTaxPaidForEmployment}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoLiabilityCalculationError, MongoTaxDeducted, MongoUkTaxPaidForEmployment}
 
 class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec extends UnitSpec with TableDrivenPropertyChecks {
@@ -53,7 +53,7 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec extends UnitSpec wit
 
       calculationError.errors should contain theSameElementsAs Seq(
           MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID,
-                                         s"The UK tax paid must be non-negative for at least one employment source"))
+                                         s"The UK tax paid must be positive for at least one employment source"))
     }
 
     "cap the UK tax paid at zero if the total tax paid is not positive" in {
@@ -74,8 +74,8 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec extends UnitSpec wit
               MongoTaxDeducted(interestFromUk = 0,
                                ukTaxPaid = 0,
                                ukTaxesPaidForEmployments =
-                                 Seq(MongoUkTaxPaidForEmployment(employment1.sourceId, -1047.32),
-                                     MongoUkTaxPaidForEmployment(employment2.sourceId, 500.32)))))
+                                 Seq(UkTaxPaidForEmployment(employment1.sourceId, -1047.32),
+                                     UkTaxPaidForEmployment(employment2.sourceId, 500.32)))))
     }
 
     "calculate the tax deducted as the rounded up sum of UK tax paid across all employments" in {
@@ -96,8 +96,8 @@ class TaxDeductedFromUkTaxPaidForEmploymentsCalculationSpec extends UnitSpec wit
               MongoTaxDeducted(interestFromUk = 0,
                                ukTaxPaid = 453,
                                ukTaxesPaidForEmployments =
-                                 Seq(MongoUkTaxPaidForEmployment(employment1.sourceId, -147.32),
-                                     MongoUkTaxPaidForEmployment(employment2.sourceId, 600.32)))))
+                                 Seq(UkTaxPaidForEmployment(employment1.sourceId, -147.32),
+                                     UkTaxPaidForEmployment(employment2.sourceId, 600.32)))))
     }
   }
 }

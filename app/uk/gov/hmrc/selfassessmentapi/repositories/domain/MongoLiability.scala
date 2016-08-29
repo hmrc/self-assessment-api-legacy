@@ -24,6 +24,7 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand, NilTaxBand, SavingsStartingTaxBand}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.FLiabilityResult
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 case class MongoLiability(id: BSONObjectID,
@@ -124,9 +125,7 @@ case class MongoLiability(id: BSONObjectID,
           .map(taxDeducted =>
                 TaxDeducted(interestFromUk = taxDeducted.interestFromUk,
                             fromUkProperties = taxDeducted.deductionFromUkProperties,
-                            fromEmployments = taxDeducted.ukTaxesPaidForEmployments.map(ukTaxPaidForEmployment =>
-                                  UkTaxPaidForEmployment(ukTaxPaidForEmployment.sourceId,
-                                                         ukTaxPaidForEmployment.ukTaxPaid)),
+                            fromEmployments = taxDeducted.ukTaxesPaidForEmployments,
                             total = taxDeducted.totalTaxDeducted))
           .getOrElse(TaxDeducted(0, Nil, Nil, 0)),
         totalTaxDue = if (totalTaxDue > 0) totalTaxDue else 0,
@@ -153,6 +152,8 @@ case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) {
   def toTaxBandSummary(chargedAt: BigDecimal) =
     uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"$chargedAt%", tax(chargedAt))
 
+  def toTaxBandSummary = uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary(taxBand.name, amount, s"${taxBand.chargedAt}%", tax(taxBand.chargedAt))
+
   def tax(chargedAt: BigDecimal): BigDecimal = roundDownToPennies(amount * chargedAt / 100)
 
   def available: BigDecimal = positiveOrZero(taxBand.width - amount)
@@ -175,7 +176,7 @@ case class MongoTaxDeducted(interestFromUk: BigDecimal = 0,
                             totalDeductionFromUkProperties: BigDecimal = 0,
                             deductionFromUkProperties: Seq[TaxPaidForUkProperty] = Nil,
                             ukTaxPaid: BigDecimal = 0,
-                            ukTaxesPaidForEmployments: Seq[MongoUkTaxPaidForEmployment] = Nil) {
+                            ukTaxesPaidForEmployments: Seq[UkTaxPaidForEmployment] = Nil) {
 
   def totalTaxDeducted = interestFromUk + totalDeductionFromUkProperties + ukTaxPaid
 }

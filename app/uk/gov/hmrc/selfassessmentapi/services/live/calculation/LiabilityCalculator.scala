@@ -22,26 +22,26 @@ import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 class LiabilityCalculator {
 
   private val calculationSteps = Seq(
-      EmploymentIncomeCalculation,
-      SelfEmploymentProfitCalculation,
-      FurnishedHolidayLettingsProfitCalculation,
-      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation,
-      DividendsFromUKSourcesCalculation,
-      UkPropertyProfitCalculation,
-      TotalIncomeCalculation,
-      IncomeTaxReliefCalculation,
-      PersonalAllowanceCalculation,
-      RetirementAnnuityContractCalculation,
-      TotalAllowancesAndReliefsCalculation,
-      TotalIncomeOnWhichTaxIsDueCalculation,
-      PersonalSavingsAllowanceCalculation,
-      SavingsStartingRateCalculation,
-      NonSavingsIncomeTaxCalculation,
-      SavingsIncomeTaxCalculation,
-      DividendsTaxCalculation,
-      TaxDeductedFromInterestFromUkCalculation,
-      TaxDeductedFromUkTaxPaidForEmploymentsCalculation,
-      TaxDeductedForUkPropertiesCalculation
+      EmploymentIncomeCalculation, //Test ported
+      SelfEmploymentProfitCalculation, //Test ported
+      FurnishedHolidayLettingsProfitCalculation, //Test Ported
+      UnearnedInterestFromUKBanksAndBuildingSocietiesCalculation, //Test ported
+      DividendsFromUKSourcesCalculation, //Test ported
+      UkPropertyProfitCalculation, //Test ported
+      TotalIncomeCalculation, //Test ported
+      IncomeTaxReliefCalculation, //Test ported
+      PersonalAllowanceCalculation, //Test ported
+      RetirementAnnuityContractCalculation, //Test ported
+      TotalAllowancesAndReliefsCalculation, //Test Ported
+      TotalIncomeOnWhichTaxIsDueCalculation, //Test Ported
+      PersonalSavingsAllowanceCalculation, //Test Ported
+      SavingsStartingRateCalculation, //Test ported
+      NonSavingsIncomeTaxCalculation, //Test ported
+      SavingsIncomeTaxCalculation, //Test ported
+      DividendsTaxCalculation, //Test Ported
+      TaxDeductedFromInterestFromUkCalculation, //Test Ported
+      TaxDeductedFromUkTaxPaidForEmploymentsCalculation, //Test Ported
+      TaxDeductedForUkPropertiesCalculation //Test Ported
   )
 
   def calculate(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {

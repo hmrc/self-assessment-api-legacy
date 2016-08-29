@@ -29,7 +29,7 @@ object RetirementAnnuityContractCalculation extends CalculationStep {
   private def calculateAnnuityContract(selfAssessment: SelfAssessment): BigDecimal = {
     val annuityContract = for {
       taxProperties <- selfAssessment.taxYearProperties
-    } yield roundUp(taxProperties.retirementAnnuityContract)
+    } yield roundUp(valueOrZero(taxProperties.retirementAnnuityContract))
 
     annuityContract.sum
   }

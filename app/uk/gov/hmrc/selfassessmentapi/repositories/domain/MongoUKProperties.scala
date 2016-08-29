@@ -182,11 +182,11 @@ case class MongoUKProperties(id: BSONObjectID,
                                balancingCharges: Seq[MongoUKPropertiesBalancingChargeSummary] = Nil,
                                privateUseAdjustment: Seq[MongoUKPropertiesPrivateUseAdjustmentSummary] = Nil,
                                taxesPaid: Seq[MongoUKPropertiesTaxPaidSummary] = Nil) extends SourceMetadata {
-  def rentARoomReliefAmount = rentARoomRelief.getOrElse(BigDecimal(0))
+  def rentARoomReliefAmount = ValueOrZero(rentARoomRelief)
 
-  def allowancesTotal = allowances.map(_.total).getOrElse(BigDecimal(0))
+  def allowancesTotal = ValueOrZero(allowances.map(_.total))
 
-  def lossBroughtForward = adjustments.flatMap(_.lossBroughtForward).getOrElse(BigDecimal(0))
+  def lossBroughtForward = ValueOrZero(adjustments.flatMap(_.lossBroughtForward))
 
   def adjustedProfit = {
     PositiveOrZero(Total(incomes) + Total(balancingCharges) + Total(privateUseAdjustment) -

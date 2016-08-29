@@ -27,7 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType.B
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.domain.{Sum, Total, _}
+import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
                                             `type`: IncomeType,
@@ -63,7 +63,7 @@ object MongoSelfEmploymentIncomeSummary {
 
 case class MongoSelfEmploymentExpenseSummary(summaryId: SummaryId,
                                              `type`: ExpenseType,
-                                             amount: BigDecimal) extends MongoSummary {
+                                             amount: BigDecimal) extends MongoSummary with AmountHolder {
   val arrayName = MongoSelfEmploymentExpenseSummary.arrayName
 
   def toExpense: Expense =
@@ -207,7 +207,6 @@ case class MongoSelfEmployment(id: BSONObjectID,
     Sum(expenses, allowances, adjustments)
   }
 
-  def outstandingBusinessIncome = adjustments.flatMap(_.outstandingBusinessIncome).getOrElse(BigDecimal(0))
   def lossBroughtForward = adjustments.flatMap(_.lossBroughtForward).getOrElse(BigDecimal(0))
 
   def toSelfEmployment = SelfEmployment(
@@ -215,6 +214,8 @@ case class MongoSelfEmployment(id: BSONObjectID,
     commencementDate = commencementDate,
     allowances = allowances,
     adjustments = adjustments)
+
+  lazy val outstandingBusinessIncome = ValueOrZero(adjustments.flatMap(_.outstandingBusinessIncome))
 }
 
 object MongoSelfEmployment {

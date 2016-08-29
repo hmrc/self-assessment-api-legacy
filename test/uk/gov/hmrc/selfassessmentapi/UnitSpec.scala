@@ -33,4 +33,11 @@ trait UnitSpec extends uk.gov.hmrc.play.test.UnitSpec {
 
   val taxYear = TaxYear("2016-17")
 
+  case class Print(value: BigDecimal) {
+    def as(name: String) = {
+      println(s"$name => $value")
+      value
+    }
+  }
+
 }

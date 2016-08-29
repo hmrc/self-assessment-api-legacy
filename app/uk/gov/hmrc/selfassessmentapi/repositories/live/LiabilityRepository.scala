@@ -25,21 +25,20 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.LiabilityResult
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.FLiabilityResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object LiabilityRepository extends MongoDbConnection {
   private lazy val repository = new LiabilityMongoRepository()
-
   def apply() = repository
 }
 
 class LiabilityMongoRepository(implicit mongo: () => DB)
-    extends ReactiveRepository[LiabilityResult, BSONObjectID]("liabilities",
+    extends ReactiveRepository[FLiabilityResult, BSONObjectID]("liabilities",
                                                               mongo,
-                                                              domainFormat = LiabilityResult.liabilityResultFormat,
+                                                              domainFormat = FLiabilityResult.liabilityResultFormat,
                                                               idFormat = ReactiveMongoFormats.objectIdFormats) {
 
   override def indexes: Seq[Index] =
@@ -48,12 +47,12 @@ class LiabilityMongoRepository(implicit mongo: () => DB)
               name = Some("ui_utr_taxyear"),
               unique = true))
 
-  def save[T <: LiabilityResult](liabilityResult: T): Future[T] = {
+  def save[T <: FLiabilityResult](liabilityResult: T): Future[T] = {
     val selector = BSONDocument("data.saUtr" -> liabilityResult.saUtr.value, "data.taxYear" -> liabilityResult.taxYear.value)
     collection.update(selector, liabilityResult, upsert = true).map(_ => liabilityResult)
   }
 
-  def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[LiabilityResult]] = {
+  def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[FLiabilityResult]] = {
     find("data.saUtr" -> saUtr.value, "data.taxYear" -> taxYear.value).map(_.headOption)
   }
 }

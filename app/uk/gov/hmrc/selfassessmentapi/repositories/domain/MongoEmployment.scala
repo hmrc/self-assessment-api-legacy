@@ -28,7 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.employment._
 import uk.gov.hmrc.selfassessmentapi.domain.employment.IncomeType.IncomeType
 
 case class MongoEmploymentIncomeSummary(summaryId: SummaryId, `type`: IncomeType, amount: BigDecimal)
-    extends MongoSummary {
+    extends MongoSummary with AmountHolder {
   val arrayName = MongoEmploymentIncomeSummary.arrayName
 
   def toIncome: Income =
@@ -57,7 +57,7 @@ object MongoEmploymentIncomeSummary {
 }
 
 case class MongoEmploymentExpenseSummary(summaryId: SummaryId, `type`: ExpenseType, amount: BigDecimal)
-    extends MongoSummary {
+    extends MongoSummary with AmountHolder {
   val arrayName = MongoEmploymentExpenseSummary.arrayName
 
   def toExpense: Expense =
@@ -86,7 +86,7 @@ object MongoEmploymentExpenseSummary {
 }
 
 case class MongoEmploymentBenefitSummary(summaryId: SummaryId, `type`: BenefitType, amount: BigDecimal)
-    extends MongoSummary {
+    extends MongoSummary with AmountHolder {
   val arrayName = MongoEmploymentBenefitSummary.arrayName
 
   def toBenefit: Benefit =

@@ -17,22 +17,23 @@
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
 
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.domain.UkTaxPaidForEmployment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
 object TaxDeductedFromUkTaxPaidForEmploymentsCalculation extends CalculationStep {
   override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-    val (initialUkTaxesPaid, initialAccUkTaxPaid) = (Seq.empty[MongoUkTaxPaidForEmployment], BigDecimal(0))
+    val (initialUkTaxesPaid, initialAccUkTaxPaid) = (Seq.empty[UkTaxPaidForEmployment], BigDecimal(0))
 
     val (ukTaxesPaidForEmployments, totalUkTaxesPaid) =
       selfAssessment.employments.foldLeft((initialUkTaxesPaid, initialAccUkTaxPaid)) {
         case ((ukTaxesPaid, accUkTaxPaid), employment) =>
           val ukTaxPaidForEmployment = employment.ukTaxPaid.map(_.amount).sum
-          (ukTaxesPaid :+ MongoUkTaxPaidForEmployment(employment.sourceId, ukTaxPaidForEmployment),
+          (ukTaxesPaid :+ UkTaxPaidForEmployment(employment.sourceId, ukTaxPaidForEmployment),
            accUkTaxPaid + ukTaxPaidForEmployment)
       }
 
-    val isValidTaxPaid = ukTaxesPaidForEmployments.isEmpty || ukTaxesPaidForEmployments.exists(_.ukTaxPaid >= 0)
+    val isValidTaxPaid = ukTaxesPaidForEmployments.isEmpty || ukTaxesPaidForEmployments.exists(_.taxPaid >= 0)
 
     if (isValidTaxPaid) {
       val ukTaxPaid = if (totalUkTaxesPaid <= 0) BigDecimal(0) else roundUpToPennies(totalUkTaxesPaid)
@@ -50,7 +51,7 @@ object TaxDeductedFromUkTaxPaidForEmploymentsCalculation extends CalculationStep
           Seq(
               MongoLiabilityCalculationError(
                   INVALID_EMPLOYMENT_TAX_PAID,
-                  s"The UK tax paid must be non-negative for at least one employment source")))
+                  s"The UK tax paid must be positive for at least one employment source")))
     }
   }
 }

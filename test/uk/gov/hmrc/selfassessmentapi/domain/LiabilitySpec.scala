@@ -77,7 +77,7 @@ class LiabilitySpec extends JsonSpec {
           500,
         deductionFromUkProperties = Seq(TaxPaidForUkProperty(sourceId = "abc", taxPaid = 500)),
         ukTaxPaid = 500,
-        ukTaxesPaidForEmployments = Seq(MongoUkTaxPaidForEmployment("abc", 500))))
+        ukTaxesPaidForEmployments = Seq(UkTaxPaidForEmployment("abc", 500))))
     }
   }
 

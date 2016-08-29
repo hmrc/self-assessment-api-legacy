@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.domain.selfemployment
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.domain._
 
 case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
@@ -29,7 +30,7 @@ case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
                       allowancesOnSales: Option[BigDecimal] = None) {
 
   private val maxAnnualInvestmentAllowance = 200000
-  
+
   def total = {
     Sum(CapAt(annualInvestmentAllowance, maxAnnualInvestmentAllowance), capitalAllowanceMainPool, capitalAllowanceSpecialRatePool,
       businessPremisesRenovationAllowance, enhancedCapitalAllowance, allowancesOnSales)

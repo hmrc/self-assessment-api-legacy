@@ -16,14 +16,19 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
-import uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary
+import uk.gov.hmrc.selfassessmentapi.domain.{PositiveOrZero, TaxBandSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 object NonSavings {
 
-  object TotalIncome {
+  object TotalTaxableIncome {
+    def apply(totalIncome: BigDecimal, totalDeductions: BigDecimal): BigDecimal = PositiveOrZero(totalIncome - totalDeductions)
 
+    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(TotalIncome(selfAssessment), Deductions.Total(selfAssessment))
+  }
+
+  object TotalIncome {
     def apply(selfEmploymentProfits: BigDecimal, ukPropertyProfits: BigDecimal, employmentProfits: BigDecimal,
               furnishedHolidayLettingProfits: BigDecimal): BigDecimal = {
       selfEmploymentProfits + ukPropertyProfits + employmentProfits + furnishedHolidayLettingProfits
@@ -47,4 +52,5 @@ object NonSavings {
     def apply(selfAssessment: SelfAssessment): BigDecimal = apply(NonSavings.IncomeTaxBandSummary(selfAssessment))
     def apply(summaries: Seq[TaxBandSummary]): BigDecimal = incomeTax(summaries)
   }
+
 }

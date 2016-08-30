@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary
 
 class NonSavingsSpec extends UnitSpec {
 
@@ -32,47 +33,62 @@ class NonSavingsSpec extends UnitSpec {
   "NonSavings.TaxBandSummaries" should {
 
     "be calculated for total NonSavingsIncome < 32000" in {
-      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 20000)
-        .map(_.taxableAmount) should contain theSameElementsAs Seq(20000, 0, 0)
-      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 31999)
-        .map(_.taxableAmount) should contain theSameElementsAs Seq(31999, 0, 0)
+      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 20000) should contain theSameElementsAs
+        Seq(TaxBandSummary("basicRate", 20000.00, "20%", 4000.00), TaxBandSummary("higherRate", 0.00, "40%", 0.00),
+          TaxBandSummary("additionalHigherRate", 0.00, "45%", 0.00))
+
+      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 31999.00) should contain theSameElementsAs
+        Seq(TaxBandSummary("basicRate", 31999.00, "20%", 6399.80), TaxBandSummary("higherRate", 0.0, "40%", 0.0),
+          TaxBandSummary("additionalHigherRate", 0.0, "45%", 0.0))
+
     }
 
     "be calculated for total NonSavingsIncome = 32000" in {
-      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 32000)
-        .map(_.taxableAmount) should contain theSameElementsInOrderAs Seq(32000, 0, 0)
+      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 32000) should contain theSameElementsAs
+        Seq(TaxBandSummary("basicRate", 32000.00, "20%", 6400.00), TaxBandSummary("higherRate", 0, "40%", 0),
+          TaxBandSummary("additionalHigherRate", 0, "45%", 0))
     }
 
     "be calculated tax for 32000 < NonSavingsIncome < 150000" in {
-      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 60000)
-        .map(_.taxableAmount) should contain theSameElementsInOrderAs Seq(32000, 28000, 0)
+      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 32001) should contain theSameElementsAs
+        Seq(TaxBandSummary("basicRate", 32000.00, "20%", 6400.00), TaxBandSummary("higherRate", 1.0, "40%", 0.40),
+          TaxBandSummary("additionalHigherRate", 0, "45%", 0))
+
+      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 33003) should contain theSameElementsAs
+        Seq(TaxBandSummary("basicRate", 32000.00, "20%", 6400.00), TaxBandSummary("higherRate", 1003, "40%", 401.20),
+          TaxBandSummary("additionalHigherRate", 0, "45%", 0))
     }
 
     "be calculated tax for NonSavingsIncome = 150000" in {
-      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 150000)
-        .map(_.taxableAmount) should contain theSameElementsInOrderAs Seq(32000, 118000, 0)
+      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 150000) should contain theSameElementsAs
+        Seq(TaxBandSummary("basicRate", 32000.00, "20%", 6400.00), TaxBandSummary("higherRate", 118000.00, "40%", 47200.00),
+          TaxBandSummary("additionalHigherRate", 0, "45%", 0))
     }
 
     "be calculated tax for NonSavingsIncome > 150000" in {
-      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 150001)
-        .map(_.taxableAmount) should contain theSameElementsInOrderAs Seq(32000, 118000, 1)
-      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 300000)
-        .map(_.taxableAmount) should contain theSameElementsInOrderAs Seq(32000, 118000, 150000)
+      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 150001) should contain theSameElementsAs
+        Seq(TaxBandSummary("basicRate", 32000.00, "20%", 6400.00), TaxBandSummary("higherRate", 118000.00, "40%", 47200.00),
+          TaxBandSummary("additionalHigherRate", 1, "45%", 0.45))
+
+      NonSavings.IncomeTaxBandSummary(totalTaxableProfitFromSelfEmployments = 150003) should contain theSameElementsAs
+        Seq(TaxBandSummary("basicRate", 32000.00, "20%", 6400.00), TaxBandSummary("higherRate", 118000.00, "40%", 47200.00),
+          TaxBandSummary("additionalHigherRate", 3, "45%", 1.35))
     }
+
   }
 
   "NonSavingsIncomeTax" should {
     "be equal to" in {
       val inputs = Table(
         ("TotalTaxableProfits", "NonSavingsIncomeTax"),
-        ("20000", "4000"),
-        ("31999", "6399"),
-        ("33000", "6800"),
-        ("89000", "29200"),
-        ("160000", "58100")
+        ("20001", "4000.20"),
+        ("31999", "6399.80"),
+        ("33001", "6800.40"),
+        ("89002", "29200.80"),
+        ("160003", "58101.35")
       )
       TableDrivenPropertyChecks.forAll(inputs) { (totalTaxableProfits: String, nonSavingsIncomeTax: String) =>
-        NonSavings.IncomeTax(NonSavings.IncomeTaxBandSummary(BigDecimal(totalTaxableProfits.toInt))) shouldBe BigDecimal(nonSavingsIncomeTax.toInt)
+        NonSavings.IncomeTax(NonSavings.IncomeTaxBandSummary(BigDecimal(totalTaxableProfits.toInt))) shouldBe BigDecimal(nonSavingsIncomeTax.toDouble)
       }
     }
   }

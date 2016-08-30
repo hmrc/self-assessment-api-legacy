@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
-import uk.gov.hmrc.selfassessmentapi.domain.{RoundDown, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary
 
 trait IncomeTax {
   def incomeTax(taxBandSummaries: Seq[TaxBandSummary]): BigDecimal =
-    RoundDown(taxBandSummaries.foldLeft(BigDecimal(0)) { (tax, taxBandSummary) => tax + taxBandSummary.tax})
+    taxBandSummaries.foldLeft(BigDecimal(0)) { (tax, taxBandSummary) => tax + taxBandSummary.tax}
 }

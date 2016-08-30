@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.domain.{CapAt, PositiveOrZero}
+import uk.gov.hmrc.selfassessmentapi.domain.{CapAt, PositiveOrZero, RoundDownToPennies}
 
 trait TaxBand {
   def name: String
@@ -26,7 +26,7 @@ trait TaxBand {
   val chargedAt: BigDecimal = 0
   def width = upperBound.map(_ - lowerBound + 1).getOrElse(BigDecimal(Long.MaxValue))
   def allocate(income: BigDecimal) = if (income < width) income else width
-  def allocate2(taxableIncome: BigDecimal) = CapAt(PositiveOrZero(taxableIncome - (lowerBound - 1)), PositiveOrZero(width))
+  def allocate2(taxableIncome: BigDecimal) = RoundDownToPennies(CapAt(PositiveOrZero(taxableIncome - (lowerBound - 1)), PositiveOrZero(width)))
 }
 
 object TaxBand {

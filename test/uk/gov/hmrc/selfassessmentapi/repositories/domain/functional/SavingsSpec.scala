@@ -20,6 +20,7 @@ import org.scalacheck.Gen
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
 import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
+import uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoUnearnedIncomesSavingsIncomeSummary
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
@@ -221,6 +222,81 @@ class SavingsSpec extends UnitSpec {
   }
 
   "Savings.IncomeTaxBandSummary" should {
+    "be calculated when NonSavingsIncome = 0 and TaxableSavingIncome falls within BasicRate band" in {
+      Savings.IncomeTaxBandSummary(taxableSavingsIncome = 31999, startingSavingsRate = 5000, personalSavingsAllowance = 1000,
+        taxableNonSavingsIncome = 0) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("startingRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("nilRate", 1000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 25999.0, "20%", 5199.80),
+          TaxBandSummary("higherRate", 0.0, "40%", 0.0),
+          TaxBandSummary("additionalHigherRate", 0.0, "45%", 0.0)
+        )
+    }
+
+    "be calculated when NonSavingsIncome = 0 and TaxableSavingIncome is spread over Basic and Higher Rate band" in {
+      Savings.IncomeTaxBandSummary(taxableSavingsIncome = 32001, startingSavingsRate = 5000, personalSavingsAllowance = 1000,
+        taxableNonSavingsIncome = 0) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("startingRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("nilRate", 1000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 26000.0, "20%", 5200.0),
+          TaxBandSummary("higherRate", 1.0, "40%", 0.4),
+          TaxBandSummary("additionalHigherRate", 0.0, "45%", 0.0)
+        )
+    }
+
+    "be calculated when NonSavingsIncome = 0 and TaxableSavingIncome is spread over Basic, Higher and Additional Higher Rate band" in {
+      Savings.IncomeTaxBandSummary(taxableSavingsIncome = 150001, startingSavingsRate = 5000, personalSavingsAllowance = 1000,
+        taxableNonSavingsIncome = 0) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("startingRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("nilRate", 1000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 26000.0, "20%", 5200.0),
+          TaxBandSummary("higherRate", 118000.0, "40%", 47200.0),
+          TaxBandSummary("additionalHigherRate", 1.0, "45%", 0.45)
+        )
+    }
+
+    "be calculated when NonSavingsIncome > 0 and TaxableSavingIncome falls within BasicRate band" in {
+      Savings.IncomeTaxBandSummary(taxableSavingsIncome = 30999, startingSavingsRate = 5000, personalSavingsAllowance = 1000,
+        taxableNonSavingsIncome = 1000.00) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("startingRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("nilRate", 1000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 24999.0, "20%", 4999.8),
+          TaxBandSummary("higherRate", 0.0, "40%", 0.0),
+          TaxBandSummary("additionalHigherRate", 0.0, "45%", 0.0)
+        )
+    }
+
+    "be calculated when NonSavingsIncome > 0 and TaxableSavingIncome is spread over Basic and Higher Rate band" in {
+      Savings.IncomeTaxBandSummary(taxableSavingsIncome = 31001, startingSavingsRate = 5000, personalSavingsAllowance = 1000,
+        taxableNonSavingsIncome = 1000) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("startingRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("nilRate", 1000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 25000.0, "20%", 5000.0),
+          TaxBandSummary("higherRate", 1.0, "40%", 0.4),
+          TaxBandSummary("additionalHigherRate", 0.0, "45%", 0.0)
+        )
+    }
+
+    "be calculated when NonSavingsIncome > 0 and TaxableSavingIncome is spread over Basic, Higher and Additional Higher Rate band" in {
+      Savings.IncomeTaxBandSummary(taxableSavingsIncome = 149001, startingSavingsRate = 5000, personalSavingsAllowance = 1000,
+        taxableNonSavingsIncome = 1000) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("startingRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("nilRate", 1000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 25000.0, "20%", 5000.0),
+          TaxBandSummary("higherRate", 118000.0, "40%", 47200.0),
+          TaxBandSummary("additionalHigherRate", 1.0, "45%", 0.45)
+        )
+    }
+
+  }
+
+  "Savings.IncomeTaxBandSummary" should {
     "be allocated to correct tax bands" in {
       val inputs = Table(
         ("TotalProfitFromSelfEmployments", "TotalSavingsIncome", "StartingRateAmount", "NilRateAmount", "BasicRateTaxAmount",
@@ -260,7 +336,7 @@ class SavingsSpec extends UnitSpec {
           totalDeduction, totalProfitFromSelfEmployments = totalProfitFromSelfEmployments.toInt)).as("Savings.TaxableIncome")
 
         val bandAllocations = Savings.IncomeTaxBandSummary(taxableSavingsIncome = taxableSavingsIncome, startingSavingsRate = savingStartingRate,
-          personalSavingsAllowance = personalSavingsAllowance, totalTaxableProfits = totalTaxableProfits)
+          personalSavingsAllowance = personalSavingsAllowance, taxableNonSavingsIncome = totalTaxableProfits)
 
         println(bandAllocations)
         println("====================================================================================")
@@ -276,24 +352,24 @@ class SavingsSpec extends UnitSpec {
       val inputs = Table(
         ("NonSavingsIncome", "SavingsIncome", "SavingsIncomeTax"),
         ("0", "12000", "0"),
-        ("0", "17001", "0"),
+        ("0", "17001", "0.2"),
         ("0", "17005", "1"),
         ("0", "20000", "600"),
         ("0", "43000", "5300"),
-        ("0", "43001", "5300"),
+        ("0", "43001", "5300.4"),
         ("0", "43005", "5302"),
         ("0", "100000", "28100"),
         ("0", "150000", "52500"),
-        ("0", "150001", "52600"),
-        ("0", "150005", "52602"),
+        ("0", "150001", "52600.45"),
+        ("0", "150005", "52602.25"),
         ("0", "160000", "57100"),
         ("11000", "32000", "5300"),
-        ("11000", "32001", "5300"),
+        ("11000", "32001", "5300.4"),
         ("11000", "32005", "5302"),
         ("11000", "89000", "28100"),
         ("11000", "150000", "56350"),
-        ("11000", "150001", "56350"),
-        ("11000", "150005", "56352"),
+        ("11000", "150001", "56350.45"),
+        ("11000", "150005", "56352.25"),
         ("11000", "160000", "60850")
       )
 
@@ -313,7 +389,7 @@ class SavingsSpec extends UnitSpec {
         println(savingsIncomeBandAllocation)
         println("==============================")
 
-        Savings.IncomeTax(savingsIncomeBandAllocation) shouldBe BigDecimal(savingsIncomeTax.toInt)
+        Savings.IncomeTax(savingsIncomeBandAllocation) shouldBe BigDecimal(savingsIncomeTax.toDouble)
       }
     }
   }

@@ -39,7 +39,7 @@ object Employment {
   }
 
   object TotalTaxPaid {
-    def apply(selfAssessment: SelfAssessment) = selfAssessment.employments.map(TaxPaid(_)).sum
+    def apply(selfAssessment: SelfAssessment) = PositiveOrZero(selfAssessment.employments.map(TaxPaid(_)).sum)
   }
 
   object TaxPaid {
@@ -51,8 +51,8 @@ object Employment {
       val taxPaidForEmployments = selfAssessment.employments.map { employment =>
         UkTaxPaidForEmployment(employment.sourceId, Employment.TaxPaid(employment))
       }
-      if(taxPaidForEmployments.nonEmpty && taxPaidForEmployments.count(_.taxPaid > 0) == 0) {
-        throw new LiabilityCalculationException(INVALID_EMPLOYMENT_TAX_PAID, s"The UK tax paid must be positive for at least one employment source")
+      if(taxPaidForEmployments.nonEmpty && taxPaidForEmployments.count(_.taxPaid >= 0) == 0) {
+        throw LiabilityCalculationException(INVALID_EMPLOYMENT_TAX_PAID, s"The UK tax paid must be positive for at least one employment source")
       }
       taxPaidForEmployments
     }

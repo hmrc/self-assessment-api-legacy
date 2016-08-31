@@ -39,11 +39,11 @@ object NonSavings {
   }
 
   object IncomeTaxBandSummary {
-    def apply(selfAssessment: SelfAssessment): Seq[TaxBandSummary] = apply(SelfEmployment.TotalTaxableProfit(selfAssessment))
+    def apply(selfAssessment: SelfAssessment): Seq[TaxBandSummary] = apply(NonSavings.TotalTaxableIncome(selfAssessment))
 
-    def apply(totalTaxableProfitFromSelfEmployments: BigDecimal): Seq[TaxBandSummary] = {
+    def apply(totalNonSavingsTaxableIncome: BigDecimal): Seq[TaxBandSummary] = {
       Seq(TaxBands.BasicTaxBand(), TaxBands.HigherTaxBand(), TaxBands.AdditionalHigherTaxBand()).map { taxBand =>
-        TaxBandAllocation(taxBand.allocate2(totalTaxableProfitFromSelfEmployments), taxBand).toTaxBandSummary
+        TaxBandAllocation(taxBand.allocate2(totalNonSavingsTaxableIncome), taxBand).toTaxBandSummary
       }
     }
   }

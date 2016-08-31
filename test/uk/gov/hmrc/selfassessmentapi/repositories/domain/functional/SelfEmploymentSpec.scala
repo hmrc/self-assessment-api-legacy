@@ -47,6 +47,7 @@ class SelfEmploymentSpec extends UnitSpec {
     }
   }
 
+
   "Profit from self employment" should {
     "be equal to the sum of all incomes, balancingCharges, goodsAndServices and basisAdjustment, accountingAdjustment and " +
       "averagingAdjustment" in {
@@ -80,14 +81,15 @@ class SelfEmploymentSpec extends UnitSpec {
       val selfEmployment =
         aSelfEmployment(selfEmploymentId).copy(
           incomes = Seq(
-            anIncome(IncomeType.Turnover, 2000)
+            anIncome(IncomeType.Turnover, 10000.98)
           ),
           adjustments = Some(Adjustments(
-            outstandingBusinessIncome = Some(3000)
+            outstandingBusinessIncome = Some(5000.32),
+            lossBroughtForward = Some(20000.50)
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(5000)
+      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(15001)
 
     }
 
@@ -213,6 +215,23 @@ class SelfEmploymentSpec extends UnitSpec {
       SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(0)
     }
 
+  }
+
+  "SelfEmployment.TaxableProfit" should {
+    "be RoundDown(Profit - CappedAt(LossBroughtForward, AdjustedProfit))" in {
+      val selfEmployment =
+        aSelfEmployment(selfEmploymentId).copy(
+          incomes = Seq(
+            anIncome(IncomeType.Turnover, 10000.98)
+          ),
+          adjustments = Some(Adjustments(
+            outstandingBusinessIncome = Some(5000.32),
+            lossBroughtForward = Some(20000.50)
+          ))
+        )
+
+      SelfEmployment.TaxableProfit(selfEmployment) shouldBe BigDecimal(5000.00)
+    }
   }
 
   "Incomes" should {

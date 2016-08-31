@@ -52,12 +52,12 @@ class DeductionsSpec extends UnitSpec {
   "RetirementAnnuityContract" should {
     "be sum of the retirement annuity contributions, overseas pensions and employer pension contributions" in {
       val selfAssessment = SelfAssessment(taxYearProperties = Some(aTaxYearProperty
-            .copy(pensionContributions = Some(PensionContribution(retirementAnnuity = Some(500),
-              overseasPension = Some(500),
-              employerScheme = Some(500))))
+            .copy(pensionContributions = Some(PensionContribution(retirementAnnuity = Some(500.73),
+              overseasPension = Some(500.23),
+              employerScheme = Some(500.11))))
         .toTaxYearProperties))
 
-      Deductions.RetirementAnnuityContract(selfAssessment) shouldBe 1500
+      Deductions.RetirementAnnuityContract(selfAssessment) shouldBe 1502
     }
 
     "be 0 when are no pension contributions" in {

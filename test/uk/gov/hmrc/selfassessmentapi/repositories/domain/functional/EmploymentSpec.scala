@@ -112,6 +112,18 @@ class EmploymentSpec extends UnitSpec {
     }
   }
 
+  "TotalTaxPaid" should {
+    "return a value of 0 when the total tax paid is negative" in {
+      val employment = anEmployment().copy(
+        ukTaxPaid = Seq(anUkTaxPaidSummary(amount = -500),
+                        anUkTaxPaidSummary(amount = -250)))
+
+      val sa = SelfAssessment(employments = Seq(employment))
+
+      Employment.TotalTaxPaid(sa) shouldBe 0
+    }
+  }
+
   "employment incomes" should {
 
     "be calculated from multiple employment sources" in {
@@ -180,6 +192,22 @@ class EmploymentSpec extends UnitSpec {
 
     "return the UK tax paid as zero and an empty list of UK taxes paid for employments if there are no employments" in {
       Employment.TaxesPaid(SelfAssessment(employments = Nil)) shouldBe empty
+    }
+
+
+    "return the UK tax paid as zero if the sum of UK taxes paid is zero" in {
+      val employment1UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -934.87)
+      val employment2UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", 0)
+      val employment2ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", 0)
+      val employment1 =
+        anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
+      val employment2 =
+        anEmployment().copy(ukTaxPaid = Seq(employment2UkTaxPaidSummary1, employment2ukTaxPaidSummary2))
+
+      Employment.TaxesPaid(SelfAssessment(employments = Seq(employment1, employment2))) shouldBe
+        Seq(UkTaxPaidForEmployment(employment1.sourceId, -1047.32),
+          UkTaxPaidForEmployment(employment2.sourceId, 0))
     }
 
     "throw a calculation exception if none of the sum of the UK tax paid for a given employment is positive" in {

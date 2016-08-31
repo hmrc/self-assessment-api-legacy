@@ -27,8 +27,9 @@ object Savings {
 
   object TotalTaxPaid {
     def apply(selfAssessment: SelfAssessment): BigDecimal = {
-      val totalTaxedInterest = Savings.TotalTaxedInterest(selfAssessment)
-      RoundUpToPennies(RoundDown(totalTaxedInterest * 100 / 80) - totalTaxedInterest)
+      selfAssessment.unearnedIncomes.map { unearnedincome =>
+        RoundUpToPennies(TaxedInterest(unearnedincome) * 0.25)
+      }.sum
     }
   }
 
@@ -54,14 +55,6 @@ object Savings {
 
   private object UntaxedInterest {
     def apply(mongoUnearnedIncome: MongoUnearnedIncome) = Interest(mongoUnearnedIncome, SavingsIncomeType.InterestFromBanksUntaxed)
-  }
-
-  object TotalTaxedInterest {
-    def apply(selfAssessment: SelfAssessment) = selfAssessment.unearnedIncomes.map(TaxedInterest(_)).sum
-  }
-
-  object TotalUntaxedInterest {
-    def apply(selfAssessment: SelfAssessment) = selfAssessment.unearnedIncomes.map(UntaxedInterest(_)).sum
   }
 
   object Incomes {

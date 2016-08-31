@@ -211,13 +211,41 @@ class SavingsSpec extends UnitSpec {
         aSavingsIncome("", InterestFromBanksTaxed, 786.78),
         aSavingsIncome("", InterestFromBanksTaxed, 456.76),
         aSavingsIncome("", InterestFromBanksTaxed, 2000.56),
-        aSavingsIncome("", InterestFromBanksUntaxed, 1000.56)))))) shouldBe 810.90
+        aSavingsIncome("", InterestFromBanksUntaxed, 1000.56)))))) shouldBe 811.03
 
       Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(anIncome().copy(savings = Seq(
         aSavingsIncome("", InterestFromBanksTaxed, 1000.78),
         aSavingsIncome("", InterestFromBanksTaxed, 999.22),
         aSavingsIncome("", InterestFromBanksTaxed, 3623.67),
-        aSavingsIncome("", InterestFromBanksUntaxed, 2000.56)))))) shouldBe 1405.33
+        aSavingsIncome("", InterestFromBanksUntaxed, 2000.56)))))) shouldBe 1405.92
+    }
+
+    "be equal to RoundUpToPennies(RoundUp(Sum(Taxed Interest)) * 100/80 - Sum(Taxed Interest)) for multiple unearned income sources" in {
+/*
+new UnEarnedIncomeBuilder()
+        .withSavings(SavingsIncomeType.InterestFromBanksTaxed, 786.78)
+        .withSavings(SavingsIncomeType.InterestFromBanksUntaxed, 2500.00)
+        .buildForUtr(saUtr, accessToken)
+
+      info(s"Tax Paid from Source 1 = (786.78*1.25)-786.78 = 196.695, which is ROUNDED UP to Money = 196.70")
+
+      new UnEarnedIncomeBuilder()
+        .withSavings(SavingsIncomeType.InterestFromBanksTaxed, 456.76)
+        .withSavings(SavingsIncomeType.InterestFromBanksTaxed, 2000.56)
+        .withSavings(SavingsIncomeType.InterestFromBanksUntaxed, 2500.00)
+        .buildForUtr(saUtr, accessToken)
+
+ */
+      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(
+        anIncome().copy(savings = Seq(
+          aSavingsIncome("", InterestFromBanksTaxed, 786.78),
+          aSavingsIncome("", InterestFromBanksUntaxed, 2500.00))),
+        anIncome().copy(savings = Seq(
+          aSavingsIncome("", InterestFromBanksTaxed, 456.76),
+          aSavingsIncome("", InterestFromBanksTaxed, 2000.56),
+          aSavingsIncome("", InterestFromBanksUntaxed, 2500.00))))
+        )
+      ) shouldBe 811.03
     }
   }
 

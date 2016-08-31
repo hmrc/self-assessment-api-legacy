@@ -67,7 +67,7 @@ object Deductions {
   object RetirementAnnuityContract {
     def apply(selfAssessment: SelfAssessment): BigDecimal =
     ValueOrZero(selfAssessment.taxYearProperties.flatMap(_.pensionContributions).map { pensionContribution =>
-        Sum(pensionContribution.employerScheme, pensionContribution.overseasPension, pensionContribution.retirementAnnuity)
+        RoundUp(Sum(pensionContribution.employerScheme, pensionContribution.overseasPension, pensionContribution.retirementAnnuity))
     })
   }
 

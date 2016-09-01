@@ -18,9 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.SelfEmploymentSugar._
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfAssessment, SelfEmploymentIncome}
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfEmploymentIncome
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 class SelfEmploymentSpec extends UnitSpec {
 

@@ -21,7 +21,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.{FunctionalLiability, MongoTaxDeducted}
 
 object SelfAssessmentSugar extends UnitSpec {
 
@@ -36,38 +36,32 @@ object SelfAssessmentSugar extends UnitSpec {
                  retirementAnnuityContract: Option[BigDecimal] = None,
                  savingsStartingRate: Option[BigDecimal] = None,
                  profitFromUkProperties: Seq[UkPropertyIncome] = Nil,
-                 incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil): MongoLiability = {
+                 incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil): FunctionalLiability = {
 
-    MongoLiability
-      .create(saUtr, taxYear)
-      .copy(incomeFromEmployments = incomeFromEmployments,
-            profitFromSelfEmployments = profitFromSelfEmployments,
-            interestFromUKBanksAndBuildingSocieties = interestFromUKBanksAndBuildingSocieties,
-            dividendsFromUKSources = dividendsFromUKSources,
-            deductionsRemaining = deductionsRemaining,
-            allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance,
-                                                        savingsStartingRate = savingsStartingRate,
-                                                        retirementAnnuityContract = retirementAnnuityContract),
-            profitFromUkProperties = profitFromUkProperties,
-            incomeFromFurnishedHolidayLettings = incomeFromFurnishedHolidayLettings)
+    val iD = BSONObjectID.generate
+    FunctionalLiability(id= iD, liabilityId = iD.stringify,
+      saUtr = saUtr,
+      taxYear = taxYear,
+      employmentIncome = incomeFromEmployments,
+      selfEmploymentIncome = profitFromSelfEmployments,
+      ukPropertyIncome = Nil,
+      furnishedHolidayLettingsIncome = Nil,
+      savingsIncome = interestFromUKBanksAndBuildingSocieties,
+      ukDividendsIncome = dividendsFromUKSources,
+      totalIncomeReceived = 0,
+      totalTaxableIncome = 0,
+      allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance,
+                                                  savingsStartingRate = savingsStartingRate,
+                                                  retirementAnnuityContract = retirementAnnuityContract),
+      taxDeducted = MongoTaxDeducted(),
+      dividendTaxBandSummary = Nil,
+      savingsTaxBandSummary = Nil,
+      nonSavingsTaxBandSummary = Nil,
+      totalIncomeTax = 0, totalTaxDeducted = 0, totalTaxDue = 0, totalTaxOverPaid = 0
+    )
   }
-
-  def aLiabilityCalculationError(saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear): MongoLiabilityCalculationErrors = {
-    MongoLiabilityCalculationErrors.create(
-        saUtr,
-        taxYear,
-        Seq(MongoLiabilityCalculationError(ErrorCode.INVALID_EMPLOYMENT_TAX_PAID, "Tax Paid from your Employment(s) should not be negative")))
-  }
-
-  def aTaxBandAllocation(taxableAmount: BigDecimal, taxBand: TaxBand) =
-    TaxBandAllocation(amount = taxableAmount, taxBand = taxBand)
 
   def now = DateTime.now(DateTimeZone.UTC)
-
-  implicit class LiabilityExtractor(val liabilityResult: LiabilityResult) {
-    def getLiabilityOrFail =
-      liabilityResult.fold(calculationError => fail(s"Liability calculation failed with: $calculationError"), identity)
-  }
 
   def aTaxYearProperty = MongoTaxYearProperties(BSONObjectID.generate, generateSaUtr(), taxYear, now, now)
 

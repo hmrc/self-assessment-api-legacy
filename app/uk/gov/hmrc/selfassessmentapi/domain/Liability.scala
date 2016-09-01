@@ -18,7 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, FurnishedHolidayLettingIncome, SelfEmploymentIncome, UkPropertyIncome}
 
 case class InterestFromUKBanksAndBuildingSocieties(sourceId: String, totalInterest: BigDecimal)
 

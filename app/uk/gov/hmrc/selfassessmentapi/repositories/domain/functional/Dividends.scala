@@ -17,9 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.UnearnedIncome
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoUnearnedIncome, TaxBandAllocation}
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoUnearnedIncome
 
 object Dividends {
 
@@ -55,11 +53,11 @@ object Dividends {
 
     def apply(taxableNonSavingsIncome: BigDecimal, taxableSavingsIncome: BigDecimal, taxableDividendIncome: BigDecimal,
               personalDividendAllowance: BigDecimal): Seq[TaxBandSummary] = {
-      val nilTaxBand = TaxBands.NilTaxBand(bandWidth = personalDividendAllowance)
-      val basicTaxBand = TaxBands.BasicTaxBand(Some(nilTaxBand), taxableNonSavingsIncome + taxableSavingsIncome, chargedAt = 7.5)
-      val higherTaxBand = TaxBands.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome + taxableSavingsIncome, chargedAt = 32.5)
+      val nilTaxBand = TaxBand.NilTaxBand(bandWidth = personalDividendAllowance)
+      val basicTaxBand = TaxBand.BasicTaxBand(Some(nilTaxBand), taxableNonSavingsIncome + taxableSavingsIncome, chargedAt = 7.5)
+      val higherTaxBand = TaxBand.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome + taxableSavingsIncome, chargedAt = 32.5)
 
-      Seq(nilTaxBand, basicTaxBand, higherTaxBand, TaxBands.AdditionalHigherTaxBand(higherTaxBand, chargedAt = 38.1)).map { taxBand =>
+      Seq(nilTaxBand, basicTaxBand, higherTaxBand, TaxBand.AdditionalHigherTaxBand(higherTaxBand, chargedAt = 38.1)).map { taxBand =>
         TaxBandAllocation(taxBand.allocate2(taxableDividendIncome), taxBand).toTaxBandSummary
       }
     }

@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi._
+import uk.gov.hmrc.selfassessmentapi.domain.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 class DeductionsSpec extends UnitSpec {
 

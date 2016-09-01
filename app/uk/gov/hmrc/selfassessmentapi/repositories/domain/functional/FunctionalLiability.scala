@@ -24,9 +24,6 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 object TaxDeducted {
   def apply(selfAssessment: SelfAssessment) =
@@ -78,7 +75,7 @@ case class FunctionalLiability(id: BSONObjectID,
             incomeTaxRelief = allowancesAndReliefs.incomeTaxRelief.getOrElse(0),
             personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
             retirementAnnuityContract = allowancesAndReliefs.retirementAnnuityContract.getOrElse(0),
-            total = sum(allowancesAndReliefs.incomeTaxRelief,
+            total = Sum(allowancesAndReliefs.incomeTaxRelief,
               allowancesAndReliefs.personalAllowance,
               allowancesAndReliefs.retirementAnnuityContract)
           )),
@@ -103,13 +100,7 @@ object FunctionalLiability {
 
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
-  implicit val employmentIncomeFormats = Json.format[EmploymentIncome]
-  implicit val selfEmploymentIncomeFormats = Json.format[SelfEmploymentIncome]
-  implicit val ukPropertyIncomeFormats = Json.format[UkPropertyIncome]
-  implicit val furnishedHolidayLettingIncomeFormats = Json.format[FurnishedHolidayLettingIncome]
-  implicit val taxBandAllocationFormats = Json.format[TaxBandAllocation]
-  implicit val allowancesAndReliefsFormats = Json.format[AllowancesAndReliefs]
-  implicit val ukTaxPaidForEmploymentFormats = Json.format[MongoUkTaxPaidForEmployment]
+
   implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]
   implicit val liabilityFormats = Json.format[FunctionalLiability]
 
@@ -140,6 +131,26 @@ object FunctionalLiability {
   }
 
 }
+
+case class MongoUkTaxPaidForEmployment(sourceId: SourceId, ukTaxPaid: BigDecimal)
+
+object MongoUkTaxPaidForEmployment {
+  implicit val ukTaxPaidForEmploymentFormats = Json.format[MongoUkTaxPaidForEmployment]
+}
+
+case class MongoTaxDeducted(interestFromUk: BigDecimal = 0,
+                            totalDeductionFromUkProperties: BigDecimal = 0,
+                            deductionFromUkProperties: Seq[TaxPaidForUkProperty] = Nil,
+                            ukTaxPaid: BigDecimal = 0,
+                            ukTaxesPaidForEmployments: Seq[UkTaxPaidForEmployment] = Nil) {
+
+  def totalTaxDeducted = interestFromUk + totalDeductionFromUkProperties + ukTaxPaid
+}
+
+object MongoTaxDeducted {
+  implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]
+}
+
 
 case class FLiabilityCalculationError(code: ErrorCode, message: String)
 

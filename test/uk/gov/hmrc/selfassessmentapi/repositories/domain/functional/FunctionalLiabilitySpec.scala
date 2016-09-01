@@ -19,7 +19,6 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.{UnitSpec, domain}
 
 class FunctionalLiabilitySpec extends UnitSpec {

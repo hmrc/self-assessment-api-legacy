@@ -20,12 +20,7 @@ import org.json.{JSONArray, JSONObject}
 import org.skyscreamer.jsonassert.JSONAssert._
 import org.skyscreamer.jsonassert.JSONCompareMode._
 import play.api.libs.json.{JsArray, JsValue}
-import play.api.libs.json.Json._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability._
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.TaxPaid
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.BasicTaxBand
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.MongoTaxDeducted
 
 class LiabilitySpec extends JsonSpec {
 
@@ -54,12 +49,6 @@ class LiabilitySpec extends JsonSpec {
   "DividendsFromUKSources" should {
     "correctly map to JSON" in {
       roundTripJson(DividendsFromUKSources("abc", 500))
-    }
-  }
-
-  "TaxBandAllocation" should {
-    "correctly map to JSON" in {
-      roundTripJson(TaxBandAllocation(500, BasicTaxBand))
     }
   }
 

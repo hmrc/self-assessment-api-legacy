@@ -17,9 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain.{DividendsFromUKSources, InterestFromUKBanksAndBuildingSocieties, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.FunctionalLiability
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.{FunctionalLiability, MongoTaxDeducted}
 
 object LiabilitySugar extends UnitSpec {
   def aLiability(id: BSONObjectID = BSONObjectID.generate, employmentIncome: Seq[EmploymentIncome] = Seq(),

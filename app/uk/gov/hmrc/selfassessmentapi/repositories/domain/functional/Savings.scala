@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType.SavingsIncomeType
+import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoUnearnedIncome, TaxBandAllocation}
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{BasicTaxBand, HigherTaxBand, TaxBandRangeCheck}
+import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoUnearnedIncome
 
 object Savings {
 
@@ -75,8 +73,8 @@ object Savings {
     def apply(selfAssessment: SelfAssessment): BigDecimal = apply(Totals.TaxableIncome(selfAssessment))
     def apply(totalTaxableIncome: BigDecimal): BigDecimal = totalTaxableIncome match {
       case total if total < 1 => 0
-      case total if total isWithin BasicTaxBand => 1000
-      case total if total isWithin HigherTaxBand => 500
+      case total if total <= TaxBand.BasicTaxBand.defaultUpperBound => 1000
+      case total if total > TaxBand.BasicTaxBand.defaultUpperBound && total <= TaxBand.HigherTaxBand.defaultUpperBound => 500
       case _ => 0
     }
   }
@@ -87,13 +85,13 @@ object Savings {
 
     def apply(taxableSavingsIncome: BigDecimal, startingSavingsRate: BigDecimal, personalSavingsAllowance: BigDecimal,
               taxableNonSavingsIncome: BigDecimal): Seq[TaxBandSummary] = {
-      val startingTaxBand = TaxBands.SavingsStartingTaxBand(startingSavingsRate)
-      val nilTaxBand = TaxBands.NilTaxBand(Some(startingTaxBand), personalSavingsAllowance)
-      val basicTaxBand = TaxBands.BasicTaxBand(Some(nilTaxBand), taxableNonSavingsIncome)
-      val higherTaxBand = TaxBands.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome)
+      val startingTaxBand = TaxBand.SavingsStartingTaxBand(startingSavingsRate)
+      val nilTaxBand = TaxBand.NilTaxBand(Some(startingTaxBand), personalSavingsAllowance)
+      val basicTaxBand = TaxBand.BasicTaxBand(Some(nilTaxBand), taxableNonSavingsIncome)
+      val higherTaxBand = TaxBand.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome)
 
-      Seq(startingTaxBand, nilTaxBand, basicTaxBand, higherTaxBand, TaxBands.AdditionalHigherTaxBand(higherTaxBand)).map { taxBand =>
-        TaxBandAllocation(taxBand.allocate2(taxableSavingsIncome), taxBand).toTaxBandSummary
+      Seq(startingTaxBand, nilTaxBand, basicTaxBand, higherTaxBand, TaxBand.AdditionalHigherTaxBand(higherTaxBand)).map { taxBand =>
+        domain.TaxBandAllocation(taxBand.allocate2(taxableSavingsIncome), taxBand).toTaxBandSummary
       }
     }
   }

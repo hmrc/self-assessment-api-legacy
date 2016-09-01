@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
-import uk.gov.hmrc.selfassessmentapi.domain.{PositiveOrZero, TaxBandSummary}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBandAllocation
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.domain.{PositiveOrZero, SelfAssessment, TaxBandAllocation, TaxBandSummary}
 
 object NonSavings {
 
@@ -42,7 +40,7 @@ object NonSavings {
     def apply(selfAssessment: SelfAssessment): Seq[TaxBandSummary] = apply(NonSavings.TotalTaxableIncome(selfAssessment))
 
     def apply(totalNonSavingsTaxableIncome: BigDecimal): Seq[TaxBandSummary] = {
-      Seq(TaxBands.BasicTaxBand(), TaxBands.HigherTaxBand(), TaxBands.AdditionalHigherTaxBand()).map { taxBand =>
+      Seq(TaxBand.BasicTaxBand(), TaxBand.HigherTaxBand(), TaxBand.AdditionalHigherTaxBand()).map { taxBand =>
         TaxBandAllocation(taxBand.allocate2(totalNonSavingsTaxableIncome), taxBand).toTaxBandSummary
       }
     }

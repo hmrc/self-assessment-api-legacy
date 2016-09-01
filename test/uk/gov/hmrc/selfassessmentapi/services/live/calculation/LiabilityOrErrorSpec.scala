@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
-import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.{LiabilitySugar, UnitSpec}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.UkTaxPaidForEmployment
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.MongoTaxDeducted
 
 class LiabilityOrErrorSpec extends UnitSpec {
   "LiabilityOrError.validate" should {

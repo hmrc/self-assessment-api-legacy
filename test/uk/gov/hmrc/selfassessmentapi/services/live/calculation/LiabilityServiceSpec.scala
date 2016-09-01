@@ -28,9 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.FLiabilityResult
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 import scala.concurrent.Future
 
@@ -44,7 +42,6 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
   private val ukPropertyRepo = mock[UKPropertiesMongoRepository]
   private val furnishedHolidayLettingsRepo = mock[FurnishedHolidayLettingsMongoRepository]
   private val selfAssessmentRepo = mock[SelfAssessmentMongoRepository]
-  private val liabilityCalculator = mock[LiabilityCalculator]
   private val featureSwitch = mock[FeatureSwitch]
   private val service = new LiabilityService(employmentRepo,
                                              selfEmploymentRepo,
@@ -53,7 +50,6 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
                                              liabilityRepo,
                                              ukPropertyRepo,
                                              selfAssessmentRepo,
-                                             liabilityCalculator,
                                              featureSwitch)
 
   "calculate" should {
@@ -67,13 +63,6 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
         Future.successful(arg)
       }
     })
-
-    when(liabilityCalculator.calculate(any[SelfAssessment], any[MongoLiability]))
-      .thenAnswer(new Answer[FLiabilityResult] {
-        override def answer(invocation: InvocationOnMock): FLiabilityResult = {
-          invocation.getArguments.last.asInstanceOf[FLiabilityResult]
-        }
-      })
 
     "not get employment sources from repository when Employment source is switched on" in {
       when(featureSwitch.isEnabled(Employments)).thenReturn(true)

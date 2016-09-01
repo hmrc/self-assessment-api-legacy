@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.repositories.live
 
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.domain.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.FunctionalLiability
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

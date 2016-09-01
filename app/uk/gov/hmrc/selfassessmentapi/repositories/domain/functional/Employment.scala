@@ -17,8 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
 import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, MongoEmployment}
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoEmployment
 
 object Employment {
 

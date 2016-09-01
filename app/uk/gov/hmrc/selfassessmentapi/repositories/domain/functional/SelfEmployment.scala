@@ -18,8 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Allowances, ExpenseType}
 import uk.gov.hmrc.selfassessmentapi.domain.{CapAt, RoundDown, _}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, SelfEmploymentIncome}
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
 
 object SelfEmployment {
 

@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps
+package uk.gov.hmrc.selfassessmentapi.domain
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math._
 
-object UkPropertyProfitCalculation extends CalculationStep {
-  override def run(selfAssessment: SelfAssessment, liability: MongoLiability): LiabilityResult = {
-    liability.copy(profitFromUkProperties = ukPropertyIncomes(selfAssessment))
-  }
-
-  def ukPropertyIncomes(selfAssessment: SelfAssessment): Seq[UkPropertyIncome] = {
-    selfAssessment.ukProperties.map { property => UkPropertyIncome(property.sourceId, roundDown(property.adjustedProfit)) }
-  }
-
-}
+case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),
+                          selfEmployments: Seq[MongoSelfEmployment] = Seq(),
+                          unearnedIncomes: Seq[MongoUnearnedIncome] = Seq(),
+                          ukProperties: Seq[MongoUKProperties] = Seq(),
+                          taxYearProperties: Option[TaxYearProperties] = None,
+                          furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Seq())

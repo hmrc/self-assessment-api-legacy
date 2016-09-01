@@ -19,14 +19,12 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.{LiabilityCalculationError, LiabilityCalculationErrors}
-import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.{FLiabilityCalculationErrors, FunctionalLiability}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoLiability, MongoSelfEmployment, MongoUnearnedIncome, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoSelfEmployment, MongoUnearnedIncome, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -38,7 +36,6 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                        liabilityRepo: LiabilityMongoRepository,
                        ukPropertiesRepo: UKPropertiesMongoRepository,
                        selfAssessmentRepository: SelfAssessmentMongoRepository,
-                       liabilityCalculator: LiabilityCalculator,
                        featureSwitch: FeatureSwitch) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[LiabilityCalculationErrors, Liability]]] = {
@@ -76,21 +73,6 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
 
   private[calculation] def isSourceEnabled(sourceType: SourceType) = featureSwitch.isEnabled(sourceType)
 
-  private def calculateLiability(liability: MongoLiability,
-                                 employments: Seq[MongoEmployment],
-                                 selfEmployments: Seq[MongoSelfEmployment],
-                                 ukProperties: Seq[MongoUKProperties],
-                                 unearnedIncomes: Seq[MongoUnearnedIncome],
-                                 furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings],
-                                 taxYearProperties: Option[TaxYearProperties]): LiabilityResult = {
-    liabilityCalculator.calculate(SelfAssessment(employments = employments,
-                                                 selfEmployments = selfEmployments,
-                                                 unearnedIncomes = unearnedIncomes,
-                                                 ukProperties = ukProperties,
-                                                 furnishedHolidayLettings = furnishedHolidayLettings,
-                                                 taxYearProperties = taxYearProperties),
-                                  liability)
-  }
 }
 
 object LiabilityService {
@@ -102,7 +84,6 @@ object LiabilityService {
                                                   LiabilityRepository(),
                                                   UKPropertiesRepository(),
                                                   SelfAssessmentRepository(),
-                                                  LiabilityCalculator(),
                                                   FeatureSwitch(AppContext.featureSwitch))
 
   def apply() = service

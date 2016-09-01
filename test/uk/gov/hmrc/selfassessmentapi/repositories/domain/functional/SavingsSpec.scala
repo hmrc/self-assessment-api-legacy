@@ -111,24 +111,21 @@ class SavingsSpec extends UnitSpec {
 
   "SavingsStartingRate" should {
 
-    "be 5000 if payPensionProfitsReceived is less than deductions" in {
-      Savings.StartingRate(profitFromSelfEmployments = 5000, totalDeduction = 6000) shouldBe 5000
+    "be 5000 when totalNonSavingsTaxableIncome is 0" in {
+      Savings.StartingRate(totalNonSavingsTaxableIncome = 0) shouldBe 5000
     }
 
-    "be 5000 if payPensionProfitsReceived is equal to deductions" in {
-      Savings.StartingRate(profitFromSelfEmployments = 6000, totalDeduction = 6000) shouldBe 5000
+    "be the 5000 - totalNonSavingsTaxableIncome when totalNonSavingsTaxableIncome < 5000" in {
+      Savings.StartingRate(totalNonSavingsTaxableIncome = 3000) shouldBe 2000
+      Savings.StartingRate(totalNonSavingsTaxableIncome = 4999) shouldBe 1
     }
 
-    "be the startingRateLimit - positiveOfZero(totalProfit - totalDeductions)" in {
-      Savings.StartingRate(profitFromSelfEmployments = 9000, totalDeduction = 6000) shouldBe 2000
+    "be 0 when totalNonSavingsTaxableIncome == 5000" in {
+      Savings.StartingRate(totalNonSavingsTaxableIncome = 5000) shouldBe 0
     }
 
-    "return 0 if payPensionProfitsReceived is equal to deductions + startingRateLimit" in {
-      Savings.StartingRate(profitFromSelfEmployments = 11000, totalDeduction = 6000) shouldBe 0
-    }
-
-    "return 0 if payPensionProfitsReceived is more than deductions + startingRateLimit" in {
-      Savings.StartingRate(profitFromSelfEmployments = 12000, totalDeduction = 6000) shouldBe 0
+    "be 0 when totalNonSavingsTaxableIncome > 5000" in {
+      Savings.StartingRate(totalNonSavingsTaxableIncome = 5001) shouldBe 0
     }
   }
 
@@ -220,21 +217,6 @@ class SavingsSpec extends UnitSpec {
     }
 
     "be equal to RoundUpToPennies(RoundUp(Sum(Taxed Interest)) * 100/80 - Sum(Taxed Interest)) for multiple unearned income sources" in {
-/*
-new UnEarnedIncomeBuilder()
-        .withSavings(SavingsIncomeType.InterestFromBanksTaxed, 786.78)
-        .withSavings(SavingsIncomeType.InterestFromBanksUntaxed, 2500.00)
-        .buildForUtr(saUtr, accessToken)
-
-      info(s"Tax Paid from Source 1 = (786.78*1.25)-786.78 = 196.695, which is ROUNDED UP to Money = 196.70")
-
-      new UnEarnedIncomeBuilder()
-        .withSavings(SavingsIncomeType.InterestFromBanksTaxed, 456.76)
-        .withSavings(SavingsIncomeType.InterestFromBanksTaxed, 2000.56)
-        .withSavings(SavingsIncomeType.InterestFromBanksUntaxed, 2500.00)
-        .buildForUtr(saUtr, accessToken)
-
- */
       Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(
         anIncome().copy(savings = Seq(
           aSavingsIncome("", InterestFromBanksTaxed, 786.78),
@@ -353,17 +335,16 @@ new UnEarnedIncomeBuilder()
           totalSavings = BigDecimal(totalSavingsIncome.toInt), totalDividends = 0)
         val personalAllowance = Print(Deductions.PersonalAllowance(totalIncomeReceived, 0, 0)).as("PersonalAllowance")
         val totalDeduction = Deductions.Total(incomeTaxRelief = 0, personalAllowance = personalAllowance, retirementAnnuityContract = 0)
-        val totalTaxableProfits = Print(SelfEmployment.TotalTaxableProfit(BigDecimal(totalProfitFromSelfEmployments.toInt),
+        val totalNonSavingsTaxableIncome = Print(NonSavings.TotalTaxableIncome(BigDecimal(totalProfitFromSelfEmployments.toInt),
           totalDeduction)).as("TotalTaxableProfits")
-        val savingStartingRate = Print(Savings.StartingRate(profitFromSelfEmployments = totalProfitFromSelfEmployments.toInt,
-          totalDeduction = totalDeduction)).as("StartingSavingRate")
+        val savingStartingRate = Print(Savings.StartingRate(totalNonSavingsTaxableIncome)).as("StartingSavingRate")
         val totalTaxableIncome = Totals.TaxableIncome(totalIncomeReceived = totalIncomeReceived, totalDeduction = totalDeduction)
         val personalSavingsAllowance = Print(Savings.PersonalAllowance(totalTaxableIncome = totalTaxableIncome)).as("PersonalSavingsAllowance")
         val taxableSavingsIncome = Print(Savings.TotalTaxableIncome(totalSavingsIncome = totalSavingsIncome.toInt, totalDeduction =
           totalDeduction, totalProfitFromSelfEmployments = totalProfitFromSelfEmployments.toInt)).as("Savings.TaxableIncome")
 
         val bandAllocations = Savings.IncomeTaxBandSummary(taxableSavingsIncome = taxableSavingsIncome, startingSavingsRate = savingStartingRate,
-          personalSavingsAllowance = personalSavingsAllowance, taxableNonSavingsIncome = totalTaxableProfits)
+          personalSavingsAllowance = personalSavingsAllowance, taxableNonSavingsIncome = totalNonSavingsTaxableIncome)
 
         println(bandAllocations)
         println("====================================================================================")
@@ -407,7 +388,7 @@ new UnEarnedIncomeBuilder()
         val allowance = Print(Deductions.PersonalAllowance(nonSavings + savings, 0, 0)).as("personalAllowance")
         val deduction = Deductions.Total(0, allowance, 0)
 
-        val startingSavingsRate = Print(Savings.StartingRate(nonSavings, deduction)).as("startingSavingsRate")
+        val startingSavingsRate = Print(Savings.StartingRate(NonSavings.TotalTaxableIncome(nonSavings, deduction))).as("startingSavingsRate")
         val taxableSavingsIncome = Print(Savings.TotalTaxableIncome(savings, deduction, nonSavings)).as("taxableSavingsIncome")
         val personalSavingsAllowance = Print(Savings.PersonalAllowance(nonSavings + savings)).as("personalSavingsAllowance")
         val profitFromSelfEmployments = Print(SelfEmployment.TotalTaxableProfit(nonSavings, deduction)).as("nonSavingsIncome")

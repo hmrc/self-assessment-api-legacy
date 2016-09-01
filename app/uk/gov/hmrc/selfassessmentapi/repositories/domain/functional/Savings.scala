@@ -64,9 +64,8 @@ object Savings {
 
   object StartingRate {
     private val startingRateLimit = BigDecimal(5000)
-    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(SelfEmployment.TotalProfit(selfAssessment), Deductions.Total(selfAssessment))
-    def apply(profitFromSelfEmployments: BigDecimal, totalDeduction: BigDecimal): BigDecimal =
-      PositiveOrZero(startingRateLimit - PositiveOrZero(profitFromSelfEmployments - totalDeduction))
+    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(NonSavings.TotalTaxableIncome(selfAssessment))
+    def apply(totalNonSavingsTaxableIncome: BigDecimal): BigDecimal = PositiveOrZero(startingRateLimit - totalNonSavingsTaxableIncome)
   }
 
   object PersonalAllowance {

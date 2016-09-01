@@ -63,11 +63,10 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       ukProperties <- if (isSourceEnabled(UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUKProperties]())
       taxYearProperties <- selfAssessmentRepository.findTaxYearProperties(saUtr, taxYear)
       furnishedHolidayLettings <- if (isSourceEnabled(FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoFurnishedHolidayLettings]())
-      //emptyLiability <- liabilityRepo.save(MongoLiability.create(saUtr, taxYear))
-      liabilityResult = LiabilityOrError(saUtr, taxYear, SelfAssessment(employments = employments, selfEmployments = selfEmployments,
+      liability = FunctionalLiability.create(saUtr, taxYear, SelfAssessment(employments = employments, selfEmployments = selfEmployments,
         ukProperties = ukProperties, unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings,
         taxYearProperties = taxYearProperties))
-      liability <- liabilityRepo.save(liabilityResult)
+      liability <- liabilityRepo.save(LiabilityOrError(liability))
     } yield
       liability match {
         case calculationError: FLiabilityCalculationErrors => Left(calculationError.liabilityCalculationErrorId)

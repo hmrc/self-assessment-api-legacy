@@ -31,7 +31,7 @@ object EmploymentSugar {
                    saUtr: SaUtr = generateSaUtr(),
                    taxYear: TaxYear = taxYear) = MongoEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
-  def anUkTaxPaidSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, amount: BigDecimal) =
+  def aUkTaxPaidSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, amount: BigDecimal) =
     MongoEmploymentUkTaxPaidSummary(summaryId, amount)
 
   def anIncome(`type`: IncomeType, amount: BigDecimal) =

@@ -202,8 +202,8 @@ class LiabilityCalculatorSpec extends UnitSpec {
 
     "run the liability calculation steps until a calculation error occurs" in {
 
-      val ukTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -812.45)
-      val ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", 234.87)
+      val ukTaxPaidSummary1 = aUkTaxPaidSummary("ukTaxPaid1", -812.45)
+      val ukTaxPaidSummary2 = aUkTaxPaidSummary("ukTaxPaid2", 234.87)
       val employments = anEmployment().copy(ukTaxPaid = Seq(ukTaxPaidSummary1, ukTaxPaidSummary2))
 
       val selfAssessment =

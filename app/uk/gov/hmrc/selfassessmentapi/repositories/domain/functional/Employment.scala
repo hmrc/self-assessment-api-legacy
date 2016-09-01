@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
 
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{EmploymentIncome, MongoEmployment}
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
@@ -48,13 +47,9 @@ object Employment {
 
   object TaxesPaid {
     def apply(selfAssessment: SelfAssessment) = {
-      val taxPaidForEmployments = selfAssessment.employments.map { employment =>
+      selfAssessment.employments.map { employment =>
         UkTaxPaidForEmployment(employment.sourceId, Employment.TaxPaid(employment))
       }
-      if(taxPaidForEmployments.nonEmpty && taxPaidForEmployments.count(_.taxPaid >= 0) == 0) {
-        throw LiabilityCalculationException(INVALID_EMPLOYMENT_TAX_PAID, s"The UK tax paid must be positive for at least one employment source")
-      }
-      taxPaidForEmployments
     }
   }
 

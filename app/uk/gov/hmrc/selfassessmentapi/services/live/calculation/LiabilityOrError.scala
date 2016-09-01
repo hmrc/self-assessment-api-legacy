@@ -16,22 +16,22 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{LiabilityResult, MongoLiabilityCalculationError, MongoLiabilityCalculationErrors}
+import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.INVALID_EMPLOYMENT_TAX_PAID
+import uk.gov.hmrc.selfassessmentapi.domain.UkTaxPaidForEmployment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
-
-import scala.util.{Failure, Success, Try}
 
 object LiabilityOrError {
-  def apply(saUtr: SaUtr, taxYear: TaxYear, assessment: SelfAssessment): FLiabilityResult = {
-    Try(FunctionalLiability.create(saUtr, taxYear, assessment)) match {
-      case Success(liability) => liability
-      case Failure(ex: LiabilityCalculationException) => FLiabilityCalculationErrors.create(saUtr, taxYear,
-        errors = Seq(FLiabilityCalculationError(ex.errorCode, ex.message)))
-      case Failure(ex) => throw ex
+  def apply(liability: FunctionalLiability): FLiabilityResult = {
+    liability.taxDeducted.ukTaxesPaidForEmployments match  {
+      case taxesPaidForEmployments if doesntContainsAnyPositiveTaxPaid(taxesPaidForEmployments) =>
+        FLiabilityCalculationErrors.create(liability.saUtr, liability.taxYear,
+          errors = Seq(FLiabilityCalculationError(INVALID_EMPLOYMENT_TAX_PAID,
+          "The UK tax paid must be positive for at least one employment source")))
+      case _ => liability
     }
   }
 
+  private def doesntContainsAnyPositiveTaxPaid(taxesPaidForEmployments: Seq[UkTaxPaidForEmployment]): Boolean = {
+    taxesPaidForEmployments.nonEmpty && taxesPaidForEmployments.count(_.taxPaid >= 0) == 0
+  }
 }

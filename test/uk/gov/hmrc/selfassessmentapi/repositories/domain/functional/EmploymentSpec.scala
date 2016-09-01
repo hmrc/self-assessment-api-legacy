@@ -115,8 +115,8 @@ class EmploymentSpec extends UnitSpec {
   "TotalTaxPaid" should {
     "return a value of 0 when the total tax paid is negative" in {
       val employment = anEmployment().copy(
-        ukTaxPaid = Seq(anUkTaxPaidSummary(amount = -500),
-                        anUkTaxPaidSummary(amount = -250)))
+        ukTaxPaid = Seq(aUkTaxPaidSummary(amount = -500),
+                        aUkTaxPaidSummary(amount = -250)))
 
       val sa = SelfAssessment(employments = Seq(employment))
 
@@ -196,10 +196,10 @@ class EmploymentSpec extends UnitSpec {
 
 
     "return the UK tax paid as zero if the sum of UK taxes paid is zero" in {
-      val employment1UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -112.45)
-      val employment1ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -934.87)
-      val employment2UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", 0)
-      val employment2ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", 0)
+      val employment1UkTaxPaidSummary1 = aUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = aUkTaxPaidSummary("ukTaxPaid2", -934.87)
+      val employment2UkTaxPaidSummary1 = aUkTaxPaidSummary("ukTaxPaid1", 0)
+      val employment2ukTaxPaidSummary2 = aUkTaxPaidSummary("ukTaxPaid2", 0)
       val employment1 =
         anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
       val employment2 =
@@ -210,24 +210,11 @@ class EmploymentSpec extends UnitSpec {
           UkTaxPaidForEmployment(employment2.sourceId, 0))
     }
 
-    "throw a calculation exception if none of the sum of the UK tax paid for a given employment is positive" in {
-      val employment1UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", 112.45)
-      val employment1ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -934.87)
-      val employment2UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", 199.45)
-      val employment2ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -300.87)
-      val employment1 =
-        anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
-      val employment2 =
-        anEmployment().copy(ukTaxPaid = Seq(employment2UkTaxPaidSummary1, employment2ukTaxPaidSummary2))
-
-      a[LiabilityCalculationException] shouldBe thrownBy {Employment.TaxesPaid(SelfAssessment(employments = Seq(employment1, employment2)))}
-    }
-
     "cap the UK tax paid at zero if the total tax paid is not positive" in {
-      val employment1UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -112.45)
-      val employment1ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -934.87)
-      val employment2UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", 199.45)
-      val employment2ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", 300.87)
+      val employment1UkTaxPaidSummary1 = aUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = aUkTaxPaidSummary("ukTaxPaid2", -934.87)
+      val employment2UkTaxPaidSummary1 = aUkTaxPaidSummary("ukTaxPaid1", 199.45)
+      val employment2ukTaxPaidSummary2 = aUkTaxPaidSummary("ukTaxPaid2", 300.87)
       val employment1 =
         anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
       val employment2 =
@@ -239,10 +226,10 @@ class EmploymentSpec extends UnitSpec {
     }
 
     "calculate the tax deducted as the rounded up sum of UK tax paid across all employments" in {
-      val employment1UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", -112.45)
-      val employment1ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", -34.87)
-      val employment2UkTaxPaidSummary1 = anUkTaxPaidSummary("ukTaxPaid1", 299.45)
-      val employment2ukTaxPaidSummary2 = anUkTaxPaidSummary("ukTaxPaid2", 300.87)
+      val employment1UkTaxPaidSummary1 = aUkTaxPaidSummary("ukTaxPaid1", -112.45)
+      val employment1ukTaxPaidSummary2 = aUkTaxPaidSummary("ukTaxPaid2", -34.87)
+      val employment2UkTaxPaidSummary1 = aUkTaxPaidSummary("ukTaxPaid1", 299.45)
+      val employment2ukTaxPaidSummary2 = aUkTaxPaidSummary("ukTaxPaid2", 300.87)
       val employment1 =
         anEmployment().copy(ukTaxPaid = Seq(employment1UkTaxPaidSummary1, employment1ukTaxPaidSummary2))
       val employment2 =

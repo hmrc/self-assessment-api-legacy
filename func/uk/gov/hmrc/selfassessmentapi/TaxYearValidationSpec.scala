@@ -2,15 +2,20 @@ package uk.gov.hmrc.selfassessmentapi
 
 import play.api.libs.json.Json
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 // FIXME: Refactor into live and sandbox tests
 
 class TaxYearValidationSpec extends BaseFunctionalSpec {
+  override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map("Test.feature-switch.pensionContributions.enabled" -> true,
+                                                                                         "Test.feature-switch.charitableGivings.enabled" -> true,
+                                                                                         "Test.feature-switch.blindPerson.enabled" -> true,
+                                                                                         "Test.feature-switch.studentLoan.enabled" -> true,
+                                                                                         "Test.feature-switch.taxRefundedOrSetOff.enabled" -> true,
+                                                                                         "Test.feature-switch.childBenefit.enabled" -> true))
 
   "if the tax year in the path is valid for a sandbox request, they" should {
-    "return a 200 response" in {
+    "return a 200 response containing pension contributions" in {
       val expectedJson = Json.parse(
         s"""
            |{
@@ -188,7 +193,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
 }
 
 class TaxYearFeatureSwitchOnSpec extends BaseFunctionalSpec {
-  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = Map("update-tax-year-properties.enabled" -> false))
+  override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map("update-tax-year-properties.enabled" -> false))
 
   "if update-tax-year-properties switch is disabled for live mode it" should {
     "return 501 not implemented" in {
@@ -216,7 +221,7 @@ class TaxYearFeatureSwitchOnSpec extends BaseFunctionalSpec {
 }
 
 class TaxYearFeatureSwitchOffSpec extends BaseFunctionalSpec {
-  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = Map("update-tax-year-properties.enabled" -> true))
+  override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = Map("update-tax-year-properties.enabled" -> true))
 
   "if update-tax-year-properties switch is enabled for live mode it" should {
     "return 200" in {

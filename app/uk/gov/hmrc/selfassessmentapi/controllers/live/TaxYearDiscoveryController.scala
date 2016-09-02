@@ -23,17 +23,16 @@ import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
+import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, TaxYear, TaxYearProperties}
-import uk.gov.hmrc.selfassessmentapi.services.TaxYearPropertiesService
+import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object TaxYearDiscoveryController extends BaseController with Links {
   override val context: String = AppContext.apiGatewayLinkContext
-  val taxYearPropertiesService = TaxYearPropertiesService()
+  private val taxYearPropertiesService = TaxYearPropertiesService()
 
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
     val halLinks = buildSourceHalLinks(utr, taxYear) + HalLink("self",
@@ -62,8 +61,9 @@ object TaxYearDiscoveryController extends BaseController with Links {
       implicit request =>
         if (AppContext.updateTaxYearPropertiesEnabled)
           withJsonBody[TaxYearProperties] { taxYearProperties =>
-            taxYearPropertiesService.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { _ =>
-              Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
+            taxYearPropertiesService.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
+              if (updated) Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
+              else NotImplemented(Json.toJson(ErrorFeatureSwitched))
             }
           }
         else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))

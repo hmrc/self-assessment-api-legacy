@@ -19,14 +19,15 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.domain._
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, MongoUnearnedIncome, TaxBand}
 
 object Savings {
 
   object TotalTaxPaid {
     def apply(selfAssessment: SelfAssessment): BigDecimal = {
-      selfAssessment.unearnedIncomes.map { unearnedincome =>
-        RoundUpToPennies(TaxedInterest(unearnedincome) * 0.25)
+      selfAssessment.unearnedIncomes.map { income =>
+        RoundUpToPennies(TaxedInterest(income) * 0.25)
       }.sum
     }
   }
@@ -72,8 +73,8 @@ object Savings {
     def apply(selfAssessment: SelfAssessment): BigDecimal = apply(Totals.TaxableIncome(selfAssessment))
     def apply(totalTaxableIncome: BigDecimal): BigDecimal = totalTaxableIncome match {
       case total if total < 1 => 0
-      case total if total <= TaxBand.BasicTaxBand.defaultUpperBound => 1000
-      case total if total > TaxBand.BasicTaxBand.defaultUpperBound && total <= TaxBand.HigherTaxBand.defaultUpperBound => 500
+      case total if total isWithin BasicTaxBand() => 1000
+      case total if total isWithin HigherTaxBand() => 500
       case _ => 0
     }
   }

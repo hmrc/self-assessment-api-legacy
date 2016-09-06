@@ -408,6 +408,95 @@ class LiabilitySpec extends UnitSpec {
         .totalTaxDueIs(280981.33)
     }
 
+    "correctly compute a liability when taxable non-savings income is less than zero" in {
+      val selfEmployments = TestSelfEmployment()
+        .withAllowances(
+          annualInvestmentAllowance = 2300.22,
+          capitalAllowanceMainPool = 200.75,
+          capitalAllowanceSpecialRatePool = 12.50,
+          businessPremisesRenovationAllowance = 1000.72,
+          enhancedCapitalAllowance = 123.45,
+          allowancesOnSales = 50.50)
+        .withAdjustments(
+          includedNonTaxableProfits = 100.25,
+          basisAdjustment = 50.50,
+          overlapReliefUsed = 12.50,
+          averagingAdjustment = 100.23,
+          lossBroughtForward = 5000.05,
+          outstandingBusinessIncome = 123.45)
+        .incomes((selfemployment.IncomeType.Turnover, 30000.22))
+        .expenses((selfemployment.ExpenseType.PremisesRunningCosts, 12334.56))
+        .balancingCharges((selfemployment.BalancingChargeType.BPRA, 500.25))
+        .goodsAndServicesOwnUse(200.02)
+        .create()
+
+      val ukProperties = TestUkProperty(rentARoomRelief = 500.25)
+        .withAllowances(
+          annualInvestmentAllowance = 200,
+          otherCapitalAllowance = 123.45,
+          wearAndTearAllowance = 12.25)
+        .lossBroughtForward(3000)
+        .incomes((ukproperty.IncomeType.RentIncome, 3000))
+        .expenses((ukproperty.ExpenseType.PremisesRunningCosts, 243.34))
+        .balancingCharges(200)
+        .privateUseAdjustment(125.25)
+        .taxesPaid(12500.56)
+        .create()
+
+      val furnishedHolidayLetting = TestFurnishedHolidayLetting(123.45)
+        .propertyLocation(furnishedholidaylettings.PropertyLocationType.UK)
+        .lossBroughtForward(0.50)
+        .incomes(1525.50)
+        .expenses((furnishedholidaylettings.ExpenseType.PremisesRunningCosts, 1250.25))
+        .balancingCharges(150.20)
+        .privateUseAdjustments(750.65)
+        .create()
+
+      val unearnedIncome = TestUnearnedIncome()
+        .withSavings((unearnedincome.SavingsIncomeType.InterestFromBanksTaxed, 5000.73), (unearnedincome.SavingsIncomeType.InterestFromBanksTaxed, 5000.23))
+        .create()
+
+      val sa = SelfAssessment(selfEmployments = Seq(selfEmployments),
+      ukProperties = Seq(ukProperties),
+      unearnedIncomes = Seq(unearnedIncome),
+      furnishedHolidayLettings = Seq(furnishedHolidayLetting))
+
+      println(NonSavings.TotalIncome(sa))
+      println(Savings.TotalIncome(sa))
+      println(Deductions.Total(sa))
+      println(NonSavings.TotalTaxableIncome(sa))
+      println(Savings.TotalTaxableIncome(sa))
+
+
+      ComputeLiabilityFor(
+        selfEmployments = Seq(selfEmployments),
+        ukProperties = Seq(ukProperties),
+        unearnedIncomes = Seq(unearnedIncome),
+        furnishedHolidayLettings = Seq(furnishedHolidayLetting))
+        .andAssertThat()
+        .personalAllowanceIs(11000)
+        .incomeTaxReliefIs(7247.50)
+        .nonSavings()
+        .basicRateBandSummaryIs(0, 0)
+        .higherRateBandSummaryIs(0, 0)
+        .additionalHigherRateBandSummaryIs(0, 0)
+        .savings()
+        .startingRateBandSummaryIs(5000)
+        .nilRateBandSummaryIs(1000)
+        .basicRateBandSummaryIs(3092.5, 618.5)
+        .higherRateBandSummaryIs(0, 0)
+        .additionalHigherRateBandSummaryIs(0, 0)
+        .dividends()
+        .nilRateBandSummaryIs(0)
+        .basicRateBandSummaryIs(0, 0)
+        .higherRateBandSummaryIs(0, 0)
+        .additionalHigherRateBandSummaryIs(0, 0)
+        .totalIncomeReceivedIs(30637.96)
+        .totalTaxableIncomeIs(12390.46)
+        .totalIncomeTaxIs(618.5)
+        .totalTaxDueIs(0)
+
+    }
   }
 }
 

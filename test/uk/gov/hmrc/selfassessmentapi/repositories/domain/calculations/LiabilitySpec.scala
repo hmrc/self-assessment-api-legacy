@@ -453,7 +453,7 @@ class LiabilitySpec extends UnitSpec {
         .create()
 
       val unearnedIncome = TestUnearnedIncome()
-        .withSavings((unearnedincome.SavingsIncomeType.InterestFromBanksTaxed, 5000.73), (unearnedincome.SavingsIncomeType.InterestFromBanksTaxed, 5000.23))
+        .withSavings((unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 2000.73), (unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 2000.23))
         .create()
 
       val sa = SelfAssessment(selfEmployments = Seq(selfEmployments),
@@ -481,9 +481,9 @@ class LiabilitySpec extends UnitSpec {
         .higherRateBandSummaryIs(0, 0)
         .additionalHigherRateBandSummaryIs(0, 0)
         .savings()
-        .startingRateBandSummaryIs(5000)
-        .nilRateBandSummaryIs(1000)
-        .basicRateBandSummaryIs(3092.5, 618.5)
+        .startingRateBandSummaryIs(3889.46)
+        .nilRateBandSummaryIs(0)
+        .basicRateBandSummaryIs(0, 0)
         .higherRateBandSummaryIs(0, 0)
         .additionalHigherRateBandSummaryIs(0, 0)
         .dividends()
@@ -491,9 +491,9 @@ class LiabilitySpec extends UnitSpec {
         .basicRateBandSummaryIs(0, 0)
         .higherRateBandSummaryIs(0, 0)
         .additionalHigherRateBandSummaryIs(0, 0)
-        .totalIncomeReceivedIs(30637.96)
-        .totalTaxableIncomeIs(12390.46)
-        .totalIncomeTaxIs(618.5)
+        .totalIncomeReceivedIs(22136.96)
+        .totalTaxableIncomeIs(3889.46)
+        .totalIncomeTaxIs(0)
         .totalTaxDueIs(0)
 
     }

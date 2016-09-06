@@ -34,9 +34,9 @@ object Savings {
 
   object TotalTaxableIncome {
     def apply(selfAssessment: SelfAssessment): BigDecimal = apply(TotalIncome(selfAssessment), Deductions.Total(selfAssessment),
-      SelfEmployment.TotalProfit(selfAssessment))
-    def apply(totalSavingsIncome: BigDecimal, totalDeduction: BigDecimal, totalProfitFromSelfEmployments: BigDecimal): BigDecimal = {
-      PositiveOrZero(totalSavingsIncome - PositiveOrZero(totalDeduction - totalProfitFromSelfEmployments))
+      NonSavings.TotalIncome(selfAssessment))
+    def apply(totalSavingsIncome: BigDecimal, totalDeduction: BigDecimal, totalNonSavingsIncome: BigDecimal): BigDecimal = {
+      PositiveOrZero(totalSavingsIncome - PositiveOrZero(totalDeduction - totalNonSavingsIncome))
     }
   }
 

@@ -157,14 +157,14 @@ class SavingsSpec extends UnitSpec {
   "Savings.TotalTaxableIncome" should {
     "be equal to TotalSavingsIncomes - ((PersonalAllowance + IncomeTaxRelief) - ProfitsFromSelfEmployments) if ProfitsFromSelfEmployments" +
       " < (PersonalAllowance + IncomeTaxRelief) " in {
-      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalProfitFromSelfEmployments = 2000) shouldBe 3000
-      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalProfitFromSelfEmployments = 3999) shouldBe 4999
+      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalNonSavingsIncome = 2000) shouldBe 3000
+      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalNonSavingsIncome = 3999) shouldBe 4999
     }
 
     "be equal to TotalSavingsIncomes if ProfitsFromSelfEmployments >= (PersonalAllowance + IncomeTaxRelief) " in {
-      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalProfitFromSelfEmployments = 4000) shouldBe 5000
-      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalProfitFromSelfEmployments = 4001) shouldBe 5000
-      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalProfitFromSelfEmployments = 4500) shouldBe 5000
+      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalNonSavingsIncome = 4000) shouldBe 5000
+      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalNonSavingsIncome = 4001) shouldBe 5000
+      Savings.TotalTaxableIncome(totalSavingsIncome = 5000, totalDeduction = 4000, totalNonSavingsIncome = 4500) shouldBe 5000
     }
   }
 
@@ -341,7 +341,7 @@ class SavingsSpec extends UnitSpec {
         val totalTaxableIncome = Totals.TaxableIncome(totalIncomeReceived = totalIncomeReceived, totalDeduction = totalDeduction)
         val personalSavingsAllowance = Print(Savings.PersonalAllowance(totalTaxableIncome = totalTaxableIncome)).as("PersonalSavingsAllowance")
         val taxableSavingsIncome = Print(Savings.TotalTaxableIncome(totalSavingsIncome = totalSavingsIncome.toInt, totalDeduction =
-          totalDeduction, totalProfitFromSelfEmployments = totalProfitFromSelfEmployments.toInt)).as("Savings.TaxableIncome")
+          totalDeduction, totalNonSavingsIncome = totalProfitFromSelfEmployments.toInt)).as("Savings.TaxableIncome")
 
         val bandAllocations = Savings.IncomeTaxBandSummary(taxableSavingsIncome = taxableSavingsIncome, startingSavingsRate = savingStartingRate,
           personalSavingsAllowance = personalSavingsAllowance, taxableNonSavingsIncome = totalNonSavingsTaxableIncome)

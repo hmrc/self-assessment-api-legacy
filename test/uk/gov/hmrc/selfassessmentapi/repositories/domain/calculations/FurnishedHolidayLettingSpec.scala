@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
+import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar._
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Adjustments, Allowances, PropertyLocationType}
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar._
 import uk.gov.hmrc.selfassessmentapi.domain.{FurnishedHolidayLettingIncome, SelfAssessment}
 
 class FurnishedHolidayLettingSpec extends UnitSpec {

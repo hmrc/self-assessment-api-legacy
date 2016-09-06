@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.SelfEmploymentSugar._
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfAssessment, SelfEmploymentIncome}
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfAssessment, SelfEmploymentIncome}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 class SelfEmploymentSpec extends UnitSpec {
 
@@ -27,11 +28,11 @@ class SelfEmploymentSpec extends UnitSpec {
 
   "TotalTaxableProfit" should {
     "be TotalProfit - TotalDeduction" in {
-      SelfEmployment.TotalTaxableProfit(totalProfit = 10000, totalDeduction = 5000) shouldBe 5000
+      calculations.SelfEmployment.TotalTaxableProfit(totalProfit = 10000, totalDeduction = 5000) shouldBe 5000
     }
 
     "be 0 if TotalProfit is less than TotalDeductions" in {
-      SelfEmployment.TotalTaxableProfit(totalProfit = 1000, totalDeduction = 1001) shouldBe 0
+      calculations.SelfEmployment.TotalTaxableProfit(totalProfit = 1000, totalDeduction = 1001) shouldBe 0
     }
   }
 
@@ -42,7 +43,7 @@ class SelfEmploymentSpec extends UnitSpec {
       val selfEmploymentTwo =
         aSelfEmployment(selfEmploymentId).copy(incomes = Seq(anIncome(IncomeType.Turnover, 3000)))
 
-        SelfEmployment.TotalProfit(SelfAssessment(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo))) shouldBe BigDecimal(5000)
+        calculations.SelfEmployment.TotalProfit(SelfAssessment(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo))) shouldBe BigDecimal(5000)
     }
   }
 
@@ -71,7 +72,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(2430)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(2430)
 
     }
 
@@ -88,7 +89,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(15001)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(15001)
 
     }
 
@@ -107,7 +108,7 @@ class SelfEmploymentSpec extends UnitSpec {
           )
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1800)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1800)
     }
 
     "subtract all allowances from profit" in {
@@ -127,7 +128,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1910)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1910)
 
     }
 
@@ -143,7 +144,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1)
     }
 
     "subtract adjustments from profit" in {
@@ -161,7 +162,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1900)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1900)
 
     }
 
@@ -177,7 +178,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(30000)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(30000)
 
     }
 
@@ -193,7 +194,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(3000)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(3000)
     }
 
     "be zero if expenses are bigger than incomes (loss)" in {
@@ -211,7 +212,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(0)
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(0)
     }
 
   }
@@ -229,7 +230,7 @@ class SelfEmploymentSpec extends UnitSpec {
           ))
         )
 
-      SelfEmployment.TaxableProfit(selfEmployment) shouldBe BigDecimal(5000.00)
+      calculations.SelfEmployment.TaxableProfit(selfEmployment) shouldBe BigDecimal(5000.00)
     }
   }
 
@@ -240,7 +241,7 @@ class SelfEmploymentSpec extends UnitSpec {
       val selfEmploymentTwo =
         aSelfEmployment("selfEmploymentIdTwo").copy(incomes = Seq(anIncome(IncomeType.Turnover, 3000)))
 
-      SelfEmployment.Incomes(SelfAssessment(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo))) should contain theSameElementsAs
+      calculations.SelfEmployment.Incomes(SelfAssessment(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo))) should contain theSameElementsAs
         Seq(SelfEmploymentIncome("selfEmploymentIdOne", profit = 2000, taxableProfit = 2000),
           SelfEmploymentIncome("selfEmploymentIdTwo", profit = 3000, taxableProfit = 3000))
     }
@@ -259,7 +260,7 @@ class SelfEmploymentSpec extends UnitSpec {
           adjustments = Some(Adjustments(lossBroughtForward = Some(200.13))))
 
 
-      SelfEmployment.TotalLossBroughtForward(SelfAssessment(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo))) shouldBe 301
+      calculations.SelfEmployment.TotalLossBroughtForward(SelfAssessment(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo))) shouldBe 301
     }
 
     "be the Rounded up sum of all loss brought forward capped at adjusted profits" in {
@@ -274,7 +275,7 @@ class SelfEmploymentSpec extends UnitSpec {
           adjustments = Some(Adjustments(lossBroughtForward = Some(1000.45))))
 
 
-      SelfEmployment.TotalLossBroughtForward(SelfAssessment(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo))) shouldBe 3001
+      calculations.SelfEmployment.TotalLossBroughtForward(SelfAssessment(selfEmployments = Seq(selfEmploymentOne, selfEmploymentTwo))) shouldBe 3001
     }
   }
 

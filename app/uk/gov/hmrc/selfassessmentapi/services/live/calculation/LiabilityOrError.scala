@@ -18,20 +18,23 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.INVALID_EMPLOYMENT_TAX_PAID
 import uk.gov.hmrc.selfassessmentapi.domain.UkTaxPaidForEmployment
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Liability, LiabilityError, LiabilityErrors, LiabilityResult}
 
 object LiabilityOrError {
-  def apply(liability: FunctionalLiability): FLiabilityResult = {
-    liability.taxDeducted.ukTaxesPaidForEmployments match  {
-      case taxesPaidForEmployments if doesntContainsAnyPositiveTaxPaid(taxesPaidForEmployments) =>
-        FLiabilityCalculationErrors.create(liability.saUtr, liability.taxYear,
-          errors = Seq(FLiabilityCalculationError(INVALID_EMPLOYMENT_TAX_PAID,
-          "The UK tax paid must be positive for at least one employment source")))
+  def apply(liability: Liability): LiabilityResult = {
+    liability.taxDeducted.ukTaxesPaidForEmployments match {
+      case taxesPaidForEmployments if allTaxPaidAreNegative(taxesPaidForEmployments) =>
+        LiabilityErrors.create(
+          liability.saUtr,
+          liability.taxYear,
+          errors = Seq(
+            LiabilityError(INVALID_EMPLOYMENT_TAX_PAID,
+                           "The UK tax paid must be positive for at least one employment source")))
       case _ => liability
     }
   }
 
-  private def doesntContainsAnyPositiveTaxPaid(taxesPaidForEmployments: Seq[UkTaxPaidForEmployment]): Boolean = {
-    taxesPaidForEmployments.nonEmpty && taxesPaidForEmployments.count(_.taxPaid >= 0) == 0
-  }
+  private def allTaxPaidAreNegative(taxesPaidForEmployments: Seq[UkTaxPaidForEmployment]) =
+    taxesPaidForEmployments.nonEmpty && taxesPaidForEmployments.forall(_.taxPaid < 0)
+
 }

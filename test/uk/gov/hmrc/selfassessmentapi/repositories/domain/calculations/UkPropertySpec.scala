@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi.UkPropertySugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfAssessment, UkPropertyIncome}
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.ExpenseType.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{Adjustments, Allowances, ExpenseType, IncomeType}
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfAssessment, UkPropertyIncome}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 class UkPropertySpec extends UnitSpec {

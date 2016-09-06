@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.domain.{PositiveOrZero, SelfAssessment, TaxBandAllocation, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, TaxBand}
 
 object NonSavings {
 

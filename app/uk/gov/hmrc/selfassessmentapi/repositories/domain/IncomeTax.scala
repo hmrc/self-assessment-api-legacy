@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
+package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
 import uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary
 

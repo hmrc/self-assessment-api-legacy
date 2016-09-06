@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import org.scalacheck.Gen
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
 import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfAssessment, TaxBandSummary}
 import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
+import uk.gov.hmrc.selfassessmentapi.domain.{SelfAssessment, TaxBandSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoUnearnedIncomesSavingsIncomeSummary
 import uk.gov.hmrc.selfassessmentapi.{UnitSpec, domain}
 

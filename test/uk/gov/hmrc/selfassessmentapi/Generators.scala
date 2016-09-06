@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import org.scalacheck._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.TaxBand
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand
 
 object Generators {
 

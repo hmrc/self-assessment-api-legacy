@@ -18,11 +18,11 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.{LiabilityCalculationError, LiabilityCalculationErrors}
+import uk.gov.hmrc.selfassessmentapi._
+import uk.gov.hmrc.selfassessmentapi.controllers.{LiabilityError => _, LiabilityErrors => _}
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.{Liability, LiabilityId, SourceType, TaxYear, _}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.{FLiabilityCalculationErrors, FunctionalLiability}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoSelfEmployment, MongoUnearnedIncome, _}
+import uk.gov.hmrc.selfassessmentapi.domain.{LiabilityId, SourceType, TaxYear, Liability => _, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoSelfEmployment, MongoUnearnedIncome, Liability, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
 
@@ -38,17 +38,17 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                        selfAssessmentRepository: SelfAssessmentMongoRepository,
                        featureSwitch: FeatureSwitch) {
 
-  def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[LiabilityCalculationErrors, Liability]]] = {
+  def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[controllers.LiabilityErrors, domain.Liability]]] = {
     liabilityRepo
       .findBy(saUtr, taxYear)
       .map(_.map {
-        case calculationError: FLiabilityCalculationErrors =>
+        case calculationError: LiabilityErrors =>
           Left(
-              LiabilityCalculationErrors(ErrorCode.LIABILITY_CALCULATION_ERROR,
+            controllers.LiabilityErrors(ErrorCode.LIABILITY_CALCULATION_ERROR,
                                          "Liability calculation error",
                                          calculationError.errors.map(error =>
-                                               LiabilityCalculationError(error.code, error.message))))
-        case liability: FunctionalLiability => Right(liability.toLiability)
+                                           controllers.LiabilityError(error.code, error.message))))
+        case liability: Liability => Right(liability.toLiability)
       })
   }
 
@@ -60,14 +60,14 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       ukProperties <- if (isSourceEnabled(UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoUKProperties]())
       taxYearProperties <- selfAssessmentRepository.findTaxYearProperties(saUtr, taxYear)
       furnishedHolidayLettings <- if (isSourceEnabled(FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoFurnishedHolidayLettings]())
-      liability = FunctionalLiability.create(saUtr, taxYear, SelfAssessment(employments = employments, selfEmployments = selfEmployments,
+      liability = Liability.create(saUtr, taxYear, SelfAssessment(employments = employments, selfEmployments = selfEmployments,
         ukProperties = ukProperties, unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings,
         taxYearProperties = taxYearProperties))
       liability <- liabilityRepo.save(LiabilityOrError(liability))
     } yield
       liability match {
-        case calculationError: FLiabilityCalculationErrors => Left(calculationError.liabilityCalculationErrorId)
-        case liability: FunctionalLiability => Right(liability.liabilityId)
+        case calculationError: LiabilityErrors => Left(calculationError.liabilityCalculationErrorId)
+        case liability: Liability => Right(liability.liabilityId)
       }
   }
 

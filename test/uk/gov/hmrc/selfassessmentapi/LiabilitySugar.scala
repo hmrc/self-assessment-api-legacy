@@ -17,24 +17,48 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{Liability => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.{FunctionalLiability, MongoTaxDeducted}
 
 object LiabilitySugar extends UnitSpec {
-  def aLiability(id: BSONObjectID = BSONObjectID.generate, employmentIncome: Seq[EmploymentIncome] = Seq(),
-                 selfEmploymentIncome: Seq[SelfEmploymentIncome] = Seq(), ukPropertyIncome: Seq[UkPropertyIncome] = Seq(),
+  def aLiability(id: BSONObjectID = BSONObjectID.generate,
+                 employmentIncome: Seq[EmploymentIncome] = Seq(),
+                 selfEmploymentIncome: Seq[SelfEmploymentIncome] = Seq(),
+                 ukPropertyIncome: Seq[UkPropertyIncome] = Seq(),
                  furnishedHolidayLettingsIncome: Seq[FurnishedHolidayLettingIncome] = Seq(),
                  savingsIncome: Seq[InterestFromUKBanksAndBuildingSocieties] = Seq(),
-                 ukDividendsIncome: Seq[DividendsFromUKSources] = Seq(), totalIncomeReceived: BigDecimal = 0,
-                 totalTaxableIncome: BigDecimal = 0, allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
-                 taxDeducted: MongoTaxDeducted = MongoTaxDeducted(), dividendTaxBandSummary: Seq[TaxBandSummary] = Seq(),
-                 savingsTaxBandSummary: Seq[TaxBandSummary] = Seq(), nonSavingsTaxBandSummary: Seq[TaxBandSummary] = Seq(),
-                 totalIncomeTax: BigDecimal = 0, totalTaxDeducted: BigDecimal = 0, totalTaxDue: BigDecimal = 0,
-                 totalTaxOverPaid: BigDecimal = 0): FunctionalLiability = {
-    FunctionalLiability(id, id.stringify, generateSaUtr(), taxYear, employmentIncome,
-      selfEmploymentIncome, ukPropertyIncome, furnishedHolidayLettingsIncome, savingsIncome, ukDividendsIncome,
-      totalIncomeReceived, totalTaxableIncome, allowancesAndReliefs, taxDeducted, dividendTaxBandSummary,
-      savingsTaxBandSummary, nonSavingsTaxBandSummary, totalIncomeTax, totalTaxDeducted, totalTaxDue, totalTaxOverPaid)
+                 ukDividendsIncome: Seq[DividendsFromUKSources] = Seq(),
+                 totalIncomeReceived: BigDecimal = 0,
+                 totalTaxableIncome: BigDecimal = 0,
+                 allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
+                 taxDeducted: MongoTaxDeducted = MongoTaxDeducted(),
+                 dividendTaxBandSummary: Seq[TaxBandSummary] = Seq(),
+                 savingsTaxBandSummary: Seq[TaxBandSummary] = Seq(),
+                 nonSavingsTaxBandSummary: Seq[TaxBandSummary] = Seq(),
+                 totalIncomeTax: BigDecimal = 0,
+                 totalTaxDeducted: BigDecimal = 0,
+                 totalTaxDue: BigDecimal = 0,
+                 totalTaxOverPaid: BigDecimal = 0): Liability = {
+    Liability(id,
+              id.stringify,
+              generateSaUtr(),
+              taxYear,
+              employmentIncome,
+              selfEmploymentIncome,
+              ukPropertyIncome,
+              furnishedHolidayLettingsIncome,
+              savingsIncome,
+              ukDividendsIncome,
+              totalIncomeReceived,
+              totalTaxableIncome,
+              allowancesAndReliefs,
+              taxDeducted,
+              dividendTaxBandSummary,
+              savingsTaxBandSummary,
+              nonSavingsTaxBandSummary,
+              totalIncomeTax,
+              totalTaxDeducted,
+              totalTaxDue,
+              totalTaxOverPaid)
   }
 }

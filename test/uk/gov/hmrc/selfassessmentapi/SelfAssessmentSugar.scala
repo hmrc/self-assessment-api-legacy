@@ -19,9 +19,8 @@ package uk.gov.hmrc.selfassessmentapi
 import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.{Liability => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.{FunctionalLiability, MongoTaxDeducted}
 
 object SelfAssessmentSugar extends UnitSpec {
 
@@ -36,29 +35,32 @@ object SelfAssessmentSugar extends UnitSpec {
                  retirementAnnuityContract: Option[BigDecimal] = None,
                  savingsStartingRate: Option[BigDecimal] = None,
                  profitFromUkProperties: Seq[UkPropertyIncome] = Nil,
-                 incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil): FunctionalLiability = {
+                 incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil): Liability = {
 
     val iD = BSONObjectID.generate
-    FunctionalLiability(id= iD, liabilityId = iD.stringify,
-      saUtr = saUtr,
-      taxYear = taxYear,
-      employmentIncome = incomeFromEmployments,
-      selfEmploymentIncome = profitFromSelfEmployments,
-      ukPropertyIncome = Nil,
-      furnishedHolidayLettingsIncome = Nil,
-      savingsIncome = interestFromUKBanksAndBuildingSocieties,
-      ukDividendsIncome = dividendsFromUKSources,
-      totalIncomeReceived = 0,
-      totalTaxableIncome = 0,
-      allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance,
-                                                  savingsStartingRate = savingsStartingRate,
-                                                  retirementAnnuityContract = retirementAnnuityContract),
-      taxDeducted = MongoTaxDeducted(),
-      dividendTaxBandSummary = Nil,
-      savingsTaxBandSummary = Nil,
-      nonSavingsTaxBandSummary = Nil,
-      totalIncomeTax = 0, totalTaxDeducted = 0, totalTaxDue = 0, totalTaxOverPaid = 0
-    )
+    Liability(id = iD,
+              liabilityId = iD.stringify,
+              saUtr = saUtr,
+              taxYear = taxYear,
+              employmentIncome = incomeFromEmployments,
+              selfEmploymentIncome = profitFromSelfEmployments,
+              ukPropertyIncome = Nil,
+              furnishedHolidayLettingsIncome = Nil,
+              savingsIncome = interestFromUKBanksAndBuildingSocieties,
+              ukDividendsIncome = dividendsFromUKSources,
+              totalIncomeReceived = 0,
+              totalTaxableIncome = 0,
+              allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance,
+                                                          savingsStartingRate = savingsStartingRate,
+                                                          retirementAnnuityContract = retirementAnnuityContract),
+              taxDeducted = MongoTaxDeducted(),
+              dividendTaxBandSummary = Nil,
+              savingsTaxBandSummary = Nil,
+              nonSavingsTaxBandSummary = Nil,
+              totalIncomeTax = 0,
+              totalTaxDeducted = 0,
+              totalTaxDue = 0,
+              totalTaxOverPaid = 0)
   }
 
   def now = DateTime.now(DateTimeZone.UTC)

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.{Allowances, ExpenseType}
+import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.domain.{CapAt, RoundDown, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
 

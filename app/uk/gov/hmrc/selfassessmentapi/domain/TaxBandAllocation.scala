@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.TaxBand
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand
 
 case class TaxBandAllocation(amount: BigDecimal, taxBand: TaxBand) {
 

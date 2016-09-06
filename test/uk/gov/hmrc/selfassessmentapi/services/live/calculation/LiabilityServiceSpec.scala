@@ -27,7 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
 import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.FLiabilityResult
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.LiabilityResult
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 
 import scala.concurrent.Future
@@ -57,9 +57,9 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
     when(selfAssessmentRepo.findTaxYearProperties(any[SaUtr], any[TaxYear])).thenReturn(Future.successful(None))
 
     // Stub save and calculate methods to return the same item they are given.
-    when(liabilityRepo.save(any[FLiabilityResult])).thenAnswer(new Answer[Future[FLiabilityResult]] {
-      override def answer(invocation: InvocationOnMock): Future[FLiabilityResult] = {
-        val arg = invocation.getArguments.head.asInstanceOf[FLiabilityResult]
+    when(liabilityRepo.save(any[LiabilityResult])).thenAnswer(new Answer[Future[LiabilityResult]] {
+      override def answer(invocation: InvocationOnMock): Future[LiabilityResult] = {
+        val arg = invocation.getArguments.head.asInstanceOf[LiabilityResult]
         Future.successful(arg)
       }
     })

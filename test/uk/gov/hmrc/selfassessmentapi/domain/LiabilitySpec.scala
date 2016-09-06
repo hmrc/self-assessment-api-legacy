@@ -20,7 +20,7 @@ import org.json.{JSONArray, JSONObject}
 import org.skyscreamer.jsonassert.JSONAssert._
 import org.skyscreamer.jsonassert.JSONCompareMode._
 import play.api.libs.json.{JsArray, JsValue}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.MongoTaxDeducted
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
 
 class LiabilitySpec extends JsonSpec {
 

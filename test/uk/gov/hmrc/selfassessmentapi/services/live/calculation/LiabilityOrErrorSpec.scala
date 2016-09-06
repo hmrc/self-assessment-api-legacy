@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 import uk.gov.hmrc.selfassessmentapi.{LiabilitySugar, UnitSpec}
 import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.domain.UkTaxPaidForEmployment
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.functional.MongoTaxDeducted
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
 
 class LiabilityOrErrorSpec extends UnitSpec {
   "LiabilityOrError.validate" should {

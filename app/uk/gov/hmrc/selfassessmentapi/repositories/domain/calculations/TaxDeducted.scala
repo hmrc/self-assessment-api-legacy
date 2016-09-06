@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain.functional
+package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.domain.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
 
-case class LiabilityCalculationException(errorCode: ErrorCode.Value, message: String) extends RuntimeException(message)
+object TaxDeducted {
+  def apply(selfAssessment: SelfAssessment) =
+    MongoTaxDeducted(interestFromUk = Savings.TotalTaxPaid(selfAssessment), deductionFromUkProperties = UkProperty.TaxesPaid(selfAssessment),
+      ukTaxesPaidForEmployments = Employment.TaxesPaid(selfAssessment))
+}

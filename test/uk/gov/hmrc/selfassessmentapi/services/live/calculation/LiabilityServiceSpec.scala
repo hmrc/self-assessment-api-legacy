@@ -29,6 +29,7 @@ import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.LiabilityResult
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
+import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
 
 import scala.concurrent.Future
 
@@ -41,7 +42,7 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
   private val unearnedIncomeRepo = mock[UnearnedIncomeMongoRepository]
   private val ukPropertyRepo = mock[UKPropertiesMongoRepository]
   private val furnishedHolidayLettingsRepo = mock[FurnishedHolidayLettingsMongoRepository]
-  private val selfAssessmentRepo = mock[SelfAssessmentMongoRepository]
+  private val taxYearPropertiesService = mock[TaxYearPropertiesService]
   private val featureSwitch = mock[FeatureSwitch]
   private val service = new LiabilityService(employmentRepo,
                                              selfEmploymentRepo,
@@ -49,12 +50,12 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
                                              furnishedHolidayLettingsRepo,
                                              liabilityRepo,
                                              ukPropertyRepo,
-                                             selfAssessmentRepo,
+                                             taxYearPropertiesService,
                                              featureSwitch)
 
   "calculate" should {
 
-    when(selfAssessmentRepo.findTaxYearProperties(any[SaUtr], any[TaxYear])).thenReturn(Future.successful(None))
+    when(taxYearPropertiesService.findTaxYearProperties(any[SaUtr], any[TaxYear])).thenReturn(Future.successful(None))
 
     // Stub save and calculate methods to return the same item they are given.
     when(liabilityRepo.save(any[LiabilityResult])).thenAnswer(new Answer[Future[LiabilityResult]] {

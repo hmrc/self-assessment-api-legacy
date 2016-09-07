@@ -40,12 +40,12 @@ class TaxYearPropertiesService(saRepository: SelfAssessmentMongoRepository, over
     val switchedProperties = switchedTaxYearProperties(taxYearProperties)
 
     // If nothing has been removed (i.e. switched off), update, otherwise return an error.
-    val hasSwitched = switchedProperties == taxYearProperties
-    if (hasSwitched) {
+    val isValidProperties = switchedProperties == taxYearProperties
+    if (isValidProperties) {
       saRepository.updateTaxYearProperties(saUtr, taxYear, switchedProperties)
     }
 
-    Future.successful(hasSwitched)
+    Future.successful(isValidProperties)
   }
 }
 

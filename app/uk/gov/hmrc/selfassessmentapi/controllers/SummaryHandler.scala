@@ -19,8 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryId, SourceId, TaxYear, JsonMarshaller}
 import uk.gov.hmrc.selfassessmentapi.controllers.controllers._
-import uk.gov.hmrc.selfassessmentapi.domain.{JsonMarshaller, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.SummaryRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global

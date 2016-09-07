@@ -17,7 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain.{Liability => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.Liability
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 object LiabilitySugar extends UnitSpec {

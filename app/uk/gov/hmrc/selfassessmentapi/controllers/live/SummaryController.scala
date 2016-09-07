@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.SummaryController with SourceTypeSupport {
 

@@ -25,8 +25,8 @@ import reactivemongo.bson.{BSONDocument, BSONDouble, BSONNull, BSONObjectID, BSO
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoUKProperties, _}
 

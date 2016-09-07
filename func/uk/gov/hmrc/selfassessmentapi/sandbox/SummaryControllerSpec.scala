@@ -2,9 +2,9 @@ package uk.gov.hmrc.selfassessmentapi.sandbox
 
 import play.api.libs.json.Json._
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Income
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.Income
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {

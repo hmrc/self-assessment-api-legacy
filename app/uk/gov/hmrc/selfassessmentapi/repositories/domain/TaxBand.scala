@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.selfassessmentapi.domain.{CapAt, FlooredAt, PositiveOrZero, RoundDownToPennies}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{CapAt, FlooredAt, PositiveOrZero, RoundDownToPennies}
 
 sealed trait TaxBand {
   def name: String

@@ -1,13 +1,14 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, _}
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.GoodsAndServicesOwnUses
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SummaryType, SourceTypes}
+import SourceTypes._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes.GoodsAndServicesOwnUses
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.SourceType.UKProperties
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.UnearnedIncomes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
@@ -134,7 +135,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   "I" should {
     "not be able to create summary for a non existent source" in {
-      val summaryTypes = uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes
+      val summaryTypes = uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes
 
       given()
         .userIsAuthorisedForTheResource(saUtr)

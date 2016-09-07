@@ -21,11 +21,11 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.employment.BenefitType.BenefitType
-import uk.gov.hmrc.selfassessmentapi.domain.employment.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.domain.employment._
-import uk.gov.hmrc.selfassessmentapi.domain.employment.IncomeType.IncomeType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.BenefitType.BenefitType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.IncomeType.IncomeType
 
 case class MongoEmploymentIncomeSummary(summaryId: SummaryId, `type`: IncomeType, amount: BigDecimal)
     extends MongoSummary with AmountHolder {

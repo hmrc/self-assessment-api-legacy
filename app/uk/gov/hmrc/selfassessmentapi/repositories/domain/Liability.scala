@@ -22,8 +22,12 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi._
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxDeducted => _, Deductions => _, Liability => _, _}
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
+import ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations.TaxDeducted
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations._
 
 case class Liability(id: BSONObjectID,
@@ -49,7 +53,7 @@ case class Liability(id: BSONObjectID,
                      totalTaxOverPaid: BigDecimal)
     extends LiabilityResult {
   def toLiability =
-    domain.Liability(income = IncomeSummary(
+    api.Liability(income = IncomeSummary(
                        incomes = IncomeFromSources(
                          nonSavings = NonSavingsIncomes(
                            employment = employmentIncome,
@@ -66,7 +70,7 @@ case class Liability(id: BSONObjectID,
                          total = totalIncomeReceived
                        ),
                        deductions = Some(
-                         domain.Deductions(
+                         api.Deductions(
                            incomeTaxRelief = allowancesAndReliefs.incomeTaxRelief.getOrElse(0),
                            personalAllowance = allowancesAndReliefs.personalAllowance.getOrElse(0),
                            retirementAnnuityContract = allowancesAndReliefs.retirementAnnuityContract.getOrElse(0),
@@ -82,7 +86,7 @@ case class Liability(id: BSONObjectID,
                        dividends = dividendTaxBandSummary,
                        total = totalIncomeTax
                      ),
-                     taxDeducted = domain.TaxDeducted(interestFromUk = taxDeducted.interestFromUk,
+                     taxDeducted = api.TaxDeducted(interestFromUk = taxDeducted.interestFromUk,
                                                       fromUkProperties = taxDeducted.deductionFromUkProperties,
                                                       fromEmployments = taxDeducted.ukTaxesPaidForEmployments,
                                                       total = totalTaxDeducted),

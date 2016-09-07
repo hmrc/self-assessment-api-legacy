@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, FurnishedHolidayLettingIncome}
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoFurnishedHolidayLettings
 
 object FurnishedHolidayLetting {

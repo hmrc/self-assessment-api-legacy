@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.domain.{PositiveOrZero, SelfAssessment, TaxBandAllocation, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{PositiveOrZero, TaxBandAllocation}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, TaxBand}
 
 object NonSavings {

@@ -18,7 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.controllers.ErrorResponse
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import ErrorCode.ErrorCode
 
 
 case object ErrorSaUtrInvalid extends ErrorResponse(400, "SA_UTR_INVALID", "The provided SA UTR is invalid")

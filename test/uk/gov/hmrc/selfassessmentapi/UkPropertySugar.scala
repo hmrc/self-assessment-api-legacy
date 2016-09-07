@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 

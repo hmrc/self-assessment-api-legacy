@@ -1,8 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.sandbox
 
 import java.util.UUID
-
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SourceControllerSpec extends BaseFunctionalSpec {

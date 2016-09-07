@@ -19,7 +19,9 @@ package uk.gov.hmrc.selfassessmentapi
 import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{Liability => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.Liability
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 object SelfAssessmentSugar extends UnitSpec {

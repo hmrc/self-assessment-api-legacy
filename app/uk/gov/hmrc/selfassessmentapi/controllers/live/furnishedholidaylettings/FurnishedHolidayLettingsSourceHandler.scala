@@ -17,11 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live.furnishedholidaylettings
 
 import uk.gov.hmrc.play.http.NotImplementedException
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes.{BalancingCharges, Expenses, Incomes, PrivateUseAdjustments}
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings._
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.SummaryTypes.{BalancingCharges, Expenses, Incomes, PrivateUseAdjustments}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.live.FurnishedHolidayLettingsRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
 

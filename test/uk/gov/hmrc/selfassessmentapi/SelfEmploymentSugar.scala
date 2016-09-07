@@ -18,10 +18,10 @@ package uk.gov.hmrc.selfassessmentapi
 
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.BalancingChargeType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 

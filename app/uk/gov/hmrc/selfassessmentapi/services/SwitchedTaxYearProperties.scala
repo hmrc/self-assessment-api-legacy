@@ -17,13 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.services
 
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
-import uk.gov.hmrc.selfassessmentapi.domain.blindperson.BlindPersons
-import uk.gov.hmrc.selfassessmentapi.domain.charitablegiving.CharitableGivings
-import uk.gov.hmrc.selfassessmentapi.domain.childbenefit.ChildBenefits
-import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContributions
-import uk.gov.hmrc.selfassessmentapi.domain.studentsloan.StudentLoans
-import uk.gov.hmrc.selfassessmentapi.domain.taxrefundedorsetoff.TaxRefundedOrSetOffs
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYearProperties, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPersons
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGivings
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContributions
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYearProperties, TaxYearPropertyType}
 
 trait SwitchedTaxYearProperties {
   val featureSwitch: FeatureSwitch

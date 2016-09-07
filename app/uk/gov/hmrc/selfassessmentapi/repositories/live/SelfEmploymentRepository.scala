@@ -26,8 +26,8 @@ import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONNull, BSO
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentExpenseSummary, MongoSelfEmploymentIncomeSummary}

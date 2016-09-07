@@ -23,7 +23,7 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
 
 import scala.concurrent.Future
 

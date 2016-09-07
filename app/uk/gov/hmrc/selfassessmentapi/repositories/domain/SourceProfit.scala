@@ -16,6 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case class SourceProfit(sourceId: SourceId, profit: BigDecimal)

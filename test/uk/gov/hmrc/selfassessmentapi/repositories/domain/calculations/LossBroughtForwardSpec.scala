@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.SelfEmploymentSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.Adjustments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.Adjustments
 
 class LossBroughtForwardSpec extends UnitSpec {
 

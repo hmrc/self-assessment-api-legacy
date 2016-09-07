@@ -26,9 +26,10 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers._
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties._
-import uk.gov.hmrc.selfassessmentapi.domain.{ErrorCode, TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.services.sandbox.TaxYearPropertiesService
 import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 

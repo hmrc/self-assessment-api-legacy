@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.services.live
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
 import uk.gov.hmrc.selfassessmentapi.services.SwitchedTaxYearProperties
 

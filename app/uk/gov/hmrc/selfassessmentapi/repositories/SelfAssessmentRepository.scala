@@ -25,7 +25,7 @@ import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONElement, 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfAssessment
 
 import scala.concurrent.ExecutionContext.Implicits.global

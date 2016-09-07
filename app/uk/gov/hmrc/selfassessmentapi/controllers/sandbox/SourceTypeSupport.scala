@@ -17,13 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox
 
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment.EmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.furnishedholidaylettings.FurnishedHolidayLettingsSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.selfemployment.SelfEmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty.UKPropertySourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome.UnearnedIncomeSourceHandler
-import uk.gov.hmrc.selfassessmentapi.domain.SourceType
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
+import SourceTypes._
 
 trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.SourceTypeSupport {
 

@@ -24,7 +24,8 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceTypes, TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global

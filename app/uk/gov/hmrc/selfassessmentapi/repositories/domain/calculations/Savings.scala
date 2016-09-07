@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.domain
-import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType
+import uk.gov.hmrc.selfassessmentapi.controllers._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, MongoUnearnedIncome, TaxBand}
 
@@ -91,7 +91,7 @@ object Savings {
       val higherTaxBand = TaxBand.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome)
 
       Seq(startingTaxBand, nilTaxBand, basicTaxBand, higherTaxBand, TaxBand.AdditionalHigherTaxBand(higherTaxBand)).map { taxBand =>
-        domain.TaxBandAllocation(taxBand.allocate2(taxableSavingsIncome), taxBand).toTaxBandSummary
+        api.TaxBandAllocation(taxBand.allocate2(taxableSavingsIncome), taxBand).toTaxBandSummary
       }
     }
   }

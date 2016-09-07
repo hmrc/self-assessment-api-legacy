@@ -1,5 +1,4 @@
-@import uk.gov.hmrc.selfassessmentapi.domain.FieldDescription
-
+@import uk.gov.hmrc.selfassessmentapi.controllers.api.FieldDescription
 @(fieldDescription: FieldDescription, includeSource: Boolean = true)
 <row>
   @if(includeSource){<cell><code>@(fieldDescription.source)</code></cell>}

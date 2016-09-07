@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType._
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Adjustments, Allowances, PropertyLocationType}
-import uk.gov.hmrc.selfassessmentapi.domain.{FurnishedHolidayLettingIncome, SelfAssessment}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, FurnishedHolidayLettingIncome}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.ExpenseType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.{Adjustments, Allowances, PropertyLocationType}
 
 class FurnishedHolidayLettingSpec extends UnitSpec {
 

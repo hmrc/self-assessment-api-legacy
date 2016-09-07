@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.SourceController with SourceTypeSupport {
 

@@ -22,10 +22,10 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.JsonMarshaller
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.FurnishedHolidayLetting
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.EEA
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.FurnishedHolidayLetting
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.EEA
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoFurnishedHolidayLettings, MongoFurnishedHolidayLettingsIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 

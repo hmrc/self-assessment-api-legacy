@@ -18,10 +18,10 @@ package uk.gov.hmrc.selfassessmentapi
 
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType._
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.{apply => _, _}
-import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.Adjustments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.ExpenseType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.{apply => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.Adjustments
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 

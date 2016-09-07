@@ -24,8 +24,9 @@ import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
+import SourceTypes._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.LiabilityResult
 import uk.gov.hmrc.selfassessmentapi.repositories.live._

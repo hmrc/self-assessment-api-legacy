@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.INVALID_EMPLOYMENT_TAX_PAID
-import uk.gov.hmrc.selfassessmentapi.domain.UkTaxPaidForEmployment
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{UkTaxPaidForEmployment, ErrorCode}
+import ErrorCode.INVALID_EMPLOYMENT_TAX_PAID
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Liability, LiabilityError, LiabilityErrors, LiabilityResult}
 
 object LiabilityOrError {

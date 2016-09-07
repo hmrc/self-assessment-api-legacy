@@ -21,13 +21,13 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain
-import uk.gov.hmrc.selfassessmentapi.domain.pensioncontribution.PensionContribution
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.BalancingChargeType.BalancingChargeType
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContribution
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.BalancingChargeType.BalancingChargeType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType.IncomeType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
                                             `type`: IncomeType,
@@ -200,7 +200,7 @@ case class MongoSelfEmployment(id: BSONObjectID,
   }
 
   private def profitReductions: BigDecimal = {
-    val expenses = Some(this.expenses.filterNot(_.`type` == domain.selfemployment.ExpenseType.Depreciation).map(_.amount).sum)
+    val expenses = Some(this.expenses.filterNot(_.`type` == selfemployment.ExpenseType.Depreciation).map(_.amount).sum)
     val allowances = this.allowances.map(_.total)
     val adjustments = this.adjustments.map { a => Sum(a.includedNonTaxableProfits, a.overlapReliefUsed) }
 

@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.services.sandbox
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.services.SwitchedTaxYearProperties
 
 import scala.concurrent.Future

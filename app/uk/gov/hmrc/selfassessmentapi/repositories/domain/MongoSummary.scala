@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
 import reactivemongo.bson.BSONDocument
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 trait MongoSummary {
   def toBsonDocument: BSONDocument

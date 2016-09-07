@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.furnishedholidaylettings
 
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.FurnishedHolidayLettings
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SummaryTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.{Income, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
+import SourceTypes.FurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.SummaryTypes._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.{Income, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceRepository, SandboxSummaryRepository}
 
 object FurnishedHolidayLettingsSourceHandler extends SourceHandler(FurnishedHolidayLetting, FurnishedHolidayLettings.name) {

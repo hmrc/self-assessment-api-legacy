@@ -18,8 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.EmploymentSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.employment.{BenefitType, ExpenseType, IncomeType}
-import uk.gov.hmrc.selfassessmentapi.domain.{EmploymentIncome, SelfAssessment, UkTaxPaidForEmployment}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{UkTaxPaidForEmployment, SelfAssessment, EmploymentIncome}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.{BenefitType, ExpenseType, IncomeType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
 
 class EmploymentSpec extends UnitSpec {
 

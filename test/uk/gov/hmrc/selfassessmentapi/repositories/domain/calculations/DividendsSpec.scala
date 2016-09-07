@@ -20,8 +20,9 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
 import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType._
-import uk.gov.hmrc.selfassessmentapi.domain.{DividendsFromUKSources, SelfAssessment, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{DividendsFromUKSources, TaxBandSummary, SelfAssessment}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
 
 class DividendsSpec extends UnitSpec {
 

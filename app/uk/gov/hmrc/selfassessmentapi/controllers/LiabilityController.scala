@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
 
 trait LiabilityController extends BaseController with Links {
 

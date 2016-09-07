@@ -19,9 +19,10 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 import org.scalatest.Matchers
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{Liability => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{Liability => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
-import uk.gov.hmrc.selfassessmentapi.{UnitSpec, domain, _}
+import uk.gov.hmrc.selfassessmentapi.{UnitSpec, _}
 
 class LiabilitySpec extends UnitSpec {
 
@@ -115,7 +116,7 @@ class LiabilitySpec extends UnitSpec {
 
       liabilityDto.income.incomes.total shouldBe 1000
 
-      liabilityDto.income.deductions.get shouldBe domain.Deductions(personalAllowance = 3000, incomeTaxRelief = 2000,
+      liabilityDto.income.deductions.get shouldBe api.Deductions(personalAllowance = 3000, incomeTaxRelief = 2000,
                                                         retirementAnnuityContract = 1000,
                                                         total = 6000)
 
@@ -154,7 +155,7 @@ class LiabilitySpec extends UnitSpec {
 
   "FunctionalLiability.create" should {
     "correctly compute values for employments" in {
-      import uk.gov.hmrc.selfassessmentapi.domain.employment._
+      import uk.gov.hmrc.selfassessmentapi.controllers.api.employment._
 
       val employment = TestEmployment()
         .withIncomes((IncomeType.Salary, 20000), (IncomeType.Other, 2500.50))
@@ -177,7 +178,7 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for self-employments" in {
-      import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
+      import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 
       val selfEmployment = TestSelfEmployment()
           .withAllowances(
@@ -216,7 +217,7 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for UK properties" in {
-      import uk.gov.hmrc.selfassessmentapi.domain.ukproperty._
+      import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
 
       val ukProperty = TestUkProperty(rentARoomRelief = 500.25)
         .withAllowances(annualInvestmentAllowance = 200,
@@ -245,7 +246,7 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for savings" in {
-      import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome._
+      import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome._
 
       val unearnedIncome = TestUnearnedIncome()
         .withSavings(
@@ -271,7 +272,7 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for dividends" in {
-      import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome._
+      import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome._
 
       val unearnedIncome = TestUnearnedIncome()
           .withDividends(
@@ -295,7 +296,7 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for furnished holiday lettings" in {
-      import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings._
+      import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
 
       val furnishedHolidayLetting = TestFurnishedHolidayLetting(capitalAllowance = 123.45)
           .propertyLocation(PropertyLocationType.UK)
@@ -321,7 +322,7 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for a whole self assessment" in {
-      import uk.gov.hmrc.selfassessmentapi.domain._
+      import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
       val employments = TestEmployment()
         .withIncomes((employment.IncomeType.Salary, 20000), (employment.IncomeType.Other, 2500.50))
@@ -596,7 +597,7 @@ case class LiabilityResultAssertions(liability: Liability) extends Matchers {
 }
 
 case class TestEmployment() {
-  import uk.gov.hmrc.selfassessmentapi.domain.employment.{BenefitType, ExpenseType, IncomeType}
+  import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.{BenefitType, ExpenseType, IncomeType}
 
   private var anEmployment: MongoEmployment = EmploymentSugar.anEmployment()
 
@@ -626,7 +627,7 @@ case class TestEmployment() {
 case class TestSelfEmployment() {
   def create() = selfEmployment
 
-  import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
+  import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 
   private var selfEmployment: MongoSelfEmployment = SelfEmploymentSugar.aSelfEmployment().copy(allowances = Some(Allowances()), adjustments = Some(Adjustments()))
 
@@ -680,7 +681,7 @@ case class TestSelfEmployment() {
 }
 
 case class TestUkProperty(rentARoomRelief: BigDecimal) {
-  import uk.gov.hmrc.selfassessmentapi.domain.ukproperty._
+  import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
 
   private var ukProperties: MongoUKProperties = UkPropertySugar.aUkProperty().copy(rentARoomRelief = Some(rentARoomRelief),
     allowances = Some(Allowances()), adjustments = Some(Adjustments()))
@@ -725,7 +726,7 @@ case class TestUkProperty(rentARoomRelief: BigDecimal) {
 }
 
 case class TestUnearnedIncome() {
-  import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome._
+  import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome._
 
   private var unearnedIncomes: MongoUnearnedIncome = UnearnedIncomesSugar.anIncome()
 
@@ -744,7 +745,7 @@ case class TestUnearnedIncome() {
 }
 
 case class TestFurnishedHolidayLetting(capitalAllowance: BigDecimal) {
-  import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings._
+  import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
 
   private var furnishedHolidayLetting: MongoFurnishedHolidayLettings = FurnishedHolidayLettingsSugar
     .aFurnishedHolidayLetting().copy(allowances = Some(Allowances(capitalAllowance = Some(capitalAllowance))))

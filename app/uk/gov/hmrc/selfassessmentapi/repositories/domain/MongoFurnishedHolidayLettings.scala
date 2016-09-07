@@ -21,10 +21,10 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
 
 case class MongoFurnishedHolidayLettingsIncomeSummary(summaryId: SummaryId,
                                             amount: BigDecimal) extends MongoSummary with AmountHolder {

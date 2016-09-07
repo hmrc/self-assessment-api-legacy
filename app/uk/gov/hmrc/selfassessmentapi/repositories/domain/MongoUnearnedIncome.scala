@@ -21,11 +21,11 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.BenefitType.BenefitType
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.DividendType._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{Benefit, Dividend, SavingsIncome, UnearnedIncome}
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.BenefitType.BenefitType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{Benefit, Dividend, SavingsIncome, UnearnedIncome}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, _}
 
 case class MongoUnearnedIncomesSavingsIncomeSummary(summaryId: SummaryId,
                                             `type`: SavingsIncomeType,

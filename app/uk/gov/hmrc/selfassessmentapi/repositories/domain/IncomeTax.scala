@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxBandSummary
 
 trait IncomeTax {
   def incomeTax(taxBandSummaries: Seq[TaxBandSummary]): BigDecimal =

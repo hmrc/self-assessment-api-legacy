@@ -20,10 +20,12 @@ import org.scalacheck.Gen
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
 import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.domain.{SelfAssessment, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.controllers.api
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxBandSummary, SelfAssessment, InterestFromUKBanksAndBuildingSocieties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxBandSummary
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoUnearnedIncomesSavingsIncomeSummary
-import uk.gov.hmrc.selfassessmentapi.{UnitSpec, domain}
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 class SavingsSpec extends UnitSpec {
 
@@ -38,15 +40,15 @@ class SavingsSpec extends UnitSpec {
       val unearnedIncomes2 = anIncome().copy(savings = Seq(taxedInterest(300.99), unTaxedInterest(400.99)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes1, unearnedIncomes2))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes1.sourceId, BigDecimal(326)),
-          domain.InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes2.sourceId, BigDecimal(777)))
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes1.sourceId, BigDecimal(326)),
+          api.InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes2.sourceId, BigDecimal(777)))
     }
 
     "calculate interest when there is one taxed interest from uk banks and building societies from a single unearned income source" in {
       val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest(100)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(125)))
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(125)))
 
     }
 
@@ -54,7 +56,7 @@ class SavingsSpec extends UnitSpec {
       val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest(100), taxedInterest(200)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(375)))
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(375)))
 
     }
 
@@ -63,7 +65,7 @@ class SavingsSpec extends UnitSpec {
       val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest(100.50)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(125)))
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(125)))
     }
 
     "calculate round down interest when there are multiple taxed interest from uk banks and building societies from a single unearned " +
@@ -71,7 +73,7 @@ class SavingsSpec extends UnitSpec {
       val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest(100.90), taxedInterest(200.99)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(377)))
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(377)))
 
     }
 
@@ -79,7 +81,7 @@ class SavingsSpec extends UnitSpec {
       val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest(100)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(100)))
+        Seq(InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(100)))
 
     }
 
@@ -88,7 +90,7 @@ class SavingsSpec extends UnitSpec {
       val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest(100), unTaxedInterest(200)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(300)))
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(300)))
     }
 
 
@@ -97,7 +99,7 @@ class SavingsSpec extends UnitSpec {
       val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest(100.50)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(100)))
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(100)))
     }
 
     "calculate rounded down interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned" +
@@ -105,7 +107,7 @@ class SavingsSpec extends UnitSpec {
       val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest(100.50), unTaxedInterest(200.99)))
 
       Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(domain.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(301)))
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(301)))
     }
   }
 

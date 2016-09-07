@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain.TaxBandSummary
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxBandSummary
 
 class NonSavingsSpec extends UnitSpec {
 

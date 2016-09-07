@@ -18,7 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import ErrorCode._
 
 object JsonFormatters {
 

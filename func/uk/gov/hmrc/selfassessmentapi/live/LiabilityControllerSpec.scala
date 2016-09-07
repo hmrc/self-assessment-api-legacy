@@ -1,9 +1,9 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json.toJson
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
-import uk.gov.hmrc.selfassessmentapi.domain.employment.UkTaxPaid
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.SourceType.Employments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.UkTaxPaid
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {

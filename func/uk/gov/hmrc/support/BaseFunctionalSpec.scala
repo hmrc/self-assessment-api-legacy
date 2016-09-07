@@ -14,7 +14,8 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.TestApplication
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes, SummaryType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryType, SourceType, SourceTypes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
 
 import scala.collection.mutable
 import scala.concurrent.duration._

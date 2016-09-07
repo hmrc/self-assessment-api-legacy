@@ -21,10 +21,10 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty._
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.IncomeType.IncomeType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case class MongoUKPropertiesIncomeSummary(summaryId: SummaryId,
                                           `type`: IncomeType,

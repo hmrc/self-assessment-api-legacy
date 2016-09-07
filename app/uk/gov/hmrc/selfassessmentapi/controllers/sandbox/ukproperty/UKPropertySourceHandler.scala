@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty
 
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UKProperties
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SummaryTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.{Income, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
+import SourceTypes.UKProperties
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.SummaryTypes._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{Income, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceRepository, SandboxSummaryRepository}
 
 object UKPropertySourceHandler extends SourceHandler(UKProperty, UKProperties.name) {

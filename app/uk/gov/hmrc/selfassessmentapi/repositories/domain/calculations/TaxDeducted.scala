@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.domain.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
 
 object TaxDeducted {

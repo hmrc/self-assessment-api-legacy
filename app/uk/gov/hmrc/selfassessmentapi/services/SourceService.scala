@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.services
 
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, TaxYear}
 
 import scala.concurrent.Future
 

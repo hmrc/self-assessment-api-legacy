@@ -18,13 +18,13 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 
 import uk.gov.hmrc.play.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.controllers.SourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.live.employment.EmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.furnishedholidaylettings.FurnishedHolidayLettingsSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment.SelfEmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.ukproperty.UKPropertySourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.unearnedincome.UnearnedIncomeSourceHandler
-import uk.gov.hmrc.selfassessmentapi.domain.SourceType
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
+import SourceTypes._
 
 trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.SourceTypeSupport {
   def sourceHandler(sourceType: SourceType): SourceHandler[_] = sourceType match {

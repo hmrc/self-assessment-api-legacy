@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment
 
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.Employments
-import uk.gov.hmrc.selfassessmentapi.domain.employment._
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SummaryTypes._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, SummaryType}
+import SourceTypes.Employments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.SummaryTypes._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceRepository, SandboxSummaryRepository}
 
 object EmploymentSourceHandler extends SourceHandler(Employment, Employments.name) {

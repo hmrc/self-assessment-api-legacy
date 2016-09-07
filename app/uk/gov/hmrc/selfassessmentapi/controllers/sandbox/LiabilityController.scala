@@ -22,7 +22,8 @@ import play.api.mvc.hal._
 import play.api.mvc.Action
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.Liability
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 import scala.concurrent.Future
 

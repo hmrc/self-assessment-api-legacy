@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers
 
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, TaxYear, SourceType}
 
 trait Links {
 

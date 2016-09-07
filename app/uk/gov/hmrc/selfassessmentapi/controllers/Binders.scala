@@ -20,7 +20,7 @@ import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.referencechecker.SelfAssessmentReferenceChecker
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, TaxYear}
 
 object Binders {
 

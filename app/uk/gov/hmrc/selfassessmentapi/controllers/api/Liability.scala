@@ -129,9 +129,9 @@ object OtherCharges {
 
 case class Liability(income: IncomeSummary,
                      incomeTaxCalculations: IncomeTaxCalculations,
+                     otherCharges: OtherCharges,
                      taxDeducted: TaxDeducted,
                      totalTaxDue: BigDecimal,
-                     otherCharges: OtherCharges,
                      totalTaxOverpaid: BigDecimal)
 
 object Liability {

@@ -59,10 +59,15 @@ object SelfAssessmentSugar extends UnitSpec {
               dividendTaxBandSummary = Nil,
               savingsTaxBandSummary = Nil,
               nonSavingsTaxBandSummary = Nil,
-              totalIncomeTax = 0,
-              totalTaxDeducted = 0,
-              totalTaxDue = 0,
-              totalTaxOverPaid = 0)
+              pensionSavingsChargesSummary = Nil,
+              taxes = TaxesCalculated(
+                totalIncomeTax = 0,
+                totalTaxDeducted = 0,
+                totalTaxDue = 0,
+                totalTaxOverPaid = 0,
+                pensionSavingsCharges = 0
+              )
+    )
   }
 
   def now = DateTime.now(DateTimeZone.UTC)

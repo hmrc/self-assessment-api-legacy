@@ -18,9 +18,7 @@ package uk.gov.hmrc.selfassessmentapi
 
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.Liability
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Liability, _}
 
 object LiabilitySugar extends UnitSpec {
   def aLiability(id: BSONObjectID = BSONObjectID.generate,
@@ -37,10 +35,12 @@ object LiabilitySugar extends UnitSpec {
                  dividendTaxBandSummary: Seq[TaxBandSummary] = Seq(),
                  savingsTaxBandSummary: Seq[TaxBandSummary] = Seq(),
                  nonSavingsTaxBandSummary: Seq[TaxBandSummary] = Seq(),
+                 pensionSavingsChargesSummary: Seq[TaxBandSummary] = Seq(),
                  totalIncomeTax: BigDecimal = 0,
                  totalTaxDeducted: BigDecimal = 0,
                  totalTaxDue: BigDecimal = 0,
-                 totalTaxOverPaid: BigDecimal = 0): Liability = {
+                 totalTaxOverPaid: BigDecimal = 0
+                 ): Liability = {
     Liability(id,
               id.stringify,
               generateSaUtr(),
@@ -58,9 +58,14 @@ object LiabilitySugar extends UnitSpec {
               dividendTaxBandSummary,
               savingsTaxBandSummary,
               nonSavingsTaxBandSummary,
-              totalIncomeTax,
-              totalTaxDeducted,
-              totalTaxDue,
-              totalTaxOverPaid)
+              pensionSavingsChargesSummary,
+              taxes = TaxesCalculated(
+                        totalIncomeTax = totalIncomeTax,
+                        totalTaxDeducted = totalTaxDeducted,
+                        totalTaxDue = totalTaxDue,
+                        totalTaxOverPaid = totalTaxOverPaid,
+                        pensionSavingsCharges = 0
+                      )
+              )
   }
 }

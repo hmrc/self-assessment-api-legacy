@@ -52,20 +52,20 @@ object TaxBand {
     override def toString = s"NilTaxBand($lowerBound:${upperBound.get})"
   }
 
-  case class BasicTaxBand(precedingTaxBand: Option[TaxBand] = None, reductionInUpperBound: BigDecimal = 0,
+  case class BasicTaxBand(precedingTaxBand: Option[TaxBand] = None, reductionInUpperBound: BigDecimal = 0, additionsToUpperBound: BigDecimal = 0,
                           override val chargedAt: BigDecimal = 20) extends TaxBand {
-    private val defaultUpperBound = 32000
+    val defaultUpperBound = 32000
     override def name: String = "basicRate"
-    override val upperBound = Some(FlooredAt(defaultUpperBound - reductionInUpperBound, lowerBound - 1))
+    override val upperBound = Some(FlooredAt(defaultUpperBound - reductionInUpperBound + additionsToUpperBound, lowerBound - 1))
     override lazy val lowerBound = precedingTaxBand.flatMap(_.upperBound).getOrElse(BigDecimal(0)) + 1
     override def toString = s"BasicTaxBand($lowerBound:${upperBound.get})"
   }
 
-  case class HigherTaxBand(precedingTaxBand: BasicTaxBand = BasicTaxBand(), reductionInUpperBound: BigDecimal = 0,
+  case class HigherTaxBand(precedingTaxBand: BasicTaxBand = BasicTaxBand(), reductionInUpperBound: BigDecimal = 0, additionsToUpperBound: BigDecimal = 0,
                            override val chargedAt: BigDecimal = 40) extends TaxBand {
     private val defaultUpperBound = 150000
     override def name: String = "higherRate"
-    override val upperBound = Some(FlooredAt(defaultUpperBound - reductionInUpperBound, lowerBound - 1))
+    override val upperBound = Some(FlooredAt(defaultUpperBound - reductionInUpperBound + additionsToUpperBound, lowerBound - 1))
     override lazy val lowerBound = precedingTaxBand.upperBound.getOrElse(BigDecimal(0)) + 1
     override def toString = s"HigherTaxBand($lowerBound:${upperBound.get})"
   }

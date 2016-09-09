@@ -46,7 +46,7 @@ object Totals {
 
   object IncomeTax {
     def apply(selfAssessment: SelfAssessment) = NonSavings.IncomeTax(selfAssessment) + Savings.IncomeTax(selfAssessment) +
-      Dividends.IncomeTax(selfAssessment)
+      Dividends.IncomeTax(selfAssessment) + PensionSavingsCharges.IncomeTax(selfAssessment)
   }
 
   object TaxOverpaid {

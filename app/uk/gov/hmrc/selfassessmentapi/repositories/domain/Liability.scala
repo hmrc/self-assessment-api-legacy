@@ -21,14 +21,20 @@ import play.api.libs.json.{JsValue, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.controllers.api
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
-import ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations.TaxDeducted
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations.{TaxDeducted, _}
+
+case class TaxesCalculated(pensionSavingsCharges: BigDecimal,
+                           totalIncomeTax: BigDecimal,
+                           totalTaxDeducted: BigDecimal,
+                           totalTaxDue: BigDecimal,
+                           totalTaxOverPaid: BigDecimal)
+
+object TaxesCalculated {
+  implicit val format = Json.format[TaxesCalculated]
+}
 
 case class Liability(id: BSONObjectID,
                      liabilityId: LiabilityId,
@@ -47,10 +53,8 @@ case class Liability(id: BSONObjectID,
                      dividendTaxBandSummary: Seq[TaxBandSummary],
                      savingsTaxBandSummary: Seq[TaxBandSummary],
                      nonSavingsTaxBandSummary: Seq[TaxBandSummary],
-                     totalIncomeTax: BigDecimal,
-                     totalTaxDeducted: BigDecimal,
-                     totalTaxDue: BigDecimal,
-                     totalTaxOverPaid: BigDecimal)
+                     pensionSavingsChargesSummary: Seq[TaxBandSummary],
+                     taxes: TaxesCalculated)
     extends LiabilityResult {
   def toLiability =
     api.Liability(income = IncomeSummary(
@@ -84,14 +88,19 @@ case class Liability(id: BSONObjectID,
                        nonSavings = nonSavingsTaxBandSummary,
                        savings = savingsTaxBandSummary,
                        dividends = dividendTaxBandSummary,
-                       total = totalIncomeTax
+                       total = taxes.totalIncomeTax
+                     ),
+                     otherCharges = api.OtherCharges(
+                       pensionSavings = pensionSavingsChargesSummary,
+                       total = taxes.pensionSavingsCharges
                      ),
                      taxDeducted = api.TaxDeducted(interestFromUk = taxDeducted.interestFromUk,
                                                       fromUkProperties = taxDeducted.deductionFromUkProperties,
                                                       fromEmployments = taxDeducted.ukTaxesPaidForEmployments,
-                                                      total = totalTaxDeducted),
-                     totalTaxDue = totalTaxDue,
-                     totalTaxOverpaid = totalTaxOverPaid)
+                                                      taxPaidByPensionScheme = taxes.pensionSavingsCharges,
+                                                      total = taxes.totalTaxDeducted),
+                     totalTaxDue = taxes.totalTaxDue,
+                     totalTaxOverpaid = taxes.totalTaxOverPaid)
 }
 
 object Liability {
@@ -122,12 +131,15 @@ object Liability {
                   dividendTaxBandSummary = Dividends.IncomeTaxBandSummary(selfAssessment),
                   savingsTaxBandSummary = Savings.IncomeTaxBandSummary(selfAssessment),
                   nonSavingsTaxBandSummary = NonSavings.IncomeTaxBandSummary(selfAssessment),
+                  pensionSavingsChargesSummary = PensionSavingsCharges.IncomeTaxBandSummary(selfAssessment),
                   totalTaxableIncome = Totals.TaxableIncome(selfAssessment),
                   totalIncomeReceived = Totals.IncomeReceived(selfAssessment),
-                  totalIncomeTax = Totals.IncomeTax(selfAssessment),
-                  totalTaxDeducted = Totals.TaxDeducted(selfAssessment),
-                  totalTaxDue = Totals.TaxDue(selfAssessment),
-                  totalTaxOverPaid = Totals.TaxOverpaid(selfAssessment))
+                  taxes = TaxesCalculated(pensionSavingsCharges = PensionSavingsCharges.IncomeTax(selfAssessment),
+                                totalIncomeTax = Totals.IncomeTax(selfAssessment),
+                                totalTaxDeducted = Totals.TaxDeducted(selfAssessment),
+                                totalTaxDue = Totals.TaxDue(selfAssessment),
+                                totalTaxOverPaid = Totals.TaxOverpaid(selfAssessment))
+                  )
   }
 
 }
@@ -193,8 +205,8 @@ sealed trait LiabilityResult {
 
 object LiabilityResult {
 
-  import LiabilityErrors.calculationErrorsFormats
   import Liability.liabilityFormats
+  import LiabilityErrors.calculationErrorsFormats
 
   implicit val liabilityResultFormat = Json.format[LiabilityResult]
 

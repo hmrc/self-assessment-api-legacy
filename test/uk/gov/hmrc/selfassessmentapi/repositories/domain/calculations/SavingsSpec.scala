@@ -305,31 +305,48 @@ class SavingsSpec extends UnitSpec {
         )
     }
 
+    "be calculated when NonSavingsIncome > 0 and TaxableSavingIncome is spread over Basic, Higher and Additional Higher Rate band and ukPensionContributions are present" in {
+      Savings.IncomeTaxBandSummary(taxableSavingsIncome = 149001, startingSavingsRate = 5000, personalSavingsAllowance = 1000,
+        taxableNonSavingsIncome = 1000, ukPensionContributions = 500) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("startingRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("nilRate", 1000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 25500.0, "20%", 5100.0),
+          TaxBandSummary("higherRate", 117501.0, "40%", 47000.4),
+          TaxBandSummary("additionalHigherRate", 0, "45%", 0)
+        )
+    }
   }
 
   "Savings.IncomeTaxBandSummary" should {
     "be allocated to correct tax bands" in {
       val inputs = Table(
-        ("TotalProfitFromSelfEmployments", "TotalSavingsIncome", "StartingRateAmount", "NilRateAmount", "BasicRateTaxAmount",
+        ("TotalProfitFromSelfEmployments", "TotalSavingsIncome", "UkPensionContribution", "StartingRateAmount", "NilRateAmount", "BasicRateTaxAmount",
           "HigherRateTaxAmount", "AdditionalHigherRateAmount"),
-        ("8000", "12000", "5000", "1000", "3000", "0", "0"),
-        ("5000", "6000", "0", "0", "0", "0", "0"),
-        ("5000", "7000", "1000", "0", "0", "0", "0"),
-        ("5000", "11000", "5000", "0", "0", "0", "0"),
-        ("5000", "12000", "5000", "1000", "0", "0", "0"),
-        ("20000", "11000", "0", "1000", "10000", "0", "0"),
-        ("29000", "12000", "0", "1000", "11000", "0", "0"),
-        ("32000", "12000", "0", "500", "10500", "1000", "0"),
-        ("100000", "12000", "0", "500", "0", "11500", "0"),
-        ("140000", "12000", "0", "0", "0", "10000", "2000"),
-        ("150000", "12000", "0", "0", "0", "0", "12000"),
-        ("60000", "85000", "0", "500", "0", "84500", "0"),
-        ("80000", "85000", "0", "0", "0", "70000", "15000"),
-        ("13000", "7000", "3000", "1000", "3000", "0", "0"),
-        ("14000", "8000", "2000", "1000", "5000", "0", "0")
+        ("8000", "12000", "0", "5000", "1000", "3000", "0", "0"),
+        ("5000", "6000", "0", "0", "0", "0", "0", "0"),
+        ("5000", "7000", "0", "1000", "0", "0", "0", "0"),
+        ("5000", "7000", "100", "1000", "0", "0", "0", "0"),
+        ("5000", "11000", "0", "5000", "0", "0", "0", "0"),
+        ("5000", "12000", "0", "5000", "1000", "0", "0", "0"),
+        ("20000", "11000", "0", "0", "1000", "10000", "0", "0"),
+        ("20000", "11000", "1000", "0", "1000", "10000", "0", "0"),
+        ("29000", "12000", "0", "0", "1000", "11000", "0", "0"),
+        ("32000", "12000", "0", "0", "500", "10500", "1000", "0"),
+        ("32000", "12000", "500", "0", "500", "11000", "500", "0"),
+        ("100000", "12000", "0", "0", "500", "0", "11500", "0"),
+        ("140000", "12000", "0", "0", "0", "0", "10000", "2000"),
+        ("140000", "12000", "5000", "0", "0", "0", "12000", "0"),
+        ("150000", "12000", "0", "0", "0", "0", "0", "12000"),
+        ("60000", "85000", "0", "0", "500", "0", "84500", "0"),
+        ("80000", "85000", "0", "0", "0", "0", "70000", "15000"),
+        ("80000", "85000", "10000", "0", "0", "0", "80000", "5000"),
+        ("13000", "7000", "0", "3000", "1000", "3000", "0", "0"),
+        ("14000", "8000", "0", "2000", "1000", "5000", "0", "0"),
+        ("14000", "8000", "5000", "2000", "1000", "5000", "0", "0")
       )
 
-      TableDrivenPropertyChecks.forAll(inputs) { (totalProfitFromSelfEmployments: String, totalSavingsIncome: String,
+      TableDrivenPropertyChecks.forAll(inputs) { (totalProfitFromSelfEmployments: String, totalSavingsIncome: String, ukPensionContributions: String,
                                                   startingRateAmount: String, nilRateAmount: String, basicRateTaxAmount: String,
                                                   higherRateTaxAmount: String, additionalHigherRateAmount: String) =>
 
@@ -346,7 +363,8 @@ class SavingsSpec extends UnitSpec {
           totalDeduction, totalNonSavingsIncome = totalProfitFromSelfEmployments.toInt)).as("Savings.TaxableIncome")
 
         val bandAllocations = Savings.IncomeTaxBandSummary(taxableSavingsIncome = taxableSavingsIncome, startingSavingsRate = savingStartingRate,
-          personalSavingsAllowance = personalSavingsAllowance, taxableNonSavingsIncome = totalNonSavingsTaxableIncome)
+          personalSavingsAllowance = personalSavingsAllowance, taxableNonSavingsIncome = totalNonSavingsTaxableIncome,
+          ukPensionContributions = BigDecimal(ukPensionContributions.toInt))
 
         println(bandAllocations)
         println("====================================================================================")
@@ -360,32 +378,38 @@ class SavingsSpec extends UnitSpec {
   "SavingsIncomeTax" should {
     "be equal to" in {
       val inputs = Table(
-        ("NonSavingsIncome", "SavingsIncome", "SavingsIncomeTax"),
-        ("0", "12000", "0"),
-        ("0", "17001", "0.2"),
-        ("0", "17005", "1"),
-        ("0", "20000", "600"),
-        ("0", "43000", "5300"),
-        ("0", "43001", "5300.4"),
-        ("0", "43005", "5302"),
-        ("0", "100000", "28100"),
-        ("0", "150000", "52500"),
-        ("0", "150001", "52600.45"),
-        ("0", "150005", "52602.25"),
-        ("0", "160000", "57100"),
-        ("11000", "32000", "5300"),
-        ("11000", "32001", "5300.4"),
-        ("11000", "32005", "5302"),
-        ("11000", "89000", "28100"),
-        ("11000", "150000", "56350"),
-        ("11000", "150001", "56350.45"),
-        ("11000", "150005", "56352.25"),
-        ("11000", "160000", "60850")
+        ("NonSavingsIncome", "SavingsIncome","UkPensionContribution", "SavingsIncomeTax"),
+        ("0", "12000", "0", "0"),
+        ("0", "17001", "0", "0.2"),
+        ("0", "17005", "0", "1"),
+        ("0", "20000", "0", "600"),
+        ("0", "43000", "0", "5300"),
+        ("0", "43001", "0", "5300.4"),
+        ("0", "43005", "0", "5302"),
+        ("0", "100000", "0", "28100"),
+        ("0", "100000", "10000", "26100"),
+        ("0", "150000", "0", "52500"),
+        ("0", "150001", "0", "52600.45"),
+        ("0", "150005", "0", "52602.25"),
+        ("0", "160000", "0", "57100"),
+        ("11000", "32000", "0", "5300"),
+        ("11000", "32001", "0", "5300.4"),
+        ("11000", "32005", "0", "5302"),
+        ("11000", "89000", "0", "28100"),
+        ("11000", "150000", "0", "56350"),
+        ("11000", "150001", "0", "56350.45"),
+        ("11000", "150001", "20000", "51800.40"),
+        ("11000", "150005", "0", "56352.25"),
+        ("11000", "160000", "0", "60850"),
+        ("11000", "160000", "30000", "53800")
       )
 
-      TableDrivenPropertyChecks.forAll(inputs) { (nonSavingsIncome: String, savingsIncome: String, savingsIncomeTax: String) =>
+      TableDrivenPropertyChecks.forAll(inputs) { (nonSavingsIncome: String, savingsIncome: String, ukPensionContributions: String, savingsIncomeTax: String) =>
         val nonSavings = BigDecimal(nonSavingsIncome.toInt)
         val savings = BigDecimal(savingsIncome.toInt)
+        Print(savings).as("savings")
+        Print(nonSavings).as("nonSavings")
+        Print(BigDecimal(ukPensionContributions.toInt)).as("ukPensionContributions")
 
         val allowance = Print(Deductions.PersonalAllowance(nonSavings + savings, 0, 0)).as("personalAllowance")
         val deduction = Deductions.Total(0, allowance, 0)
@@ -394,7 +418,8 @@ class SavingsSpec extends UnitSpec {
         val taxableSavingsIncome = Print(Savings.TotalTaxableIncome(savings, deduction, nonSavings)).as("taxableSavingsIncome")
         val personalSavingsAllowance = Print(Savings.PersonalAllowance(nonSavings + savings)).as("personalSavingsAllowance")
         val profitFromSelfEmployments = Print(SelfEmployment.TotalTaxableProfit(nonSavings, deduction)).as("nonSavingsIncome")
-        val savingsIncomeBandAllocation = Savings.IncomeTaxBandSummary(taxableSavingsIncome, startingSavingsRate, personalSavingsAllowance,profitFromSelfEmployments)
+        val savingsIncomeBandAllocation = Savings.IncomeTaxBandSummary(taxableSavingsIncome, startingSavingsRate, personalSavingsAllowance,profitFromSelfEmployments,
+          ukPensionContributions = BigDecimal(ukPensionContributions.toInt))
 
         println(savingsIncomeBandAllocation)
         println("==============================")

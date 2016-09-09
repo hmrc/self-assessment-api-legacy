@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
 
 object Deductions {
 
-  def apply(selfAssessment: SelfAssessment) = new AllowancesAndReliefs(incomeTaxRelief = Some(Deductions.IncomeTaxRelief(selfAssessment)),
+  def apply(selfAssessment: SelfAssessment) = AllowancesAndReliefs(incomeTaxRelief = Some(Deductions.IncomeTaxRelief(selfAssessment)),
     personalAllowance = Some(Deductions.PersonalAllowance(selfAssessment)),
     retirementAnnuityContract = Some(Deductions.RetirementAnnuityContract(selfAssessment)))
 
@@ -78,4 +78,9 @@ object Deductions {
       })
   }
 
+  object TotalUkPensionContributions {
+    def apply(selfAssessment: SelfAssessment): BigDecimal =
+      ValueOrZero(selfAssessment.taxYearProperties.flatMap(_.pensionContributions).map(pensionContribution => Sum(pensionContribution.ukRegisteredPension)))
+
+  }
 }

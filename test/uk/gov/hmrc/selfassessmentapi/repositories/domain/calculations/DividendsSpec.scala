@@ -139,6 +139,17 @@ class DividendsSpec extends UnitSpec {
         )
     }
 
+    "be calculated when NonSavingsIncome = 0, ukPensionContributions is present and TaxableSavingIncome is all in Basic Rate band" in {
+      Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 0, taxableNonSavingsIncome =0, taxableDividendIncome = 32001,
+        personalDividendAllowance = 5000, ukPensionContribution = 500) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 27001.0, "7.5%", 2025.07),
+          TaxBandSummary("higherRate", 0, "32.5%", 0.0),
+          TaxBandSummary("additionalHigherRate", 0.0, "38.1%", 0.0)
+        )
+    }
+
     "be calculated when NonSavingsIncome = 0 and TaxableSavingIncome is spread over Basic, Higher and Additional Higher Rate band" in {
       Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 0, taxableNonSavingsIncome =0, taxableDividendIncome = 150001,
         personalDividendAllowance = 5000) should contain theSameElementsInOrderAs
@@ -183,35 +194,48 @@ class DividendsSpec extends UnitSpec {
         )
     }
 
+   "be calculated when NonSavingsIncome > 0, ukPensionContributions is present and TaxableSavingIncome is spread over Basic and Higher Rate band" in {
+      Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 500, taxableNonSavingsIncome = 500, taxableDividendIncome = 149001,
+        personalDividendAllowance = 5000, ukPensionContribution = 500) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
+          TaxBandSummary("basicRate", 26500.0, "7.5%", 1987.5),
+          TaxBandSummary("higherRate", 117501.0, "32.5%", 38187.82),
+          TaxBandSummary("additionalHigherRate", 0.0, "38.1%", 0.0)
+        )
+    }
+
   }
 
   "Dividends.IncomeTaxBandSummary" should {
     "acceptance test" in {
       val inputs = Table(
-        ("TotalProfitFromSelfEmployments", "TotalSavingsIncome", "TotalDividends", "NilRateAmount", "BasicRateTaxAmount",
+        ("TotalProfitFromSelfEmployments", "TotalSavingsIncome", "UkPensionContribution", "TotalDividends", "NilRateAmount", "BasicRateTaxAmount",
           "HigherRateTaxAmount", "AdditionalHigherRateAmount"),
-        ("0", "0", "10999", "0", "0", "0", "0"),
-        ("0", "0", "11001", "1", "0", "0", "0"),
-        ("0", "0", "15000", "4000", "0", "0", "0"),
-        ("0", "0", "16001", "5000", "1", "0", "0"),
-        ("0", "0", "20000", "5000", "4000", "0", "0"),
-        ("0", "0", "33000", "5000", "17000", "0", "0"),
-        ("0", "0", "43000", "5000", "27000", "0", "0"),
-        ("0", "0", "43001", "5000", "27000", "1", "0"),
-        ("0", "0", "120000", "5000", "27000", "87000", "0"),
-        ("0", "0", "149000", "5000", "27000", "117000", "0"),
-        ("0", "0", "150001", "5000", "27000", "118000", "1"),
-        ("0", "0", "151000", "5000", "27000", "118000", "1000"),
-        ("1000", "0", "11000", "1000", "0", "0", "0"),
-        ("1000", "0", "15000", "5000", "0", "0", "0"),
-        ("1000", "0", "16000", "5000", "1000", "0", "0"),
-        ("11000", "0", "5001", "5000", "1", "0", "0"),
-        ("12000", "0", "5000", "5000", "0", "0", "0"),
-        ("12000", "0", "6000", "5000", "1000", "0", "0"),
-        ("12000", "0", "139000", "5000", "15000", "118000", "1000")
+        ("0", "0", "0", "10999", "0", "0", "0", "0"),
+        ("0", "0", "0", "11001", "1", "0", "0", "0"),
+        ("0", "0", "0", "15000", "4000", "0", "0", "0"),
+        ("0", "0", "0", "16001", "5000", "1", "0", "0"),
+        ("0", "0", "0", "20000", "5000", "4000", "0", "0"),
+        ("0", "0", "0", "33000", "5000", "17000", "0", "0"),
+        ("0", "0", "0", "43000", "5000", "27000", "0", "0"),
+        ("0", "0", "0", "43001", "5000", "27000", "1", "0"),
+        ("0", "0", "0", "120000", "5000", "27000", "87000", "0"),
+        ("0", "0", "0", "149000", "5000", "27000", "117000", "0"),
+        ("0", "0", "5000", "149000", "5000", "32000", "112000", "0"),
+        ("0", "0", "0", "150001", "5000", "27000", "118000", "1"),
+        ("0", "0", "0", "151000", "5000", "27000", "118000", "1000"),
+        ("1000", "0", "0", "11000", "1000", "0", "0", "0"),
+        ("1000", "0", "0", "15000", "5000", "0", "0", "0"),
+        ("1000", "0", "0", "16000", "5000", "1000", "0", "0"),
+        ("11000", "0", "0", "5001", "5000", "1", "0", "0"),
+        ("12000", "0", "0", "5000", "5000", "0", "0", "0"),
+        ("12000", "0", "0", "6000", "5000", "1000", "0", "0"),
+        ("12000", "0", "0", "139000", "5000", "15000", "118000", "1000"),
+        ("12000", "0", "500", "139000", "5000", "15500", "118000", "500")
       )
 
-      TableDrivenPropertyChecks.forAll(inputs) { (totalProfits: String, totalSavingsIncome: String,
+      TableDrivenPropertyChecks.forAll(inputs) { (totalProfits: String, totalSavingsIncome: String, ukPensionContributions: String,
                                                   totalDividends:String, nilRateAmount: String, basicRateTaxAmount: String,
                                                   higherRateTaxAmount: String, additionalHigherRateAmount: String) =>
 
@@ -219,6 +243,7 @@ class DividendsSpec extends UnitSpec {
         val profits = BigDecimal(totalProfits.toInt)
         val savings = BigDecimal(totalSavingsIncome.toInt)
         val dividends = BigDecimal(totalDividends.toInt)
+        val ukPensionsContributions = BigDecimal(ukPensionContributions.toInt)
 
         val personalAllowance = Print(Deductions.PersonalAllowance(totalIncomeReceived = profits + savings + dividends, incomeTaxRelief,
           pensionContribution = 0)).as("personalAllowance")
@@ -229,7 +254,7 @@ class DividendsSpec extends UnitSpec {
         val personalDividendAllowance = Print(Dividends.PersonalAllowance(taxableDividendIncome)).as("personalDividendAllowance")
 
         val dividendIncomeTax = Dividends.IncomeTaxBandSummary(taxableProfitFromSelfEmployments, taxableSavingsIncome, taxableDividendIncome,
-          personalDividendAllowance)
+          personalDividendAllowance, ukPensionContribution = ukPensionsContributions)
 
         println(dividendIncomeTax.map(_.taxableAmount))
         println("==========================================")
@@ -278,7 +303,4 @@ class DividendsSpec extends UnitSpec {
     }
 
   }
-
-
-
 }

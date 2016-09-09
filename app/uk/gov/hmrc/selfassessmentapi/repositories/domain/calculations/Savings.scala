@@ -81,14 +81,17 @@ object Savings {
 
   object IncomeTaxBandSummary {
     def apply(selfAssessment: SelfAssessment): Seq[TaxBandSummary] = apply(Savings.TotalTaxableIncome(selfAssessment),
-      Savings.StartingRate(selfAssessment), Savings.PersonalAllowance(selfAssessment), NonSavings.TotalTaxableIncome(selfAssessment))
+      Savings.StartingRate(selfAssessment), Savings.PersonalAllowance(selfAssessment), NonSavings.TotalTaxableIncome(selfAssessment),
+      Deductions.TotalUkPensionContributions(selfAssessment))
 
     def apply(taxableSavingsIncome: BigDecimal, startingSavingsRate: BigDecimal, personalSavingsAllowance: BigDecimal,
-              taxableNonSavingsIncome: BigDecimal): Seq[TaxBandSummary] = {
+              taxableNonSavingsIncome: BigDecimal, ukPensionContributions: BigDecimal = 0): Seq[TaxBandSummary] = {
       val startingTaxBand = TaxBand.SavingsStartingTaxBand(startingSavingsRate)
       val nilTaxBand = TaxBand.NilTaxBand(Some(startingTaxBand), personalSavingsAllowance)
-      val basicTaxBand = TaxBand.BasicTaxBand(Some(nilTaxBand), taxableNonSavingsIncome)
-      val higherTaxBand = TaxBand.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome)
+      val basicTaxBand = TaxBand.BasicTaxBand(Some(nilTaxBand), reductionInUpperBound =  taxableNonSavingsIncome,
+                                              additionsToUpperBound = ukPensionContributions)
+      val higherTaxBand = TaxBand.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome,
+                                                additionsToUpperBound = ukPensionContributions)
 
       Seq(startingTaxBand, nilTaxBand, basicTaxBand, higherTaxBand, TaxBand.AdditionalHigherTaxBand(higherTaxBand)).map { taxBand =>
         api.TaxBandAllocation(taxBand.allocate2(taxableSavingsIncome), taxBand).toTaxBandSummary

@@ -79,10 +79,18 @@ class LiabilitySpec extends UnitSpec {
           TaxBandSummary("higherRate", taxableAmount = 300, chargedAt = "40%", tax = 120),
           TaxBandSummary("additionalHigherRate", taxableAmount = 300, chargedAt = "45%", tax = 135)
         ),
-        totalIncomeTax = 630,
-        totalTaxDeducted = 100,
-        totalTaxDue = 530,
-        totalTaxOverPaid = 0
+        pensionSavingsChargesSummary = Seq(
+          TaxBandSummary("basicRate", taxableAmount = 300, chargedAt = "20%", tax = 60),
+          TaxBandSummary("higherRate", taxableAmount = 300, chargedAt = "40%", tax = 120),
+          TaxBandSummary("additionalHigherRate", taxableAmount = 300, chargedAt = "45%", tax = 135)
+        ),
+        taxes = TaxesCalculated(
+          totalIncomeTax = 630,
+          totalTaxDeducted = 100,
+          totalTaxDue = 530,
+          totalTaxOverPaid = 0,
+          pensionSavingsCharges = 0
+        )
       )
 
       val liabilityDto = liability.toLiability
@@ -514,12 +522,12 @@ case class LiabilityResultAssertions(liability: Liability) extends Matchers {
     this
   }
   def totalTaxDueIs(amount: BigDecimal) = {
-    liability.totalTaxDue shouldBe amount
+    liability.taxes.totalTaxDue shouldBe amount
     this
   }
 
   def totalIncomeTaxIs(amount: BigDecimal) = {
-    liability.totalIncomeTax shouldBe amount
+    liability.taxes.totalIncomeTax shouldBe amount
     this
   }
 

@@ -53,18 +53,21 @@ object Dividends {
   object IncomeTaxBandSummary  {
 
     def apply(taxableNonSavingsIncome: BigDecimal, taxableSavingsIncome: BigDecimal, taxableDividendIncome: BigDecimal,
-              personalDividendAllowance: BigDecimal): Seq[TaxBandSummary] = {
+              personalDividendAllowance: BigDecimal, ukPensionContribution: BigDecimal = 0): Seq[TaxBandSummary] = {
       val nilTaxBand = TaxBand.NilTaxBand(bandWidth = personalDividendAllowance)
-      val basicTaxBand = TaxBand.BasicTaxBand(Some(nilTaxBand), taxableNonSavingsIncome + taxableSavingsIncome, chargedAt = 7.5)
-      val higherTaxBand = TaxBand.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome + taxableSavingsIncome, chargedAt = 32.5)
+      val basicTaxBand = TaxBand.BasicTaxBand(Some(nilTaxBand), taxableNonSavingsIncome + taxableSavingsIncome,
+        additionsToUpperBound = ukPensionContribution, chargedAt = 7.5)
+      val higherTaxBand = TaxBand.HigherTaxBand(basicTaxBand, taxableNonSavingsIncome + taxableSavingsIncome,
+        additionsToUpperBound = ukPensionContribution, chargedAt = 32.5)
 
       Seq(nilTaxBand, basicTaxBand, higherTaxBand, TaxBand.AdditionalHigherTaxBand(higherTaxBand, chargedAt = 38.1)).map { taxBand =>
         TaxBandAllocation(taxBand.allocate2(taxableDividendIncome), taxBand).toTaxBandSummary
       }
     }
 
-    def apply(selfAssessment: SelfAssessment): Seq[TaxBandSummary] = apply(NonSavings.TotalTaxableIncome(selfAssessment), Savings.TotalTaxableIncome(selfAssessment),
-      Dividends.TotalTaxableIncome(selfAssessment), Dividends.PersonalAllowance(selfAssessment))
+    def apply(selfAssessment: SelfAssessment): Seq[TaxBandSummary] = apply(NonSavings.TotalTaxableIncome(selfAssessment),
+      Savings.TotalTaxableIncome(selfAssessment), Dividends.TotalTaxableIncome(selfAssessment),
+      Dividends.PersonalAllowance(selfAssessment), Deductions.TotalUkPensionContributions(selfAssessment))
   }
 
   object IncomeTax extends IncomeTax {

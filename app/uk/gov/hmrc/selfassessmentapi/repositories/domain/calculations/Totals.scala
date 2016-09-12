@@ -37,11 +37,13 @@ object Totals {
 
   object TaxDeducted {
     def apply(selfAssessment: SelfAssessment) = Savings.TotalTaxPaid(selfAssessment) + UkProperty.TotalTaxPaid(selfAssessment) +
-      Employment.TotalTaxPaid(selfAssessment)
+      Employment.TotalTaxPaid(selfAssessment) + PensionSavingsCharges.TotalTaxPaid(selfAssessment)
   }
 
   object TaxDue {
-    def apply(selfAssessment: SelfAssessment) = PositiveOrZero(Totals.IncomeTax(selfAssessment) - Totals.TaxDeducted(selfAssessment))
+    def apply(selfAssessment: SelfAssessment) = PositiveOrZero(
+      Totals.IncomeTax(selfAssessment) + PensionSavingsCharges.IncomeTax(selfAssessment) - Totals.TaxDeducted(selfAssessment)
+    )
   }
 
   object IncomeTax {
@@ -50,7 +52,8 @@ object Totals {
   }
 
   object TaxOverpaid {
-    def apply(selfAssessment: SelfAssessment) = PositiveOrZero(Totals.TaxDeducted(selfAssessment) - Totals.IncomeTax(selfAssessment))
+    def apply(selfAssessment: SelfAssessment) = PositiveOrZero(
+      Totals.TaxDeducted(selfAssessment) - Totals.IncomeTax(selfAssessment) - PensionSavingsCharges.IncomeTax(selfAssessment))
   }
 
 }

@@ -112,6 +112,7 @@ object TaxPaidForUkProperty {
 }
 
 case class TaxDeducted(interestFromUk: BigDecimal,
+                       taxPaidByPensionScheme: BigDecimal,
                        fromUkProperties: Seq[TaxPaidForUkProperty],
                        fromEmployments: Seq[UkTaxPaidForEmployment],
                        total: BigDecimal)
@@ -120,8 +121,15 @@ object TaxDeducted {
   implicit val format = Json.format[TaxDeducted]
 }
 
+case class OtherCharges(pensionSavings: Seq[TaxBandSummary], total: BigDecimal)
+
+object OtherCharges {
+  implicit val format = Json.format[OtherCharges]
+}
+
 case class Liability(income: IncomeSummary,
                      incomeTaxCalculations: IncomeTaxCalculations,
+                     otherCharges: OtherCharges,
                      taxDeducted: TaxDeducted,
                      totalTaxDue: BigDecimal,
                      totalTaxOverpaid: BigDecimal)
@@ -177,8 +185,17 @@ object Liability {
             ),
             total = 31500
         ),
+        otherCharges = OtherCharges(
+            pensionSavings = Seq(
+                TaxBandSummary("basicRate", 10000, "20%", 2000),
+                TaxBandSummary("higherRate", 10000, "40%", 4000),
+                TaxBandSummary("additionalHigherRate", 10000, "45%", 4500)
+            ),
+          total = 10500)
+        ,
         taxDeducted = TaxDeducted(
             interestFromUk = 0,
+            taxPaidByPensionScheme = 10500,
             fromUkProperties = Nil,
             fromEmployments = exampleUkTaxPaidForEmployment,
             total = 0

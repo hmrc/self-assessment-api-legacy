@@ -20,7 +20,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
 import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{DividendsFromUKSources, TaxBandSummary, SelfAssessment}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{DividendsFromUKSources, TaxBandSummary}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
 
@@ -119,7 +119,7 @@ class DividendsSpec extends UnitSpec {
   "Dividends.IncomeTaxBandSummary" should {
     "be calculated when TaxableNonSavingsIncome = 0, TaxableSavingIncome = 0 and TaxableDividendsIncome falls within BasicRate band" in {
       Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 0, taxableNonSavingsIncome =0, taxableDividendIncome = 31999,
-        personalDividendAllowance = 5000) should contain theSameElementsInOrderAs
+        personalDividendAllowance = 5000, ukPensionContribution = 0) should contain theSameElementsInOrderAs
         Seq(
           TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
           TaxBandSummary("basicRate", 26999.0, "7.5%", 2024.92),
@@ -130,7 +130,7 @@ class DividendsSpec extends UnitSpec {
 
     "be calculated when NonSavingsIncome = 0 and TaxableSavingIncome is spread over Basic and Higher Rate band" in {
       Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 0, taxableNonSavingsIncome =0, taxableDividendIncome = 32001,
-        personalDividendAllowance = 5000) should contain theSameElementsInOrderAs
+        personalDividendAllowance = 5000, ukPensionContribution = 0) should contain theSameElementsInOrderAs
         Seq(
           TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
           TaxBandSummary("basicRate", 27000.0, "7.5%", 2025.0),
@@ -152,7 +152,7 @@ class DividendsSpec extends UnitSpec {
 
     "be calculated when NonSavingsIncome = 0 and TaxableSavingIncome is spread over Basic, Higher and Additional Higher Rate band" in {
       Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 0, taxableNonSavingsIncome =0, taxableDividendIncome = 150001,
-        personalDividendAllowance = 5000) should contain theSameElementsInOrderAs
+        personalDividendAllowance = 5000, ukPensionContribution = 0) should contain theSameElementsInOrderAs
         Seq(
           TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
           TaxBandSummary("basicRate", 27000.0, "7.5%", 2025.0),
@@ -163,7 +163,7 @@ class DividendsSpec extends UnitSpec {
 
     "be calculated when NonSavingsIncome > 0 and TaxableSavingIncome falls within BasicRate band" in {
       Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 500, taxableNonSavingsIncome = 500, taxableDividendIncome = 30999,
-        personalDividendAllowance = 5000) should contain theSameElementsInOrderAs
+        personalDividendAllowance = 5000, ukPensionContribution = 0) should contain theSameElementsInOrderAs
         Seq(
           TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
           TaxBandSummary("basicRate", 25999.0, "7.5%", 1949.92),
@@ -174,7 +174,7 @@ class DividendsSpec extends UnitSpec {
 
     "be calculated when NonSavingsIncome > 0 and TaxableSavingIncome is spread over Basic and Higher Rate band" in {
       Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 500, taxableNonSavingsIncome = 500, taxableDividendIncome = 31001,
-        personalDividendAllowance = 5000) should contain theSameElementsInOrderAs
+        personalDividendAllowance = 5000, ukPensionContribution = 0) should contain theSameElementsInOrderAs
         Seq(
           TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
           TaxBandSummary("basicRate", 26000.0, "7.5%", 1950.0),
@@ -185,7 +185,7 @@ class DividendsSpec extends UnitSpec {
 
     "be calculated when NonSavingsIncome > 0 and TaxableSavingIncome is spread over Basic, Higher and Additional Higher Rate band" in {
       Dividends.IncomeTaxBandSummary(taxableSavingsIncome = 500, taxableNonSavingsIncome = 500, taxableDividendIncome = 149001,
-        personalDividendAllowance = 5000) should contain theSameElementsInOrderAs
+        personalDividendAllowance = 5000, ukPensionContribution = 0) should contain theSameElementsInOrderAs
         Seq(
           TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
           TaxBandSummary("basicRate", 26000.0, "7.5%", 1950.0),

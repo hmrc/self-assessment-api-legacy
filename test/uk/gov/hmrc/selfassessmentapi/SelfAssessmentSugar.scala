@@ -65,7 +65,8 @@ object SelfAssessmentSugar extends UnitSpec {
                 totalTaxDeducted = 0,
                 totalTaxDue = 0,
                 totalTaxOverPaid = 0,
-                pensionSavingsCharges = 0
+                pensionSavingsCharges = 0,
+                taxPaidByPensionScheme = 0
               )
     )
   }

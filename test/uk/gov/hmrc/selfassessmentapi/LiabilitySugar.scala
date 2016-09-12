@@ -64,7 +64,8 @@ object LiabilitySugar extends UnitSpec {
                         totalTaxDeducted = totalTaxDeducted,
                         totalTaxDue = totalTaxDue,
                         totalTaxOverPaid = totalTaxOverPaid,
-                        pensionSavingsCharges = 0
+                        pensionSavingsCharges = 0,
+                        taxPaidByPensionScheme = 0
                       )
               )
   }

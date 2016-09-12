@@ -89,7 +89,8 @@ class LiabilitySpec extends UnitSpec {
           totalTaxDeducted = 100,
           totalTaxDue = 530,
           totalTaxOverPaid = 0,
-          pensionSavingsCharges = 0
+          pensionSavingsCharges = 0,
+          taxPaidByPensionScheme = 0
         )
       )
 

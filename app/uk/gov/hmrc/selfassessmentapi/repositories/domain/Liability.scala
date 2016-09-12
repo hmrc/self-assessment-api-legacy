@@ -30,7 +30,8 @@ case class TaxesCalculated(pensionSavingsCharges: BigDecimal,
                            totalIncomeTax: BigDecimal,
                            totalTaxDeducted: BigDecimal,
                            totalTaxDue: BigDecimal,
-                           totalTaxOverPaid: BigDecimal)
+                           totalTaxOverPaid: BigDecimal,
+                           taxPaidByPensionScheme: BigDecimal)
 
 object TaxesCalculated {
   implicit val format = Json.format[TaxesCalculated]
@@ -97,7 +98,7 @@ case class Liability(id: BSONObjectID,
                      taxDeducted = api.TaxDeducted(interestFromUk = taxDeducted.interestFromUk,
                                                       fromUkProperties = taxDeducted.deductionFromUkProperties,
                                                       fromEmployments = taxDeducted.ukTaxesPaidForEmployments,
-                                                      taxPaidByPensionScheme = taxes.pensionSavingsCharges,
+                                                      taxPaidByPensionScheme = taxes.taxPaidByPensionScheme,
                                                       total = taxes.totalTaxDeducted),
                      totalTaxDue = taxes.totalTaxDue,
                      totalTaxOverpaid = taxes.totalTaxOverPaid)
@@ -138,7 +139,8 @@ object Liability {
                                 totalIncomeTax = Totals.IncomeTax(selfAssessment),
                                 totalTaxDeducted = Totals.TaxDeducted(selfAssessment),
                                 totalTaxDue = Totals.TaxDue(selfAssessment),
-                                totalTaxOverPaid = Totals.TaxOverpaid(selfAssessment))
+                                totalTaxOverPaid = Totals.TaxOverpaid(selfAssessment),
+                                taxPaidByPensionScheme = PensionSavingsCharges.TotalTaxPaid(selfAssessment))
                   )
   }
 

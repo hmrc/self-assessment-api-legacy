@@ -21,6 +21,21 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, TaxBand}
 
 object PensionSavingsCharges {
 
+
+  private def getPensionSavings(selfAssessment: SelfAssessment) = {
+    for {
+      taxYearProperties <- selfAssessment.taxYearProperties
+      pensionContribution <- taxYearProperties.pensionContributions
+      pensionSavings <- pensionContribution.pensionSavings
+    } yield pensionSavings
+  }
+
+  object TotalTaxPaid {
+    def apply(selfAssessment: SelfAssessment): BigDecimal = {
+      getPensionSavings(selfAssessment).flatMap( _.taxPaidByPensionScheme).getOrElse(BigDecimal(0))
+    }
+  }
+
   object IncomeTaxBandSummary  {
 
     def apply(totalTaxableIncome: BigDecimal, ukPensionContribution: BigDecimal = 0, pensionContributionExcess: BigDecimal): Seq[TaxBandSummary] = {
@@ -32,16 +47,10 @@ object PensionSavingsCharges {
     }
 
     def apply(selfAssessment: SelfAssessment): Seq[TaxBandSummary] = {
-
-      val taxablePensionContributionExcess = (for {
-        taxYearProperties <- selfAssessment.taxYearProperties
-        pensionContribution <- taxYearProperties.pensionContributions
-        pensionSaving <- pensionContribution.pensionSavings
-        excessOfAnnualAllowance <- pensionSaving.excessOfAnnualAllowance
-      } yield excessOfAnnualAllowance).getOrElse(BigDecimal(0))
-
-      apply(NonSavings.TotalTaxableIncome(selfAssessment) + Savings.TotalTaxableIncome(selfAssessment) + Dividends.TotalTaxableIncome(selfAssessment),
-        Deductions.TotalUkPensionContributions(selfAssessment), taxablePensionContributionExcess)
+      apply(NonSavings.TotalTaxableIncome(selfAssessment) + Savings.TotalTaxableIncome(selfAssessment) +
+            Dividends.TotalTaxableIncome(selfAssessment),
+        Deductions.TotalUkPensionContributions(selfAssessment),
+        getPensionSavings(selfAssessment).flatMap(_.excessOfAnnualAllowance).getOrElse(BigDecimal(0)))
     }
   }
 

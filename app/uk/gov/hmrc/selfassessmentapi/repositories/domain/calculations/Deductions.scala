@@ -65,22 +65,26 @@ object Deductions {
 
   object RetirementAnnuityContract {
     def apply(selfAssessment: SelfAssessment): BigDecimal =
-    ValueOrZero(selfAssessment.taxYearProperties.flatMap(_.pensionContributions).map { pensionContribution =>
+      ValueOrZero(getPensionContribution(selfAssessment).map ( pensionContribution =>
         RoundUp(Sum(pensionContribution.employerScheme, pensionContribution.overseasPension, pensionContribution.retirementAnnuity))
-    })
+      ))
   }
 
   object PensionContribution {
     def apply(selfAssessment: SelfAssessment): BigDecimal =
-      ValueOrZero(selfAssessment.taxYearProperties.flatMap(_.pensionContributions).map { pensionContribution =>
+      ValueOrZero(getPensionContribution(selfAssessment).map(pensionContribution =>
         Sum(pensionContribution.employerScheme, pensionContribution.overseasPension, pensionContribution.retirementAnnuity,
           pensionContribution.ukRegisteredPension)
-      })
+      ))
   }
 
   object TotalUkPensionContributions {
     def apply(selfAssessment: SelfAssessment): BigDecimal =
-      ValueOrZero(selfAssessment.taxYearProperties.flatMap(_.pensionContributions).map(pensionContribution => Sum(pensionContribution.ukRegisteredPension)))
-
+      ValueOrZero(getPensionContribution(selfAssessment).flatMap(_.ukRegisteredPension))
   }
+
+  private def getPensionContribution(selfAssessment: SelfAssessment) = for {
+    taxYearProps <- selfAssessment.taxYearProperties
+    pensionContribution <- taxYearProps.pensionContributions
+  } yield pensionContribution
 }

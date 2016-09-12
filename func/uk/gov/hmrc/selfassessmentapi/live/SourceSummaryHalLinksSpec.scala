@@ -1,8 +1,8 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.domain._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SourceSummaryHalLinksSpec extends BaseFunctionalSpec {

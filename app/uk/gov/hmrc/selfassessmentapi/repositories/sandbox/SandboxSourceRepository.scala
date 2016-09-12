@@ -20,7 +20,7 @@ import play.api.libs.json.Json.toJson
 import play.api.libs.json.Writes
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.{JsonItem, SourceRepository}
 
 import scala.concurrent.Future

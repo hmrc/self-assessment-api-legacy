@@ -3,20 +3,20 @@ package uk.gov.hmrc.selfassessmentapi.live
 import org.joda.time.LocalDate
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.{parse, toJson}
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
-import uk.gov.hmrc.selfassessmentapi.domain.employment.Employment
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.FurnishedHolidayLetting
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.EEA
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment._
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.SourceType.UKProperties
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.UKProperty
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SourceType.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.UnearnedIncome
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceType, SourceTypes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, ErrorCode, SourceTypes}
+import ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.Employment
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.SourceType.Employments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.FurnishedHolidayLetting
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.EEA
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SelfEmployment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.SourceType.UKProperties
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.UKProperty
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.UnearnedIncome
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 import scala.util.matching.Regex

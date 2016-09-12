@@ -20,8 +20,8 @@ import play.api.hal.{Hal, HalLink, HalResource}
 import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SourceController._
-import uk.gov.hmrc.selfassessmentapi.domain._
 
 trait HalSupport {
 

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import uk.gov.hmrc.selfassessmentapi.domain.ValidationErrors
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ValidationErrors
 
 sealed trait ErrorResult
 

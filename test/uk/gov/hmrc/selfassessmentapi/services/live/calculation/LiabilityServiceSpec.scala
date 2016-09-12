@@ -21,16 +21,20 @@ import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoLiability
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
+import SourceTypes._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.LiabilityResult
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.SelfAssessment
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
 
 import scala.concurrent.Future
 
-class LiabilityServiceSpec extends UnitSpec with MockitoSugar with SelfEmploymentSugar {
+class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
 
   private val saUtr = generateSaUtr()
   private val liabilityRepo = mock[LiabilityMongoRepository]
@@ -38,33 +42,37 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar with SelfEmploymen
   private val selfEmploymentRepo = mock[SelfEmploymentMongoRepository]
   private val unearnedIncomeRepo = mock[UnearnedIncomeMongoRepository]
   private val ukPropertyRepo = mock[UKPropertiesMongoRepository]
-  private val liabilityCalculator = mock[LiabilityCalculator]
+  private val furnishedHolidayLettingsRepo = mock[FurnishedHolidayLettingsMongoRepository]
+  private val taxYearPropertiesService = mock[TaxYearPropertiesService]
   private val featureSwitch = mock[FeatureSwitch]
-  private val service = new LiabilityService(employmentRepo, selfEmploymentRepo, unearnedIncomeRepo, liabilityRepo, ukPropertyRepo, liabilityCalculator, featureSwitch)
+  private val service = new LiabilityService(employmentRepo,
+                                             selfEmploymentRepo,
+                                             unearnedIncomeRepo,
+                                             furnishedHolidayLettingsRepo,
+                                             liabilityRepo,
+                                             ukPropertyRepo,
+                                             taxYearPropertiesService,
+                                             featureSwitch)
 
   "calculate" should {
 
+    when(taxYearPropertiesService.findTaxYearProperties(any[SaUtr], any[TaxYear])).thenReturn(Future.successful(None))
+
     // Stub save and calculate methods to return the same item they are given.
-    when(liabilityRepo.save(any[MongoLiability])).thenAnswer(new Answer[Future[MongoLiability]] {
-      override def answer(invocation: InvocationOnMock): Future[MongoLiability] = {
-        val arg = invocation.getArguments.head.asInstanceOf[MongoLiability]
+    when(liabilityRepo.save(any[LiabilityResult])).thenAnswer(new Answer[Future[LiabilityResult]] {
+      override def answer(invocation: InvocationOnMock): Future[LiabilityResult] = {
+        val arg = invocation.getArguments.head.asInstanceOf[LiabilityResult]
         Future.successful(arg)
       }
     })
 
-    when(liabilityCalculator.calculate(any[SelfAssessment], any[MongoLiability])).thenAnswer(new Answer[MongoLiability] {
-      override def answer(invocation: InvocationOnMock): MongoLiability = {
-        invocation.getArguments.last.asInstanceOf[MongoLiability]
-      }
-    })
-
     "not get employment sources from repository when Employment source is switched on" in {
-        when(featureSwitch.isEnabled(Employments)).thenReturn(true)
-        when(employmentRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+      when(featureSwitch.isEnabled(Employments)).thenReturn(true)
+      when(employmentRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
 
-        await(service.calculate(saUtr, taxYear))
+      await(service.calculate(saUtr, taxYear))
 
-        verify(employmentRepo).findAll(saUtr, taxYear)
+      verify(employmentRepo).findAll(saUtr, taxYear)
     }
 
     "not get employment sources from repository when Employment source is switched off" in {

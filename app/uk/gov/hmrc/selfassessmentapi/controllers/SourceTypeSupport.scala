@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import uk.gov.hmrc.selfassessmentapi.domain.SourceType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceType
 
 trait SourceTypeSupport {
   def sourceHandler(sourceType: SourceType): SourceHandler[_]

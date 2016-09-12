@@ -22,8 +22,8 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.JsonMarshaller
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
@@ -145,7 +145,6 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
         annualInvestmentAllowance = Some(BigDecimal(10.00)),
         capitalAllowanceMainPool = Some(BigDecimal(20.00)),
         capitalAllowanceSpecialRatePool = Some(BigDecimal(30.00)),
-        restrictedCapitalAllowance = Some(BigDecimal(40.00)),
         businessPremisesRenovationAllowance = Some(BigDecimal(50.00)),
         enhancedCapitalAllowance = Some(BigDecimal(60.00)),
         allowancesOnSales = Some(BigDecimal(70.00)))

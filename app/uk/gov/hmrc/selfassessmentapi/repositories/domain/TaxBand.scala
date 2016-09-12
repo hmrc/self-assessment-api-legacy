@@ -16,14 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.services.live.calculation.steps.Math
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{CapAt, FlooredAt, PositiveOrZero, RoundDownToPennies}
 
-sealed trait TaxBand extends Math {
+sealed trait TaxBand {
   def name: String
   def lowerBound: BigDecimal
   def upperBound: Option[BigDecimal]
+  val chargedAt: BigDecimal = 0
   def width = upperBound.map(_ - lowerBound + 1).getOrElse(BigDecimal(Long.MaxValue))
+  def allocate(income: BigDecimal) = if (income < width) income else width
+  def allocate2(taxableIncome: BigDecimal) = RoundDownToPennies(CapAt(PositiveOrZero(taxableIncome - (lowerBound - 1)), PositiveOrZero(width)))
 }
 
 object TaxBand {
@@ -34,58 +36,45 @@ object TaxBand {
       amount >= taxBand.lowerBound && taxBand.upperBound.forall(amount <= _)
   }
 
-  case object NilTaxBand extends TaxBand {
-    val name = "nilRate"
-    val lowerBound = BigDecimal(0)
-    val upperBound = None
+  case class SavingsStartingTaxBand(startingSavingsRate: BigDecimal) extends TaxBand {
+    override def name: String = "startingRate"
+    override val chargedAt = BigDecimal(0)
+    override val upperBound = Some(lowerBound - 1 + startingSavingsRate)
+    override lazy val lowerBound = BigDecimal(1)
+    override def toString = s"SavingsStartingTaxBand($lowerBound:${upperBound.get})"
   }
 
-  case object BasicTaxBand extends TaxBand {
-    val name = "basicRate"
-    val lowerBound = BigDecimal(1)
-    val upperBound = Some(BigDecimal(32000))
+  case class NilTaxBand(precedingTaxBand: Option[TaxBand] = None, bandWidth: BigDecimal = 0) extends TaxBand {
+    override def name: String = "nilRate"
+    override val chargedAt = BigDecimal(0)
+    override val upperBound = Some(lowerBound - 1 + bandWidth)
+    override lazy val lowerBound = precedingTaxBand.flatMap(_.upperBound).getOrElse(BigDecimal(0)) + 1
+    override def toString = s"NilTaxBand($lowerBound:${upperBound.get})"
   }
 
-  case object HigherTaxBand extends TaxBand {
-    val name = "higherRate"
-    val lowerBound = BigDecimal(32001)
-    val upperBound = Some(BigDecimal(150000))
+  case class BasicTaxBand(precedingTaxBand: Option[TaxBand] = None, reductionInUpperBound: BigDecimal = 0,
+                          override val chargedAt: BigDecimal = 20) extends TaxBand {
+    private val defaultUpperBound = 32000
+    override def name: String = "basicRate"
+    override val upperBound = Some(FlooredAt(defaultUpperBound - reductionInUpperBound, lowerBound - 1))
+    override lazy val lowerBound = precedingTaxBand.flatMap(_.upperBound).getOrElse(BigDecimal(0)) + 1
+    override def toString = s"BasicTaxBand($lowerBound:${upperBound.get})"
   }
 
-  case object AdditionalHigherTaxBand extends TaxBand {
-    val name = "additionalHigherRate"
-    val lowerBound = BigDecimal(150001)
-    val upperBound = None
+  case class HigherTaxBand(precedingTaxBand: BasicTaxBand = BasicTaxBand(), reductionInUpperBound: BigDecimal = 0,
+                           override val chargedAt: BigDecimal = 40) extends TaxBand {
+    private val defaultUpperBound = 150000
+    override def name: String = "higherRate"
+    override val upperBound = Some(FlooredAt(defaultUpperBound - reductionInUpperBound, lowerBound - 1))
+    override lazy val lowerBound = precedingTaxBand.upperBound.getOrElse(BigDecimal(0)) + 1
+    override def toString = s"HigherTaxBand($lowerBound:${upperBound.get})"
   }
 
-  case object SavingsStartingTaxBand extends TaxBand { 
-    val name = "startingRate"
-    val lowerBound = BigDecimal(0)
-    val upperBound = None 
-  }
-
-  implicit val format: Format[TaxBand] = new Format[TaxBand] {
-
-    def reads(json: JsValue): JsResult[TaxBand] = {
-      json.as[String] match {
-        case NilTaxBand.name => JsSuccess(NilTaxBand)
-        case BasicTaxBand.name => JsSuccess(BasicTaxBand)
-        case HigherTaxBand.name => JsSuccess(HigherTaxBand)
-        case AdditionalHigherTaxBand.name => JsSuccess(AdditionalHigherTaxBand)
-        case SavingsStartingTaxBand.name => JsSuccess(SavingsStartingTaxBand)
-        case unknown => throw new IllegalStateException(s"Unknown tax band '$unknown'")
-      }
-    }
-
-    def writes(band: TaxBand): JsValue = {
-      band match {
-        case NilTaxBand => JsString(NilTaxBand.name)
-        case BasicTaxBand => JsString(BasicTaxBand.name)
-        case HigherTaxBand => JsString(HigherTaxBand.name)
-        case AdditionalHigherTaxBand => JsString(AdditionalHigherTaxBand.name)
-        case SavingsStartingTaxBand => JsString(SavingsStartingTaxBand.name)
-        case _ => throw new IllegalStateException(s"Unknown tax band '${band.name}'")
-      }
-    }
+  case class AdditionalHigherTaxBand(precedingTaxBand: HigherTaxBand = HigherTaxBand(),
+                                     override val chargedAt: BigDecimal = 45) extends TaxBand {
+    override def name: String = "additionalHigherRate"
+    override val upperBound = Some(BigDecimal(Integer.MAX_VALUE))
+    override lazy val lowerBound = precedingTaxBand.upperBound.getOrElse(BigDecimal(0)) + 1
+    override def toString = s"AdditionalHigherTaxBand($lowerBound:${upperBound.get})"
   }
 }

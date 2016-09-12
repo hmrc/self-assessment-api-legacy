@@ -25,12 +25,11 @@ import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONElement, 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.domain.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfAssessment
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 
 object SelfAssessmentRepository extends MongoDbConnection {
   private lazy val repository = new SelfAssessmentMongoRepository
@@ -96,6 +95,7 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
 
   def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Unit] = {
     val now = DateTime.now(DateTimeZone.UTC)
+
     val pensionContributionModifiers:BSONDocument =
       taxYearProperties.pensionContributions
         .map(pensionContributions =>
@@ -107,7 +107,11 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
                     "ukRegisteredPension" -> pensionContributions.ukRegisteredPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
                     "retirementAnnuity" -> pensionContributions.retirementAnnuity.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
                     "employerScheme" -> pensionContributions.employerScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                    "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull))))))
+                    "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                    "pensionSavings" -> BSONDocument(Seq(
+                      "excessOfAnnualAllowance" -> pensionContributions.pensionSavings.map(_.excessOfAnnualAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull),
+                      "taxPaidByPensionScheme" -> pensionContributions.pensionSavings.map(_.taxPaidByPensionScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull)
+                    )))))))
         .getOrElse(BSONDocument(
           lastModifiedDateTimeModfier(now),
           "pensionContributions" -> BSONNull))
@@ -121,11 +125,12 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
     } yield ()
   }
 
-  def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] =
+  def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] = {
     for {
       optionSa <- find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear).map(_.headOption)
     } yield for {
       sa <- optionSa
       taxYearProperties <- sa.taxYearProperties
     } yield taxYearProperties
+  }
 }

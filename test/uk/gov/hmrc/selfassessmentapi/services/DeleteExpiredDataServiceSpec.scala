@@ -24,7 +24,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoJobHistory, MongoSelfAssessment, MongoSelfEmployment}
 import uk.gov.hmrc.selfassessmentapi.repositories.live.{SelfEmploymentMongoRepository, UnearnedIncomeMongoRepository}

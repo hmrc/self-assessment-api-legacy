@@ -17,11 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment
 
 import uk.gov.hmrc.play.http.NotImplementedException
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SummaryTypes.{BalancingCharges, Expenses, GoodsAndServicesOwnUses, Incomes}
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes.{BalancingCharges, Expenses, GoodsAndServicesOwnUses, Incomes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
 import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentRepository
 

@@ -1,7 +1,7 @@
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 @import uk.gov.hmrc.domain.SaUtr
-@import uk.gov.hmrc.selfassessmentapi.domain.TaxYear
-@import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
+@import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+@import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
 @import play.api.libs.json.Json.toJson
 
 @(saUtr: SaUtr, taxYear: TaxYear)

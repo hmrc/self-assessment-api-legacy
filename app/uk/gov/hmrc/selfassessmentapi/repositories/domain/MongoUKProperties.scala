@@ -21,10 +21,10 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.domain.ukproperty._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.IncomeType.IncomeType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case class MongoUKPropertiesIncomeSummary(summaryId: SummaryId,
                                           `type`: IncomeType,
@@ -142,7 +142,7 @@ object MongoUKPropertiesPrivateUseAdjustmentSummary {
   }
 }
 
-case class MongoUKPropertiesTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary {
+case class MongoUKPropertiesTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary with AmountHolder {
 
   val arrayName = MongoUKPropertiesTaxPaidSummary.arrayName
 
@@ -182,11 +182,20 @@ case class MongoUKProperties(id: BSONObjectID,
                                balancingCharges: Seq[MongoUKPropertiesBalancingChargeSummary] = Nil,
                                privateUseAdjustment: Seq[MongoUKPropertiesPrivateUseAdjustmentSummary] = Nil,
                                taxesPaid: Seq[MongoUKPropertiesTaxPaidSummary] = Nil) extends SourceMetadata {
-  def rentARoomReliefAmount = rentARoomRelief.getOrElse(BigDecimal(0))
+  def rentARoomReliefAmount = ValueOrZero(rentARoomRelief)
 
-  def allowancesTotal = allowances.map(_.total).getOrElse(BigDecimal(0))
+  def allowancesTotal = ValueOrZero(allowances.map(_.total))
 
-  def lossBroughtForward = adjustments.flatMap(_.lossBroughtForward).getOrElse(BigDecimal(0))
+  def lossBroughtForward = ValueOrZero(adjustments.flatMap(_.lossBroughtForward))
+
+  def adjustedProfit = {
+    PositiveOrZero(Total(incomes) + Total(balancingCharges) + Total(privateUseAdjustment) -
+      Total(expenses) - allowancesTotal - rentARoomReliefAmount)
+  }
+
+  def taxPaid = Total(taxesPaid)
+
+  def taxPaidPerProperty = taxesPaid.map(_.toTaxPaid)
 
   def toUKProperties = UKProperty(
     id = Some(sourceId),

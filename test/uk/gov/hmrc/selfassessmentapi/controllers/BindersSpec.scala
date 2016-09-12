@@ -18,7 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 class BindersSpec extends UnitSpec {
 

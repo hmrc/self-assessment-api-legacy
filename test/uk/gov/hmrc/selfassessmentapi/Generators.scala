@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import org.scalacheck._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand.{AdditionalHigherTaxBand, BasicTaxBand, HigherTaxBand}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand
 
 object Generators {
 
@@ -27,13 +27,13 @@ object Generators {
     } yield BigDecimal.valueOf(value)
 
   val basicTaxBandAmountGen: Gen[BigDecimal] =
-    amountGen(BasicTaxBand.lowerBound, BasicTaxBand.upperBound.get)
+    amountGen(TaxBand.BasicTaxBand().lowerBound, TaxBand.BasicTaxBand().upperBound.get)
 
   val higherTaxBandAmountGen: Gen[BigDecimal] =
-    amountGen(HigherTaxBand.lowerBound, HigherTaxBand.upperBound.get)
+    amountGen(TaxBand.HigherTaxBand().lowerBound, TaxBand.HigherTaxBand().upperBound.get)
 
   val additionalHigherTaxBandAmountGen: Gen[BigDecimal] = amountGen(
-      AdditionalHigherTaxBand.lowerBound,
-      AdditionalHigherTaxBand.upperBound.getOrElse(BigDecimal.valueOf(Int.MaxValue)))
+    TaxBand.AdditionalHigherTaxBand().lowerBound,
+    TaxBand.AdditionalHigherTaxBand().upperBound.getOrElse(BigDecimal.valueOf(Int.MaxValue)))
 
 }

@@ -22,8 +22,8 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.domain.JsonMarshaller
-import uk.gov.hmrc.selfassessmentapi.domain.employment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoEmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 

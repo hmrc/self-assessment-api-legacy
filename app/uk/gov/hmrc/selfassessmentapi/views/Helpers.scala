@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.views
 
-import play.api.hal.Hal._
+import scala.xml.PCData
+
 import play.api.hal.HalLink
-import play.api.libs.json.Json._
+import play.api.hal.Hal._
 import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.{HalSupport, Links}
-import uk.gov.hmrc.selfassessmentapi.domain._
-
-import scala.xml.PCData
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 object Helpers extends HalSupport with Links {
 

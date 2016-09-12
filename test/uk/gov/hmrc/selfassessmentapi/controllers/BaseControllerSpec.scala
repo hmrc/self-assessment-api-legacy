@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 import org.scalatest.{Matchers, WordSpecLike}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 
 class BaseControllerSpec extends WordSpecLike with Matchers {
 

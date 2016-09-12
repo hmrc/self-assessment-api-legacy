@@ -16,26 +16,31 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.domain.employment.BenefitType.BenefitType
-import uk.gov.hmrc.selfassessmentapi.domain.employment.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.domain.employment.IncomeType.IncomeType
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.BenefitType.{apply => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.ExpenseType.{apply => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.IncomeType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
-trait EmploymentSugar {
+object EmploymentSugar {
 
-  this: UnitSpec =>
+  def anEmployment(id: SourceId = BSONObjectID.generate.stringify,
+                   saUtr: SaUtr = generateSaUtr(),
+                   taxYear: TaxYear = taxYear) = MongoEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
-  def anEmployment(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear) = MongoEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now)
+  def aUkTaxPaidSummary(summaryId: SummaryId = BSONObjectID.generate.stringify, amount: BigDecimal) =
+    MongoEmploymentUkTaxPaidSummary(summaryId, amount)
 
-  def income(`type`: IncomeType, amount: BigDecimal) = MongoEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
+  def anIncome(`type`: IncomeType, amount: BigDecimal) =
+    MongoEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def expense(`type`: ExpenseType, amount: BigDecimal) = MongoEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
+  def anExpense(`type`: ExpenseType, amount: BigDecimal) =
+    MongoEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def benefit(`type`: BenefitType, amount: BigDecimal) = MongoEmploymentBenefitSummary(BSONObjectID.generate.stringify, `type`, amount)
+  def aBenefit(`type`: BenefitType, amount: BigDecimal) =
+    MongoEmploymentBenefitSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  private def now = DateTime.now(DateTimeZone.UTC)
 }

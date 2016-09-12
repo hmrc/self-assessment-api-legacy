@@ -21,11 +21,10 @@ import play.api.libs.json._
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.domain.{ErrorCode, ValidationErrors}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{ValidationErrors, ErrorCode}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
 
 trait BaseController
   extends uk.gov.hmrc.play.microservice.controller.BaseController with HalSupport {

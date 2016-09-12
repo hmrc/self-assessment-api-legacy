@@ -25,19 +25,23 @@ import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, InvalidPart, InvalidRequest, Links}
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties._
-import uk.gov.hmrc.selfassessmentapi.domain.{ErrorCode, TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.services.sandbox.TaxYearPropertiesService
 import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object TaxYearDiscoveryController extends BaseController with Links {
   override val context: String = AppContext.apiGatewayLinkContext
+  private val service = TaxYearPropertiesService()
 
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    Future.successful(Ok(halResource(toJson(TaxYearProperties.example()), discoveryLinks(utr, taxYear))))
+    Future.successful(Ok(halResource(toJson(service.findTaxYearProperties(utr, taxYear)), discoveryLinks(utr, taxYear))))
   }
 
   private def taxYearValidationErrors(path: String, yearFromBody : LocalDate, yearFromUrl: String) = {
@@ -61,7 +65,10 @@ object TaxYearDiscoveryController extends BaseController with Links {
       taxYearProperties =>
         validateRequest(taxYearProperties, taxYear.taxYear) match {
           case Some(invalidPart) => Future.successful(BadRequest(Json.toJson(InvalidRequest(ErrorCode.INVALID_REQUEST, "Invalid request", Seq(invalidPart)))))
-          case None => Future.successful(Ok(halResource(obj(), discoveryLinks(utr, taxYear))))
+          case None => service.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
+            if (updated) Ok(halResource(obj(), discoveryLinks(utr, taxYear)))
+            else NotImplemented(Json.toJson(ErrorFeatureSwitched))
+          }
         }
     }
   }

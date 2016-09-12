@@ -16,20 +16,37 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import play.api.libs.json.Json
-import play.api.mvc.{ActionBuilder, Request, Result}
-import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.domain.SourceType
+import play.api.libs.iteratee.Done
+import play.api.libs.iteratee.Input.Empty
+import play.api.libs.json._
 import play.api.mvc.Results._
+import play.api.mvc._
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceType
 
 import scala.concurrent.Future
 
 class FeatureSwitchAction(source: SourceType, summary: String) extends ActionBuilder[Request] {
+  val isFeatureEnabled = FeatureSwitch(AppContext.featureSwitch).isEnabled(source, summary)
+  val notImplemented = Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+
   override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
-    if (FeatureSwitch(AppContext.featureSwitch).isEnabled(source, summary)) block(request)
-    else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
+    block(request)
   }
+
+  def asyncFeatureSwitch(block: Request[JsValue] => Future[Result]) = {
+    val emptyJsonParser: BodyParser[JsValue] = BodyParser { request => Done(Right(JsNull), Empty) }
+
+    if (isFeatureEnabled) async(BodyParsers.parse.json)(block)
+    else async[JsValue](emptyJsonParser)(_ => notImplemented)
+  }
+
+  def asyncFeatureSwitch(block: => Future[Result]) = {
+    if (isFeatureEnabled) async(block)
+    else async(notImplemented)
+  }
+
 }
 
 object FeatureSwitchAction {

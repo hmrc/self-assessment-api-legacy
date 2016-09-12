@@ -21,13 +21,13 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.ExpenseType.ExpenseType
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.ExpenseType.ExpenseType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
 
 case class MongoFurnishedHolidayLettingsIncomeSummary(summaryId: SummaryId,
-                                            amount: BigDecimal) extends MongoSummary {
+                                            amount: BigDecimal) extends MongoSummary with AmountHolder {
   val arrayName = MongoFurnishedHolidayLettingsIncomeSummary.arrayName
 
   def toIncome: Income =
@@ -56,7 +56,7 @@ object MongoFurnishedHolidayLettingsIncomeSummary {
 
 case class MongoFurnishedHolidayLettingsExpenseSummary(summaryId: SummaryId,
                                              `type`: ExpenseType,
-                                             amount: BigDecimal) extends MongoSummary {
+                                             amount: BigDecimal) extends MongoSummary with AmountHolder {
   val arrayName = MongoFurnishedHolidayLettingsExpenseSummary.arrayName
 
   def toExpense: Expense =
@@ -87,7 +87,7 @@ object MongoFurnishedHolidayLettingsExpenseSummary {
 }
 
 case class MongoFurnishedHolidayLettingsBalancingChargeSummary(summaryId: SummaryId,
-                                                     amount: BigDecimal) extends MongoSummary {
+                                                     amount: BigDecimal) extends MongoSummary with AmountHolder {
   val arrayName = MongoFurnishedHolidayLettingsBalancingChargeSummary.arrayName
 
   def toBalancingCharge =
@@ -114,11 +114,12 @@ object MongoFurnishedHolidayLettingsBalancingChargeSummary {
   }
 }
 
-case class MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary {
+case class MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary
+  with AmountHolder {
 
   val arrayName = MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary.arrayName
 
-  def toGoodsAndServicesOwnUse = PrivateUseAdjustment(id = Some(summaryId), amount = amount)
+  def toPrivateUseAdjustment = PrivateUseAdjustment(id = Some(summaryId), amount = amount)
 
   def toBsonDocument = BSONDocument(
     "summaryId" -> summaryId,
@@ -153,6 +154,10 @@ case class MongoFurnishedHolidayLettings(id: BSONObjectID,
                                expenses: Seq[MongoFurnishedHolidayLettingsExpenseSummary] = Nil,
                                balancingCharges: Seq[MongoFurnishedHolidayLettingsBalancingChargeSummary] = Nil,
                                privateUseAdjustment: Seq[MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary] = Nil) extends SourceMetadata {
+
+
+  def capitalAllowance: BigDecimal = allowances.flatMap(_.capitalAllowance).getOrElse(0)
+
 
   def toFurnishedHolidayLettings = FurnishedHolidayLetting(
     id = Some(sourceId),

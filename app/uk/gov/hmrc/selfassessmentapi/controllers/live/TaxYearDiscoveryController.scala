@@ -19,28 +19,26 @@ package uk.gov.hmrc.selfassessmentapi.controllers.live
 import play.api.hal.HalLink
 import play.api.libs.json.Json
 import play.api.libs.json.Json._
-import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, ErrorNotImplemented, Links}
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, InvalidPart, InvalidRequest, Links}
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.domain.{ErrorCode, SourceTypes, TaxYear, TaxYearProperties}
-import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentRepository
+import uk.gov.hmrc.selfassessmentapi.controllers._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object TaxYearDiscoveryController extends BaseController with Links {
   override val context: String = AppContext.apiGatewayLinkContext
-  val repository = SelfAssessmentRepository()
+  private val taxYearPropertiesService = TaxYearPropertiesService()
 
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
     val halLinks = buildSourceHalLinks(utr, taxYear) + HalLink("self",
       discoverTaxYearHref(utr, taxYear))
-    repository
+    taxYearPropertiesService
       .findTaxYearProperties(utr, taxYear)
       .map(taxYearProperties =>
         Ok(halResource(taxYearProperties match {
@@ -59,26 +57,14 @@ object TaxYearDiscoveryController extends BaseController with Links {
     }
   }
 
-  private def validateRequest(taxYearProperties: TaxYearProperties, taxYear: String)  = {
-    if (taxYearProperties.charitableGivings.isDefined || taxYearProperties.blindPerson.isDefined ||
-      taxYearProperties.studentLoan.isDefined || taxYearProperties.taxRefundedOrSetOff.isDefined ||
-      taxYearProperties.childBenefit.isDefined) {
-      Some(
-            InvalidPart(ONLY_PENSION_CONTRIBUTIONS_SUPPORTED, s"Only update of Pension Contributions is supported", "/taxYearProperties"))
-    } else None
-  }
-
   final def updateTaxYearProperties(utr: SaUtr, taxYear: TaxYear) =
     Action.async(parse.json) {
       implicit request =>
         if (AppContext.updateTaxYearPropertiesEnabled)
           withJsonBody[TaxYearProperties] { taxYearProperties =>
-            validateRequest(taxYearProperties, taxYear.taxYear) match {
-              case Some(invalidPart) => Future.successful(BadRequest(Json.toJson(InvalidRequest(ErrorCode.INVALID_REQUEST, "Invalid request", Seq(invalidPart)))))
-              case None =>
-                repository.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { x =>
-                  Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
-                }
+            taxYearPropertiesService.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
+              if (updated) Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
+              else NotImplemented(Json.toJson(ErrorFeatureSwitched))
             }
           }
         else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))

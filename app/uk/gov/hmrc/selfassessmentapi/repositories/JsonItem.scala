@@ -17,6 +17,6 @@
 package uk.gov.hmrc.selfassessmentapi.repositories
 
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.selfassessmentapi.domain.SourceId
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
 
 case class JsonItem(id: SourceId, json: JsValue)

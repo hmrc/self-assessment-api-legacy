@@ -20,7 +20,7 @@ import play.api.libs.json.Format
 import reactivemongo.bson.{BSONDocument, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.AtomicUpdate
-import uk.gov.hmrc.selfassessmentapi.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSummary, SourceMetadata}
 
 import scala.concurrent.Future

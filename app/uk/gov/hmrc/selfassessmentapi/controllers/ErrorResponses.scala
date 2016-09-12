@@ -18,12 +18,15 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.controllers.ErrorResponse
-import uk.gov.hmrc.selfassessmentapi.domain.ErrorCode.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import ErrorCode.ErrorCode
 
 
 case object ErrorSaUtrInvalid extends ErrorResponse(400, "SA_UTR_INVALID", "The provided SA UTR is invalid")
 
 case object ErrorNotImplemented extends ErrorResponse(501, "NOT_IMPLEMENTED", "The resource is not implemented")
+
+case object ErrorFeatureSwitched extends ErrorResponse(400, "FEATURE_DISABLED", "The provided JSON object contains disabled properties")
 
 case class ErrorBadRequest(code: ErrorCode, override val message: String)
   extends ErrorResponse(400, code.toString, message)
@@ -39,3 +42,17 @@ case class InvalidRequest(code: ErrorCode, message: String, errors: Seq[InvalidP
 object InvalidRequest {
   implicit val writes = Json.writes[InvalidRequest]
 }
+
+case class LiabilityError(code: ErrorCode, message: String)
+
+object LiabilityError {
+  implicit val writes = Json.writes[LiabilityError]
+}
+
+case class LiabilityErrors(code: ErrorCode, message: String, errors: Seq[LiabilityError])
+
+object LiabilityErrors {
+  implicit val writes = Json.writes[LiabilityErrors]
+}
+
+

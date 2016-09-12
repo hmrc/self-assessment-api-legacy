@@ -25,8 +25,8 @@ import reactivemongo.bson.{BSONDocument, BSONDouble, BSONNull, BSONObjectID, BSO
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.domain.furnishedholidaylettings._
-import uk.gov.hmrc.selfassessmentapi.domain.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoFurnishedHolidayLettings, _}
 
@@ -182,7 +182,7 @@ class FurnishedHolidayLettingsMongoRepository(implicit mongo: () => DB)
       self.createSummary(saUtr, taxYear, sourceId, MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary.toMongoSummary(goodsAndServicesOwnUse))
 
     override def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[PrivateUseAdjustment]] =
-      self.findSummaryById[PrivateUseAdjustment](saUtr, taxYear, sourceId, (se: MongoFurnishedHolidayLettings) => se.privateUseAdjustment.find(_.summaryId == id).map(_.toGoodsAndServicesOwnUse))
+      self.findSummaryById[PrivateUseAdjustment](saUtr, taxYear, sourceId, (se: MongoFurnishedHolidayLettings) => se.privateUseAdjustment.find(_.summaryId == id).map(_.toPrivateUseAdjustment))
 
     override def update(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId, goodsAndServicesOwnUse: PrivateUseAdjustment): Future[Boolean] =
       self.updateSummary(saUtr, taxYear, sourceId, MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary.toMongoSummary(goodsAndServicesOwnUse, Some(id)),
@@ -192,7 +192,7 @@ class FurnishedHolidayLettingsMongoRepository(implicit mongo: () => DB)
       self.deleteSummary(saUtr, taxYear, sourceId, id, MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary.arrayName, (se: MongoFurnishedHolidayLettings) => se.privateUseAdjustment.exists(_.summaryId == id))
 
     override def list(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[PrivateUseAdjustment]]] =
-      self.listSummaries[PrivateUseAdjustment](saUtr, taxYear, sourceId, (se: MongoFurnishedHolidayLettings) => se.privateUseAdjustment.map(_.toGoodsAndServicesOwnUse))
+      self.listSummaries[PrivateUseAdjustment](saUtr, taxYear, sourceId, (se: MongoFurnishedHolidayLettings) => se.privateUseAdjustment.map(_.toPrivateUseAdjustment))
 
     override def listAsJsonItem(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Seq[JsonItem]] =
       list(saUtr, taxYear, sourceId).map(_.getOrElse(Seq()).map(privateUseAdjustment => JsonItem(privateUseAdjustment.id.get.toString, toJson(privateUseAdjustment))))

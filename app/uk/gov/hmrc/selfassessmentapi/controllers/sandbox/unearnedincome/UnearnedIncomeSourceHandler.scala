@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
 
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.domain.SourceTypes.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.SummaryTypes.{Benefits, Dividends, SavingsIncomes}
-import uk.gov.hmrc.selfassessmentapi.domain.unearnedincome.{UnearnedIncome, _}
-import uk.gov.hmrc.selfassessmentapi.domain.{SummaryType, _}
+import SourceTypes.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SummaryTypes.{Benefits, Dividends, SavingsIncomes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{UnearnedIncome, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceRepository, SandboxSummaryRepository}
 
 object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {

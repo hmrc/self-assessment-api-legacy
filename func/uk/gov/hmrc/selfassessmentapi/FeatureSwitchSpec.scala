@@ -3,9 +3,9 @@ package uk.gov.hmrc.selfassessmentapi
 import java.util.UUID
 
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.domain.SourceId
-import uk.gov.hmrc.selfassessmentapi.domain.employment.SourceType.Employments
-import uk.gov.hmrc.selfassessmentapi.domain.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.SourceType.Employments
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class FeatureSwitchSpec extends BaseFunctionalSpec {

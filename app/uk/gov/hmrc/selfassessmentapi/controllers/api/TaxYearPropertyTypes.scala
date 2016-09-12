@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.api
 
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPersons
 import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGivings
 import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
@@ -23,8 +24,15 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.Pension
 import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
 import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
 
-object TaxYearPropertyTypes {
-  val types = Seq(PensionContributions, CharitableGivings, BlindPersons, TaxRefundedOrSetOffs, StudentLoans, ChildBenefits)
-  private val typesByName = types.map(x => x.name -> x).toMap
-  def fromName(name: String): Option[TaxYearPropertyType] = typesByName.get(name)
+trait TaxYearPropertyTypes {
+  val featureSwitch: FeatureSwitch
+
+  def types = Seq(PensionContributions, CharitableGivings, BlindPersons,
+    TaxRefundedOrSetOffs, StudentLoans, ChildBenefits).filter(featureSwitch.isEnabled)
+
+  def fromName(name: String): Option[TaxYearPropertyType] = types.find(_.name == name)
+}
+
+object TaxYearPropertyTypes extends TaxYearPropertyTypes {
+  override val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
 }

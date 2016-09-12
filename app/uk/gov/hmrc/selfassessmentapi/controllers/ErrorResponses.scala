@@ -26,7 +26,7 @@ case object ErrorSaUtrInvalid extends ErrorResponse(400, "SA_UTR_INVALID", "The 
 
 case object ErrorNotImplemented extends ErrorResponse(501, "NOT_IMPLEMENTED", "The resource is not implemented")
 
-case object ErrorFeatureSwitched extends ErrorResponse(400, "FEATURE_DISABLED", "The provided JSON object contains disabled properties")
+case object ErrorFeatureSwitched extends ErrorResponse(400, "INVALID_REQUEST", "The provided JSON object contains disabled properties")
 
 case class ErrorBadRequest(code: ErrorCode, override val message: String)
   extends ErrorResponse(400, code.toString, message)

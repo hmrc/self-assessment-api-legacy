@@ -24,6 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.JsonFormatters._
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 
 trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationController {
 
@@ -61,27 +62,30 @@ object Documentation extends BaseController with Links {
   private val utr = SaUtr("2234567890")
   private val taxYear = TaxYear("2016-17")
 
+  private lazy val updateTaxYearPropertiesPage = if (TaxYearProperties.atLeastOnePropertyIsEnabled) {
+    Seq(EndpointDocumentation("Update Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.updateTaxYear(utr, taxYear)))
+  } else Seq.empty[EndpointDocumentation]
 
-  private lazy val documentation = Seq(
-    EndpointDocumentation("Resolve Customer", uk.gov.hmrc.selfassessmentapi.views.xml.resolveCustomer(utr)),
-    EndpointDocumentation("Discover Tax Years", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYears(utr, taxYear)),
-    EndpointDocumentation("Discover Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYear(utr, taxYear)),
-    EndpointDocumentation("Update Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.updateTaxYear(utr, taxYear)),
+  private lazy val documentation = updateTaxYearPropertiesPage ++ Seq(
+      EndpointDocumentation("Resolve Customer", uk.gov.hmrc.selfassessmentapi.views.xml.resolveCustomer(utr)),
 
-    EndpointDocumentation("Create Summary", uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceId, summaryId)),
-    EndpointDocumentation("Retrieve Summary", uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceId, summaryId)),
-    EndpointDocumentation("Update Summary", uk.gov.hmrc.selfassessmentapi.views.xml.updateSummary(utr, taxYear, sourceId, summaryId)),
-    EndpointDocumentation("Delete Summary", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSummary(utr, taxYear, sourceId, summaryId)),
-    EndpointDocumentation("Retrieve Summaries", uk.gov.hmrc.selfassessmentapi.views.xml.listSummaries(utr, taxYear, sourceId, summaryId)),
+      EndpointDocumentation("Discover Tax Years", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYears(utr, taxYear)),
+      EndpointDocumentation("Discover Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.discoverTaxYear(utr, taxYear)),
 
-    EndpointDocumentation("Create Source", uk.gov.hmrc.selfassessmentapi.views.xml.createSource(utr, taxYear, sourceId)),
-    EndpointDocumentation("Retrieve Source", uk.gov.hmrc.selfassessmentapi.views.xml.readSource(utr, taxYear, sourceId)),
-    EndpointDocumentation("Update Source", uk.gov.hmrc.selfassessmentapi.views.xml.updateSource(utr, taxYear, sourceId)),
-    EndpointDocumentation("Delete Source", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceId)),
-    EndpointDocumentation("Retrieve Sources", uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceId)),
+      EndpointDocumentation("Create Summary", uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceId, summaryId)),
+      EndpointDocumentation("Retrieve Summary", uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceId, summaryId)),
+      EndpointDocumentation("Update Summary", uk.gov.hmrc.selfassessmentapi.views.xml.updateSummary(utr, taxYear, sourceId, summaryId)),
+      EndpointDocumentation("Delete Summary", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSummary(utr, taxYear, sourceId, summaryId)),
+      EndpointDocumentation("Retrieve Summaries", uk.gov.hmrc.selfassessmentapi.views.xml.listSummaries(utr, taxYear, sourceId, summaryId)),
 
-    EndpointDocumentation("Request Liability", uk.gov.hmrc.selfassessmentapi.views.xml.createLiability(utr, taxYear)),
-    EndpointDocumentation("Retrieve Liability", uk.gov.hmrc.selfassessmentapi.views.xml.readLiability(utr, taxYear)))
+      EndpointDocumentation("Create Source", uk.gov.hmrc.selfassessmentapi.views.xml.createSource(utr, taxYear, sourceId)),
+      EndpointDocumentation("Retrieve Source", uk.gov.hmrc.selfassessmentapi.views.xml.readSource(utr, taxYear, sourceId)),
+      EndpointDocumentation("Update Source", uk.gov.hmrc.selfassessmentapi.views.xml.updateSource(utr, taxYear, sourceId)),
+      EndpointDocumentation("Delete Source", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceId)),
+      EndpointDocumentation("Retrieve Sources", uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceId)),
+
+      EndpointDocumentation("Request Liability", uk.gov.hmrc.selfassessmentapi.views.xml.createLiability(utr, taxYear)),
+      EndpointDocumentation("Retrieve Liability", uk.gov.hmrc.selfassessmentapi.views.xml.readLiability(utr, taxYear)))
 
   private lazy val documentationByName = documentation.map(x => x.name -> x.view).toMap
 

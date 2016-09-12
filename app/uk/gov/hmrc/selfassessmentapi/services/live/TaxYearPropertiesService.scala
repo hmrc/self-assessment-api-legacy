@@ -18,22 +18,18 @@ package uk.gov.hmrc.selfassessmentapi.services.live
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.repositories.{SelfAssessmentMongoRepository, SelfAssessmentRepository}
 import uk.gov.hmrc.selfassessmentapi.services.SwitchedTaxYearProperties
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TaxYearPropertiesService(saRepository: SelfAssessmentMongoRepository, override val featureSwitch: FeatureSwitch)
   extends SwitchedTaxYearProperties {
 
-  def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] = {
-    for {
-      propertiesOption <- saRepository.findTaxYearProperties(saUtr, taxYear)
-    } yield for {
-      properties <- propertiesOption
-    } yield switchedTaxYearProperties(properties)
+  def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] = featureSwitched {
+    saRepository.findTaxYearProperties(saUtr, taxYear)
   }
 
   def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Boolean] = {

@@ -25,7 +25,8 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,15 +37,13 @@ object TaxYearDiscoveryController extends BaseController with Links {
   private val taxYearPropertiesService = TaxYearPropertiesService()
 
   final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    val halLinks = buildSourceHalLinks(utr, taxYear) + HalLink("self",
-      discoverTaxYearHref(utr, taxYear))
-    taxYearPropertiesService
-      .findTaxYearProperties(utr, taxYear)
-      .map(taxYearProperties =>
+    val halLinks = buildSourceHalLinks(utr, taxYear) + HalLink("self", discoverTaxYearHref(utr, taxYear))
+    taxYearPropertiesService.findTaxYearProperties(utr, taxYear).map(taxYearProperties =>
         Ok(halResource(taxYearProperties match {
           case Some(t) => toJson(t)
           case None => obj()
-        }, halLinks)))
+        }, halLinks))
+    )
   }
 
   private def buildSourceHalLinks(utr: SaUtr, taxYear: TaxYear) = {
@@ -60,11 +59,11 @@ object TaxYearDiscoveryController extends BaseController with Links {
   final def updateTaxYearProperties(utr: SaUtr, taxYear: TaxYear) =
     Action.async(parse.json) {
       implicit request =>
-        if (AppContext.updateTaxYearPropertiesEnabled)
+        if (TaxYearProperties.atLeastOnePropertyIsEnabled)
           withJsonBody[TaxYearProperties] { taxYearProperties =>
             taxYearPropertiesService.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
               if (updated) Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
-              else NotImplemented(Json.toJson(ErrorFeatureSwitched))
+              else BadRequest(Json.toJson(ErrorFeatureSwitched))
             }
           }
         else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.api
 
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),

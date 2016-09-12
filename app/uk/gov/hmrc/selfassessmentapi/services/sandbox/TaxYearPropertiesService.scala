@@ -17,28 +17,22 @@
 package uk.gov.hmrc.selfassessmentapi.services.sandbox
 
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
-import uk.gov.hmrc.selfassessmentapi.services.SwitchedTaxYearProperties
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 
 import scala.concurrent.Future
 
-
-class TaxYearPropertiesService(override val featureSwitch: FeatureSwitch) extends SwitchedTaxYearProperties {
+class TaxYearPropertiesService {
   def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): TaxYearProperties = {
-    switchedTaxYearProperties(TaxYearProperties.example())
+    TaxYearProperties.example()
   }
 
   def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Boolean] = {
-    val switchedProperties = switchedTaxYearProperties(taxYearProperties)
-    val hasSwitched = switchedProperties == taxYearProperties
-
-    Future.successful(hasSwitched)
+    Future.successful(true)
   }
 }
 
 object TaxYearPropertiesService {
-  private val taxYearPropertiesService = new TaxYearPropertiesService(FeatureSwitch(AppContext.featureSwitch))
-
+  private val taxYearPropertiesService = new TaxYearPropertiesService()
   def apply() = taxYearPropertiesService
 }

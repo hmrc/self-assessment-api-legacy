@@ -21,13 +21,13 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain._
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContribution
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.BalancingChargeType.BalancingChargeType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
                                             `type`: IncomeType,

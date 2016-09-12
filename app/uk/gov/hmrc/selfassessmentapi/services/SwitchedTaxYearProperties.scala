@@ -23,22 +23,25 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
 import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContributions
 import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
 import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYearProperties, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait SwitchedTaxYearProperties {
   val featureSwitch: FeatureSwitch
 
-  def taxYearPropertyIsEnabled(propertyType: TaxYearPropertyType): Boolean = {
-    featureSwitch.isEnabled(propertyType)
+  def featureSwitched(eventualMaybeProperties: Future[Option[TaxYearProperties]]) = {
+    eventualMaybeProperties.map { mayBeTaxYearProperties => mayBeTaxYearProperties.map(switchedTaxYearProperties)}
   }
 
   def switchedTaxYearProperties(properties: TaxYearProperties): TaxYearProperties = {
-    val pensionContributions = if (taxYearPropertyIsEnabled(PensionContributions)) properties.pensionContributions else None
-    val charitableGivings = if (taxYearPropertyIsEnabled(CharitableGivings)) properties.charitableGivings else None
-    val blindPersons = if (taxYearPropertyIsEnabled(BlindPersons)) properties.blindPerson else None
-    val studentLoans = if (taxYearPropertyIsEnabled(StudentLoans)) properties.studentLoan else None
-    val taxRefundedOrSetOffs = if (taxYearPropertyIsEnabled(TaxRefundedOrSetOffs)) properties.taxRefundedOrSetOff else None
-    val childBenefits = if (taxYearPropertyIsEnabled(ChildBenefits)) properties.childBenefit else None
+    val pensionContributions = if (featureSwitch.isEnabled(PensionContributions)) properties.pensionContributions else None
+    val charitableGivings = if (featureSwitch.isEnabled(CharitableGivings)) properties.charitableGivings else None
+    val blindPersons = if (featureSwitch.isEnabled(BlindPersons)) properties.blindPerson else None
+    val studentLoans = if (featureSwitch.isEnabled(StudentLoans)) properties.studentLoan else None
+    val taxRefundedOrSetOffs = if (featureSwitch.isEnabled(TaxRefundedOrSetOffs)) properties.taxRefundedOrSetOff else None
+    val childBenefits = if (featureSwitch.isEnabled(ChildBenefits)) properties.childBenefit else None
 
     TaxYearProperties(pensionContributions = pensionContributions, charitableGivings = charitableGivings, blindPerson = blindPersons,
       studentLoan = studentLoans, taxRefundedOrSetOff = taxRefundedOrSetOffs, childBenefit = childBenefits)

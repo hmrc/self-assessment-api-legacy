@@ -147,7 +147,7 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
-    def isBadRequest(path: String, code: String) = {
+    def isBadRequest(path: String, code: String): Assertions = {
       statusIs(400)
         .contentTypeIsJson()
         .body(_ \ "path").is(path)
@@ -155,11 +155,15 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
-    def isBadRequest(code: String) = {
+    def isBadRequest(code: String): Assertions = {
       statusIs(400)
         .contentTypeIsJson()
         .body(_ \ "code").is(code)
       this
+    }
+
+    def isBadRequest: Assertions = {
+      isBadRequest("INVALID_REQUEST")
     }
 
     def isNotFound = {

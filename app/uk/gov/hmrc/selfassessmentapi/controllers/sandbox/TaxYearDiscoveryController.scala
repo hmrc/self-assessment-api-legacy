@@ -28,8 +28,8 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 import ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.services.sandbox.TaxYearPropertiesService
 import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 

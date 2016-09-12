@@ -19,8 +19,6 @@ package uk.gov.hmrc.selfassessmentapi.controllers.api
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.CountryCodes.CountryCode
-import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
 

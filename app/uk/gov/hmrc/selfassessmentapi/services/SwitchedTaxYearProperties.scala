@@ -23,7 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
 import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContributions
 import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
 import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

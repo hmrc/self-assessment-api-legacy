@@ -28,7 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.{ChildBenefit,
 import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.{PensionContribution, PensionContributions}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.{StudentLoan, StudentLoanPlanType, StudentLoans}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.{TaxRefundedOrSetOff, TaxRefundedOrSetOffs}
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, UkCountryCodes}
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
 

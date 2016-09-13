@@ -27,7 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType.
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
 
 case class MongoSelfEmploymentIncomeSummary(summaryId: SummaryId,
                                             `type`: IncomeType,

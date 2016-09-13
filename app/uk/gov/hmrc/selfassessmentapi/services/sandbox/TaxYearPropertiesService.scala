@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.services.sandbox
 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
-import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
 
 import scala.concurrent.Future
 

@@ -18,14 +18,12 @@ package uk.gov.hmrc.selfassessmentapi.controllers.api
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.{BlindPerson, BlindPersons}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.{CharitableGiving, CharitableGivings}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.{ChildBenefit, ChildBenefits}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.{PensionContribution, PensionContributions}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.{StudentLoan, StudentLoans}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.{TaxRefundedOrSetOff, TaxRefundedOrSetOffs}
-
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPerson
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGiving
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefit
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContribution
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoan
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOff
 
 case class TaxYearProperties(id: Option[String] = None, pensionContributions: Option[PensionContribution] = None,
                              charitableGivings: Option[CharitableGiving] = None,
@@ -39,12 +37,6 @@ case class TaxYearProperties(id: Option[String] = None, pensionContributions: Op
 
 object TaxYearProperties extends JsonMarshaller[TaxYearProperties] {
 
-  /**
-    This is prevent newing up in a TaxYearProperties object in the test!!!
-    We need to separate documentation generation code from domain; the documentation
-    generation code must be a function of domain and embedded in the domain
-   */
-  private val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
   override implicit val writes = Json.writes[TaxYearProperties]
 
   override implicit val reads = (
@@ -57,22 +49,14 @@ object TaxYearProperties extends JsonMarshaller[TaxYearProperties] {
       (__ \ "childBenefit").readNullable[ChildBenefit]
     ) (TaxYearProperties.apply _)
 
-  def atLeastOnePropertyIsEnabled: Boolean =
-    featureSwitch.isEnabled(PensionContributions) ||
-    featureSwitch.isEnabled(CharitableGivings) ||
-    featureSwitch.isEnabled(BlindPersons) ||
-    featureSwitch.isEnabled(StudentLoans) ||
-    featureSwitch.isEnabled(TaxRefundedOrSetOffs) ||
-    featureSwitch.isEnabled(ChildBenefits)
-
   override def example(id: Option[String]) =
     TaxYearProperties(
       id = id,
-      pensionContributions = if(featureSwitch.isEnabled(PensionContributions)) Some(PensionContribution.example()) else None,
-      charitableGivings = if(featureSwitch.isEnabled(CharitableGivings)) Some(CharitableGiving.example()) else None,
-      blindPerson = if(featureSwitch.isEnabled(BlindPersons)) Some(BlindPerson.example()) else None,
-      studentLoan = if(featureSwitch.isEnabled(StudentLoans)) Some(StudentLoan.example()) else None,
-      taxRefundedOrSetOff = if(featureSwitch.isEnabled(TaxRefundedOrSetOffs)) Some(TaxRefundedOrSetOff.example()) else None,
-      childBenefit = if(featureSwitch.isEnabled(ChildBenefits)) Some(ChildBenefit.example()) else None
+      pensionContributions = Some(PensionContribution.example()),
+      charitableGivings = Some(CharitableGiving.example()),
+      blindPerson = Some(BlindPerson.example()),
+      studentLoan = Some(StudentLoan.example()),
+      taxRefundedOrSetOff = Some(TaxRefundedOrSetOff.example()),
+      childBenefit = Some(ChildBenefit.example())
     )
 }

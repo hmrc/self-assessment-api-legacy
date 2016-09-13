@@ -17,47 +17,39 @@
 package uk.gov.hmrc.selfassessmentapi.services.live
 
 import org.mockito.Matchers.any
+import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
-import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.{BlindPerson, BlindPersons}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.{CharitableGiving, CharitableGivings, GiftAidPayments}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.{ChildBenefit, ChildBenefits}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.{PensionContribution, PensionContributions}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.{StudentLoan, StudentLoanPlanType, StudentLoans}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.{TaxRefundedOrSetOff, TaxRefundedOrSetOffs}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, UkCountryCodes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.blindperson.BlindPersons
+import uk.gov.hmrc.selfassessmentapi.controllers.api.charitablegiving.CharitableGivings
+import uk.gov.hmrc.selfassessmentapi.controllers.api.childbenefit.ChildBenefits
+import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContributions
+import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.StudentLoans
+import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.TaxRefundedOrSetOffs
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfAssessmentMongoRepository
 
 import scala.concurrent.Future
 
-/**
-    The FeatureSwitch initialization in TaxYearProperties is preventing newing up in a TaxYearProperties object in the test!!!
-    We need to separate documentation generation code from domain; the documentation generation code must be a function of domain
-    and embedded in the domain
-    Also, we should elevate each TaxYear property to path thus making the feature switch similar to the feature switch on source
-    and summary URLs
-*/
-class TaxYearPropertiesServiceSpec extends UnitSpec with MockitoSugar {
+class TaxYearPropertiesServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
 
   val mockSaRepository = mock[SelfAssessmentMongoRepository]
   val mockFeatureSwitch = mock[FeatureSwitch]
   val service = new TaxYearPropertiesService(mockSaRepository, mockFeatureSwitch)
 
-  "TaxYearPropertiesService.findTaxYearProperties" should {
-    val taxYearProperties = new TaxYearProperties(
-      studentLoan = Some(StudentLoan(planType = StudentLoanPlanType.Plan1, deductedByEmployers = Some(10.0))),
-      blindPerson = Some(BlindPerson(country = Some(UkCountryCodes.England))),
-      childBenefit = Some(ChildBenefit(100, 2)),
-      charitableGivings = Some(CharitableGiving(giftAidPayments = Some(GiftAidPayments(totalInTaxYear = Some(100))))),
-      taxRefundedOrSetOff = Some(TaxRefundedOrSetOff(200)),
-      pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(300)))
-    )
+  override def beforeEach() = {
+    Mockito.reset(mockSaRepository)
+    Mockito.reset(mockFeatureSwitch)
+  }
 
-    "only include properties that have been enabled" ignore {
+  val taxYearProperties = TaxYearProperties.example()
+
+  "TaxYearPropertiesService.findTaxYearProperties" should {
+    "only include properties that have been enabled" in {
 
       when(mockFeatureSwitch.isEnabled(PensionContributions)).thenReturn(false)
       when(mockFeatureSwitch.isEnabled(CharitableGivings)).thenReturn(false)
@@ -70,24 +62,15 @@ class TaxYearPropertiesServiceSpec extends UnitSpec with MockitoSugar {
 
       val actualProperties = await(service.findTaxYearProperties(generateSaUtr(), taxYear))
 
-      actualProperties.map(_.studentLoan) shouldBe Some(StudentLoan(planType = StudentLoanPlanType.Plan1, deductedByEmployers = Some(10.0)))
-      actualProperties.map(_.blindPerson) shouldBe Some(BlindPerson(country = Some(UkCountryCodes.England)))
-      actualProperties.map(_.childBenefit) shouldBe None
-      actualProperties.map(_.childBenefit) shouldBe None
+      actualProperties.flatMap(_.studentLoan) shouldBe TaxYearProperties.example().studentLoan
+      actualProperties.flatMap(_.blindPerson) shouldBe TaxYearProperties.example().blindPerson
+      actualProperties.flatMap(_.childBenefit) shouldBe None
+      actualProperties.flatMap(_.childBenefit) shouldBe None
     }
   }
 
   "TaxYearPropertiesService.updateTaxYearProperties" should {
-    val taxYearProperties = new TaxYearProperties(
-      studentLoan = Some(StudentLoan(planType = StudentLoanPlanType.Plan1, deductedByEmployers = Some(10.0))),
-      blindPerson = Some(BlindPerson(country = Some(UkCountryCodes.England))),
-      childBenefit = Some(ChildBenefit(100, 2)),
-      charitableGivings = Some(CharitableGiving(giftAidPayments = Some(GiftAidPayments(totalInTaxYear = Some(100))))),
-      taxRefundedOrSetOff = Some(TaxRefundedOrSetOff(200)),
-      pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(300)))
-    )
-
-    "update the tax year properties when the provided TaxYearProperties object contains no disabled features" ignore {
+    "update the tax year properties when the provided TaxYearProperties object contains no disabled features" in {
       val saUtr = generateSaUtr()
 
       when(mockFeatureSwitch.isEnabled(PensionContributions)).thenReturn(true)
@@ -97,17 +80,14 @@ class TaxYearPropertiesServiceSpec extends UnitSpec with MockitoSugar {
       when(mockFeatureSwitch.isEnabled(TaxRefundedOrSetOffs)).thenReturn(false)
       when(mockFeatureSwitch.isEnabled(ChildBenefits)).thenReturn(false)
 
-      service.updateTaxYearProperties(saUtr, taxYear, taxYearProperties)
+      val onlySwitchedOnProperties = taxYearProperties.copy(childBenefit = None).copy(taxRefundedOrSetOff = None)
 
-      verify(mockSaRepository, times(1)).updateTaxYearProperties(saUtr, taxYear, TaxYearProperties(
-        studentLoan = Some(StudentLoan(planType = StudentLoanPlanType.Plan1, deductedByEmployers = Some(10.0))),
-        blindPerson = Some(BlindPerson(country = Some(UkCountryCodes.England))),
-        charitableGivings = Some(CharitableGiving(giftAidPayments = Some(GiftAidPayments(totalInTaxYear = Some(100))))),
-        pensionContributions = Some(PensionContribution(ukRegisteredPension = Some(300)))
-      ))
+      await(service.updateTaxYearProperties(saUtr, taxYear, onlySwitchedOnProperties))
+
+      verify(mockSaRepository, times(1)).updateTaxYearProperties(saUtr, taxYear, onlySwitchedOnProperties)
     }
 
-    "not update the tax year properties when the provided TaxYearProperties object contains disabled features" ignore {
+    "not update the tax year properties when the provided TaxYearProperties object contains disabled features" in {
       when(mockFeatureSwitch.isEnabled(PensionContributions)).thenReturn(true)
       when(mockFeatureSwitch.isEnabled(CharitableGivings)).thenReturn(true)
       when(mockFeatureSwitch.isEnabled(BlindPersons)).thenReturn(true)
@@ -115,7 +95,7 @@ class TaxYearPropertiesServiceSpec extends UnitSpec with MockitoSugar {
       when(mockFeatureSwitch.isEnabled(TaxRefundedOrSetOffs)).thenReturn(false)
       when(mockFeatureSwitch.isEnabled(ChildBenefits)).thenReturn(false)
 
-      service.updateTaxYearProperties(generateSaUtr(), taxYear, taxYearProperties)
+      await(service.updateTaxYearProperties(generateSaUtr(), taxYear, taxYearProperties)) shouldBe false
 
       verify(mockSaRepository, times(0)).updateTaxYearProperties(any[SaUtr], any[TaxYear], any[TaxYearProperties])
     }

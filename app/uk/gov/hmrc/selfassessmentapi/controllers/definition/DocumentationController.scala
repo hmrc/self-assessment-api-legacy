@@ -24,7 +24,6 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.JsonFormatters._
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
 
 trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationController {
 
@@ -62,7 +61,7 @@ object Documentation extends BaseController with Links {
   private val utr = SaUtr("2234567890")
   private val taxYear = TaxYear("2016-17")
 
-  private lazy val updateTaxYearPropertiesPage = if (TaxYearProperties.atLeastOnePropertyIsEnabled) {
+  private lazy val updateTaxYearPropertiesPage = if (FeatureSwitchedTaxProperties.atLeastOnePropertyIsEnabled) {
     Seq(EndpointDocumentation("Update Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.updateTaxYear(utr, taxYear)))
   } else Seq.empty[EndpointDocumentation]
 

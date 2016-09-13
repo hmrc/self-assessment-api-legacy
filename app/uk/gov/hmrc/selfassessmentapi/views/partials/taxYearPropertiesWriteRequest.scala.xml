@@ -1,6 +1,5 @@
 @import uk.gov.hmrc.domain.SaUtr
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
-@import uk.gov.hmrc.selfassessmentapi.domain.TaxYearProperties
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 @import play.api.libs.json.Json.toJson
 
@@ -11,9 +10,9 @@
     <resource>@method /self-assessment/@saUtr/@taxYear</resource>
 
         <description>Updates tax year properties</description>
-        <json>@prettyPrint(toJson(TaxYearProperties.example()))</json>
+        <json>@prettyPrint(toJson(FeatureSwitchedTaxProperties()))</json>
 
-        @for(taxYearPropertyType <- TaxYearPropertyTypes.types) {
+        @for(taxYearPropertyType <- FeatureSwitchedTaxYearPropertyTypes.types) {
             @if(taxYearPropertyType.fieldDescriptions.nonEmpty) {
 
                 <section id="@taxYearPropertyType.name">

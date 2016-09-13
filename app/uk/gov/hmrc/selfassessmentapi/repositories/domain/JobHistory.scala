@@ -23,33 +23,33 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
 
-object MongoJobStatus extends Enumeration {
-  type MongoJobStatus = Value
+object JobStatus extends Enumeration {
+  type JobStatus = Value
 
   val InProgress = Value("InProgress")
   val Success = Value("Success")
   val Failed = Value("Failed")
 
-  implicit val jobStatus = EnumJson.enumFormat(MongoJobStatus, Some("Job Status is invalid"))
+  implicit val jobStatus = EnumJson.enumFormat(JobStatus, Some("Job Status is invalid"))
 
-  implicit object BSONEnumHandler extends BSONHandler[BSONString, MongoJobStatus] {
-    def read(doc: BSONString) = MongoJobStatus.Value(doc.value)
+  implicit object BSONEnumHandler extends BSONHandler[BSONString, JobStatus] {
+    def read(doc: BSONString) = JobStatus.Value(doc.value)
 
-    def write(stats: MongoJobStatus) = BSON.write(stats.toString)
+    def write(stats: JobStatus) = BSON.write(stats.toString)
   }
 
 }
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
 
-case class MongoJobHistory(jobNumber: Int, status: MongoJobStatus, startedAt: DateTime = DateTime.now,
-                           finishedAt: Option[DateTime] = None, recordsDeleted: Int = 0) {
+case class JobHistory(jobNumber: Int, status: JobStatus, startedAt: DateTime = DateTime.now,
+                      finishedAt: Option[DateTime] = None, recordsDeleted: Int = 0) {
   val isInProgress = status == InProgress
   val hasFailed = status == Failed
   val hasFinished = status == Success
 }
 
-object MongoJobHistory {
-  implicit val mongoFormats = Json.format[MongoJobHistory]
+object JobHistory {
+  implicit val mongoFormats = Json.format[JobHistory]
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
 }

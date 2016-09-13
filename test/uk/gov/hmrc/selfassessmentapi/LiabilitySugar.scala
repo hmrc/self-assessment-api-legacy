@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxDeducted => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Liability, _}
 
 object LiabilitySugar extends UnitSpec {
@@ -31,7 +31,7 @@ object LiabilitySugar extends UnitSpec {
                  totalIncomeReceived: BigDecimal = 0,
                  totalTaxableIncome: BigDecimal = 0,
                  allowancesAndReliefs: AllowancesAndReliefs = AllowancesAndReliefs(),
-                 taxDeducted: MongoTaxDeducted = MongoTaxDeducted(),
+                 taxDeducted: TaxDeducted = TaxDeducted(),
                  dividendTaxBandSummary: Seq[TaxBandSummary] = Seq(),
                  savingsTaxBandSummary: Seq[TaxBandSummary] = Seq(),
                  nonSavingsTaxBandSummary: Seq[TaxBandSummary] = Seq(),

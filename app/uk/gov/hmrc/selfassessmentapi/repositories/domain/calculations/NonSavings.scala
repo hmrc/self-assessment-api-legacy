@@ -34,7 +34,7 @@ object NonSavings {
       selfEmploymentProfits + ukPropertyProfits + employmentProfits + furnishedHolidayLettingProfits
     }
 
-    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(SelfEmployment.TotalProfit(selfAssessment), UkProperty.TotalProfit(selfAssessment),
+    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(SelfEmployment.TotalProfit(selfAssessment), UKProperty.TotalProfit(selfAssessment),
       Employment.TotalProfit(selfAssessment), FurnishedHolidayLetting.TotalProfit(selfAssessment))
   }
 

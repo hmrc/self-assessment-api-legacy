@@ -26,7 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.FurnishedHolidayLetting
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.EEA
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoFurnishedHolidayLettings, MongoFurnishedHolidayLettingsIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{FurnishedHolidayLettings, FurnishedHolidayLettingsIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -184,7 +184,7 @@ class FurnishedHolidayLettingsRepositorySpec extends MongoEmbeddedDatabase with 
     }
 
     "not remove incomes" in {
-      val source = MongoFurnishedHolidayLettings.create(saUtr, taxYear, furnishedHolidayLetting()).copy(incomes = Seq(MongoFurnishedHolidayLettingsIncomeSummary(BSONObjectID.generate.stringify,  10)))
+      val source = FurnishedHolidayLettings.create(saUtr, taxYear, furnishedHolidayLetting()).copy(incomes = Seq(FurnishedHolidayLettingsIncomeSummary(BSONObjectID.generate.stringify,  10)))
       await(mongoRepository.insert(source))
       val found = await(mongoRepository.findById(saUtr, taxYear, source.sourceId)).get
       await(furnishedHolidayLettingsRepository.update(saUtr, taxYear, source.sourceId, found))

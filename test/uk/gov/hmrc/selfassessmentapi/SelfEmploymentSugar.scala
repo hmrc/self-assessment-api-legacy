@@ -30,18 +30,18 @@ object SelfEmploymentSugar {
   def aSelfEmployment(id: SourceId = BSONObjectID.generate.stringify,
                       saUtr: SaUtr = generateSaUtr(),
                       taxYear: TaxYear = taxYear) =
-    MongoSelfEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now, now.toLocalDate)
+    SelfEmployment(BSONObjectID.generate, id, saUtr, taxYear, now, now, now.toLocalDate)
 
   def anIncome(`type`: IncomeType, amount: BigDecimal) =
-    MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
+    SelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
   def anExpense(`type`: ExpenseType, amount: BigDecimal) =
-    MongoSelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
+    SelfEmploymentExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
   def aBalancingCharge(`type`: BalancingChargeType, amount: BigDecimal) =
-    MongoSelfEmploymentBalancingChargeSummary(BSONObjectID.generate.stringify, `type`, amount)
+    SelfEmploymentBalancingChargeSummary(BSONObjectID.generate.stringify, `type`, amount)
 
   def aGoodsAndServices(amount: BigDecimal) =
-    MongoSelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
+    SelfEmploymentGoodsAndServicesOwnUseSummary(BSONObjectID.generate.stringify, amount)
 
 }

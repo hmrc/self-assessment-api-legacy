@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
-import uk.gov.hmrc.selfassessmentapi.UkPropertySugar._
+import uk.gov.hmrc.selfassessmentapi.UKPropertySugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.ExpenseType.{apply => _, _}
@@ -26,12 +26,12 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{Adjustments, Al
 import uk.gov.hmrc.selfassessmentapi.controllers.api.UkPropertyIncome
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
-class UkPropertySpec extends UnitSpec {
+class UKPropertySpec extends UnitSpec {
 
-  def income(incomeType: IncomeType, amount: BigDecimal) = MongoUKPropertiesIncomeSummary("", incomeType, amount)
-  def privateUseAdjustment(amount: BigDecimal) = MongoUKPropertiesPrivateUseAdjustmentSummary("", amount)
-  def balancingCharge(amount: BigDecimal) = MongoUKPropertiesBalancingChargeSummary("", amount)
-  def expense(expenseType: ExpenseType, amount: BigDecimal) = MongoUKPropertiesExpenseSummary("", expenseType, amount)
+  def income(incomeType: IncomeType, amount: BigDecimal) = UKPropertiesIncomeSummary("", incomeType, amount)
+  def privateUseAdjustment(amount: BigDecimal) = UKPropertiesPrivateUseAdjustmentSummary("", amount)
+  def balancingCharge(amount: BigDecimal) = UKPropertiesBalancingChargeSummary("", amount)
+  def expense(expenseType: ExpenseType, amount: BigDecimal) = UKPropertiesExpenseSummary("", expenseType, amount)
 
   "UK property incomes" should {
     "compute adjusted profits for UK properties" in {
@@ -54,7 +54,7 @@ class UkPropertySpec extends UnitSpec {
                   Some(Allowances(Some(100), Some(100), Some(100), Some(100))),
                 rentARoomRelief = Some(500))))
 
-      UkProperty.Incomes(selfAssessment) should contain theSameElementsAs
+      UKProperty.Incomes(selfAssessment) should contain theSameElementsAs
         Seq(UkPropertyIncome("ukpropertyone", profit = 1000))
     }
 
@@ -64,7 +64,7 @@ class UkPropertySpec extends UnitSpec {
           aUkProperty("ukpropertyone").copy(incomes = Seq(income(IncomeType.RentIncome, 500)),
             expenses = Seq(expense(ExpenseType.PremisesRunningCosts, 1000)))))
 
-      UkProperty.Incomes(selfAssessment) should contain theSameElementsAs
+      UKProperty.Incomes(selfAssessment) should contain theSameElementsAs
         Seq(UkPropertyIncome("ukpropertyone", profit = 0))
     }
 
@@ -78,7 +78,7 @@ class UkPropertySpec extends UnitSpec {
         )
       )
 
-      UkProperty.Incomes(selfAssessment) should contain theSameElementsAs
+      UKProperty.Incomes(selfAssessment) should contain theSameElementsAs
         Seq(UkPropertyIncome("ukpropertyone", profit = 500), UkPropertyIncome("ukpropertytwo", profit = 800))
     }
 
@@ -92,7 +92,7 @@ class UkPropertySpec extends UnitSpec {
                 expenses = Seq(expense(ExpenseType.PremisesRunningCosts, 100.11)),
                 adjustments = Some(Adjustments(lossBroughtForward = Some(200.22))))))
 
-      UkProperty.Incomes(selfAssessment) should contain theSameElementsAs
+      UKProperty.Incomes(selfAssessment) should contain theSameElementsAs
         Seq(UkPropertyIncome("ukpropertyone", profit = 900))
     }
   }
@@ -111,14 +111,14 @@ class UkPropertySpec extends UnitSpec {
           )
         )
 
-      UkProperty.TotalLossBroughtForward(selfAssessment) shouldBe 8002
+      UKProperty.TotalLossBroughtForward(selfAssessment) shouldBe 8002
     }
   }
 
   "UkProperty.TotalTaxPaid" should {
 
     "be equal to sum of all uk property tax paid" in {
-      UkProperty.TotalTaxPaid(aSelfAssessment(
+      UKProperty.TotalTaxPaid(aSelfAssessment(
         ukProperties = Seq(
           aUkProperty(id = "property-1").copy(taxesPaid = Seq(aTaxPaidSummary("", 500), aTaxPaidSummary("", 600))),
           aUkProperty(id = "property2").copy(taxesPaid = Seq(aTaxPaidSummary("", 400), aTaxPaidSummary("", 300)))
@@ -127,7 +127,7 @@ class UkPropertySpec extends UnitSpec {
     }
 
     "be equal to rounded up sum of all uk property tax paid" in {
-      UkProperty.TotalTaxPaid(aSelfAssessment(
+      UKProperty.TotalTaxPaid(aSelfAssessment(
         ukProperties = Seq(
           aUkProperty(id = "property-1").copy(taxesPaid = Seq(aTaxPaidSummary("", 500.09), aTaxPaidSummary("", 600.86))),
           aUkProperty(id = "property2").copy(taxesPaid = Seq(aTaxPaidSummary("", 400.67), aTaxPaidSummary("", 300.34)))

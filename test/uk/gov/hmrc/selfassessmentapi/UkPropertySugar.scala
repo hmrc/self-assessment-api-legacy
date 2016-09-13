@@ -21,12 +21,12 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
-object UkPropertySugar {
+object UKPropertySugar {
 
   def aUkProperty(id: SourceId = BSONObjectID.generate.stringify) =
-    MongoUKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
+    UKProperties(BSONObjectID.generate, id, generateSaUtr(), taxYear)
 
   def aTaxPaidSummary(id: String = BSONObjectID.generate.stringify, amount: BigDecimal) =
-    MongoUKPropertiesTaxPaidSummary(id, amount)
+    UKPropertiesTaxPaidSummary(id, amount)
 
 }

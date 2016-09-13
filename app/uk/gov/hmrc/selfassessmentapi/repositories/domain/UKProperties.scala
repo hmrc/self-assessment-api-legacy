@@ -26,11 +26,11 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.IncomeType.Incom
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-case class MongoUKPropertiesIncomeSummary(summaryId: SummaryId,
-                                          `type`: IncomeType,
-                                          amount: BigDecimal) extends MongoSummary with AmountHolder {
+case class UKPropertiesIncomeSummary(summaryId: SummaryId,
+                                     `type`: IncomeType,
+                                     amount: BigDecimal) extends Summary with AmountHolder {
 
-  val arrayName = MongoUKPropertiesIncomeSummary.arrayName
+  val arrayName = UKPropertiesIncomeSummary.arrayName
 
   def toIncome: Income = Income(id = Some(summaryId), `type` = `type`, amount = amount)
 
@@ -41,14 +41,14 @@ case class MongoUKPropertiesIncomeSummary(summaryId: SummaryId,
   )
 }
 
-object MongoUKPropertiesIncomeSummary {
+object UKPropertiesIncomeSummary {
 
   val arrayName = "incomes"
 
-  implicit val format = Json.format[MongoUKPropertiesIncomeSummary]
+  implicit val format = Json.format[UKPropertiesIncomeSummary]
 
-  def toMongoSummary(income: Income, id: Option[SummaryId] = None): MongoUKPropertiesIncomeSummary = {
-    MongoUKPropertiesIncomeSummary(
+  def toMongoSummary(income: Income, id: Option[SummaryId] = None): UKPropertiesIncomeSummary = {
+    UKPropertiesIncomeSummary(
       summaryId = id.getOrElse(BSONObjectID.generate.stringify),
       `type` = income.`type`,
       amount = income.amount
@@ -56,10 +56,10 @@ object MongoUKPropertiesIncomeSummary {
   }
 }
 
-case class MongoUKPropertiesExpenseSummary(summaryId: SummaryId,
-                                             `type`: ExpenseType,
-                                             amount: BigDecimal) extends MongoSummary with AmountHolder {
-  val arrayName = MongoUKPropertiesExpenseSummary.arrayName
+case class UKPropertiesExpenseSummary(summaryId: SummaryId,
+                                      `type`: ExpenseType,
+                                      amount: BigDecimal) extends Summary with AmountHolder {
+  val arrayName = UKPropertiesExpenseSummary.arrayName
 
   def toExpense: Expense =
     Expense(id = Some(summaryId),
@@ -73,14 +73,14 @@ case class MongoUKPropertiesExpenseSummary(summaryId: SummaryId,
   )
 }
 
-object MongoUKPropertiesExpenseSummary {
+object UKPropertiesExpenseSummary {
 
   val arrayName = "expenses"
 
-  implicit val format = Json.format[MongoUKPropertiesExpenseSummary]
+  implicit val format = Json.format[UKPropertiesExpenseSummary]
 
-  def toMongoSummary(expense: Expense, id: Option[SummaryId] = None): MongoUKPropertiesExpenseSummary = {
-    MongoUKPropertiesExpenseSummary(
+  def toMongoSummary(expense: Expense, id: Option[SummaryId] = None): UKPropertiesExpenseSummary = {
+    UKPropertiesExpenseSummary(
       summaryId = id.getOrElse(BSONObjectID.generate.stringify),
       `type` = expense.`type`,
       amount = expense.amount
@@ -88,9 +88,9 @@ object MongoUKPropertiesExpenseSummary {
   }
 }
 
-case class MongoUKPropertiesBalancingChargeSummary(summaryId: SummaryId,
-                                                     amount: BigDecimal) extends MongoSummary with AmountHolder {
-  val arrayName = MongoUKPropertiesBalancingChargeSummary.arrayName
+case class UKPropertiesBalancingChargeSummary(summaryId: SummaryId,
+                                              amount: BigDecimal) extends Summary with AmountHolder {
+  val arrayName = UKPropertiesBalancingChargeSummary.arrayName
 
   def toBalancingCharge =
     BalancingCharge(id = Some(summaryId),
@@ -102,23 +102,23 @@ case class MongoUKPropertiesBalancingChargeSummary(summaryId: SummaryId,
   )
 }
 
-object MongoUKPropertiesBalancingChargeSummary {
+object UKPropertiesBalancingChargeSummary {
 
   val arrayName = "balancingCharges"
 
-  implicit val format = Json.format[MongoUKPropertiesBalancingChargeSummary]
+  implicit val format = Json.format[UKPropertiesBalancingChargeSummary]
 
-  def toMongoSummary(balancingCharge: BalancingCharge, id: Option[SummaryId] = None): MongoUKPropertiesBalancingChargeSummary = {
-    MongoUKPropertiesBalancingChargeSummary(
+  def toMongoSummary(balancingCharge: BalancingCharge, id: Option[SummaryId] = None): UKPropertiesBalancingChargeSummary = {
+    UKPropertiesBalancingChargeSummary(
       summaryId = id.getOrElse(BSONObjectID.generate.stringify),
       amount = balancingCharge.amount
     )
   }
 }
 
-case class MongoUKPropertiesPrivateUseAdjustmentSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary with AmountHolder {
+case class UKPropertiesPrivateUseAdjustmentSummary(summaryId: SummaryId, amount: BigDecimal) extends Summary with AmountHolder {
 
-  val arrayName = MongoUKPropertiesPrivateUseAdjustmentSummary.arrayName
+  val arrayName = UKPropertiesPrivateUseAdjustmentSummary.arrayName
 
   def toGoodsAndServicesOwnUse = PrivateUseAdjustment(id = Some(summaryId), amount = amount)
 
@@ -128,23 +128,23 @@ case class MongoUKPropertiesPrivateUseAdjustmentSummary(summaryId: SummaryId, am
   )
 }
 
-object MongoUKPropertiesPrivateUseAdjustmentSummary {
+object UKPropertiesPrivateUseAdjustmentSummary {
 
   val arrayName = "privateUseAdjustment"
 
-  implicit val format = Json.format[MongoUKPropertiesPrivateUseAdjustmentSummary]
+  implicit val format = Json.format[UKPropertiesPrivateUseAdjustmentSummary]
 
-  def toMongoSummary(privateUseAdjustment: PrivateUseAdjustment, id: Option[SummaryId] = None): MongoUKPropertiesPrivateUseAdjustmentSummary = {
-    MongoUKPropertiesPrivateUseAdjustmentSummary(
+  def toMongoSummary(privateUseAdjustment: PrivateUseAdjustment, id: Option[SummaryId] = None): UKPropertiesPrivateUseAdjustmentSummary = {
+    UKPropertiesPrivateUseAdjustmentSummary(
       summaryId = id.getOrElse(BSONObjectID.generate.stringify),
       amount = privateUseAdjustment.amount
     )
   }
 }
 
-case class MongoUKPropertiesTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary with AmountHolder {
+case class UKPropertiesTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends Summary with AmountHolder {
 
-  val arrayName = MongoUKPropertiesTaxPaidSummary.arrayName
+  val arrayName = UKPropertiesTaxPaidSummary.arrayName
 
   def toTaxPaid = TaxPaid(id = Some(summaryId), amount = amount)
 
@@ -154,34 +154,34 @@ case class MongoUKPropertiesTaxPaidSummary(summaryId: SummaryId, amount: BigDeci
   )
 }
 
-object MongoUKPropertiesTaxPaidSummary {
+object UKPropertiesTaxPaidSummary {
 
   val arrayName = "taxesPaid"
 
-  implicit val format = Json.format[MongoUKPropertiesTaxPaidSummary]
+  implicit val format = Json.format[UKPropertiesTaxPaidSummary]
 
-  def toMongoSummary(taxPaid: TaxPaid, id: Option[SummaryId] = None): MongoUKPropertiesTaxPaidSummary = {
-    MongoUKPropertiesTaxPaidSummary(
+  def toMongoSummary(taxPaid: TaxPaid, id: Option[SummaryId] = None): UKPropertiesTaxPaidSummary = {
+    UKPropertiesTaxPaidSummary(
       summaryId = id.getOrElse(BSONObjectID.generate.stringify),
       amount = taxPaid.amount
     )
   }
 }
 
-case class MongoUKProperties(id: BSONObjectID,
-                               sourceId: SourceId,
-                               saUtr: SaUtr,
-                               taxYear: TaxYear,
-                               lastModifiedDateTime: DateTime = DateTime.now(DateTimeZone.UTC),
-                               createdDateTime: DateTime = DateTime.now(DateTimeZone.UTC),
-                               rentARoomRelief: Option[BigDecimal] = None,
-                               allowances: Option[Allowances] = None,
-                               adjustments: Option[Adjustments] = None,
-                               incomes: Seq[MongoUKPropertiesIncomeSummary] = Nil,
-                               expenses: Seq[MongoUKPropertiesExpenseSummary] = Nil,
-                               balancingCharges: Seq[MongoUKPropertiesBalancingChargeSummary] = Nil,
-                               privateUseAdjustment: Seq[MongoUKPropertiesPrivateUseAdjustmentSummary] = Nil,
-                               taxesPaid: Seq[MongoUKPropertiesTaxPaidSummary] = Nil) extends SourceMetadata {
+case class UKProperties(id: BSONObjectID,
+                        sourceId: SourceId,
+                        saUtr: SaUtr,
+                        taxYear: TaxYear,
+                        lastModifiedDateTime: DateTime = DateTime.now(DateTimeZone.UTC),
+                        createdDateTime: DateTime = DateTime.now(DateTimeZone.UTC),
+                        rentARoomRelief: Option[BigDecimal] = None,
+                        allowances: Option[Allowances] = None,
+                        adjustments: Option[Adjustments] = None,
+                        incomes: Seq[UKPropertiesIncomeSummary] = Nil,
+                        expenses: Seq[UKPropertiesExpenseSummary] = Nil,
+                        balancingCharges: Seq[UKPropertiesBalancingChargeSummary] = Nil,
+                        privateUseAdjustment: Seq[UKPropertiesPrivateUseAdjustmentSummary] = Nil,
+                        taxesPaid: Seq[UKPropertiesTaxPaidSummary] = Nil) extends SourceMetadata {
   def rentARoomReliefAmount = ValueOrZero(rentARoomRelief)
 
   def allowancesTotal = ValueOrZero(allowances.map(_.total))
@@ -204,7 +204,7 @@ case class MongoUKProperties(id: BSONObjectID,
     adjustments = adjustments)
 }
 
-object MongoUKProperties {
+object UKProperties {
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val localDateFormat = ReactiveMongoFormats.localDateFormats
 
@@ -212,12 +212,12 @@ object MongoUKProperties {
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
     implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
-    Format(Json.reads[MongoUKProperties], Json.writes[MongoUKProperties])
+    Format(Json.reads[UKProperties], Json.writes[UKProperties])
   })
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, ukp: UKProperty): MongoUKProperties = {
+  def create(saUtr: SaUtr, taxYear: TaxYear, ukp: UKProperty): UKProperties = {
     val id = BSONObjectID.generate
-    MongoUKProperties(
+    UKProperties(
       id = id,
       sourceId = id.stringify,
       saUtr = saUtr,

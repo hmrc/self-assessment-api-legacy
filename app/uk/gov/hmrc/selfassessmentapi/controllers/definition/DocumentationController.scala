@@ -21,9 +21,9 @@ import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Xml
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.JsonFormatters._
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationController {
 

@@ -21,7 +21,7 @@ import reactivemongo.bson.{BSONDocument, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.AtomicUpdate
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSummary, SourceMetadata}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Summary, SourceMetadata}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,7 +31,7 @@ trait TypedSourceSummaryRepository[A <: SourceMetadata, ID <: Any] extends Typed
 
   implicit val domainFormatImplicit: Format[A]
 
-  def createSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summary: MongoSummary): Future[Option[SummaryId]] = {
+  def createSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summary: Summary): Future[Option[SummaryId]] = {
     val modifiers = BSONDocument(Seq(
       modifierStatementLastModified,
       "$push" -> BSONDocument(summary.arrayName -> summary.toBsonDocument)
@@ -45,7 +45,7 @@ trait TypedSourceSummaryRepository[A <: SourceMetadata, ID <: Any] extends Typed
     } yield result.map(x => summary.summaryId)
   }
 
-  def updateSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summary: MongoSummary,  exists: A => Boolean): Future[Boolean] = {
+  def updateSummary(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summary: Summary, exists: A => Boolean): Future[Boolean] = {
     lazy val modifiers = BSONDocument(Seq(
       modifierStatementLastModified,
       "$set" -> BSONDocument(summary.arrayName+".$" -> summary.toBsonDocument)

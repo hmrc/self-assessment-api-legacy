@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{UkTaxPaidForEmployment, SelfAssessment, EmploymentIncome}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoEmployment
+import uk.gov.hmrc.selfassessmentapi.repositories._
 
 object Employment {
 
@@ -27,7 +27,7 @@ object Employment {
   }
 
   object Profit {
-    def apply(employment: MongoEmployment) = RoundDown(PositiveOrZero(Total(employment.incomes) + Total(employment.benefits) - Total(employment.expenses)))
+    def apply(employment: domain.Employment) = RoundDown(PositiveOrZero(Total(employment.incomes) + Total(employment.benefits) - Total(employment.expenses)))
   }
 
   object Incomes {
@@ -42,7 +42,7 @@ object Employment {
   }
 
   object TaxPaid {
-    def apply(employment: MongoEmployment) = RoundUpToPennies(employment.ukTaxPaid.map(_.amount).sum)
+    def apply(employment: domain.Employment) = RoundUpToPennies(employment.ukTaxPaid.map(_.amount).sum)
   }
 
   object TaxesPaid {

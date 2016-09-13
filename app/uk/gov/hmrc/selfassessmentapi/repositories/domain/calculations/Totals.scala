@@ -36,7 +36,7 @@ object Totals {
   }
 
   object TaxDeducted {
-    def apply(selfAssessment: SelfAssessment) = Savings.TotalTaxPaid(selfAssessment) + UkProperty.TotalTaxPaid(selfAssessment) +
+    def apply(selfAssessment: SelfAssessment) = Savings.TotalTaxPaid(selfAssessment) + UKProperty.TotalTaxPaid(selfAssessment) +
       Employment.TotalTaxPaid(selfAssessment) + PensionSavingsCharges.TotalTaxPaid(selfAssessment)
   }
 

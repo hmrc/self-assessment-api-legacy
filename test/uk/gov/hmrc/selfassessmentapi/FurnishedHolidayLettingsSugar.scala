@@ -27,15 +27,15 @@ import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 
 object FurnishedHolidayLettingsSugar {
 
-  def aFurnishedHolidayLetting(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, propertyLocation: PropertyLocationType = UK) = MongoFurnishedHolidayLettings(BSONObjectID.generate, id, saUtr, taxYear, now, now, propertyLocation)
+  def aFurnishedHolidayLetting(id: SourceId = BSONObjectID.generate.stringify, saUtr: SaUtr = generateSaUtr(), taxYear: TaxYear = taxYear, propertyLocation: PropertyLocationType = UK) = FurnishedHolidayLettings(BSONObjectID.generate, id, saUtr, taxYear, now, now, propertyLocation)
 
-  def fhlIncome(amount: BigDecimal, summaryId: SummaryId = BSONObjectID.generate.stringify) = MongoFurnishedHolidayLettingsIncomeSummary(summaryId, amount)
+  def fhlIncome(amount: BigDecimal, summaryId: SummaryId = BSONObjectID.generate.stringify) = FurnishedHolidayLettingsIncomeSummary(summaryId, amount)
 
-  def fhlExpense(amount: BigDecimal, `type`: ExpenseType) = MongoFurnishedHolidayLettingsExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
+  def fhlExpense(amount: BigDecimal, `type`: ExpenseType) = FurnishedHolidayLettingsExpenseSummary(BSONObjectID.generate.stringify, `type`, amount)
 
-  def fhlBalancingCharge(amount: BigDecimal) = MongoFurnishedHolidayLettingsBalancingChargeSummary(BSONObjectID.generate.stringify, amount)
+  def fhlBalancingCharge(amount: BigDecimal) = FurnishedHolidayLettingsBalancingChargeSummary(BSONObjectID.generate.stringify, amount)
 
-  def fhlPrivateUseAdjustment(amount: BigDecimal) = MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary(BSONObjectID.generate.stringify, amount)
+  def fhlPrivateUseAdjustment(amount: BigDecimal) = FurnishedHolidayLettingsPrivateUseAdjustmentSummary(BSONObjectID.generate.stringify, amount)
 
   def fhlAdjustments(lossBroughtForward: BigDecimal) = Adjustments(lossBroughtForward = Some(lossBroughtForward))
 }

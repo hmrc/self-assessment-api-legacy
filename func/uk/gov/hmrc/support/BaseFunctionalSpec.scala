@@ -1,7 +1,5 @@
 package uk.gov.hmrc.support
 
-import java.time.Duration
-
 import com.github.tomakehurst.wiremock.client.RequestPatternBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.json.{JSONArray, JSONObject}
@@ -14,11 +12,9 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.TestApplication
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryType, SourceType, SourceTypes}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, SummaryType}
 
 import scala.collection.mutable
-import scala.concurrent.duration._
 import scala.util.matching.Regex
 
 

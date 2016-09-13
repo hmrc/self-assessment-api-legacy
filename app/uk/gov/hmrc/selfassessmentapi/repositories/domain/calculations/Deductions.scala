@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, AllowancesAndReliefs}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
+import uk.gov.hmrc.selfassessmentapi.repositories._
 
 object Deductions {
 
@@ -27,7 +27,7 @@ object Deductions {
     retirementAnnuityContract = Some(Deductions.RetirementAnnuityContract(selfAssessment)))
 
   object LossBroughtForward {
-    def apply(selfEmployment: MongoSelfEmployment): BigDecimal = selfEmployment.adjustments.flatMap(_.lossBroughtForward).getOrElse(0)
+    def apply(selfEmployment: domain.SelfEmployment): BigDecimal = selfEmployment.adjustments.flatMap(_.lossBroughtForward).getOrElse(0)
   }
 
   object IncomeTaxRelief {
@@ -35,7 +35,7 @@ object Deductions {
     def apply(ukPropertyTotalLBF: BigDecimal, selfEmploymentTotalLBF: BigDecimal, furnishedHolidayLettingTotalLBF: BigDecimal): BigDecimal =
       ukPropertyTotalLBF + selfEmploymentTotalLBF + furnishedHolidayLettingTotalLBF
 
-    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(UkProperty.TotalLossBroughtForward(selfAssessment),
+    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(UKProperty.TotalLossBroughtForward(selfAssessment),
       SelfEmployment.TotalLossBroughtForward(selfAssessment), FurnishedHolidayLetting.TotalLossBroughtForward(selfAssessment))
   }
 

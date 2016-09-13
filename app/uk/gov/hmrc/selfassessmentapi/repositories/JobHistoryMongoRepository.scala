@@ -23,7 +23,7 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,20 +36,20 @@ object JobHistoryRepository extends MongoDbConnection {
 }
 
 class JobHistoryMongoRepository(implicit mongo: () => DB)
-  extends ReactiveRepository[MongoJobHistory, BSONObjectID](
-  collectionName = "jobHistory", mongo = mongo, domainFormat = MongoJobHistory.mongoFormats){
+  extends ReactiveRepository[JobHistory, BSONObjectID](
+  collectionName = "jobHistory", mongo = mongo, domainFormat = JobHistory.mongoFormats){
 
 
   override def indexes: Seq[Index] = {
     Seq(Index(key = Seq("jobNumber" -> IndexType.Ascending), name = Some("job_number"), unique = true))
   }
 
-  def startJob(): Future[MongoJobHistory] =
+  def startJob(): Future[JobHistory] =
     findLatestJob.flatMap {
       case Some(latestJob) if latestJob.isInProgress => throw JobAlreadyInProgressException()
       case latestJob =>
         val nextJobNumber = latestJob.map(_.jobNumber + 1).getOrElse(1)
-        val mongoJobHistory = MongoJobHistory(nextJobNumber, InProgress)
+        val mongoJobHistory = JobHistory(nextJobNumber, InProgress)
         insert(mongoJobHistory).map {
           case result if result.n == 0 => throw CannotStartJobException(result.getCause)
           case _ => mongoJobHistory
@@ -74,11 +74,11 @@ class JobHistoryMongoRepository(implicit mongo: () => DB)
 
   def isLatestJobInProgress: Future[Boolean] = findLatestJob.map(latestJob => latestJob.exists(_.isInProgress))
 
-  private def findLatestJob: Future[Option[MongoJobHistory]] = {
+  private def findLatestJob: Future[Option[JobHistory]] = {
     collection
       .find(Json.obj())
       .sort(Json.obj("jobNumber" -> -1))
-      .one[MongoJobHistory]
+      .one[JobHistory]
   }
 
 }

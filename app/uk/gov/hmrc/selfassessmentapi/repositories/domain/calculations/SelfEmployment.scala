@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfEmploymentIncome, SelfAssessment}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{CapAt, RoundDown, _}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfEmployment
+import uk.gov.hmrc.selfassessmentapi.repositories._
 
 object SelfEmployment {
 
@@ -36,7 +36,7 @@ object SelfEmployment {
 
     private val annualInvestmentAllowanceThreshold = 200000
 
-    def apply(selfEmployment: MongoSelfEmployment) = {
+    def apply(selfEmployment: domain.SelfEmployment) = {
       val profitIncreases = {
         val adjustments = selfEmployment.adjustments.map(a => Sum(a.basisAdjustment, a.accountingAdjustment, a.averagingAdjustment))
         Total(selfEmployment.incomes) + Total(selfEmployment.balancingCharges) + Total(selfEmployment.goodsAndServicesOwnUse) +
@@ -51,7 +51,7 @@ object SelfEmployment {
       PositiveOrZero(profitIncreases - profitReductions)
     }
 
-    def totalAllowances(selfEmployment: MongoSelfEmployment) = {
+    def totalAllowances(selfEmployment: domain.SelfEmployment) = {
       selfEmployment.allowances.map { a =>
         Sum(CapAt(a.annualInvestmentAllowance, annualInvestmentAllowanceThreshold), a.capitalAllowanceMainPool, a.capitalAllowanceSpecialRatePool,
           a.businessPremisesRenovationAllowance, a.enhancedCapitalAllowance, a.allowancesOnSales)
@@ -60,7 +60,7 @@ object SelfEmployment {
   }
 
   object Profit {
-    def apply(selfEmployment: MongoSelfEmployment) = {
+    def apply(selfEmployment: domain.SelfEmployment) = {
       RoundDown(AdjustedProfit(selfEmployment) + selfEmployment.outstandingBusinessIncome)
     }
   }
@@ -73,13 +73,13 @@ object SelfEmployment {
   }
 
   object TaxableProfit {
-    def apply(selfEmployment: MongoSelfEmployment): BigDecimal =
+    def apply(selfEmployment: domain.SelfEmployment): BigDecimal =
       RoundDown(PositiveOrZero(Profit(selfEmployment) - CapAt(LossBroughtForward(selfEmployment), AdjustedProfit(selfEmployment))))
   }
 
 
   object LossBroughtForward {
-    def apply(selfEmployment: MongoSelfEmployment) = ValueOrZero(selfEmployment.adjustments.flatMap(_.lossBroughtForward))
+    def apply(selfEmployment: domain.SelfEmployment) = ValueOrZero(selfEmployment.adjustments.flatMap(_.lossBroughtForward))
   }
 
   object TotalLossBroughtForward {

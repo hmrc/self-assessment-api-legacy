@@ -29,15 +29,15 @@ object UnearnedIncomesSugar {
   def anIncome(id: SourceId = BSONObjectID.generate.stringify,
                saUtr: SaUtr = generateSaUtr(),
                taxYear: TaxYear = taxYear) =
-    MongoUnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
+    UnearnedIncome(BSONObjectID.generate, id, saUtr, taxYear, now, now)
 
   def aSavingsIncome(summaryId: SummaryId = BSONObjectID.generate.stringify,
                      `type`: SavingsIncomeType = InterestFromBanksUntaxed,
                      amount: BigDecimal) =
-    MongoUnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
+    UnearnedIncomesSavingsIncomeSummary(summaryId, `type`, amount)
 
   def aDividendIncome(summaryId: SummaryId = BSONObjectID.generate.stringify,
                       `type`: DividendType = FromUKCompanies,
                       amount: BigDecimal) =
-    MongoUnearnedIncomesDividendSummary(summaryId, `type`, amount)
+    UnearnedIncomesDividendSummary(summaryId, `type`, amount)
 }

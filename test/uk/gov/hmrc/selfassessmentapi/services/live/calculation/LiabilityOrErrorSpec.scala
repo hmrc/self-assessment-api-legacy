@@ -19,12 +19,12 @@ package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{UkTaxPaidForEmployment, ErrorCode}
 import uk.gov.hmrc.selfassessmentapi.{LiabilitySugar, UnitSpec}
 import ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxDeducted
 
 class LiabilityOrErrorSpec extends UnitSpec {
   "LiabilityOrError.validate" should {
     "return the same liability passed if it contains a tax paid containing zero" in {
-      val taxDeducted = MongoTaxDeducted(
+      val taxDeducted = TaxDeducted(
         ukTaxesPaidForEmployments = Seq(UkTaxPaidForEmployment("", -200.15),
                                         UkTaxPaidForEmployment("", -300.33),
                                         UkTaxPaidForEmployment("", 0)))
@@ -35,7 +35,7 @@ class LiabilityOrErrorSpec extends UnitSpec {
     }
 
     "return the same liability passed if it contains a tax paid containing a positive number" in {
-      val taxDeducted = MongoTaxDeducted(
+      val taxDeducted = TaxDeducted(
         ukTaxesPaidForEmployments = Seq(UkTaxPaidForEmployment("", -200.15),
           UkTaxPaidForEmployment("", -300.33),
           UkTaxPaidForEmployment("", 256.84)))
@@ -46,7 +46,7 @@ class LiabilityOrErrorSpec extends UnitSpec {
     }
 
     "return a calculation error if passed a liability that contains invalid employment tax paid" in {
-      val taxDeducted = MongoTaxDeducted(
+      val taxDeducted = TaxDeducted(
         ukTaxesPaidForEmployments = Seq(UkTaxPaidForEmployment("", -200.15),
           UkTaxPaidForEmployment("", -300.33),
           UkTaxPaidForEmployment("", -22)))

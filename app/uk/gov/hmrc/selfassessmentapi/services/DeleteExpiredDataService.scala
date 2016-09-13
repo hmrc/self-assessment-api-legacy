@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.services
 
 import org.joda.time.DateTime
 import play.api.Logger
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfAssessment
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.repositories._
 import uk.gov.hmrc.selfassessmentapi.repositories.live.{UnearnedIncomeRepository, UnearnedIncomeMongoRepository, SelfEmploymentRepository, SelfEmploymentMongoRepository}
 
@@ -45,7 +45,7 @@ class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: Se
     }
   }
 
-  private def deleteRecords(records: Seq[MongoSelfAssessment]): Future[Unit] = {
+  private def deleteRecords(records: Seq[SelfAssessment]): Future[Unit] = {
     Future.successful {
       records.foreach { record =>
         saRepo.delete(record.saUtr, record.taxYear)

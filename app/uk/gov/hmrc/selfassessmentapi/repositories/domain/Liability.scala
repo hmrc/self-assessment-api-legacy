@@ -21,10 +21,10 @@ import play.api.libs.json.{JsValue, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api
+import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations.{TaxDeducted, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxDeducted => _, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations._
 
 case class TaxesCalculated(pensionSavingsCharges: BigDecimal,
                            totalIncomeTax: BigDecimal,
@@ -50,7 +50,7 @@ case class Liability(id: BSONObjectID,
                      totalIncomeReceived: BigDecimal,
                      totalTaxableIncome: BigDecimal,
                      allowancesAndReliefs: AllowancesAndReliefs,
-                     taxDeducted: MongoTaxDeducted,
+                     taxDeducted: TaxDeducted,
                      dividendTaxBandSummary: Seq[TaxBandSummary],
                      savingsTaxBandSummary: Seq[TaxBandSummary],
                      nonSavingsTaxBandSummary: Seq[TaxBandSummary],
@@ -109,26 +109,26 @@ object Liability {
   implicit val BSONObjectIDFormat = ReactiveMongoFormats.objectIdFormats
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
 
-  implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]
+  implicit val taxDeductedFormats = Json.format[TaxDeducted]
   implicit val liabilityFormats = Json.format[Liability]
 
   def create(saUtr: SaUtr,
              taxYear: TaxYear,
-             selfAssessment: SelfAssessment,
+             selfAssessment: api.SelfAssessment,
              createdDateTime: DateTime = DateTime.now()) = {
     val id = BSONObjectID.generate
     new Liability(id = id,
                   liabilityId = id.stringify,
                   saUtr = saUtr,
                   taxYear = taxYear,
-                  employmentIncome = Employment.Incomes(selfAssessment),
-                  selfEmploymentIncome = SelfEmployment.Incomes(selfAssessment),
+                  employmentIncome = calculations.Employment.Incomes(selfAssessment),
+                  selfEmploymentIncome = calculations.SelfEmployment.Incomes(selfAssessment),
                   furnishedHolidayLettingsIncome = FurnishedHolidayLetting.Incomes(selfAssessment),
-                  ukPropertyIncome = UkProperty.Incomes(selfAssessment),
+                  ukPropertyIncome = UKProperty.Incomes(selfAssessment),
                   savingsIncome = Savings.Incomes(selfAssessment),
                   ukDividendsIncome = Dividends.FromUK(selfAssessment),
                   allowancesAndReliefs = calculations.Deductions(selfAssessment),
-                  taxDeducted = TaxDeducted(selfAssessment),
+                  taxDeducted = calculations.TaxDeducted(selfAssessment),
                   dividendTaxBandSummary = Dividends.IncomeTaxBandSummary(selfAssessment),
                   savingsTaxBandSummary = Savings.IncomeTaxBandSummary(selfAssessment),
                   nonSavingsTaxBandSummary = NonSavings.IncomeTaxBandSummary(selfAssessment),
@@ -146,23 +146,23 @@ object Liability {
 
 }
 
-case class MongoUkTaxPaidForEmployment(sourceId: SourceId, ukTaxPaid: BigDecimal)
+case class UkTaxPaidForEmployment(sourceId: SourceId, ukTaxPaid: BigDecimal)
 
-object MongoUkTaxPaidForEmployment {
-  implicit val ukTaxPaidForEmploymentFormats = Json.format[MongoUkTaxPaidForEmployment]
+object UkTaxPaidForEmployment {
+  implicit val ukTaxPaidForEmploymentFormats = Json.format[UkTaxPaidForEmployment]
 }
 
-case class MongoTaxDeducted(interestFromUk: BigDecimal = 0,
-                            totalDeductionFromUkProperties: BigDecimal = 0,
-                            deductionFromUkProperties: Seq[TaxPaidForUkProperty] = Nil,
-                            ukTaxPaid: BigDecimal = 0,
-                            ukTaxesPaidForEmployments: Seq[UkTaxPaidForEmployment] = Nil) {
+case class TaxDeducted(interestFromUk: BigDecimal = 0,
+                       totalDeductionFromUkProperties: BigDecimal = 0,
+                       deductionFromUkProperties: Seq[TaxPaidForUkProperty] = Nil,
+                       ukTaxPaid: BigDecimal = 0,
+                       ukTaxesPaidForEmployments: Seq[api.UkTaxPaidForEmployment] = Nil) {
 
   def totalTaxDeducted = interestFromUk + totalDeductionFromUkProperties + ukTaxPaid
 }
 
-object MongoTaxDeducted {
-  implicit val taxDeductedFormats = Json.format[MongoTaxDeducted]
+object TaxDeducted {
+  implicit val taxDeductedFormats = Json.format[TaxDeducted]
 }
 
 case class LiabilityError(code: ErrorCode, message: String)

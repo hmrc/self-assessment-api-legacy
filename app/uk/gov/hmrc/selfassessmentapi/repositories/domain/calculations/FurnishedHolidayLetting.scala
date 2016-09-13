@@ -18,21 +18,21 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, FurnishedHolidayLettingIncome}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoFurnishedHolidayLettings
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.FurnishedHolidayLettings
 
 object FurnishedHolidayLetting {
 
   object AdjustedProfits {
-    private def profitIncreases(furnishedHolidayLetting: MongoFurnishedHolidayLettings): BigDecimal = {
+    private def profitIncreases(furnishedHolidayLetting: FurnishedHolidayLettings): BigDecimal = {
       Total(furnishedHolidayLetting.incomes) + Total(furnishedHolidayLetting.balancingCharges) +
         Total(furnishedHolidayLetting.privateUseAdjustment)
     }
 
-    private def profitReductions(selfEmployment: MongoFurnishedHolidayLettings): BigDecimal = {
+    private def profitReductions(selfEmployment: FurnishedHolidayLettings): BigDecimal = {
       Total(selfEmployment.expenses) + selfEmployment.capitalAllowance
     }
 
-    def apply(furnishedHolidayLetting: MongoFurnishedHolidayLettings) =
+    def apply(furnishedHolidayLetting: FurnishedHolidayLettings) =
       RoundDown(PositiveOrZero(profitIncreases(furnishedHolidayLetting) - profitReductions(furnishedHolidayLetting)))
   }
 
@@ -57,7 +57,7 @@ object FurnishedHolidayLetting {
    */
 
   object LossBroughtForward {
-    def apply(furnishedHolidayLetting: MongoFurnishedHolidayLettings) = ValueOrZero(furnishedHolidayLetting.adjustments.flatMap(_.lossBroughtForward))
+    def apply(furnishedHolidayLetting: FurnishedHolidayLettings) = ValueOrZero(furnishedHolidayLetting.adjustments.flatMap(_.lossBroughtForward))
   }
 
   object TotalLossBroughtForward {

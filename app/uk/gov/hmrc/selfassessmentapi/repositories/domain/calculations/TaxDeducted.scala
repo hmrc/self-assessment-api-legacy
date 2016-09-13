@@ -17,10 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
+import uk.gov.hmrc.selfassessmentapi.repositories._
 
 object TaxDeducted {
   def apply(selfAssessment: SelfAssessment) =
-    MongoTaxDeducted(interestFromUk = Savings.TotalTaxPaid(selfAssessment), deductionFromUkProperties = UkProperty.TaxesPaid(selfAssessment),
+    domain.TaxDeducted(interestFromUk = Savings.TotalTaxPaid(selfAssessment), deductionFromUkProperties = UKProperty.TaxesPaid(selfAssessment),
       ukTaxesPaidForEmployments = Employment.TaxesPaid(selfAssessment))
 }

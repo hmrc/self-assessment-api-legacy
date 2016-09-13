@@ -22,9 +22,10 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{JsonMarshaller, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoEmployment, MongoEmploymentIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Employment => _, EmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -124,7 +125,7 @@ class EmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
   "update" should {
 
     "not remove incomes" in {
-      val source = MongoEmployment.create(saUtr, taxYear, employment()).copy(incomes = Seq(MongoEmploymentIncomeSummary(BSONObjectID.generate.stringify, IncomeType.Salary, 1000)))
+      val source = domain.Employment.create(saUtr, taxYear, employment()).copy(incomes = Seq(EmploymentIncomeSummary(BSONObjectID.generate.stringify, IncomeType.Salary, 1000)))
       await(mongoRepository.insert(source))
       val found = await(mongoRepository.findById(saUtr, taxYear, source.sourceId)).get
       await(employmentRepository.update(saUtr, taxYear, source.sourceId, found))

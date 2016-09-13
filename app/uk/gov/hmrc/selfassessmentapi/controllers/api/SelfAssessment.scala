@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.controllers.api
 
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
-case class SelfAssessment(employments: Seq[MongoEmployment] = Seq(),
-                          selfEmployments: Seq[MongoSelfEmployment] = Seq(),
-                          unearnedIncomes: Seq[MongoUnearnedIncome] = Seq(),
-                          ukProperties: Seq[MongoUKProperties] = Seq(),
+case class SelfAssessment(employments: Seq[Employment] = Seq(),
+                          selfEmployments: Seq[SelfEmployment] = Seq(),
+                          unearnedIncomes: Seq[UnearnedIncome] = Seq(),
+                          ukProperties: Seq[UKProperties] = Seq(),
                           taxYearProperties: Option[TaxYearProperties] = None,
-                          furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Seq())
+                          furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Seq())

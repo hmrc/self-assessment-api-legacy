@@ -20,8 +20,8 @@ import org.joda.time.{DateTime, DateTimeUtils}
 import org.scalatest.BeforeAndAfterEach
 import reactivemongo.core.errors.DatabaseException
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobHistory
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoJobStatus._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobHistory
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -37,9 +37,9 @@ class JobHistoryRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
   "insert" should {
 
     "throw exception when trying to insert a job with the same number" in {
-      await(mongoRepository.insert(MongoJobHistory(1, InProgress)))
+      await(mongoRepository.insert(JobHistory(1, InProgress)))
 
-      an[DatabaseException] should be thrownBy await(mongoRepository.insert(MongoJobHistory(1, InProgress)))
+      an[DatabaseException] should be thrownBy await(mongoRepository.insert(JobHistory(1, InProgress)))
     }
   }
 
@@ -50,27 +50,27 @@ class JobHistoryRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
 
       val jobHistory = await(mongoRepository.startJob())
 
-      jobHistory shouldBe MongoJobHistory(jobNumber = 1, status = InProgress, startedAt = DateTime.now,  finishedAt = None, recordsDeleted = 0)
+      jobHistory shouldBe JobHistory(jobNumber = 1, status = InProgress, startedAt = DateTime.now,  finishedAt = None, recordsDeleted = 0)
     }
 
     "start a new job if last job has completed" in {
       DateTimeUtils.setCurrentMillisFixed(DateTime.now.getMillis)
 
-      await(mongoRepository.insert(MongoJobHistory(jobNumber = 1, status = Success)))
+      await(mongoRepository.insert(JobHistory(jobNumber = 1, status = Success)))
 
       val jobHistory = await(mongoRepository.startJob())
 
-      jobHistory shouldBe MongoJobHistory(jobNumber = 2, status = InProgress, startedAt = DateTime.now,  finishedAt = None, recordsDeleted = 0)
+      jobHistory shouldBe JobHistory(jobNumber = 2, status = InProgress, startedAt = DateTime.now,  finishedAt = None, recordsDeleted = 0)
     }
 
     "start a new job if last job has failed" in {
       DateTimeUtils.setCurrentMillisFixed(DateTime.now.getMillis)
 
-      await(mongoRepository.insert(MongoJobHistory(jobNumber = 1, status = Failed)))
+      await(mongoRepository.insert(JobHistory(jobNumber = 1, status = Failed)))
 
       val jobHistory = await(mongoRepository.startJob())
 
-      jobHistory shouldBe MongoJobHistory(jobNumber = 2, status = InProgress, startedAt = DateTime.now,  finishedAt = None, recordsDeleted = 0)
+      jobHistory shouldBe JobHistory(jobNumber = 2, status = InProgress, startedAt = DateTime.now,  finishedAt = None, recordsDeleted = 0)
     }
 
     "throw exception if last job is still in progress" in {
@@ -87,13 +87,13 @@ class JobHistoryRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
     "mark job as completed and update the records deleted" in {
       DateTimeUtils.setCurrentMillisFixed(DateTime.now.getMillis)
 
-      await(mongoRepository.insert(MongoJobHistory(1, InProgress)))
+      await(mongoRepository.insert(JobHistory(1, InProgress)))
 
       await(mongoRepository.completeJob(1, 100))
 
       val actualJob = await(mongoRepository.find("jobNumber" -> 1)).head
 
-      actualJob shouldBe MongoJobHistory(jobNumber = 1, status = Success, startedAt = DateTime.now,
+      actualJob shouldBe JobHistory(jobNumber = 1, status = Success, startedAt = DateTime.now,
         finishedAt = Some(DateTime.now), recordsDeleted = 100)
     }
 
@@ -107,13 +107,13 @@ class JobHistoryRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
     "mark job as failed" in {
       DateTimeUtils.setCurrentMillisFixed(DateTime.now.getMillis)
 
-      await(mongoRepository.insert(MongoJobHistory(1, InProgress)))
+      await(mongoRepository.insert(JobHistory(1, InProgress)))
 
       await(mongoRepository.abortJob(1))
 
       val actualJob = await(mongoRepository.find("jobNumber" -> 1)).head
 
-      actualJob shouldBe MongoJobHistory(jobNumber = 1, status = Failed, startedAt = DateTime.now,
+      actualJob shouldBe JobHistory(jobNumber = 1, status = Failed, startedAt = DateTime.now,
         finishedAt = Some(DateTime.now), recordsDeleted = 0)
     }
 
@@ -129,20 +129,20 @@ class JobHistoryRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
     }
 
     "return true if last job is still in progress" in {
-      await(mongoRepository.insert(MongoJobHistory(1, InProgress)))
+      await(mongoRepository.insert(JobHistory(1, InProgress)))
 
       await(mongoRepository.isLatestJobInProgress) shouldBe true
     }
 
 
     "return false if last job has completed successfully" in {
-      await(mongoRepository.insert(MongoJobHistory(1, Success)))
+      await(mongoRepository.insert(JobHistory(1, Success)))
 
       await(mongoRepository.isLatestJobInProgress) shouldBe false
     }
 
     "return false if last job has completed with errors" in {
-      await(mongoRepository.insert(MongoJobHistory(1, Failed)))
+      await(mongoRepository.insert(JobHistory(1, Failed)))
 
       await(mongoRepository.isLatestJobInProgress) shouldBe false
     }

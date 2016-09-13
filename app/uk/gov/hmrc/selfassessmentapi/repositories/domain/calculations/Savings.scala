@@ -20,7 +20,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxBand._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, MongoUnearnedIncome, TaxBand}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, UnearnedIncome, TaxBand}
 
 object Savings {
 
@@ -45,15 +45,15 @@ object Savings {
   }
 
   private object Interest {
-    def apply(income: MongoUnearnedIncome, `type`: SavingsIncomeType.Value) = income.savings.filter(_.`type` == `type`).map(_.amount).sum
+    def apply(income: UnearnedIncome, `type`: SavingsIncomeType.Value) = income.savings.filter(_.`type` == `type`).map(_.amount).sum
   }
 
   private object TaxedInterest {
-    def apply(mongoUnearnedIncome: MongoUnearnedIncome) = Interest(mongoUnearnedIncome, SavingsIncomeType.InterestFromBanksTaxed)
+    def apply(mongoUnearnedIncome: UnearnedIncome) = Interest(mongoUnearnedIncome, SavingsIncomeType.InterestFromBanksTaxed)
   }
 
   private object UntaxedInterest {
-    def apply(mongoUnearnedIncome: MongoUnearnedIncome) = Interest(mongoUnearnedIncome, SavingsIncomeType.InterestFromBanksUntaxed)
+    def apply(mongoUnearnedIncome: UnearnedIncome) = Interest(mongoUnearnedIncome, SavingsIncomeType.InterestFromBanksUntaxed)
   }
 
   object Incomes {

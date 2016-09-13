@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxBandSummary, DividendsFromUKSources, SelfAssessment}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, MongoUnearnedIncome, TaxBand}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, UnearnedIncome, TaxBand}
 
 object Dividends {
 
@@ -36,7 +36,7 @@ object Dividends {
   }
 
   private object Income {
-    def apply(unearnedIncome: MongoUnearnedIncome) = RoundDown(unearnedIncome.dividends.map(_.amount).sum)
+    def apply(unearnedIncome: UnearnedIncome) = RoundDown(unearnedIncome.dividends.map(_.amount).sum)
   }
 
   object FromUK {

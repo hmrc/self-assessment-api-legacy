@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain
 import reactivemongo.bson.BSONDocument
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-trait MongoSummary {
+trait Summary {
   def toBsonDocument: BSONDocument
   val summaryId: SummaryId
   val arrayName: String

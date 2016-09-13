@@ -23,8 +23,9 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoSelfEmployment, MongoSelfEmploymentIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{SelfEmployment, SelfEmploymentIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
 
   private val mongoRepository = new SelfEmploymentMongoRepository
-  private val selfEmploymentRepository: SourceRepository[SelfEmployment] = mongoRepository
+  private val selfEmploymentRepository: SourceRepository[selfemployment.SelfEmployment] = mongoRepository
   private val summariesMap: Map[JsonMarshaller[_], SummaryRepository[_]] = Map(Income -> mongoRepository.IncomeRepository,
     Expense -> mongoRepository.ExpenseRepository, BalancingCharge -> mongoRepository.BalancingChargeRepository,
     GoodsAndServicesOwnUse -> mongoRepository.GoodsAndServicesOwnUseRepository)
@@ -45,13 +46,13 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
   val saUtr = generateSaUtr()
 
-  def selfEmployment(): SelfEmployment = SelfEmployment.example()
+  def selfEmployment(): selfemployment.SelfEmployment = selfemployment.SelfEmployment.example()
 
   "round trip" should {
     "create and retrieve using generated id" in {
       val source = selfEmployment()
       val id = await(selfEmploymentRepository.create(saUtr, taxYear, source))
-      val found: SelfEmployment = await(selfEmploymentRepository.findById(saUtr, taxYear, id)).get
+      val found: selfemployment.SelfEmployment = await(selfEmploymentRepository.findById(saUtr, taxYear, id)).get
 
       found.commencementDate shouldBe source.commencementDate
     }
@@ -86,7 +87,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
       await(selfEmploymentRepository.delete(saUtr, taxYear))
 
-      val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
+      val found: Seq[selfemployment.SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
 
       found shouldBe empty
     }
@@ -97,7 +98,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       val source2 = await(selfEmploymentRepository.create(saUtr2, taxYear, selfEmployment()))
 
       await(selfEmploymentRepository.delete(saUtr, taxYear))
-      val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr2, taxYear))
+      val found: Seq[selfemployment.SelfEmployment] = await(selfEmploymentRepository.list(saUtr2, taxYear))
 
       found.flatMap(_.id) should contain theSameElementsAs Seq(source2)
     }
@@ -113,7 +114,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       } yield source.copy(id = Some(id))
 
 
-      val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
+      val found: Seq[selfemployment.SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
 
       found should contain theSameElementsAs sources
     }
@@ -122,14 +123,14 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       val source1 = await(selfEmploymentRepository.create(saUtr, taxYear, selfEmployment()))
       await(selfEmploymentRepository.create(generateSaUtr(), taxYear, selfEmployment()))
 
-      val found: Seq[SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
+      val found: Seq[selfemployment.SelfEmployment] = await(selfEmploymentRepository.list(saUtr, taxYear))
 
       found.flatMap(_.id) should contain theSameElementsAs Seq(source1)
     }
   }
 
   "update" should {
-    def verifyUpdate(original: SelfEmployment, updated: SelfEmployment) = {
+    def verifyUpdate(original: selfemployment.SelfEmployment, updated: selfemployment.SelfEmployment) = {
       val sourceId = await(selfEmploymentRepository.create(saUtr, taxYear, original))
       val result = await(selfEmploymentRepository.update(saUtr, taxYear, sourceId, updated))
       result shouldEqual true
@@ -213,7 +214,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     }
 
     "not remove incomes" in {
-      val source = MongoSelfEmployment.create(saUtr, taxYear, selfEmployment()).copy(incomes = Seq(MongoSelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, IncomeType.Turnover, 10)))
+      val source = SelfEmployment.create(saUtr, taxYear, selfEmployment()).copy(incomes = Seq(SelfEmploymentIncomeSummary(BSONObjectID.generate.stringify, IncomeType.Turnover, 10)))
       await(mongoRepository.insert(source))
       val found = await(mongoRepository.findById(saUtr, taxYear, source.sourceId)).get
       await(selfEmploymentRepository.update(saUtr, taxYear, source.sourceId, found))

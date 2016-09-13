@@ -25,8 +25,9 @@ import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.employment._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.{Employment => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.repositories.{JsonItem, SourceRepository, SummaryRepository, TypedSourceSummaryRepository}
 
@@ -40,13 +41,13 @@ object EmploymentRepository extends MongoDbConnection {
 }
 
 class EmploymentMongoRepository(implicit mongo: () => DB)
-    extends ReactiveRepository[MongoEmployment, BSONObjectID]("employments",
+    extends ReactiveRepository[Employment, BSONObjectID]("employments",
                                                               mongo,
-                                                              domainFormat = MongoEmployment.mongoFormats,
+                                                              domainFormat = Employment.mongoFormats,
                                                               idFormat = ReactiveMongoFormats.objectIdFormats)
-    with SourceRepository[Employment]
-    with AtomicUpdate[MongoEmployment]
-    with TypedSourceSummaryRepository[MongoEmployment, BSONObjectID] {
+    with SourceRepository[employment.Employment]
+    with AtomicUpdate[Employment]
+    with TypedSourceSummaryRepository[Employment, BSONObjectID] {
   self =>
 
   override def indexes: Seq[Index] = Seq(
@@ -58,16 +59,16 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("ukTaxPaid.summaryId", Ascending)), name = Some("employments_utr_taxyear_source_uktaxpaidid"), unique = true),
     Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("employments_last_modified"), unique = false))
 
-  override def create(saUtr: SaUtr, taxYear: TaxYear, employment: Employment): Future[SourceId] = {
-    val mongoEmployment = MongoEmployment.create(saUtr, taxYear, employment)
+  override def create(saUtr: SaUtr, taxYear: TaxYear, employment: api.employment.Employment): Future[SourceId] = {
+    val mongoEmployment = Employment.create(saUtr, taxYear, employment)
     insert(mongoEmployment).map(_ => mongoEmployment.sourceId)
   }
 
-  override def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[Employment]] = {
+  override def findById(saUtr: SaUtr, taxYear: TaxYear, id: SourceId): Future[Option[employment.Employment]] = {
     for (option <- findMongoObjectById(saUtr, taxYear, id)) yield option.map(_.toEmployment)
   }
 
-  override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, employment: Employment): Future[Boolean] = {
+  override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, employment: api.employment.Employment): Future[Boolean] = {
     val modifiers = BSONDocument(Seq(modifierStatementLastModified))
     for {
       result <- atomicUpdate(
@@ -79,11 +80,11 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
     } yield result.nonEmpty
   }
 
-  override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[Employment]] = {
+  override def list(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[employment.Employment]] = {
     findAll(saUtr, taxYear).map(_.map(_.toEmployment))
   }
 
-  def findAll(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[MongoEmployment]] = {
+  def findAll(saUtr: SaUtr, taxYear: TaxYear): Future[Seq[Employment]] = {
     find("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)
   }
 
@@ -96,7 +97,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
                         taxYear: TaxYear,
                         sourceId: SourceId,
                         income: Income): Future[Option[SummaryId]] =
-      self.createSummary(saUtr, taxYear, sourceId, MongoEmploymentIncomeSummary.toMongoSummary(income))
+      self.createSummary(saUtr, taxYear, sourceId, EmploymentIncomeSummary.toMongoSummary(income))
 
     override def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[Income]] =
       self.findSummaryById[Income](saUtr,
@@ -112,7 +113,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
       self.updateSummary(saUtr,
                          taxYear,
                          sourceId,
-                         MongoEmploymentIncomeSummary.toMongoSummary(income, Some(id)),
+                         EmploymentIncomeSummary.toMongoSummary(income, Some(id)),
                          mongoEmployment => mongoEmployment.incomes.exists(_.summaryId == id))
 
     override def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
@@ -120,7 +121,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
                          taxYear,
                          sourceId,
                          id,
-                         MongoEmploymentIncomeSummary.arrayName,
+                         EmploymentIncomeSummary.arrayName,
                          mongoEmployment => mongoEmployment.incomes.exists((_.summaryId == id)))
 
     override def list(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Income]]] =
@@ -136,7 +137,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
                         taxYear: TaxYear,
                         sourceId: SourceId,
                         expense: Expense): Future[Option[SummaryId]] =
-      self.createSummary(saUtr, taxYear, sourceId, MongoEmploymentExpenseSummary.toMongoSummary(expense))
+      self.createSummary(saUtr, taxYear, sourceId, EmploymentExpenseSummary.toMongoSummary(expense))
 
     override def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[Expense]] =
       self.findSummaryById[Expense](
@@ -153,7 +154,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
       self.updateSummary(saUtr,
                          taxYear,
                          sourceId,
-                         MongoEmploymentExpenseSummary.toMongoSummary(expense, Some(id)),
+                         EmploymentExpenseSummary.toMongoSummary(expense, Some(id)),
                          mongoEmployment => mongoEmployment.expenses.exists(_.summaryId == id))
 
     override def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
@@ -161,7 +162,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
                          taxYear,
                          sourceId,
                          id,
-                         MongoEmploymentExpenseSummary.arrayName,
+                         EmploymentExpenseSummary.arrayName,
                          mongoEmployment => mongoEmployment.expenses.exists(_.summaryId == id))
 
     override def list(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Expense]]] =
@@ -178,7 +179,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
                         taxYear: TaxYear,
                         sourceId: SourceId,
                         benefit: Benefit): Future[Option[SummaryId]] =
-      self.createSummary(saUtr, taxYear, sourceId, MongoEmploymentBenefitSummary.toMongoSummary(benefit))
+      self.createSummary(saUtr, taxYear, sourceId, EmploymentBenefitSummary.toMongoSummary(benefit))
 
     override def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Option[Benefit]] =
       self.findSummaryById[Benefit](
@@ -195,7 +196,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
       self.updateSummary(saUtr,
                          taxYear,
                          sourceId,
-                         MongoEmploymentBenefitSummary.toMongoSummary(benefit, Some(id)),
+                         EmploymentBenefitSummary.toMongoSummary(benefit, Some(id)),
                          mongoEmployment => mongoEmployment.benefits.exists(_.summaryId == id))
 
     override def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
@@ -203,7 +204,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
                          taxYear,
                          sourceId,
                          id,
-                         MongoEmploymentBenefitSummary.arrayName,
+                         EmploymentBenefitSummary.arrayName,
                          mongoEmployment => mongoEmployment.benefits.exists(_.summaryId == id))
 
     override def list(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[Benefit]]] =
@@ -220,7 +221,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
                         taxYear: TaxYear,
                         sourceId: SourceId,
                         ukTaxPaid: UkTaxPaid): Future[Option[SummaryId]] =
-      self.createSummary(saUtr, taxYear, sourceId, MongoEmploymentUkTaxPaidSummary.toMongoSummary(ukTaxPaid))
+      self.createSummary(saUtr, taxYear, sourceId, EmploymentUkTaxPaidSummary.toMongoSummary(ukTaxPaid))
 
     override def findById(saUtr: SaUtr,
                           taxYear: TaxYear,
@@ -240,7 +241,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
       self.updateSummary(saUtr,
                          taxYear,
                          sourceId,
-                         MongoEmploymentUkTaxPaidSummary.toMongoSummary(uKTaxPaid, Some(id)),
+                         EmploymentUkTaxPaidSummary.toMongoSummary(uKTaxPaid, Some(id)),
                          mongoEmployment => mongoEmployment.ukTaxPaid.exists(_.summaryId == id))
 
     override def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, id: SummaryId): Future[Boolean] =
@@ -248,7 +249,7 @@ class EmploymentMongoRepository(implicit mongo: () => DB)
                          taxYear,
                          sourceId,
                          id,
-                         MongoEmploymentUkTaxPaidSummary.arrayName,
+                         EmploymentUkTaxPaidSummary.arrayName,
                          mongoEmployment => mongoEmployment.ukTaxPaid.exists(_.summaryId == id))
 
     override def list(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId): Future[Option[Seq[UkTaxPaid]]] =

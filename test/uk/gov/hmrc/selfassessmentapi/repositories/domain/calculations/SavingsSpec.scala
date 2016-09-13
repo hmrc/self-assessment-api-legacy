@@ -24,14 +24,14 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxBandSummary, SelfAssessment, InterestFromUKBanksAndBuildingSocieties}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxBandSummary
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoUnearnedIncomesSavingsIncomeSummary
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.UnearnedIncomesSavingsIncomeSummary
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 class SavingsSpec extends UnitSpec {
 
   "Interest from UK banks and building societies" should {
-    def taxedInterest(amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary("", InterestFromBanksTaxed, amount)
-    def unTaxedInterest(amount: BigDecimal) = MongoUnearnedIncomesSavingsIncomeSummary("", InterestFromBanksUntaxed, amount)
+    def taxedInterest(amount: BigDecimal) = UnearnedIncomesSavingsIncomeSummary("", InterestFromBanksTaxed, amount)
+    def unTaxedInterest(amount: BigDecimal) = UnearnedIncomesSavingsIncomeSummary("", InterestFromBanksUntaxed, amount)
 
     "calculate rounded down interest when there are multiple interest of both taxed and unTaxed from uk banks and building societies from" +
       " multiple unearned income source" in {

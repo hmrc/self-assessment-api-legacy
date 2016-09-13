@@ -20,7 +20,8 @@ import org.scalatest.Matchers
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.controllers._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{Liability => _, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{SelfEmployment => _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{Liability => _, SelfAssessment => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 import uk.gov.hmrc.selfassessmentapi.{UnitSpec, _}
 
@@ -60,10 +61,10 @@ class LiabilitySpec extends UnitSpec {
         totalIncomeReceived = 1000,
         totalTaxableIncome = 4000,
         allowancesAndReliefs = AllowancesAndReliefs(personalAllowance = Some(3000), incomeTaxRelief = Some(2000), retirementAnnuityContract = Some(1000)),
-        taxDeducted = MongoTaxDeducted(
+        taxDeducted = repositories.domain.TaxDeducted(
           interestFromUk = 50,
           deductionFromUkProperties = Seq(TaxPaidForUkProperty(sourceId = "propTaxPaid", taxPaid = 30)),
-          ukTaxesPaidForEmployments = Seq(UkTaxPaidForEmployment(sourceId = "empTaxPaid", taxPaid = 20))),
+          ukTaxesPaidForEmployments = Seq(api.UkTaxPaidForEmployment(sourceId = "empTaxPaid", taxPaid = 20))),
         nonSavingsTaxBandSummary = Seq(
           TaxBandSummary("basicRate", taxableAmount = 100, chargedAt = "20%", tax = 20),
           TaxBandSummary("higherRate", taxableAmount = 100, chargedAt = "40%", tax = 40),
@@ -150,7 +151,7 @@ class LiabilitySpec extends UnitSpec {
       )
 
       liabilityDto.taxDeducted.interestFromUk shouldBe 50
-      liabilityDto.taxDeducted.fromEmployments shouldBe Seq(UkTaxPaidForEmployment(sourceId = "empTaxPaid", taxPaid = 20))
+      liabilityDto.taxDeducted.fromEmployments shouldBe Seq(api.UkTaxPaidForEmployment(sourceId = "empTaxPaid", taxPaid = 20))
       liabilityDto.taxDeducted.fromUkProperties shouldBe Seq(TaxPaidForUkProperty(sourceId = "propTaxPaid", taxPaid = 30))
 
       liabilityDto.taxDeducted.total shouldBe 100
@@ -255,12 +256,11 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for savings" in {
-      import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome._
 
       val unearnedIncome = TestUnearnedIncome()
         .withSavings(
-          (SavingsIncomeType.InterestFromBanksUntaxed, 150000.73),
-          (SavingsIncomeType.InterestFromBanksTaxed, 5000.23))
+          (unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 150000.73),
+          (unearnedincome.SavingsIncomeType.InterestFromBanksTaxed, 5000.23))
         .create()
 
 
@@ -466,7 +466,7 @@ class LiabilitySpec extends UnitSpec {
         .withSavings((unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 2000.73), (unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 2000.23))
         .create()
 
-      val sa = SelfAssessment(selfEmployments = Seq(selfEmployments),
+      val sa = api.SelfAssessment(selfEmployments = Seq(selfEmployments),
       ukProperties = Seq(ukProperties),
       unearnedIncomes = Seq(unearnedIncome),
       furnishedHolidayLettings = Seq(furnishedHolidayLetting))
@@ -510,10 +510,10 @@ class LiabilitySpec extends UnitSpec {
   }
 }
 
-case class ComputeLiabilityFor(employments: Seq[MongoEmployment] = Nil, selfEmployments: Seq[MongoSelfEmployment] = Nil,
-                               ukProperties: Seq[MongoUKProperties] = Nil, unearnedIncomes: Seq[MongoUnearnedIncome] = Nil, furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Nil) {
+case class ComputeLiabilityFor(employments: Seq[Employment] = Nil, selfEmployments: Seq[SelfEmployment] = Nil,
+                               ukProperties: Seq[UKProperties] = Nil, unearnedIncomes: Seq[UnearnedIncome] = Nil, furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Nil) {
   def andAssertThat() = LiabilityResultAssertions(Liability.create(SaUtr("123456789"), TaxYear("2016-17"),
-    SelfAssessment(employments = employments, selfEmployments = selfEmployments, ukProperties = ukProperties, unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings)))
+    api.SelfAssessment(employments = employments, selfEmployments = selfEmployments, ukProperties = ukProperties, unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings)))
 }
 
 case class LiabilityResultAssertions(liability: Liability) extends Matchers {
@@ -608,7 +608,7 @@ case class LiabilityResultAssertions(liability: Liability) extends Matchers {
 case class TestEmployment() {
   import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.{BenefitType, ExpenseType, IncomeType}
 
-  private var anEmployment: MongoEmployment = EmploymentSugar.anEmployment()
+  private var anEmployment: Employment = EmploymentSugar.anEmployment()
 
   def withIncomes(incomes: (IncomeType.IncomeType, BigDecimal)*) = {
     anEmployment = anEmployment.copy(incomes = incomes.map (income => EmploymentSugar.anIncome(income._1, income._2)))
@@ -638,7 +638,7 @@ case class TestSelfEmployment() {
 
   import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 
-  private var selfEmployment: MongoSelfEmployment = SelfEmploymentSugar.aSelfEmployment().copy(allowances = Some(Allowances()), adjustments = Some(Adjustments()))
+  private var selfEmployment: repositories.domain.SelfEmployment = SelfEmploymentSugar.aSelfEmployment().copy(allowances = Some(Allowances()), adjustments = Some(Adjustments()))
 
   def withAllowances(allowancesOnSales: BigDecimal, enhancedCapitalAllowance: BigDecimal,
                      businessPremisesRenovationAllowance: BigDecimal, capitalAllowanceSpecialRatePool: BigDecimal,
@@ -692,7 +692,7 @@ case class TestSelfEmployment() {
 case class TestUkProperty(rentARoomRelief: BigDecimal) {
   import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
 
-  private var ukProperties: MongoUKProperties = UkPropertySugar.aUkProperty().copy(rentARoomRelief = Some(rentARoomRelief),
+  private var ukProperties: UKProperties = UKPropertySugar.aUkProperty().copy(rentARoomRelief = Some(rentARoomRelief),
     allowances = Some(Allowances()), adjustments = Some(Adjustments()))
 
   def withAllowances(annualInvestmentAllowance: BigDecimal, otherCapitalAllowance: BigDecimal, wearAndTearAllowance: BigDecimal) = {
@@ -707,27 +707,27 @@ case class TestUkProperty(rentARoomRelief: BigDecimal) {
   }
 
   def incomes(incomes: (IncomeType.IncomeType, BigDecimal)*) = {
-    ukProperties = ukProperties.copy(incomes = incomes.map (income => MongoUKPropertiesIncomeSummary("", income._1, income._2)))
+    ukProperties = ukProperties.copy(incomes = incomes.map (income => UKPropertiesIncomeSummary("", income._1, income._2)))
     this
   }
 
   def expenses(expenses: (ExpenseType.ExpenseType, BigDecimal)*) = {
-    ukProperties = ukProperties.copy(expenses = expenses.map (expense => MongoUKPropertiesExpenseSummary("", expense._1, expense._2)))
+    ukProperties = ukProperties.copy(expenses = expenses.map (expense => UKPropertiesExpenseSummary("", expense._1, expense._2)))
     this
   }
 
   def balancingCharges(amounts: BigDecimal*) = {
-    ukProperties = ukProperties.copy(balancingCharges = amounts.map (amount => MongoUKPropertiesBalancingChargeSummary("", amount)))
+    ukProperties = ukProperties.copy(balancingCharges = amounts.map (amount => UKPropertiesBalancingChargeSummary("", amount)))
     this
   }
 
   def privateUseAdjustment(amounts: BigDecimal*) = {
-    ukProperties = ukProperties.copy(privateUseAdjustment = amounts.map (amount => MongoUKPropertiesPrivateUseAdjustmentSummary("", amount)))
+    ukProperties = ukProperties.copy(privateUseAdjustment = amounts.map (amount => UKPropertiesPrivateUseAdjustmentSummary("", amount)))
     this
   }
 
   def taxesPaid(amounts: BigDecimal*) = {
-    ukProperties = ukProperties.copy(taxesPaid = amounts.map (amount => MongoUKPropertiesTaxPaidSummary("", amount)))
+    ukProperties = ukProperties.copy(taxesPaid = amounts.map (amount => UKPropertiesTaxPaidSummary("", amount)))
     this
   }
 
@@ -735,17 +735,18 @@ case class TestUkProperty(rentARoomRelief: BigDecimal) {
 }
 
 case class TestUnearnedIncome() {
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome._
+  import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
+  import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
 
-  private var unearnedIncomes: MongoUnearnedIncome = UnearnedIncomesSugar.anIncome()
+  private var unearnedIncomes: UnearnedIncome = UnearnedIncomesSugar.anIncome()
 
-  def withSavings(savings: (SavingsIncomeType.SavingsIncomeType, BigDecimal)*) = {
-    unearnedIncomes = unearnedIncomes.copy(savings = savings.map(saving => MongoUnearnedIncomesSavingsIncomeSummary("", saving._1, saving._2)))
+  def withSavings(savings: (SavingsIncomeType, BigDecimal)*) = {
+    unearnedIncomes = unearnedIncomes.copy(savings = savings.map(saving => UnearnedIncomesSavingsIncomeSummary("", saving._1, saving._2)))
     this
   }
 
-  def withDividends(dividends: (DividendType.DividendType, BigDecimal)*) = {
-    unearnedIncomes = unearnedIncomes.copy(dividends = dividends.map(dividend => MongoUnearnedIncomesDividendSummary("", dividend._1, dividend._2)))
+  def withDividends(dividends: (DividendType, BigDecimal)*) = {
+    unearnedIncomes = unearnedIncomes.copy(dividends = dividends.map(dividend => UnearnedIncomesDividendSummary("", dividend._1, dividend._2)))
     this
   }
 
@@ -756,7 +757,7 @@ case class TestUnearnedIncome() {
 case class TestFurnishedHolidayLetting(capitalAllowance: BigDecimal) {
   import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
 
-  private var furnishedHolidayLetting: MongoFurnishedHolidayLettings = FurnishedHolidayLettingsSugar
+  private var furnishedHolidayLetting: FurnishedHolidayLettings = FurnishedHolidayLettingsSugar
     .aFurnishedHolidayLetting().copy(allowances = Some(Allowances(capitalAllowance = Some(capitalAllowance))))
 
   def propertyLocation(propertyLocation: PropertyLocationType.PropertyLocationType) = {
@@ -770,22 +771,22 @@ case class TestFurnishedHolidayLetting(capitalAllowance: BigDecimal) {
   }
 
   def incomes(incomes: BigDecimal*) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(incomes = incomes.map (MongoFurnishedHolidayLettingsIncomeSummary("", _)))
+    furnishedHolidayLetting = furnishedHolidayLetting.copy(incomes = incomes.map (FurnishedHolidayLettingsIncomeSummary("", _)))
     this
   }
 
   def expenses(expenses: (ExpenseType.ExpenseType, BigDecimal)*) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(expenses = expenses.map (expense => MongoFurnishedHolidayLettingsExpenseSummary("", expense._1, expense._2)))
+    furnishedHolidayLetting = furnishedHolidayLetting.copy(expenses = expenses.map (expense => FurnishedHolidayLettingsExpenseSummary("", expense._1, expense._2)))
     this
   }
 
   def balancingCharges(amounts: BigDecimal*) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(balancingCharges = amounts.map (MongoFurnishedHolidayLettingsBalancingChargeSummary("", _)))
+    furnishedHolidayLetting = furnishedHolidayLetting.copy(balancingCharges = amounts.map (FurnishedHolidayLettingsBalancingChargeSummary("", _)))
     this
   }
 
   def privateUseAdjustments(amounts: BigDecimal*) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(privateUseAdjustment = amounts.map (MongoFurnishedHolidayLettingsPrivateUseAdjustmentSummary("", _)))
+    furnishedHolidayLetting = furnishedHolidayLetting.copy(privateUseAdjustment = amounts.map (FurnishedHolidayLettingsPrivateUseAdjustmentSummary("", _)))
     this
   }
 

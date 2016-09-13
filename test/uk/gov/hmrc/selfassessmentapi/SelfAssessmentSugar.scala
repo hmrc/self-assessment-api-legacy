@@ -19,11 +19,9 @@ package uk.gov.hmrc.selfassessmentapi
 import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.Liability
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.controllers._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxDeducted => _, TaxYearProperties => _, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Liability, SelfAssessment => _, _}
 
 object SelfAssessmentSugar extends UnitSpec {
 
@@ -56,7 +54,7 @@ object SelfAssessmentSugar extends UnitSpec {
               allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance,
                                                           savingsStartingRate = savingsStartingRate,
                                                           retirementAnnuityContract = retirementAnnuityContract),
-              taxDeducted = MongoTaxDeducted(),
+              taxDeducted = TaxDeducted(),
               dividendTaxBandSummary = Nil,
               savingsTaxBandSummary = Nil,
               nonSavingsTaxBandSummary = Nil,
@@ -74,14 +72,14 @@ object SelfAssessmentSugar extends UnitSpec {
 
   def now = DateTime.now(DateTimeZone.UTC)
 
-  def aTaxYearProperty = MongoTaxYearProperties(BSONObjectID.generate, generateSaUtr(), taxYear, now, now)
+  def aTaxYearProperty = TaxYearProperties(BSONObjectID.generate, generateSaUtr(), taxYear, now, now)
 
-  def aSelfAssessment(employments: Seq[MongoEmployment] = Nil,
-                      selfEmployments: Seq[MongoSelfEmployment] = Nil,
-                      unearnedIncomes: Seq[MongoUnearnedIncome] = Nil,
-                      ukProperties: Seq[MongoUKProperties] = Nil,
-                      taxYearProperties: Option[TaxYearProperties] = None,
-                      furnishedHolidayLettings: Seq[MongoFurnishedHolidayLettings] = Nil) =
+  def aSelfAssessment(employments: Seq[Employment] = Nil,
+                      selfEmployments: Seq[SelfEmployment] = Nil,
+                      unearnedIncomes: Seq[UnearnedIncome] = Nil,
+                      ukProperties: Seq[UKProperties] = Nil,
+                      taxYearProperties: Option[api.TaxYearProperties] = None,
+                      furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Nil) =
     SelfAssessment(employments,
                    selfEmployments,
                    unearnedIncomes,

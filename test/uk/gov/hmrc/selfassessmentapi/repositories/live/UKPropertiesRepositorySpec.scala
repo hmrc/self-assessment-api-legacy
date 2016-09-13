@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.IncomeType.RentIncome
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{UKProperty, _}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{MongoUKProperties, MongoUKPropertiesIncomeSummary}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{UKProperties, UKPropertiesIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -187,7 +187,7 @@ class UKPropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAft
 
     "not remove incomes" in {
 
-      val source = MongoUKProperties.create(saUtr, taxYear, ukProperty()).copy(incomes = Seq(MongoUKPropertiesIncomeSummary(BSONObjectID.generate.stringify,  RentIncome, 10)))
+      val source = UKProperties.create(saUtr, taxYear, ukProperty()).copy(incomes = Seq(UKPropertiesIncomeSummary(BSONObjectID.generate.stringify,  RentIncome, 10)))
       await(mongoRepository.insert(source))
       val found = await(mongoRepository.findById(saUtr, taxYear, source.sourceId)).get
       await(ukPropertiesRepository.update(saUtr, taxYear, source.sourceId, found))

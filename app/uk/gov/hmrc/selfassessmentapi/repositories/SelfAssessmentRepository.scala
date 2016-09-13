@@ -25,9 +25,8 @@ import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONElement, 
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoSelfAssessment
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfAssessment
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -39,12 +38,12 @@ object SelfAssessmentRepository extends MongoDbConnection {
 }
 
 class SelfAssessmentMongoRepository(implicit mongo: () => DB)
-  extends ReactiveRepository[MongoSelfAssessment, BSONObjectID](
+  extends ReactiveRepository[SelfAssessment, BSONObjectID](
     "selfAssessments",
     mongo,
-    domainFormat = MongoSelfAssessment.mongoFormats,
+    domainFormat = SelfAssessment.mongoFormats,
     idFormat = ReactiveMongoFormats.objectIdFormats)
-    with AtomicUpdate[MongoSelfAssessment] {
+    with AtomicUpdate[SelfAssessment] {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("sa_utr_taxyear"), unique = true),
@@ -76,13 +75,13 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
     "lastModifiedDateTime" -> BSONDateTime(dateTime.getMillis)
 
 
-  def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[MongoSelfAssessment]] = {
+  def findBy(saUtr: SaUtr, taxYear: TaxYear): Future[Option[SelfAssessment]] = {
     find(
       "saUtr" -> BSONString(saUtr.toString), "taxYear" -> BSONString(taxYear.toString)
     ).map(_.headOption)
   }
 
-  def findOlderThan(lastModified: DateTime): Future[Seq[MongoSelfAssessment]] = {
+  def findOlderThan(lastModified: DateTime): Future[Seq[SelfAssessment]] = {
     find(
       "lastModifiedDateTime" -> BSONDocument("$lt" -> BSONDateTime(lastModified.getMillis))
     )
@@ -92,7 +91,7 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
     for (option <- remove("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear)) yield option.n > 0
   }
 
-  def isInsertion(suppliedId: BSONObjectID, returned: MongoSelfAssessment): Boolean = suppliedId.equals(returned.id)
+  def isInsertion(suppliedId: BSONObjectID, returned: SelfAssessment): Boolean = suppliedId.equals(returned.id)
 
   def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Unit] = {
     val now = DateTime.now(DateTimeZone.UTC)

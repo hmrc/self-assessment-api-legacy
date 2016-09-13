@@ -20,7 +20,7 @@ import org.json.{JSONArray, JSONObject}
 import org.skyscreamer.jsonassert.JSONAssert._
 import org.skyscreamer.jsonassert.JSONCompareMode._
 import play.api.libs.json.{JsArray, JsValue}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoTaxDeducted
+import uk.gov.hmrc.selfassessmentapi.repositories._
 
 class LiabilitySpec extends JsonSpec {
 
@@ -60,7 +60,7 @@ class LiabilitySpec extends JsonSpec {
 
   "MongoTaxDeducted" should {
     "correctly map to JSON" in {
-      roundTripJson(MongoTaxDeducted(
+      roundTripJson(domain.TaxDeducted(
         interestFromUk = 500,
         totalDeductionFromUkProperties =
           500,

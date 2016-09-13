@@ -24,12 +24,14 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.BenefitType.BenefitType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SummaryId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.IncomeType.IncomeType
 
-case class MongoEmploymentIncomeSummary(summaryId: SummaryId, `type`: IncomeType, amount: BigDecimal)
-    extends MongoSummary with AmountHolder {
-  val arrayName = MongoEmploymentIncomeSummary.arrayName
+case class EmploymentIncomeSummary(summaryId: SummaryId, `type`: IncomeType, amount: BigDecimal)
+    extends Summary with AmountHolder {
+  val arrayName = EmploymentIncomeSummary.arrayName
 
   def toIncome: Income =
     Income(id = Some(summaryId), `type` = `type`, amount = amount)
@@ -41,14 +43,14 @@ case class MongoEmploymentIncomeSummary(summaryId: SummaryId, `type`: IncomeType
   )
 }
 
-object MongoEmploymentIncomeSummary {
+object EmploymentIncomeSummary {
 
   val arrayName = "incomes"
 
-  implicit val format = Json.format[MongoEmploymentIncomeSummary]
+  implicit val format = Json.format[EmploymentIncomeSummary]
 
-  def toMongoSummary(income: Income, id: Option[SummaryId] = None): MongoEmploymentIncomeSummary = {
-    MongoEmploymentIncomeSummary(
+  def toMongoSummary(income: Income, id: Option[SummaryId] = None): EmploymentIncomeSummary = {
+    EmploymentIncomeSummary(
         summaryId = id.getOrElse(BSONObjectID.generate.stringify),
         `type` = income.`type`,
         amount = income.amount
@@ -56,9 +58,9 @@ object MongoEmploymentIncomeSummary {
   }
 }
 
-case class MongoEmploymentExpenseSummary(summaryId: SummaryId, `type`: ExpenseType, amount: BigDecimal)
-    extends MongoSummary with AmountHolder {
-  val arrayName = MongoEmploymentExpenseSummary.arrayName
+case class EmploymentExpenseSummary(summaryId: SummaryId, `type`: ExpenseType, amount: BigDecimal)
+    extends Summary with AmountHolder {
+  val arrayName = EmploymentExpenseSummary.arrayName
 
   def toExpense: Expense =
     Expense(id = Some(summaryId), `type` = `type`, amount = amount)
@@ -70,14 +72,14 @@ case class MongoEmploymentExpenseSummary(summaryId: SummaryId, `type`: ExpenseTy
   )
 }
 
-object MongoEmploymentExpenseSummary {
+object EmploymentExpenseSummary {
 
   val arrayName = "expenses"
 
-  implicit val format = Json.format[MongoEmploymentExpenseSummary]
+  implicit val format = Json.format[EmploymentExpenseSummary]
 
-  def toMongoSummary(expense: Expense, id: Option[SummaryId] = None): MongoEmploymentExpenseSummary = {
-    MongoEmploymentExpenseSummary(
+  def toMongoSummary(expense: Expense, id: Option[SummaryId] = None): EmploymentExpenseSummary = {
+    EmploymentExpenseSummary(
         summaryId = id.getOrElse(BSONObjectID.generate.stringify),
         `type` = expense.`type`,
         amount = expense.amount
@@ -85,9 +87,9 @@ object MongoEmploymentExpenseSummary {
   }
 }
 
-case class MongoEmploymentBenefitSummary(summaryId: SummaryId, `type`: BenefitType, amount: BigDecimal)
-    extends MongoSummary with AmountHolder {
-  val arrayName = MongoEmploymentBenefitSummary.arrayName
+case class EmploymentBenefitSummary(summaryId: SummaryId, `type`: BenefitType, amount: BigDecimal)
+    extends Summary with AmountHolder {
+  val arrayName = EmploymentBenefitSummary.arrayName
 
   def toBenefit: Benefit =
     Benefit(id = Some(summaryId), `type` = `type`, amount = amount)
@@ -99,14 +101,14 @@ case class MongoEmploymentBenefitSummary(summaryId: SummaryId, `type`: BenefitTy
   )
 }
 
-object MongoEmploymentBenefitSummary {
+object EmploymentBenefitSummary {
 
   val arrayName = "benefits"
 
-  implicit val format = Json.format[MongoEmploymentBenefitSummary]
+  implicit val format = Json.format[EmploymentBenefitSummary]
 
-  def toMongoSummary(benefit: Benefit, id: Option[SummaryId] = None): MongoEmploymentBenefitSummary = {
-    MongoEmploymentBenefitSummary(
+  def toMongoSummary(benefit: Benefit, id: Option[SummaryId] = None): EmploymentBenefitSummary = {
+    EmploymentBenefitSummary(
         summaryId = id.getOrElse(BSONObjectID.generate.stringify),
         `type` = benefit.`type`,
         amount = benefit.amount
@@ -114,8 +116,8 @@ object MongoEmploymentBenefitSummary {
   }
 }
 
-case class MongoEmploymentUkTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends MongoSummary {
-  val arrayName = MongoEmploymentUkTaxPaidSummary.arrayName
+case class EmploymentUkTaxPaidSummary(summaryId: SummaryId, amount: BigDecimal) extends Summary {
+  val arrayName = EmploymentUkTaxPaidSummary.arrayName
 
   def toUkTaxPaid: UkTaxPaid =
     UkTaxPaid(id = Some(summaryId), amount = amount)
@@ -126,36 +128,36 @@ case class MongoEmploymentUkTaxPaidSummary(summaryId: SummaryId, amount: BigDeci
   )
 }
 
-object MongoEmploymentUkTaxPaidSummary {
+object EmploymentUkTaxPaidSummary {
 
   val arrayName = "ukTaxPaid"
 
-  implicit val format = Json.format[MongoEmploymentUkTaxPaidSummary]
+  implicit val format = Json.format[EmploymentUkTaxPaidSummary]
 
-  def toMongoSummary(uKTaxPaid: UkTaxPaid, id: Option[SummaryId] = None): MongoEmploymentUkTaxPaidSummary = {
-    MongoEmploymentUkTaxPaidSummary(
+  def toMongoSummary(uKTaxPaid: UkTaxPaid, id: Option[SummaryId] = None): EmploymentUkTaxPaidSummary = {
+    EmploymentUkTaxPaidSummary(
         summaryId = id.getOrElse(BSONObjectID.generate.stringify),
         amount = uKTaxPaid.amount
     )
   }
 }
 
-case class MongoEmployment(id: BSONObjectID,
-                           sourceId: SourceId,
-                           saUtr: SaUtr,
-                           taxYear: TaxYear,
-                           lastModifiedDateTime: DateTime,
-                           createdDateTime: DateTime,
-                           incomes: Seq[MongoEmploymentIncomeSummary] = Nil,
-                           expenses: Seq[MongoEmploymentExpenseSummary] = Nil,
-                           benefits: Seq[MongoEmploymentBenefitSummary] = Nil,
-                           ukTaxPaid: Seq[MongoEmploymentUkTaxPaidSummary] = Nil)
+case class Employment(id: BSONObjectID,
+                      sourceId: SourceId,
+                      saUtr: SaUtr,
+                      taxYear: TaxYear,
+                      lastModifiedDateTime: DateTime,
+                      createdDateTime: DateTime,
+                      incomes: Seq[EmploymentIncomeSummary] = Nil,
+                      expenses: Seq[EmploymentExpenseSummary] = Nil,
+                      benefits: Seq[EmploymentBenefitSummary] = Nil,
+                      ukTaxPaid: Seq[EmploymentUkTaxPaidSummary] = Nil)
     extends SourceMetadata {
 
-  def toEmployment = Employment(id = Some(sourceId))
+  def toEmployment = employment.Employment(id = Some(sourceId))
 }
 
-object MongoEmployment {
+object Employment {
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val localDateFormat = ReactiveMongoFormats.localDateFormats
 
@@ -163,13 +165,13 @@ object MongoEmployment {
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
     implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
-    Format(Json.reads[MongoEmployment], Json.writes[MongoEmployment])
+    Format(Json.reads[Employment], Json.writes[Employment])
   })
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, employment: Employment): MongoEmployment = {
+  def create(saUtr: SaUtr, taxYear: TaxYear, employment: api.employment.Employment): Employment = {
     val id = BSONObjectID.generate
     val now = DateTime.now(DateTimeZone.UTC)
-    MongoEmployment(id = id,
+    Employment(id = id,
                     sourceId = id.stringify,
                     saUtr = saUtr,
                     taxYear = taxYear,

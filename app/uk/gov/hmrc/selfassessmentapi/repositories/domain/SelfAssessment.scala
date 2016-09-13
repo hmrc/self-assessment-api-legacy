@@ -21,20 +21,20 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearProperties
 
-case class MongoSelfAssessment(id: BSONObjectID,
-                               saUtr: SaUtr,
-                               taxYear: TaxYear,
-                               createdDateTime: DateTime,
-                               lastModifiedDateTime: DateTime,
-                               taxYearProperties: Option[TaxYearProperties] = None)
+case class SelfAssessment(id: BSONObjectID,
+                          saUtr: SaUtr,
+                          taxYear: TaxYear,
+                          createdDateTime: DateTime,
+                          lastModifiedDateTime: DateTime,
+                          taxYearProperties: Option[api.TaxYearProperties] = None)
   extends SelfAssessmentMetadata
 
-object MongoSelfAssessment {
+object SelfAssessment {
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
   implicit val mongoFormats = ReactiveMongoFormats.mongoEntity(
-    Format(Json.reads[MongoSelfAssessment], Json.writes[MongoSelfAssessment]))
+    Format(Json.reads[SelfAssessment], Json.writes[SelfAssessment]))
 }

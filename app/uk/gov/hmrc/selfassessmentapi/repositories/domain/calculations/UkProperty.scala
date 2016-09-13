@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, TaxPaidForUkProperty}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.MongoUKProperties
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.UKProperties
 
-object UkProperty {
+object UKProperty {
 
   object TaxesPaid {
     def apply(selfAssessment: SelfAssessment) = selfAssessment.ukProperties.map { property =>
@@ -29,7 +29,7 @@ object UkProperty {
   }
 
   object TaxPaid {
-    def apply(ukProperty: MongoUKProperties) = RoundUpToPennies(Total(ukProperty.taxesPaid))
+    def apply(ukProperty: UKProperties) = RoundUpToPennies(Total(ukProperty.taxesPaid))
   }
 
   object TotalTaxPaid {
@@ -37,7 +37,7 @@ object UkProperty {
   }
 
   object LossBroughtForward {
-    def apply(ukProperty: MongoUKProperties) = ValueOrZero(ukProperty.adjustments.flatMap(_.lossBroughtForward))
+    def apply(ukProperty: UKProperties) = ValueOrZero(ukProperty.adjustments.flatMap(_.lossBroughtForward))
   }
 
   object TotalLossBroughtForward {
@@ -46,7 +46,7 @@ object UkProperty {
   }
 
   object AdjustedProfits {
-    def apply(ukProperty: MongoUKProperties) = {
+    def apply(ukProperty: UKProperties) = {
       PositiveOrZero(Total(ukProperty.incomes) + Total(ukProperty.balancingCharges) + Total(ukProperty.privateUseAdjustment) -
         Total(ukProperty.expenses) - ukProperty.allowancesTotal - ukProperty.rentARoomReliefAmount)
     }

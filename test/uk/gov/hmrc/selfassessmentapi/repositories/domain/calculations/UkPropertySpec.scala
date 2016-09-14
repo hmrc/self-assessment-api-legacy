@@ -111,7 +111,7 @@ class UKPropertySpec extends UnitSpec {
           )
         )
 
-      UKProperty.TotalLossBroughtForward(selfAssessment) shouldBe 8002
+      UKProperty.CappedTotalLossBroughtForward(selfAssessment) shouldBe 8002
     }
   }
 

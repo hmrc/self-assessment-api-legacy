@@ -16,11 +16,32 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, FurnishedHolidayLettingIncome}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{FurnishedHolidayLettingIncome, SelfAssessment}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.FurnishedHolidayLettings
 
 object FurnishedHolidayLetting {
+
+  object UK {
+    object CappedTotalLossBroughtForward {
+
+      private def excessUKPropertyLBF(selfAssessment: SelfAssessment): BigDecimal =
+        PositiveOrZero(UKProperty.TotalLossBroughtForward(selfAssessment) - UKProperty.TotalProfit(selfAssessment))
+
+      def apply(selfAssessment: SelfAssessment): BigDecimal =
+        CapAt(selfAssessment.ukFurnishedHolidayLettings.map(LossBroughtForward(_)).sum + excessUKPropertyLBF(selfAssessment),
+          selfAssessment.ukFurnishedHolidayLettings.map(AdjustedProfits(_)).sum)
+    }
+  }
+
+  object EEA {
+    object CappedTotalLossBroughtForward {
+      def apply(selfAssessment: SelfAssessment): BigDecimal =
+        CapAt(selfAssessment.eeaFurnishedHolidayLettings.map(LossBroughtForward(_)).sum,
+          selfAssessment.eeaFurnishedHolidayLettings.map(AdjustedProfits(_)).sum)
+    }
+  }
 
   object AdjustedProfits {
     private def profitIncreases(furnishedHolidayLetting: FurnishedHolidayLettings): BigDecimal = {
@@ -47,23 +68,12 @@ object FurnishedHolidayLetting {
     def apply(selfAssessment: SelfAssessment) = selfAssessment.furnishedHolidayLettings.map(AdjustedProfits(_)).sum
   }
 
-  /*
-  val furnishedHolidaysLettings =
-        Seq(aFurnishedHolidayLetting().copy(incomes = Seq(fhlIncome(100)), adjustments = Some(fhlAdjustments(lossBroughtForward = 50))),
-         aFurnishedHolidayLetting().copy(incomes = Seq(fhlIncome(350), fhlIncome(50), fhlIncome(100)), adjustments = Some(fhlAdjustments(lossBroughtForward = 200))),
-         aFurnishedHolidayLetting(propertyLocation = EEA).copy(incomes = Seq(fhlIncome(50), fhlIncome(50)), adjustments = Some(fhlAdjustments(lossBroughtForward = 500))),
-         aFurnishedHolidayLetting(propertyLocation = EEA).copy(incomes = Seq(fhlIncome(500)), adjustments = Some(fhlAdjustments(lossBroughtForward = 450)))
-      )
-   */
-
   object LossBroughtForward {
     def apply(furnishedHolidayLetting: FurnishedHolidayLettings) = ValueOrZero(furnishedHolidayLetting.adjustments.flatMap(_.lossBroughtForward))
   }
 
-  object TotalLossBroughtForward {
-    def apply(selfAssessment: SelfAssessment) = selfAssessment.furnishedHolidayLettings.groupBy(_.propertyLocation) map {
-      case (location, furnishedHolidayLettings) =>
-        CapAt(furnishedHolidayLettings.map(LossBroughtForward(_)).sum, furnishedHolidayLettings.map(AdjustedProfits(_)).sum)
-    } sum
+  object CappedTotalLossBroughtForward {
+    def apply(selfAssessment: SelfAssessment) = RoundUp(UK.CappedTotalLossBroughtForward(selfAssessment) + EEA.CappedTotalLossBroughtForward(selfAssessment))
+
   }
 }

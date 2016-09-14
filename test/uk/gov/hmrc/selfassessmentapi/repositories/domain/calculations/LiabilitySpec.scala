@@ -23,6 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{SelfEmployment => _}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{Liability => _, SelfAssessment => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders._
 import uk.gov.hmrc.selfassessmentapi.{UnitSpec, _}
 
 class LiabilitySpec extends UnitSpec {
@@ -167,7 +168,7 @@ class LiabilitySpec extends UnitSpec {
     "correctly compute values for employments" in {
       import uk.gov.hmrc.selfassessmentapi.controllers.api.employment._
 
-      val employment = TestEmployment()
+      val employment = EmploymentBuilder()
         .withIncomes((IncomeType.Salary, 20000), (IncomeType.Other, 2500.50))
         .withExpenses((ExpenseType.TravelAndSubsistence, 500.50), (ExpenseType.ProfessionalFees, 250.52))
         .withBenefits((BenefitType.Accommodation, 1000), (BenefitType.PrivateInsurance, 200))
@@ -190,7 +191,7 @@ class LiabilitySpec extends UnitSpec {
     "correctly compute values for self-employments" in {
       import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 
-      val selfEmployment = TestSelfEmployment()
+      val selfEmployment = SelfEmploymentBuilder()
           .withAllowances(
             annualInvestmentAllowance = 23000.22,
             capitalAllowanceMainPool = 200.75,
@@ -229,7 +230,7 @@ class LiabilitySpec extends UnitSpec {
     "correctly compute values for UK properties" in {
       import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
 
-      val ukProperty = TestUkProperty(rentARoomRelief = 500.25)
+      val ukProperty = UKPropertyBuilder(rentARoomRelief = 500.25)
         .withAllowances(annualInvestmentAllowance = 200,
           otherCapitalAllowance=123.45,
           wearAndTearAllowance=12.25)
@@ -257,7 +258,7 @@ class LiabilitySpec extends UnitSpec {
 
     "correctly compute values for savings" in {
 
-      val unearnedIncome = TestUnearnedIncome()
+      val unearnedIncome = UnearnedIncomeBuilder()
         .withSavings(
           (unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 150000.73),
           (unearnedincome.SavingsIncomeType.InterestFromBanksTaxed, 5000.23))
@@ -283,7 +284,7 @@ class LiabilitySpec extends UnitSpec {
     "correctly compute values for dividends" in {
       import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome._
 
-      val unearnedIncome = TestUnearnedIncome()
+      val unearnedIncome = UnearnedIncomeBuilder()
           .withDividends(
             (DividendType.FromUKCompanies, 75000.33),
             (DividendType.OtherFromUKCompanies, 125000.25))
@@ -307,7 +308,7 @@ class LiabilitySpec extends UnitSpec {
     "correctly compute values for furnished holiday lettings" in {
       import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
 
-      val furnishedHolidayLetting = TestFurnishedHolidayLetting(capitalAllowance = 123.45)
+      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(capitalAllowance = 123.45)
           .propertyLocation(PropertyLocationType.UK)
           .lossBroughtForward(500.50)
           .incomes(15250.50)
@@ -318,29 +319,29 @@ class LiabilitySpec extends UnitSpec {
 
       ComputeLiabilityFor(furnishedHolidayLettings = Seq(furnishedHolidayLetting))
         .andAssertThat()
-        .incomeTaxReliefIs(500.5)
+        .incomeTaxReliefIs(501)
         .personalAllowanceIs(11000)
         .nonSavings()
-        .basicRateBandSummaryIs(3276.5, 655.3)
+        .basicRateBandSummaryIs(3276, 655.2)
         .higherRateBandSummaryIs(0, 0)
         .additionalHigherRateBandSummaryIs(0, 0)
         .totalIncomeReceivedIs(14777)
-        .totalTaxableIncomeIs(3276.5)
-        .totalIncomeTaxIs(655.3)
-        .totalTaxDueIs(655.3)
+        .totalTaxableIncomeIs(3276)
+        .totalIncomeTaxIs(655.2)
+        .totalTaxDueIs(655.2)
     }
 
     "correctly compute values for a whole self assessment" in {
       import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-      val employments = TestEmployment()
+      val employments = EmploymentBuilder()
         .withIncomes((employment.IncomeType.Salary, 20000), (employment.IncomeType.Other, 2500.50))
         .withExpenses((employment.ExpenseType.TravelAndSubsistence, 500.50),(employment.ExpenseType.ProfessionalFees, 250.52))
         .withBenefits((employment.BenefitType.Accommodation, 1000), (employment.BenefitType.PrivateInsurance, 200))
         .withUkTaxPaid(500.25)
         .create()
 
-      val selfEmployments = TestSelfEmployment()
+      val selfEmployments = SelfEmploymentBuilder()
         .withAllowances(
           annualInvestmentAllowance = 23000.22,
           capitalAllowanceMainPool = 200.75,
@@ -361,7 +362,7 @@ class LiabilitySpec extends UnitSpec {
         .goodsAndServicesOwnUse(200.02)
         .create()
 
-      val ukProperties = TestUkProperty(rentARoomRelief = 500.25)
+      val ukProperties = UKPropertyBuilder(rentARoomRelief = 500.25)
         .withAllowances(
           annualInvestmentAllowance = 200,
           otherCapitalAllowance = 123.45,
@@ -374,7 +375,7 @@ class LiabilitySpec extends UnitSpec {
         .taxesPaid(12500.56)
         .create()
 
-      val furnishedHolidayLetting = TestFurnishedHolidayLetting(123.45)
+      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(123.45)
         .propertyLocation(furnishedholidaylettings.PropertyLocationType.UK)
         .lossBroughtForward(500.50)
         .incomes(15250.50)
@@ -383,7 +384,7 @@ class LiabilitySpec extends UnitSpec {
         .privateUseAdjustments(750.65)
         .create()
 
-      val unearnedIncome = TestUnearnedIncome()
+      val unearnedIncome = UnearnedIncomeBuilder()
         .withSavings((unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 150000.73), (unearnedincome.SavingsIncomeType.InterestFromBanksTaxed, 5000.23))
         .withDividends((unearnedincome.DividendType.FromUKCompanies, 75000.33), (unearnedincome.DividendType.OtherFromUKCompanies, 125000.25))
         .create()
@@ -396,11 +397,11 @@ class LiabilitySpec extends UnitSpec {
         furnishedHolidayLettings = Seq(furnishedHolidayLetting))
         .andAssertThat()
         .personalAllowanceIs(0)
-        .incomeTaxReliefIs(1501.5)
+        .incomeTaxReliefIs(1502)
         .nonSavings()
           .basicRateBandSummaryIs(32000, 6400)
           .higherRateBandSummaryIs(118000, 47200)
-          .additionalHigherRateBandSummaryIs(215609.46, 97024.25)
+          .additionalHigherRateBandSummaryIs(215608.96, 97024.03)
         .savings()
           .startingRateBandSummaryIs(0)
           .nilRateBandSummaryIs(0)
@@ -413,13 +414,13 @@ class LiabilitySpec extends UnitSpec {
           .higherRateBandSummaryIs(0, 0)
           .additionalHigherRateBandSummaryIs(195000, 74295)
         .totalIncomeReceivedIs(723361.96)
-        .totalTaxableIncomeIs(721860.46)
-        .totalIncomeTaxIs(295232.20)
-        .totalTaxDueIs(280981.33)
+        .totalTaxableIncomeIs(721859.96)
+        .totalIncomeTaxIs(295231.98)
+        .totalTaxDueIs(280981.11)
     }
 
     "correctly compute a liability when taxable non-savings income is less than zero" in {
-      val selfEmployments = TestSelfEmployment()
+      val selfEmployments = SelfEmploymentBuilder()
         .withAllowances(
           annualInvestmentAllowance = 2300.22,
           capitalAllowanceMainPool = 200.75,
@@ -440,7 +441,7 @@ class LiabilitySpec extends UnitSpec {
         .goodsAndServicesOwnUse(200.02)
         .create()
 
-      val ukProperties = TestUkProperty(rentARoomRelief = 500.25)
+      val ukProperties = UKPropertyBuilder(rentARoomRelief = 500.25)
         .withAllowances(
           annualInvestmentAllowance = 200,
           otherCapitalAllowance = 123.45,
@@ -453,7 +454,7 @@ class LiabilitySpec extends UnitSpec {
         .taxesPaid(12500.56)
         .create()
 
-      val furnishedHolidayLetting = TestFurnishedHolidayLetting(123.45)
+      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(123.45)
         .propertyLocation(furnishedholidaylettings.PropertyLocationType.UK)
         .lossBroughtForward(0.50)
         .incomes(1525.50)
@@ -462,21 +463,9 @@ class LiabilitySpec extends UnitSpec {
         .privateUseAdjustments(750.65)
         .create()
 
-      val unearnedIncome = TestUnearnedIncome()
+      val unearnedIncome = UnearnedIncomeBuilder()
         .withSavings((unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 2000.73), (unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 2000.23))
         .create()
-
-      val sa = api.SelfAssessment(selfEmployments = Seq(selfEmployments),
-      ukProperties = Seq(ukProperties),
-      unearnedIncomes = Seq(unearnedIncome),
-      furnishedHolidayLettings = Seq(furnishedHolidayLetting))
-
-      println(NonSavings.TotalIncome(sa))
-      println(Savings.TotalIncome(sa))
-      println(Deductions.Total(sa))
-      println(NonSavings.TotalTaxableIncome(sa))
-      println(Savings.TotalTaxableIncome(sa))
-
 
       ComputeLiabilityFor(
         selfEmployments = Seq(selfEmployments),
@@ -485,13 +474,13 @@ class LiabilitySpec extends UnitSpec {
         furnishedHolidayLettings = Seq(furnishedHolidayLetting))
         .andAssertThat()
         .personalAllowanceIs(11000)
-        .incomeTaxReliefIs(7247.50)
+        .incomeTaxReliefIs(8002)
         .nonSavings()
         .basicRateBandSummaryIs(0, 0)
         .higherRateBandSummaryIs(0, 0)
         .additionalHigherRateBandSummaryIs(0, 0)
         .savings()
-        .startingRateBandSummaryIs(3889.46)
+        .startingRateBandSummaryIs(3134.96)
         .nilRateBandSummaryIs(0)
         .basicRateBandSummaryIs(0, 0)
         .higherRateBandSummaryIs(0, 0)
@@ -502,7 +491,7 @@ class LiabilitySpec extends UnitSpec {
         .higherRateBandSummaryIs(0, 0)
         .additionalHigherRateBandSummaryIs(0, 0)
         .totalIncomeReceivedIs(22136.96)
-        .totalTaxableIncomeIs(3889.46)
+        .totalTaxableIncomeIs(3134.96)
         .totalIncomeTaxIs(0)
         .totalTaxDueIs(0)
 
@@ -605,190 +594,5 @@ case class LiabilityResultAssertions(liability: Liability) extends Matchers {
   }
 }
 
-case class TestEmployment() {
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.{BenefitType, ExpenseType, IncomeType}
 
-  private var anEmployment: Employment = EmploymentSugar.anEmployment()
 
-  def withIncomes(incomes: (IncomeType.IncomeType, BigDecimal)*) = {
-    anEmployment = anEmployment.copy(incomes = incomes.map (income => EmploymentSugar.anIncome(income._1, income._2)))
-    this
-  }
-
-  def withExpenses(expenses: (ExpenseType.ExpenseType, BigDecimal)*) = {
-    anEmployment = anEmployment.copy(expenses = expenses.map (expense => EmploymentSugar.anExpense(expense._1, expense._2)))
-    this
-  }
-
-  def withBenefits(benefits: (BenefitType.BenefitType, BigDecimal)*) = {
-    anEmployment = anEmployment.copy(benefits = benefits.map (benefit => EmploymentSugar.aBenefit(benefit._1, benefit._2)))
-    this
-  }
-
-  def withUkTaxPaid(taxPaid: BigDecimal) = {
-    anEmployment = anEmployment.copy(ukTaxPaid = Seq(EmploymentSugar.aUkTaxPaidSummary(amount = taxPaid)))
-    this
-  }
-
-  def create() = anEmployment
-}
-
-case class TestSelfEmployment() {
-  def create() = selfEmployment
-
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
-
-  private var selfEmployment: repositories.domain.SelfEmployment = SelfEmploymentSugar.aSelfEmployment().copy(allowances = Some(Allowances()), adjustments = Some(Adjustments()))
-
-  def withAllowances(allowancesOnSales: BigDecimal, enhancedCapitalAllowance: BigDecimal,
-                     businessPremisesRenovationAllowance: BigDecimal, capitalAllowanceSpecialRatePool: BigDecimal,
-                     capitalAllowanceMainPool: BigDecimal, annualInvestmentAllowance: BigDecimal) = {
-    selfEmployment = selfEmployment.copy(allowances = selfEmployment.allowances.map(_.copy(
-      allowancesOnSales = Some(allowancesOnSales),
-      enhancedCapitalAllowance = Some(enhancedCapitalAllowance),
-      businessPremisesRenovationAllowance = Some(businessPremisesRenovationAllowance),
-      capitalAllowanceSpecialRatePool = Some(capitalAllowanceSpecialRatePool),
-      capitalAllowanceMainPool = Some(capitalAllowanceMainPool),
-      annualInvestmentAllowance = Some(annualInvestmentAllowance))))
-
-    this
-  }
-
-  def withAdjustments(outstandingBusinessIncome: BigDecimal, lossBroughtForward: BigDecimal,
-                      averagingAdjustment: BigDecimal, overlapReliefUsed: BigDecimal,
-                      basisAdjustment: BigDecimal, includedNonTaxableProfits: BigDecimal) = {
-    selfEmployment = selfEmployment.copy(adjustments = selfEmployment.adjustments.map(_.copy(
-      outstandingBusinessIncome = Some(outstandingBusinessIncome),
-      lossBroughtForward = Some(lossBroughtForward),
-      averagingAdjustment = Some(averagingAdjustment),
-      overlapReliefUsed = Some(overlapReliefUsed),
-      basisAdjustment = Some(basisAdjustment),
-      includedNonTaxableProfits = Some(includedNonTaxableProfits))))
-
-    this
-  }
-
-  def incomes(incomes: (IncomeType.IncomeType, BigDecimal)*) = {
-    selfEmployment = selfEmployment.copy(incomes = incomes.map (income => SelfEmploymentSugar.anIncome(income._1, income._2)))
-    this
-  }
-
-  def expenses(expenses: (ExpenseType.ExpenseType, BigDecimal)*) = {
-    selfEmployment = selfEmployment.copy(expenses = expenses.map (expense => SelfEmploymentSugar.anExpense(expense._1, expense._2)))
-    this
-  }
-
-  def balancingCharges(balancingCharges: (BalancingChargeType.BalancingChargeType, BigDecimal)*) = {
-    selfEmployment = selfEmployment.copy(balancingCharges = balancingCharges.map (balancingCharge => SelfEmploymentSugar.aBalancingCharge(balancingCharge._1, balancingCharge._2)))
-    this
-  }
-
-  def goodsAndServicesOwnUse(amounts: BigDecimal*) = {
-    selfEmployment = selfEmployment.copy(goodsAndServicesOwnUse = amounts.map(SelfEmploymentSugar.aGoodsAndServices))
-    this
-  }
-}
-
-case class TestUkProperty(rentARoomRelief: BigDecimal) {
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
-
-  private var ukProperties: UKProperties = UKPropertySugar.aUkProperty().copy(rentARoomRelief = Some(rentARoomRelief),
-    allowances = Some(Allowances()), adjustments = Some(Adjustments()))
-
-  def withAllowances(annualInvestmentAllowance: BigDecimal, otherCapitalAllowance: BigDecimal, wearAndTearAllowance: BigDecimal) = {
-    ukProperties = ukProperties.copy(allowances = ukProperties.allowances.map(_.copy(otherCapitalAllowance = Some(otherCapitalAllowance),
-      annualInvestmentAllowance = Some(annualInvestmentAllowance), wearAndTearAllowance = Some(wearAndTearAllowance))))
-    this
-  }
-
-  def lossBroughtForward(amount: BigDecimal) = {
-    ukProperties = ukProperties.copy(adjustments = Some(Adjustments(lossBroughtForward = Some(amount))))
-    this
-  }
-
-  def incomes(incomes: (IncomeType.IncomeType, BigDecimal)*) = {
-    ukProperties = ukProperties.copy(incomes = incomes.map (income => UKPropertiesIncomeSummary("", income._1, income._2)))
-    this
-  }
-
-  def expenses(expenses: (ExpenseType.ExpenseType, BigDecimal)*) = {
-    ukProperties = ukProperties.copy(expenses = expenses.map (expense => UKPropertiesExpenseSummary("", expense._1, expense._2)))
-    this
-  }
-
-  def balancingCharges(amounts: BigDecimal*) = {
-    ukProperties = ukProperties.copy(balancingCharges = amounts.map (amount => UKPropertiesBalancingChargeSummary("", amount)))
-    this
-  }
-
-  def privateUseAdjustment(amounts: BigDecimal*) = {
-    ukProperties = ukProperties.copy(privateUseAdjustment = amounts.map (amount => UKPropertiesPrivateUseAdjustmentSummary("", amount)))
-    this
-  }
-
-  def taxesPaid(amounts: BigDecimal*) = {
-    ukProperties = ukProperties.copy(taxesPaid = amounts.map (amount => UKPropertiesTaxPaidSummary("", amount)))
-    this
-  }
-
-  def create() = ukProperties
-}
-
-case class TestUnearnedIncome() {
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
-
-  private var unearnedIncomes: UnearnedIncome = UnearnedIncomesSugar.anIncome()
-
-  def withSavings(savings: (SavingsIncomeType, BigDecimal)*) = {
-    unearnedIncomes = unearnedIncomes.copy(savings = savings.map(saving => UnearnedIncomesSavingsIncomeSummary("", saving._1, saving._2)))
-    this
-  }
-
-  def withDividends(dividends: (DividendType, BigDecimal)*) = {
-    unearnedIncomes = unearnedIncomes.copy(dividends = dividends.map(dividend => UnearnedIncomesDividendSummary("", dividend._1, dividend._2)))
-    this
-  }
-
-  def create() = unearnedIncomes
-
-}
-
-case class TestFurnishedHolidayLetting(capitalAllowance: BigDecimal) {
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
-
-  private var furnishedHolidayLetting: FurnishedHolidayLettings = FurnishedHolidayLettingsSugar
-    .aFurnishedHolidayLetting().copy(allowances = Some(Allowances(capitalAllowance = Some(capitalAllowance))))
-
-  def propertyLocation(propertyLocation: PropertyLocationType.PropertyLocationType) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(propertyLocation = propertyLocation)
-    this
-  }
-
-  def lossBroughtForward(amount: BigDecimal) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(adjustments = Some(Adjustments(lossBroughtForward = Some(amount))))
-    this
-  }
-
-  def incomes(incomes: BigDecimal*) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(incomes = incomes.map (FurnishedHolidayLettingsIncomeSummary("", _)))
-    this
-  }
-
-  def expenses(expenses: (ExpenseType.ExpenseType, BigDecimal)*) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(expenses = expenses.map (expense => FurnishedHolidayLettingsExpenseSummary("", expense._1, expense._2)))
-    this
-  }
-
-  def balancingCharges(amounts: BigDecimal*) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(balancingCharges = amounts.map (FurnishedHolidayLettingsBalancingChargeSummary("", _)))
-    this
-  }
-
-  def privateUseAdjustments(amounts: BigDecimal*) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(privateUseAdjustment = amounts.map (FurnishedHolidayLettingsPrivateUseAdjustmentSummary("", _)))
-    this
-  }
-
-  def create() = furnishedHolidayLetting
-}

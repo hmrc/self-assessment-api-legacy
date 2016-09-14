@@ -16,11 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
+import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, FurnishedHolidayLettingIncome}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{FurnishedHolidayLettingIncome, SelfAssessment}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.ExpenseType._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.{Adjustments, Allowances, PropertyLocationType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.{FurnishedHolidayLettingBuilder, UKPropertyBuilder}
 
 class FurnishedHolidayLettingSpec extends UnitSpec {
 
@@ -129,29 +132,105 @@ class FurnishedHolidayLettingSpec extends UnitSpec {
     }
   }
 
-  "TotalLossBroughtForward" should {
-    "be Sum(CapAt(Sum(LossBroughtForward), Sum(AdjustedProfit)) Per Location)" in {
-      val furnishedHolidayLettings =
-        Seq(aFurnishedHolidayLetting(propertyLocation = PropertyLocationType.UK).copy(
-            incomes = Seq(fhlIncome(100)),
-            adjustments = Some(fhlAdjustments(lossBroughtForward = 50))
-          ),
-          aFurnishedHolidayLetting(propertyLocation = PropertyLocationType.UK).copy(
-            incomes = Seq(fhlIncome(350), fhlIncome(50), fhlIncome(100)),
-            adjustments = Some(fhlAdjustments(lossBroughtForward = 600))
-          ),
-          aFurnishedHolidayLetting(propertyLocation = PropertyLocationType.EEA).copy(
-            incomes = Seq(fhlIncome(50), fhlIncome(50)),
-            adjustments = Some(fhlAdjustments(lossBroughtForward = 500))
-          ),
-          aFurnishedHolidayLetting(propertyLocation = PropertyLocationType.EEA).copy(
-            incomes = Seq(fhlIncome(500)),
-            adjustments = Some(fhlAdjustments(lossBroughtForward = 450))
-          )
-        )
+  "TotalLossBroughtForward for UK FHL" should {
 
-      FurnishedHolidayLetting.TotalLossBroughtForward(SelfAssessment().copy(
-        furnishedHolidayLettings = furnishedHolidayLettings)) shouldBe 1200
+    "FHL Total(LBF) + Excess UK Property LBF capped at FHL Total(AdjustedProfit)" +
+      "i.e CapAt(FHL.Total(LBF) + ExcessUKPropertyLBF, FHL.Total(AdjustedProfit))" in {
+
+      val ukPropertyOne = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 4000)).lossBroughtForward(5000).create()
+      val ukPropertyTwo = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 15000)).lossBroughtForward(12500).create()
+      val ukPropertyThree = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 1500)).lossBroughtForward(7000).create()
+
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
+
+      FurnishedHolidayLetting.UK.CappedTotalLossBroughtForward(SelfAssessment(
+          ukProperties = Seq(ukPropertyOne, ukPropertyTwo, ukPropertyThree),
+          furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree,
+            furnishedHolidayLettingFour, furnishedHolidayLettingFive)
+        )
+      ) shouldBe 13000
+    }
+
+    "FHL Total(LBF) + Excess UK Property LBF capped at FHL Total(AdjustedProfit) when UKProperty adjusted profit is 0" in {
+      val ukPropertyOne = UKPropertyBuilder().lossBroughtForward(5000).create()
+      val ukPropertyTwo = UKPropertyBuilder().lossBroughtForward(1250).create()
+      val ukPropertyThree = UKPropertyBuilder().lossBroughtForward(7000).create()
+
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(3500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
+
+      FurnishedHolidayLetting.UK.CappedTotalLossBroughtForward(SelfAssessment(
+        ukProperties = Seq(ukPropertyOne, ukPropertyTwo, ukPropertyThree),
+        furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree,
+          furnishedHolidayLettingFour, furnishedHolidayLettingFive)
+      )
+      ) shouldBe 10000
+    }
+
+    "FHL Total(LBF) + Excess UK Property LBF capped at FHL Total(AdjustedProfit) when there is no UK Property Income data" in {
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(3500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
+
+      FurnishedHolidayLetting.UK.CappedTotalLossBroughtForward(SelfAssessment(
+        furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree,
+          furnishedHolidayLettingFour, furnishedHolidayLettingFive)
+      )
+      ) shouldBe 10000
     }
   }
+
+  "TotalLossBroughtForward for EEA FHL" should {
+    "FHL Total(LBF) capped at FHL Total(AdjustedProfit) for EEA FHL" +
+      "i.e CapAt(FHL.EEA.Total(LBF), FHL.EEA.Total(AdjustedProfit))" in {
+
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(3050).lossBroughtForward(3100).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(1950).lossBroughtForward(2500).create()
+
+      FurnishedHolidayLetting.EEA.CappedTotalLossBroughtForward(SelfAssessment(
+        furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree,
+          furnishedHolidayLettingFour, furnishedHolidayLettingFive)
+      )
+      ) shouldBe 5000
+
+    }
+  }
+
+  "TotalLossBroughtForward for FHL" should {
+    "FHL UK TotalCappedLBF + FHL EEA TotalCappedLBF" in {
+
+      val ukPropertyOne = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 4000)).lossBroughtForward(5000).create()
+      val ukPropertyTwo = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 15000)).lossBroughtForward(12500).create()
+      val ukPropertyThree = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 1500)).lossBroughtForward(7000).create()
+
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(3050).lossBroughtForward(3100).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(1950).lossBroughtForward(2500).create()
+
+      FurnishedHolidayLetting.CappedTotalLossBroughtForward(SelfAssessment(
+        ukProperties = Seq(ukPropertyOne, ukPropertyTwo, ukPropertyThree),
+        furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree,
+          furnishedHolidayLettingFour, furnishedHolidayLettingFive)
+      )
+      ) shouldBe 18000
+
+    }
+  }
+
 }

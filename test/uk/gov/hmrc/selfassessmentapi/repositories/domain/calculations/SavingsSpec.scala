@@ -144,6 +144,11 @@ class SavingsSpec extends UnitSpec {
       Savings.PersonalAllowance(totalTaxableIncome = 32000) shouldBe 1000
     }
 
+    "be 1000 when the total income on which tax is due is greater than 32000 and ukPensionContributions is present" in {
+      generate(1, 35000) map { randomNumber => Savings.PersonalAllowance(totalTaxableIncome = randomNumber, ukPensionContributions = 3500) shouldBe 1000 }
+      Savings.PersonalAllowance(totalTaxableIncome = 33000, ukPensionContributions = 3000) shouldBe 1000
+    }
+
     "be 500 when the total income on which tax is due is greater than 32000 but less than equal to 150000" in {
       Savings.PersonalAllowance(totalTaxableIncome = 32001) shouldBe 500
       generate(32001, 150000) map { randomNumber => Savings.PersonalAllowance(totalTaxableIncome = randomNumber) shouldBe 500 }

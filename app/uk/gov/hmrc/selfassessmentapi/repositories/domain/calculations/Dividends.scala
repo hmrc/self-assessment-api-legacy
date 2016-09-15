@@ -24,7 +24,7 @@ object Dividends {
 
   object TotalTaxableIncome {
     def apply(selfAssessment: SelfAssessment): BigDecimal = apply(TotalIncome(selfAssessment),
-      SelfEmployment.TotalProfit(selfAssessment), Savings.TotalIncome(selfAssessment), Deductions.Total(selfAssessment))
+      NonSavings.TotalIncome(selfAssessment), Savings.TotalIncome(selfAssessment), Deductions.Total(selfAssessment))
 
     def apply(totalDividendIncome: BigDecimal, totalProfits: BigDecimal, totalSavingsIncome: BigDecimal,
               totalDeduction: BigDecimal): BigDecimal =

@@ -16,22 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
+import org.joda.time.{DateTime, DateTimeZone}
 import uk.gov.hmrc.domain.SaUtrGenerator
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
 
 import scala.concurrent.duration._
 
-trait UnitSpec extends uk.gov.hmrc.play.test.UnitSpec {
+trait UnitSpec extends uk.gov.hmrc.play.test.UnitSpec with TestUtils {
 
   override implicit val defaultTimeout: FiniteDuration = 30 seconds
-
-  implicit def taxYearToString(taxYear: TaxYear): String = taxYear.value
-
-  private val saUtrGenerator = new SaUtrGenerator()
-
-  def generateSaUtr() = saUtrGenerator.nextSaUtr
-
-  val taxYear = TaxYear("2016-17")
 
   case class Print(value: BigDecimal) {
     def as(name: String) = {
@@ -39,5 +32,19 @@ trait UnitSpec extends uk.gov.hmrc.play.test.UnitSpec {
       value
     }
   }
-
 }
+
+trait TestUtils {
+
+  private val saUtrGenerator = new SaUtrGenerator()
+
+  def generateSaUtr() = saUtrGenerator.nextSaUtr
+
+  def now = DateTime.now(DateTimeZone.UTC)
+
+  val taxYear = TaxYear("2016-17")
+
+  implicit def taxYearToString(taxYear: TaxYear): String = taxYear.value
+}
+
+object TestUtils extends TestUtils

@@ -20,6 +20,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxDeducted => _, _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Liability, _}
 
+@deprecated("This class is used by an old version of the Liability Calculator. DO NOT USE.", "")
 object LiabilitySugar extends UnitSpec {
   def aLiability(id: BSONObjectID = BSONObjectID.generate,
                  employmentIncome: Seq[EmploymentIncome] = Seq(),

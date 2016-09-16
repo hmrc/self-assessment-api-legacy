@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.PensionContribution
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.TaxYearPropertiesBuilder
 
 class DeductionsSpec extends UnitSpec {
 
@@ -51,11 +51,13 @@ class DeductionsSpec extends UnitSpec {
 
   "RetirementAnnuityContract" should {
     "be sum of the retirement annuity contributions, overseas pensions and employer pension contributions" in {
-      val selfAssessment = SelfAssessment(taxYearProperties = Some(aTaxYearProperty
-            .copy(pensionContributions = Some(PensionContribution(retirementAnnuity = Some(500.73),
-              overseasPension = Some(500.23),
-              employerScheme = Some(500.11))))
-        .toTaxYearProperties))
+      val taxYearProperties = TaxYearPropertiesBuilder()
+        .retirementAnnuityContract(500.73)
+        .overseasPension(500.23)
+        .employerScheme(500.11)
+        .create()
+
+      val selfAssessment = SelfAssessment(taxYearProperties = Some(taxYearProperties))
 
       Deductions.RetirementAnnuityContract(selfAssessment) shouldBe 1502
     }
@@ -67,12 +69,14 @@ class DeductionsSpec extends UnitSpec {
 
   "PensionContribution" should {
     "be sum of the retirement annuity contributions, overseas pensions, employer pension contributions and uk registered pension" in {
-      val selfAssessment = SelfAssessment(taxYearProperties = Some(aTaxYearProperty
-        .copy(pensionContributions = Some(PensionContribution(retirementAnnuity = Some(500),
-          overseasPension = Some(500),
-          employerScheme = Some(500),
-          ukRegisteredPension = Some(500))))
-        .toTaxYearProperties))
+      val taxYearProperties = TaxYearPropertiesBuilder()
+        .retirementAnnuityContract(500)
+        .overseasPension(500)
+        .employerScheme(500)
+        .ukRegisteredPension(500)
+        .create()
+
+      val selfAssessment = SelfAssessment(taxYearProperties = Some(taxYearProperties))
 
       Deductions.PensionContribution(selfAssessment) shouldBe 2000
     }

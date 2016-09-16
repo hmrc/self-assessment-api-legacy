@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.builders
 
-import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar
+import reactivemongo.bson.BSONObjectID
+import uk.gov.hmrc.selfassessmentapi.TestUtils._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
-case class FurnishedHolidayLettingBuilder(capitalAllowance: BigDecimal = 0) {
+case class FurnishedHolidayLettingBuilder(capitalAllowance: BigDecimal = 0,
+                                          location: PropertyLocationType = PropertyLocationType.UK) {
   import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
 
-  private var furnishedHolidayLetting: FurnishedHolidayLettings = FurnishedHolidayLettingsSugar
-    .aFurnishedHolidayLetting().copy(allowances = Some(Allowances(capitalAllowance = Some(capitalAllowance))))
+  private val objectID = BSONObjectID.generate
 
-  def propertyLocation(propertyLocation: PropertyLocationType.PropertyLocationType) = {
-    furnishedHolidayLetting = furnishedHolidayLetting.copy(propertyLocation = propertyLocation)
-    this
-  }
+  private var furnishedHolidayLetting: FurnishedHolidayLettings =
+    FurnishedHolidayLettings(objectID, objectID.stringify, generateSaUtr(), taxYear, now, now, location, allowances = Some(Allowances(Some(capitalAllowance))))
 
   def lossBroughtForward(amount: BigDecimal) = {
     furnishedHolidayLetting = furnishedHolidayLetting.copy(adjustments = Some(Adjustments(lossBroughtForward = Some(amount))))

@@ -16,31 +16,29 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.SelfEmploymentSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.Adjustments
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.SelfEmploymentBuilder
 
 class LossBroughtForwardSpec extends UnitSpec {
 
-  private val selfEmploymentId = "selfEmploymentId"
-
   "Loss brought forward" should {
     "be equal self employment loss brought forward" in {
-      val selfEmployment =
-        aSelfEmployment(selfEmploymentId).copy(
-          adjustments = Some(Adjustments(
-            lossBroughtForward = Some(999)
-          ))
-        )
+      val selfEmployment = SelfEmploymentBuilder()
+        .withAdjustments(
+          lossBroughtForward = 999,
+          outstandingBusinessIncome = 0,
+          averagingAdjustment = 0,
+          overlapReliefUsed = 0,
+          basisAdjustment = 0,
+          includedNonTaxableProfits = 0,
+          accountingAdjustment = 0)
+        .create()
 
       Deductions.LossBroughtForward(selfEmployment) shouldBe 999
     }
 
     "be 0 if none is provided" in {
-      val selfEmployment =
-        aSelfEmployment(selfEmploymentId).copy(
-          adjustments = None
-        )
+      val selfEmployment = SelfEmploymentBuilder().create()
 
       Deductions.LossBroughtForward(selfEmployment) shouldBe 0
     }

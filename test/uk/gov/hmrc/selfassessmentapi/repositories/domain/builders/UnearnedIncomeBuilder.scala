@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.builders
 
-import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar
+import reactivemongo.bson.BSONObjectID
+import uk.gov.hmrc.selfassessmentapi.TestUtils._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{UnearnedIncome, UnearnedIncomesDividendSummary, UnearnedIncomesSavingsIncomeSummary}
 
-/**
-  * Created by Office on 13/09/2016.
-  */
-case class UnearnedIncomeBuilder() {
+case class UnearnedIncomeBuilder(objectID: BSONObjectID = BSONObjectID.generate) {
   import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
   import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
 
-  private var unearnedIncomes: UnearnedIncome = UnearnedIncomesSugar.anIncome()
+  private var unearnedIncomes: UnearnedIncome = UnearnedIncome(objectID, objectID.stringify, generateSaUtr(), taxYear, now, now)
 
   def withSavings(savings: (SavingsIncomeType, BigDecimal)*) = {
     unearnedIncomes = unearnedIncomes.copy(savings = savings.map(saving => UnearnedIncomesSavingsIncomeSummary("", saving._1, saving._2)))

@@ -205,7 +205,8 @@ class LiabilitySpec extends UnitSpec {
             overlapReliefUsed = 12.50,
             averagingAdjustment = 100.23,
             lossBroughtForward = 500.05,
-            outstandingBusinessIncome = 123.45)
+            outstandingBusinessIncome = 123.45,
+            accountingAdjustment = 0)
           .incomes((IncomeType.Turnover, 200000.22))
           .expenses((ExpenseType.PremisesRunningCosts, 12334.56))
           .balancingCharges((BalancingChargeType.BPRA, 500.25))
@@ -233,7 +234,8 @@ class LiabilitySpec extends UnitSpec {
       val ukProperty = UKPropertyBuilder(rentARoomRelief = 500.25)
         .withAllowances(annualInvestmentAllowance = 200,
           otherCapitalAllowance=123.45,
-          wearAndTearAllowance=12.25)
+          wearAndTearAllowance=12.25,
+          businessPremisesRenovationAllowance = 0)
         .lossBroughtForward(500)
         .incomes((IncomeType.RentIncome, 175000))
         .expenses((ExpenseType.PremisesRunningCosts, 243.34))
@@ -308,8 +310,7 @@ class LiabilitySpec extends UnitSpec {
     "correctly compute values for furnished holiday lettings" in {
       import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings._
 
-      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(capitalAllowance = 123.45)
-          .propertyLocation(PropertyLocationType.UK)
+      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(capitalAllowance = 123.45, location = PropertyLocationType.UK)
           .lossBroughtForward(500.50)
           .incomes(15250.50)
           .expenses((ExpenseType.PremisesRunningCosts, 1250.25))
@@ -355,7 +356,8 @@ class LiabilitySpec extends UnitSpec {
           overlapReliefUsed = 12.50,
           averagingAdjustment = 100.23,
           lossBroughtForward = 500.05,
-          outstandingBusinessIncome = 123.45)
+          outstandingBusinessIncome = 123.45,
+          accountingAdjustment = 0)
         .incomes((selfemployment.IncomeType.Turnover, 200000.22))
         .expenses((selfemployment.ExpenseType.PremisesRunningCosts, 12334.56))
         .balancingCharges((selfemployment.BalancingChargeType.BPRA, 500.25))
@@ -366,7 +368,8 @@ class LiabilitySpec extends UnitSpec {
         .withAllowances(
           annualInvestmentAllowance = 200,
           otherCapitalAllowance = 123.45,
-          wearAndTearAllowance = 12.25)
+          wearAndTearAllowance = 12.25,
+          businessPremisesRenovationAllowance = 0)
         .lossBroughtForward(500)
         .incomes((ukproperty.IncomeType.RentIncome, 175000))
         .expenses((ukproperty.ExpenseType.PremisesRunningCosts, 243.34))
@@ -375,8 +378,7 @@ class LiabilitySpec extends UnitSpec {
         .taxesPaid(12500.56)
         .create()
 
-      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(123.45)
-        .propertyLocation(furnishedholidaylettings.PropertyLocationType.UK)
+      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(capitalAllowance = 123.45, location = furnishedholidaylettings.PropertyLocationType.UK)
         .lossBroughtForward(500.50)
         .incomes(15250.50)
         .expenses((furnishedholidaylettings.ExpenseType.PremisesRunningCosts, 1250.25))
@@ -434,7 +436,8 @@ class LiabilitySpec extends UnitSpec {
           overlapReliefUsed = 12.50,
           averagingAdjustment = 100.23,
           lossBroughtForward = 5000.05,
-          outstandingBusinessIncome = 123.45)
+          outstandingBusinessIncome = 123.45,
+          accountingAdjustment = 0)
         .incomes((selfemployment.IncomeType.Turnover, 30000.22))
         .expenses((selfemployment.ExpenseType.PremisesRunningCosts, 12334.56))
         .balancingCharges((selfemployment.BalancingChargeType.BPRA, 500.25))
@@ -445,7 +448,8 @@ class LiabilitySpec extends UnitSpec {
         .withAllowances(
           annualInvestmentAllowance = 200,
           otherCapitalAllowance = 123.45,
-          wearAndTearAllowance = 12.25)
+          wearAndTearAllowance = 12.25,
+          businessPremisesRenovationAllowance = 0)
         .lossBroughtForward(3000)
         .incomes((ukproperty.IncomeType.RentIncome, 3000))
         .expenses((ukproperty.ExpenseType.PremisesRunningCosts, 243.34))
@@ -454,8 +458,7 @@ class LiabilitySpec extends UnitSpec {
         .taxesPaid(12500.56)
         .create()
 
-      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(123.45)
-        .propertyLocation(furnishedholidaylettings.PropertyLocationType.UK)
+      val furnishedHolidayLetting = FurnishedHolidayLettingBuilder(capitalAllowance = 123.45, location = furnishedholidaylettings.PropertyLocationType.UK)
         .lossBroughtForward(0.50)
         .incomes(1525.50)
         .expenses((furnishedholidaylettings.ExpenseType.PremisesRunningCosts, 1250.25))

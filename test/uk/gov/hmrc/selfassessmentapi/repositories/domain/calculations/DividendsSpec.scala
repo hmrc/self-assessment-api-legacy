@@ -35,10 +35,10 @@ class DividendsSpec extends UnitSpec {
     "be calculated for multiple UK dividends from multiple income sources" in {
 
       val dividendUK1 = aDividendIncome("dividendUK1", FromUKCompanies, 1000.50)
-      val dividendOther1 = aDividendIncome("dividendOtherUK1", OtherFromUKCompanies, 2000.99)
+      val dividendOther1 = aDividendIncome("dividendOtherUK1", FromOtherUKSources, 2000.99)
 
       val dividendUK2 = aDividendIncome("dividendUK2", FromUKCompanies, 3000.50)
-      val dividendOther2 = aDividendIncome("dividendOtherUK2", OtherFromUKCompanies, 4000.999)
+      val dividendOther2 = aDividendIncome("dividendOtherUK2", FromOtherUKSources, 4000.999)
 
       val unearnedIncomes1 = anIncome().copy(dividends = Seq(dividendUK1, dividendOther1))
       val unearnedIncomes2 = anIncome().copy(dividends = Seq(dividendUK2, dividendOther2))
@@ -85,10 +85,10 @@ class DividendsSpec extends UnitSpec {
   "TotalDividends" should {
     "be sum of all dividends across multiple sources which have been rounded at source level" in {
       val dividendUK1 = aDividendIncome("dividendUK1", FromUKCompanies, 1000.50)
-      val dividendOther1 = aDividendIncome("dividendOtherUK1", OtherFromUKCompanies, 2000.99)
+      val dividendOther1 = aDividendIncome("dividendOtherUK1", FromOtherUKSources, 2000.99)
 
       val dividendUK2 = aDividendIncome("dividendUK2", FromUKCompanies, 3000.50)
-      val dividendOther2 = aDividendIncome("dividendOtherUK2", OtherFromUKCompanies, 4000.999)
+      val dividendOther2 = aDividendIncome("dividendOtherUK2", FromOtherUKSources, 4000.999)
 
       val unearnedIncomes1 = anIncome().copy(dividends = Seq(dividendUK1, dividendOther1))
       val unearnedIncomes2 = anIncome().copy(dividends = Seq(dividendUK2, dividendOther2))

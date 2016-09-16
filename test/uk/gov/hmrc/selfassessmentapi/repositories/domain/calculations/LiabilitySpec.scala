@@ -286,7 +286,7 @@ class LiabilitySpec extends UnitSpec {
       val unearnedIncome = TestUnearnedIncome()
           .withDividends(
             (DividendType.FromUKCompanies, 75000.33),
-            (DividendType.OtherFromUKCompanies, 125000.25))
+            (DividendType.FromOtherUKSources, 125000.25))
         .create()
 
       ComputeLiabilityFor(unearnedIncomes = Seq(unearnedIncome))
@@ -385,7 +385,7 @@ class LiabilitySpec extends UnitSpec {
 
       val unearnedIncome = TestUnearnedIncome()
         .withSavings((unearnedincome.SavingsIncomeType.InterestFromBanksUntaxed, 150000.73), (unearnedincome.SavingsIncomeType.InterestFromBanksTaxed, 5000.23))
-        .withDividends((unearnedincome.DividendType.FromUKCompanies, 75000.33), (unearnedincome.DividendType.OtherFromUKCompanies, 125000.25))
+        .withDividends((unearnedincome.DividendType.FromUKCompanies, 75000.33), (unearnedincome.DividendType.FromOtherUKSources, 125000.25))
         .create()
 
       ComputeLiabilityFor(

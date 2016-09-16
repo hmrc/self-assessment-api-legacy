@@ -19,12 +19,13 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi.UKPropertySugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, UkPropertyIncome, ukproperty}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.ExpenseType.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.IncomeType._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{Adjustments, Allowances, ExpenseType, IncomeType}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.UkPropertyIncome
 import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.{FurnishedHolidayLettingBuilder, UKPropertyBuilder}
 
 class UKPropertySpec extends UnitSpec {
 
@@ -111,7 +112,26 @@ class UKPropertySpec extends UnitSpec {
           )
         )
 
-      UKProperty.TotalLossBroughtForward(selfAssessment) shouldBe 8002
+      UKProperty.CappedTotalLossBroughtForward(selfAssessment) shouldBe 8002
+    }
+  }
+
+  "Excess UK FHL Loss brought forward" should {
+    "not be added to UK Properties Loss brought forward" in {
+      //LBF: 3000 Overflow: 0
+      val ukPropertyOne = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 10000)).lossBroughtForward(3000).create()
+      val ukPropertyTwo = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 2000)).lossBroughtForward(0).create()
+      val ukPropertyThree = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 12000)).lossBroughtForward(0).create()
+
+      //LBF: 24000 Overflow: 14000
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(10000).lossBroughtForward(3000).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(2000).lossBroughtForward(20000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(12000).lossBroughtForward(15000).create()
+
+      val selfAssessment = SelfAssessment(ukProperties = Seq(ukPropertyOne, ukPropertyTwo, ukPropertyThree),
+        furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree))
+
+      UKProperty.CappedTotalLossBroughtForward(selfAssessment) shouldBe 3000
     }
   }
 

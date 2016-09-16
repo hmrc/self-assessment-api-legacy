@@ -35,8 +35,8 @@ object Deductions {
     def apply(ukPropertyTotalLBF: BigDecimal, selfEmploymentTotalLBF: BigDecimal, furnishedHolidayLettingTotalLBF: BigDecimal): BigDecimal =
       ukPropertyTotalLBF + selfEmploymentTotalLBF + furnishedHolidayLettingTotalLBF
 
-    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(UKProperty.TotalLossBroughtForward(selfAssessment),
-      SelfEmployment.TotalLossBroughtForward(selfAssessment), FurnishedHolidayLetting.TotalLossBroughtForward(selfAssessment))
+    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(UKProperty.CappedTotalLossBroughtForward(selfAssessment),
+      SelfEmployment.TotalLossBroughtForward(selfAssessment), FurnishedHolidayLetting.CappedTotalLossBroughtForward(selfAssessment))
   }
 
   object Total {

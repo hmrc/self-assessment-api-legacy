@@ -71,12 +71,19 @@ object Savings {
 
   object PersonalAllowance {
     def apply(selfAssessment: SelfAssessment): BigDecimal = apply(Totals.TaxableIncome(selfAssessment), Deductions.TotalUkPensionContributions(selfAssessment))
-    def apply(totalTaxableIncome: BigDecimal, ukPensionContributions: BigDecimal = 0): BigDecimal = totalTaxableIncome match {
-      case total if total < 1 => 0
-      case total if total isWithin BasicTaxBand(additionsToUpperBound = ukPensionContributions) => 1000
-      case total if total isWithin HigherTaxBand() => 500
-      case _ => 0
-    }
+
+    def apply(totalTaxableIncome: BigDecimal, ukPensionContributions: BigDecimal = 0): BigDecimal = {
+
+      val basicBand = BasicTaxBand(additionsToUpperBound = ukPensionContributions)
+      val higherBand = HigherTaxBand(basicBand, additionsToUpperBound = ukPensionContributions)
+
+      totalTaxableIncome match {
+        case total if total < 1 => 0
+        case total if total isWithin basicBand  => 1000
+        case total if total isWithin higherBand => 500
+        case _ => 0
+      }
+     }
   }
 
   object IncomeTaxBandSummary {

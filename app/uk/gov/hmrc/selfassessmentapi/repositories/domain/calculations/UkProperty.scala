@@ -40,7 +40,7 @@ object UKProperty {
     def apply(ukProperty: UKProperties) = ValueOrZero(ukProperty.adjustments.flatMap(_.lossBroughtForward))
   }
 
-  object TotalLossBroughtForward {
+  object CappedTotalLossBroughtForward {
     def apply(selfAssessment: SelfAssessment) = RoundUp(CapAt(selfAssessment.ukProperties.map(LossBroughtForward(_)).sum,
         selfAssessment.ukProperties.map(AdjustedProfits(_)).sum))
   }
@@ -60,6 +60,10 @@ object UKProperty {
 
   object TotalProfit {
     def apply(selfAssessment: SelfAssessment) = selfAssessment.ukProperties.map(AdjustedProfits(_)).sum
+  }
+
+  object TotalLossBroughtForward {
+    def apply(selfAssessment: SelfAssessment) = RoundUp(selfAssessment.ukProperties.map(LossBroughtForward(_)).sum)
   }
 
 }

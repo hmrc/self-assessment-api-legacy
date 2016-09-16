@@ -25,7 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType
 
 object DividendType extends Enumeration {
   type DividendType = Value
-  val FromUKCompanies, OtherFromUKCompanies = Value
+  val FromUKCompanies, FromOtherUKSources = Value
   implicit val format = enumFormat(DividendType, Some("Dividend type is invalid"))
 }
 

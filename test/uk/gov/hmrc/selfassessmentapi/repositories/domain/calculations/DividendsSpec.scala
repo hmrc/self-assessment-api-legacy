@@ -18,11 +18,11 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
-import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{DividendsFromUKSources, TaxBandSummary}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.UnearnedIncomeBuilder
 
 class DividendsSpec extends UnitSpec {
 
@@ -33,68 +33,80 @@ class DividendsSpec extends UnitSpec {
     }
 
     "be calculated for multiple UK dividends from multiple income sources" in {
+      val unearnedIncomeOne = UnearnedIncomeBuilder()
+        .withDividends(
+          (FromUKCompanies, 1000.50),
+          (FromOtherUKSources, 2000.99))
+        .create()
 
-      val dividendUK1 = aDividendIncome("dividendUK1", FromUKCompanies, 1000.50)
-      val dividendOther1 = aDividendIncome("dividendOtherUK1", FromOtherUKSources, 2000.99)
+      val unearnedIncomeTwo = UnearnedIncomeBuilder()
+        .withDividends(
+          (FromUKCompanies, 3000.50),
+          (FromOtherUKSources, 4000.999))
+        .create()
 
-      val dividendUK2 = aDividendIncome("dividendUK2", FromUKCompanies, 3000.50)
-      val dividendOther2 = aDividendIncome("dividendOtherUK2", FromOtherUKSources, 4000.999)
-
-      val unearnedIncomes1 = anIncome().copy(dividends = Seq(dividendUK1, dividendOther1))
-      val unearnedIncomes2 = anIncome().copy(dividends = Seq(dividendUK2, dividendOther2))
-
-      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes1, unearnedIncomes2))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncomes1.sourceId, BigDecimal(3001)),
-          DividendsFromUKSources(sourceId = unearnedIncomes2.sourceId, BigDecimal(7001)))
+      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncomeOne, unearnedIncomeTwo))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = unearnedIncomeOne.sourceId, BigDecimal(3001)),
+          DividendsFromUKSources(sourceId = unearnedIncomeTwo.sourceId, BigDecimal(7001)))
     }
 
     "be calculated for a single one uk dividend for a single income source" in {
-      val unearnedIncomes = anIncome().copy(dividends = Seq(aDividendIncome("dividendUK", FromUKCompanies, 1000)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withDividends((FromUKCompanies, 1000))
+        .create()
 
-      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(1000)))
+      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = unearnedIncome.sourceId, BigDecimal(1000)))
     }
 
     "be calculated for multiple uk dividends from a single income source" in {
-      val dividendUK1 = aDividendIncome("dividendUK1", FromUKCompanies, 1000)
-      val dividendUK2 = aDividendIncome("dividendUK2", FromUKCompanies, 2000)
-      val unearnedIncomes = anIncome().copy(dividends = Seq(dividendUK1, dividendUK2))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withDividends(
+          (FromUKCompanies, 1000),
+          (FromUKCompanies, 2000))
+        .create()
 
-      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(3000)))
+      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = unearnedIncome.sourceId, BigDecimal(3000)))
     }
 
     "be round down to nearest pound for a single dividend" in {
-      val unearnedIncomes = anIncome().copy(dividends = Seq(aDividendIncome("dividendUK", FromUKCompanies, 1000.50)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withDividends((FromUKCompanies, 1000.50))
+        .create()
 
-      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(1000)))
+      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = unearnedIncome.sourceId, BigDecimal(1000)))
     }
 
     "be round down to nearest pound for multiple dividends" in {
-      val dividendUK1 = aDividendIncome("dividendUK1", FromUKCompanies, 1000.90)
-      val dividendUK2 = aDividendIncome("dividendUK2", FromUKCompanies, 2000.99)
-      val unearnedIncomes = anIncome().copy(dividends = Seq(dividendUK1, dividendUK2))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withDividends(
+          (FromUKCompanies, 1000.90),
+          (FromUKCompanies, 2000.99))
+        .create()
 
-      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncomes.sourceId, BigDecimal(3001)))
+      Dividends.FromUK(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = unearnedIncome.sourceId, BigDecimal(3001)))
     }
 
   }
 
   "TotalDividends" should {
     "be sum of all dividends across multiple sources which have been rounded at source level" in {
-      val dividendUK1 = aDividendIncome("dividendUK1", FromUKCompanies, 1000.50)
-      val dividendOther1 = aDividendIncome("dividendOtherUK1", FromOtherUKSources, 2000.99)
+      val unearnedIncomeOne = UnearnedIncomeBuilder()
+        .withDividends(
+          (FromUKCompanies, 1000.50),
+          (FromOtherUKSources, 2000.99))
+        .create()
 
-      val dividendUK2 = aDividendIncome("dividendUK2", FromUKCompanies, 3000.50)
-      val dividendOther2 = aDividendIncome("dividendOtherUK2", FromOtherUKSources, 4000.999)
+      val unearnedIncomeTwo = UnearnedIncomeBuilder()
+        .withDividends(
+          (FromUKCompanies, 3000.50),
+          (FromOtherUKSources, 4000.999))
+        .create()
 
-      val unearnedIncomes1 = anIncome().copy(dividends = Seq(dividendUK1, dividendOther1))
-      val unearnedIncomes2 = anIncome().copy(dividends = Seq(dividendUK2, dividendOther2))
-
-      Dividends.TotalIncome(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes1, unearnedIncomes2))) shouldBe 10002
-
+      Dividends.TotalIncome(SelfAssessment(unearnedIncomes = Seq(unearnedIncomeOne, unearnedIncomeTwo))) shouldBe 10002
     }
   }
 

@@ -19,95 +19,126 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 import org.scalacheck.Gen
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
-import uk.gov.hmrc.selfassessmentapi.UnearnedIncomesSugar._
 import uk.gov.hmrc.selfassessmentapi.controllers.api
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxBandSummary, SelfAssessment, InterestFromUKBanksAndBuildingSocieties}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{InterestFromUKBanksAndBuildingSocieties, SelfAssessment}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxBandSummary
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.UnearnedIncomesSavingsIncomeSummary
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.UnearnedIncomeBuilder
 
 class SavingsSpec extends UnitSpec {
 
   "Interest from UK banks and building societies" should {
-    def taxedInterest(amount: BigDecimal) = UnearnedIncomesSavingsIncomeSummary("", InterestFromBanksTaxed, amount)
-    def unTaxedInterest(amount: BigDecimal) = UnearnedIncomesSavingsIncomeSummary("", InterestFromBanksUntaxed, amount)
 
     "calculate rounded down interest when there are multiple interest of both taxed and unTaxed from uk banks and building societies from" +
       " multiple unearned income source" in {
 
-      val unearnedIncomes1 = anIncome().copy(savings = Seq(taxedInterest(100.50), unTaxedInterest(200.50)))
-      val unearnedIncomes2 = anIncome().copy(savings = Seq(taxedInterest(300.99), unTaxedInterest(400.99)))
+      val unearnedIncomeOne = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 100.50),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 200.50))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes1, unearnedIncomes2))) should contain theSameElementsAs
-        Seq(api.InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes1.sourceId, BigDecimal(326)),
-          api.InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomes2.sourceId, BigDecimal(777)))
+      val unearnedIncomeTwo = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 300.99),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 400.99))
+        .create()
+
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomeOne, unearnedIncomeTwo))) should contain theSameElementsAs
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomeOne.sourceId, BigDecimal(326)),
+          api.InterestFromUKBanksAndBuildingSocieties(sourceId = unearnedIncomeTwo.sourceId, BigDecimal(777)))
     }
 
     "calculate interest when there is one taxed interest from uk banks and building societies from a single unearned income source" in {
-      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest(100)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings((SavingsIncomeType.InterestFromBanksTaxed, 100))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(125)))
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) should contain theSameElementsAs
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, BigDecimal(125)))
 
     }
 
     "calculate interest when there are multiple taxed interest from uk banks and building societies from a single unearned income source" in {
-      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest(100), taxedInterest(200)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 100),
+          (SavingsIncomeType.InterestFromBanksTaxed, 200))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(375)))
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) should contain theSameElementsAs
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, BigDecimal(375)))
 
     }
 
     "calculate round down interest when there is one taxed interest from uk banks and building societies from a single unearned income " +
       "source" in {
-      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest(100.50)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings((SavingsIncomeType.InterestFromBanksTaxed, 100.50))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(125)))
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) should contain theSameElementsAs
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, BigDecimal(125)))
     }
 
     "calculate round down interest when there are multiple taxed interest from uk banks and building societies from a single unearned " +
       "income source" in {
-      val unearnedIncomes = anIncome().copy(savings = Seq(taxedInterest(100.90), taxedInterest(200.99)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 100.90),
+          (SavingsIncomeType.InterestFromBanksTaxed, 200.99))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(377)))
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) should contain theSameElementsAs
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, BigDecimal(377)))
 
     }
 
     "calculate interest when there is one unTaxed interest from uk banks and building societies from a single unearned income source" in {
-      val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest(100)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings((SavingsIncomeType.InterestFromBanksUntaxed, 100))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(100)))
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) should contain theSameElementsAs
+        Seq(InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, BigDecimal(100)))
 
     }
 
     "calculate interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned income " +
       "source" in {
-      val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest(100), unTaxedInterest(200)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksUntaxed, 100),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 200))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(300)))
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) should contain theSameElementsAs
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, BigDecimal(300)))
     }
 
 
     "calculate rounded down interest when there is one unTaxed interest from uk banks and building societies from a single unearned " +
       "income source" in {
-      val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest(100.50)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings((SavingsIncomeType.InterestFromBanksUntaxed, 100.50))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(100)))
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) should contain theSameElementsAs
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, BigDecimal(100)))
     }
 
     "calculate rounded down interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned" +
       " income source" in {
-      val unearnedIncomes = anIncome().copy(savings = Seq(unTaxedInterest(100.50), unTaxedInterest(200.99)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksUntaxed, 100.50),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 200.99))
+        .create()
 
-      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) should contain theSameElementsAs
-        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncomes.sourceId, BigDecimal(301)))
+      Savings.Incomes(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) should contain theSameElementsAs
+        Seq(api.InterestFromUKBanksAndBuildingSocieties(unearnedIncome.sourceId, BigDecimal(301)))
     }
   }
 
@@ -183,57 +214,78 @@ class SavingsSpec extends UnitSpec {
 
     "be 0 if sum of all taxed interests is 0" in {
 
-      val unearnedIncomes = anIncome().copy(savings = Seq(
-          aSavingsIncome("", InterestFromBanksTaxed, 0),
-          aSavingsIncome("", InterestFromBanksTaxed, 0),
-          aSavingsIncome("", InterestFromBanksUntaxed, 0)))
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 0),
+          (SavingsIncomeType.InterestFromBanksTaxed, 0),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 0))
+        .create()
 
-      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(unearnedIncomes))) shouldBe 0
-
+      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(unearnedIncome))) shouldBe 0
     }
 
     "be equal to Sum(Taxed Interest) * 100/80 - Sum(Taxed Interest)" in {
 
-      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(anIncome().copy(savings = Seq(
-        aSavingsIncome("", InterestFromBanksTaxed, 100),
-        aSavingsIncome("", InterestFromBanksTaxed, 200),
-        aSavingsIncome("", InterestFromBanksTaxed, 2000),
-        aSavingsIncome("", InterestFromBanksUntaxed, 500)))))) shouldBe 575
+      val unearnedIncomeOne = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 100),
+          (SavingsIncomeType.InterestFromBanksTaxed, 200),
+          (SavingsIncomeType.InterestFromBanksTaxed, 2000),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 500))
+        .create()
 
-      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(anIncome().copy(savings = Seq(
-        aSavingsIncome("", InterestFromBanksTaxed, 400),
-        aSavingsIncome("", InterestFromBanksTaxed, 700),
-        aSavingsIncome("", InterestFromBanksTaxed, 5800),
-        aSavingsIncome("", InterestFromBanksUntaxed, 500)))))) shouldBe 1725
+      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(unearnedIncomeOne))) shouldBe 575
+
+      val unearnedIncomeTwo = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 400),
+          (SavingsIncomeType.InterestFromBanksTaxed, 700),
+          (SavingsIncomeType.InterestFromBanksTaxed, 5800),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 500))
+        .create()
+
+      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(unearnedIncomeTwo))) shouldBe 1725
 
     }
 
     "be equal to RoundUpToPennies(RoundUp(Sum(Taxed Interest)) * 100/80 - Sum(Taxed Interest))" in {
 
-      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(anIncome().copy(savings = Seq(
-        aSavingsIncome("", InterestFromBanksTaxed, 786.78),
-        aSavingsIncome("", InterestFromBanksTaxed, 456.76),
-        aSavingsIncome("", InterestFromBanksTaxed, 2000.56),
-        aSavingsIncome("", InterestFromBanksUntaxed, 1000.56)))))) shouldBe 811.03
+      val unearnedIncomeOne = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 786.78),
+          (SavingsIncomeType.InterestFromBanksTaxed, 456.76),
+          (SavingsIncomeType.InterestFromBanksTaxed, 2000.56),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 1000.56))
+        .create()
 
-      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(anIncome().copy(savings = Seq(
-        aSavingsIncome("", InterestFromBanksTaxed, 1000.78),
-        aSavingsIncome("", InterestFromBanksTaxed, 999.22),
-        aSavingsIncome("", InterestFromBanksTaxed, 3623.67),
-        aSavingsIncome("", InterestFromBanksUntaxed, 2000.56)))))) shouldBe 1405.92
+      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(unearnedIncomeOne))) shouldBe 811.03
+
+      val unearnedIncomeTwo = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 1000.78),
+          (SavingsIncomeType.InterestFromBanksTaxed, 999.22),
+          (SavingsIncomeType.InterestFromBanksTaxed, 3623.67),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 2000.56))
+        .create()
+
+      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(unearnedIncomeTwo))) shouldBe 1405.92
     }
 
     "be equal to RoundUpToPennies(RoundUp(Sum(Taxed Interest)) * 100/80 - Sum(Taxed Interest)) for multiple unearned income sources" in {
-      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(
-        anIncome().copy(savings = Seq(
-          aSavingsIncome("", InterestFromBanksTaxed, 786.78),
-          aSavingsIncome("", InterestFromBanksUntaxed, 2500.00))),
-        anIncome().copy(savings = Seq(
-          aSavingsIncome("", InterestFromBanksTaxed, 456.76),
-          aSavingsIncome("", InterestFromBanksTaxed, 2000.56),
-          aSavingsIncome("", InterestFromBanksUntaxed, 2500.00))))
-        )
-      ) shouldBe 811.03
+      val unearnedIncomeOne = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 786.78),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 2500.00))
+        .create()
+
+      val unearnedIncomeTwo = UnearnedIncomeBuilder()
+        .withSavings(
+          (SavingsIncomeType.InterestFromBanksTaxed, 456.76),
+          (SavingsIncomeType.InterestFromBanksTaxed, 2000.56),
+          (SavingsIncomeType.InterestFromBanksUntaxed, 2500.00))
+        .create()
+
+      Savings.TotalTaxPaid(SelfAssessment(unearnedIncomes = Seq(unearnedIncomeOne, unearnedIncomeTwo))) shouldBe 811.03
     }
   }
 

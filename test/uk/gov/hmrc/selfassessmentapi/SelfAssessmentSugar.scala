@@ -25,51 +25,6 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Liability, SelfAssessm
 
 object SelfAssessmentSugar extends UnitSpec {
 
-  def aLiability(saUtr: SaUtr = generateSaUtr(),
-                 taxYear: TaxYear = taxYear,
-                 incomeFromEmployments: Seq[EmploymentIncome] = Nil,
-                 profitFromSelfEmployments: Seq[SelfEmploymentIncome] = Nil,
-                 interestFromUKBanksAndBuildingSocieties: Seq[InterestFromUKBanksAndBuildingSocieties] = Nil,
-                 dividendsFromUKSources: Seq[DividendsFromUKSources] = Nil,
-                 deductionsRemaining: Option[BigDecimal] = Some(0),
-                 personalSavingsAllowance: Option[BigDecimal] = None,
-                 retirementAnnuityContract: Option[BigDecimal] = None,
-                 savingsStartingRate: Option[BigDecimal] = None,
-                 profitFromUkProperties: Seq[UkPropertyIncome] = Nil,
-                 incomeFromFurnishedHolidayLettings: Seq[FurnishedHolidayLettingIncome] = Nil): Liability = {
-
-    val iD = BSONObjectID.generate
-    Liability(id = iD,
-              liabilityId = iD.stringify,
-              saUtr = saUtr,
-              taxYear = taxYear,
-              employmentIncome = incomeFromEmployments,
-              selfEmploymentIncome = profitFromSelfEmployments,
-              ukPropertyIncome = Nil,
-              furnishedHolidayLettingsIncome = Nil,
-              savingsIncome = interestFromUKBanksAndBuildingSocieties,
-              ukDividendsIncome = dividendsFromUKSources,
-              totalIncomeReceived = 0,
-              totalTaxableIncome = 0,
-              allowancesAndReliefs = AllowancesAndReliefs(personalSavingsAllowance = personalSavingsAllowance,
-                                                          savingsStartingRate = savingsStartingRate,
-                                                          retirementAnnuityContract = retirementAnnuityContract),
-              taxDeducted = TaxDeducted(),
-              dividendTaxBandSummary = Nil,
-              savingsTaxBandSummary = Nil,
-              nonSavingsTaxBandSummary = Nil,
-              pensionSavingsChargesSummary = Nil,
-              taxes = TaxesCalculated(
-                totalIncomeTax = 0,
-                totalTaxDeducted = 0,
-                totalTaxDue = 0,
-                totalTaxOverPaid = 0,
-                pensionSavingsCharges = 0,
-                taxPaidByPensionScheme = 0
-              )
-    )
-  }
-
   def now = DateTime.now(DateTimeZone.UTC)
 
   def aTaxYearProperty = TaxYearProperties(BSONObjectID.generate, generateSaUtr(), taxYear, now, now)

@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.builders
 
-import uk.gov.hmrc.selfassessmentapi.{SelfEmploymentSugar, repositories}
+import reactivemongo.bson.BSONObjectID
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{SelfEmployment => _, _}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
-/**
-  * Created by Office on 13/09/2016.
-  */
-case class SelfEmploymentBuilder() {
+case class SelfEmploymentBuilder(objectID: BSONObjectID = BSONObjectID.generate) {
   def create() = selfEmployment
 
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
-
-  private var selfEmployment: repositories.domain.SelfEmployment = SelfEmploymentSugar.aSelfEmployment().copy(allowances = Some(Allowances()), adjustments = Some(Adjustments()))
+  private var selfEmployment: SelfEmployment =
+    SelfEmployment(id = objectID, sourceId = objectID.stringify, generateSaUtr(), taxYear, now, now, now.toLocalDate, Some(Allowances()), Some(Adjustments()))
 
   def withAllowances(allowancesOnSales: BigDecimal, enhancedCapitalAllowance: BigDecimal,
                      businessPremisesRenovationAllowance: BigDecimal, capitalAllowanceSpecialRatePool: BigDecimal,
@@ -44,35 +43,41 @@ case class SelfEmploymentBuilder() {
 
   def withAdjustments(outstandingBusinessIncome: BigDecimal, lossBroughtForward: BigDecimal,
                       averagingAdjustment: BigDecimal, overlapReliefUsed: BigDecimal,
-                      basisAdjustment: BigDecimal, includedNonTaxableProfits: BigDecimal) = {
+                      basisAdjustment: BigDecimal, includedNonTaxableProfits: BigDecimal,
+                      accountingAdjustment: BigDecimal) = {
     selfEmployment = selfEmployment.copy(adjustments = selfEmployment.adjustments.map(_.copy(
       outstandingBusinessIncome = Some(outstandingBusinessIncome),
       lossBroughtForward = Some(lossBroughtForward),
       averagingAdjustment = Some(averagingAdjustment),
       overlapReliefUsed = Some(overlapReliefUsed),
       basisAdjustment = Some(basisAdjustment),
-      includedNonTaxableProfits = Some(includedNonTaxableProfits))))
+      includedNonTaxableProfits = Some(includedNonTaxableProfits),
+      accountingAdjustment = Some(accountingAdjustment))))
 
     this
   }
 
   def incomes(incomes: (IncomeType.IncomeType, BigDecimal)*) = {
-    selfEmployment = selfEmployment.copy(incomes = incomes.map (income => SelfEmploymentSugar.anIncome(income._1, income._2)))
+    selfEmployment = selfEmployment.copy(incomes = incomes.map(
+      income => SelfEmploymentIncomeSummary(objectID.stringify, income._1, income._2)))
     this
   }
 
   def expenses(expenses: (ExpenseType.ExpenseType, BigDecimal)*) = {
-    selfEmployment = selfEmployment.copy(expenses = expenses.map (expense => SelfEmploymentSugar.anExpense(expense._1, expense._2)))
+    selfEmployment = selfEmployment.copy(expenses = expenses.map(
+      expense => SelfEmploymentExpenseSummary(objectID.stringify, expense._1, expense._2)))
     this
   }
 
   def balancingCharges(balancingCharges: (BalancingChargeType.BalancingChargeType, BigDecimal)*) = {
-    selfEmployment = selfEmployment.copy(balancingCharges = balancingCharges.map (balancingCharge => SelfEmploymentSugar.aBalancingCharge(balancingCharge._1, balancingCharge._2)))
+    selfEmployment = selfEmployment.copy(balancingCharges = balancingCharges.map(
+      balancingCharge => SelfEmploymentBalancingChargeSummary(objectID.stringify, balancingCharge._1, balancingCharge._2)))
     this
   }
 
   def goodsAndServicesOwnUse(amounts: BigDecimal*) = {
-    selfEmployment = selfEmployment.copy(goodsAndServicesOwnUse = amounts.map(SelfEmploymentSugar.aGoodsAndServices))
+    selfEmployment = selfEmployment.copy(goodsAndServicesOwnUse = amounts.map(
+      SelfEmploymentGoodsAndServicesOwnUseSummary(objectID.stringify, _)))
     this
   }
 }

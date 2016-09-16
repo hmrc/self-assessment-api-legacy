@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
-import uk.gov.hmrc.selfassessmentapi.UKPropertySugar._
+import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, UkPropertyIncome, ukproperty}
@@ -36,81 +35,102 @@ class UKPropertySpec extends UnitSpec {
 
   "UK property incomes" should {
     "compute adjusted profits for UK properties" in {
-      val selfAssessment =
-        SelfAssessment(
-          ukProperties =
-            Seq(
-              aUkProperty("ukpropertyone").copy(incomes = Seq(income(IncomeType.RentIncome, 500),
-                income(IncomeType.PremiumsOfLeaseGrant, 500),
-                income(IncomeType.ReversePremiums, 500)),
-                privateUseAdjustment = Seq(privateUseAdjustment(500)),
-                balancingCharges = Seq(balancingCharge(500)),
-                expenses = Seq(expense(ExpenseType.PremisesRunningCosts, 100),
-                  expense(ExpenseType.RepairsAndMaintenance, 100),
-                  expense(ExpenseType.FinancialCosts, 100),
-                  expense(ExpenseType.ProfessionalFees, 100),
-                  expense(ExpenseType.CostOfServices, 100),
-                  expense(ExpenseType.Other, 100)),
-                allowances =
-                  Some(Allowances(Some(100), Some(100), Some(100), Some(100))),
-                rentARoomRelief = Some(500))))
+      val dummyID = BSONObjectID.generate
+
+      val property = UKPropertyBuilder(rentARoomRelief = 500, objectID = dummyID)
+        .incomes(
+          (IncomeType.RentIncome, 500),
+          (IncomeType.PremiumsOfLeaseGrant, 500),
+          (IncomeType.ReversePremiums, 500))
+        .expenses(
+          (ExpenseType.PremisesRunningCosts, 100),
+          (ExpenseType.RepairsAndMaintenance, 100),
+          (ExpenseType.FinancialCosts, 100),
+          (ExpenseType.ProfessionalFees, 100),
+          (ExpenseType.CostOfServices, 100),
+          (ExpenseType.Other, 100)
+        )
+        .privateUseAdjustment(500)
+        .balancingCharges(500)
+        .withAllowances(
+          annualInvestmentAllowance = 100,
+          otherCapitalAllowance = 100,
+          wearAndTearAllowance = 100,
+          businessPremisesRenovationAllowance = 100)
+        .create()
+
+      val selfAssessment = SelfAssessment(ukProperties = Seq(property))
 
       UKProperty.Incomes(selfAssessment) should contain theSameElementsAs
-        Seq(UkPropertyIncome("ukpropertyone", profit = 1000))
+        Seq(UkPropertyIncome(dummyID.stringify, profit = 1000))
     }
 
     "ensure minimum value for the UK property profit is zero" in {
-      val selfAssessment = SelfAssessment(
-        ukProperties = Seq(
-          aUkProperty("ukpropertyone").copy(incomes = Seq(income(IncomeType.RentIncome, 500)),
-            expenses = Seq(expense(ExpenseType.PremisesRunningCosts, 1000)))))
+      val dummyID = BSONObjectID.generate
+
+      val property = UKPropertyBuilder(objectID = dummyID)
+        .incomes((IncomeType.RentIncome, 500))
+        .expenses((ExpenseType.PremisesRunningCosts, 1000))
+        .create()
+
+      val selfAssessment = SelfAssessment(ukProperties = Seq(property))
 
       UKProperty.Incomes(selfAssessment) should contain theSameElementsAs
-        Seq(UkPropertyIncome("ukpropertyone", profit = 0))
+        Seq(UkPropertyIncome(dummyID.stringify, profit = 0))
     }
 
     "compute adjusted profits for each UK property" in {
-      val selfAssessment = SelfAssessment(
-        ukProperties = Seq(
-          aUkProperty("ukpropertyone").copy(incomes = Seq(income(IncomeType.RentIncome, 1000)),
-            expenses = Seq(expense(ExpenseType.PremisesRunningCosts, 500))),
-        aUkProperty("ukpropertytwo").copy(incomes = Seq(income(IncomeType.RentIncome, 1000)),
-          expenses = Seq(expense(ExpenseType.PremisesRunningCosts, 200)))
-        )
-      )
+      val dummyID = BSONObjectID.generate
+
+      val propertyOne = UKPropertyBuilder(objectID = dummyID)
+        .incomes((IncomeType.RentIncome, 1000))
+        .expenses((ExpenseType.PremisesRunningCosts, 500))
+        .create()
+
+      val propertyTwo = UKPropertyBuilder(objectID = dummyID)
+        .incomes((IncomeType.RentIncome, 1000))
+        .expenses((ExpenseType.PremisesRunningCosts, 200))
+        .create()
+
+      val selfAssessment = SelfAssessment(ukProperties = Seq(propertyOne, propertyTwo))
 
       UKProperty.Incomes(selfAssessment) should contain theSameElementsAs
-        Seq(UkPropertyIncome("ukpropertyone", profit = 500), UkPropertyIncome("ukpropertytwo", profit = 800))
+        Seq(UkPropertyIncome(dummyID.stringify, profit = 500), UkPropertyIncome(dummyID.stringify, profit = 800))
     }
 
     "computed profits should be rounded down to the nearest pound" in {
-      val selfAssessment =
-        SelfAssessment(
-          ukProperties =
-            Seq(
-              aUkProperty("ukpropertyone").copy(incomes = Seq(income(IncomeType.RentIncome, 500.55),
-                income(IncomeType.PremiumsOfLeaseGrant, 500.20)),
-                expenses = Seq(expense(ExpenseType.PremisesRunningCosts, 100.11)),
-                adjustments = Some(Adjustments(lossBroughtForward = Some(200.22))))))
+      val dummyID = BSONObjectID.generate
+
+      val property = UKPropertyBuilder(objectID = dummyID)
+        .incomes(
+          (IncomeType.RentIncome, 500.55),
+          (IncomeType.PremiumsOfLeaseGrant, 500.20))
+        .expenses((ExpenseType.PremisesRunningCosts, 100.11))
+        .lossBroughtForward(200.22)
+        .create()
+
+      val selfAssessment = SelfAssessment(ukProperties = Seq(property))
 
       UKProperty.Incomes(selfAssessment) should contain theSameElementsAs
-        Seq(UkPropertyIncome("ukpropertyone", profit = 900))
+        Seq(UkPropertyIncome(dummyID.stringify, profit = 900))
     }
   }
 
   "TotalLossBroughtForward" should {
     "sum of all loss brought forward capped at total adjusted profits" in {
-      val selfAssessment =
-        SelfAssessment(
-          ukProperties = Seq(
-              aUkProperty("ukpropertyone").copy(
-                incomes = Seq(income(IncomeType.RentIncome, 5000.99)),
-                adjustments = Some(Adjustments(lossBroughtForward = Some(6000.34)))),
-            aUkProperty("ukpropertytwo").copy(
-              incomes = Seq(income(IncomeType.RentIncome, 3000.45)),
-              adjustments = Some(Adjustments(lossBroughtForward = Some(2100.34))))
-          )
-        )
+      val dummyID = BSONObjectID.generate
+
+      val propertyOne = UKPropertyBuilder(objectID = dummyID)
+        .incomes((IncomeType.RentIncome, 5000.99))
+        .lossBroughtForward(6000.34)
+        .create()
+
+      val propertyTwo = UKPropertyBuilder(objectID = dummyID)
+        .incomes((IncomeType.RentIncome, 3000.45))
+        .lossBroughtForward(2100.34)
+        .create()
+
+      val selfAssessment = SelfAssessment(ukProperties = Seq(propertyOne, propertyTwo))
 
       UKProperty.CappedTotalLossBroughtForward(selfAssessment) shouldBe 8002
     }
@@ -124,9 +144,9 @@ class UKPropertySpec extends UnitSpec {
       val ukPropertyThree = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 12000)).lossBroughtForward(0).create()
 
       //LBF: 24000 Overflow: 14000
-      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(10000).lossBroughtForward(3000).create()
-      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(2000).lossBroughtForward(20000).create()
-      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(12000).lossBroughtForward(15000).create()
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(10000).lossBroughtForward(3000).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(2000).lossBroughtForward(20000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(12000).lossBroughtForward(15000).create()
 
       val selfAssessment = SelfAssessment(ukProperties = Seq(ukPropertyOne, ukPropertyTwo, ukPropertyThree),
         furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree))
@@ -138,21 +158,29 @@ class UKPropertySpec extends UnitSpec {
   "UkProperty.TotalTaxPaid" should {
 
     "be equal to sum of all uk property tax paid" in {
-      UKProperty.TotalTaxPaid(aSelfAssessment(
-        ukProperties = Seq(
-          aUkProperty(id = "property-1").copy(taxesPaid = Seq(aTaxPaidSummary("", 500), aTaxPaidSummary("", 600))),
-          aUkProperty(id = "property2").copy(taxesPaid = Seq(aTaxPaidSummary("", 400), aTaxPaidSummary("", 300)))
-        )
-      )) shouldBe 1800
+      val propertyOne = UKPropertyBuilder()
+        .taxesPaid(500, 600)
+        .create()
+
+      val propertyTwo = UKPropertyBuilder()
+        .taxesPaid(400, 300)
+        .create()
+
+      UKProperty.TotalTaxPaid(SelfAssessment(
+        ukProperties = Seq(propertyOne, propertyTwo))) shouldBe 1800
     }
 
     "be equal to rounded up sum of all uk property tax paid" in {
-      UKProperty.TotalTaxPaid(aSelfAssessment(
-        ukProperties = Seq(
-          aUkProperty(id = "property-1").copy(taxesPaid = Seq(aTaxPaidSummary("", 500.09), aTaxPaidSummary("", 600.86))),
-          aUkProperty(id = "property2").copy(taxesPaid = Seq(aTaxPaidSummary("", 400.67), aTaxPaidSummary("", 300.34)))
-        )
-      )) shouldBe 1801.96
+      val propertyOne = UKPropertyBuilder()
+        .taxesPaid(500.09, 600.86)
+        .create()
+
+      val propertyTwo = UKPropertyBuilder()
+        .taxesPaid(400.67, 300.34)
+        .create()
+
+      UKProperty.TotalTaxPaid(SelfAssessment(
+        ukProperties = Seq(propertyOne, propertyTwo))) shouldBe 1801.96
     }
   }
 

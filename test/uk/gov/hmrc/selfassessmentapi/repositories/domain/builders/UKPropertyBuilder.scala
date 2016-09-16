@@ -16,18 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.builders
 
-import uk.gov.hmrc.selfassessmentapi.UKPropertySugar
+import reactivemongo.bson.BSONObjectID
+import uk.gov.hmrc.selfassessmentapi.SelfAssessmentSugar._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{UKPropertiesTaxPaidSummary, _}
 
-case class UKPropertyBuilder(rentARoomRelief: BigDecimal = 0) {
+case class UKPropertyBuilder(rentARoomRelief: BigDecimal = 0, objectID: BSONObjectID = BSONObjectID.generate) {
   import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
 
-  private var ukProperties: UKProperties = UKPropertySugar.aUkProperty().copy(rentARoomRelief = Some(rentARoomRelief),
-    allowances = Some(Allowances()), adjustments = Some(Adjustments()))
+  private var ukProperties: UKProperties = UKProperties(objectID, objectID.stringify, generateSaUtr(), taxYear, now, now,
+    Some(rentARoomRelief), Some(Allowances()), Some(Adjustments()))
 
-  def withAllowances(annualInvestmentAllowance: BigDecimal, otherCapitalAllowance: BigDecimal, wearAndTearAllowance: BigDecimal) = {
-    ukProperties = ukProperties.copy(allowances = ukProperties.allowances.map(_.copy(otherCapitalAllowance = Some(otherCapitalAllowance),
-      annualInvestmentAllowance = Some(annualInvestmentAllowance), wearAndTearAllowance = Some(wearAndTearAllowance))))
+  def withAllowances(annualInvestmentAllowance: BigDecimal, otherCapitalAllowance: BigDecimal,
+                     wearAndTearAllowance: BigDecimal, businessPremisesRenovationAllowance: BigDecimal) = {
+    ukProperties = ukProperties.copy(allowances = ukProperties.allowances.map(_.copy(
+      otherCapitalAllowance = Some(otherCapitalAllowance), annualInvestmentAllowance = Some(annualInvestmentAllowance),
+      wearAndTearAllowance = Some(wearAndTearAllowance), businessPremisesRenovationAllowance = Some(businessPremisesRenovationAllowance))))
     this
   }
 

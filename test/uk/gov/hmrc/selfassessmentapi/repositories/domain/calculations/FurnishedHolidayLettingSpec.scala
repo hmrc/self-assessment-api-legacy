@@ -16,75 +16,48 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.FurnishedHolidayLettingsSugar._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{FurnishedHolidayLettingIncome, SelfAssessment}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.ExpenseType._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.{Adjustments, Allowances, PropertyLocationType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.{FurnishedHolidayLettingBuilder, UKPropertyBuilder}
 
 class FurnishedHolidayLettingSpec extends UnitSpec {
 
-  private val furnishedHolidayLettingId = "furnishedHolidayLettingId"
-
   "AdjustedProfit" should {
     "be equal to (Incomes + BalancingCharges + PrivateUseAdjustment) - (Expenses + CapitalAllowance)" in {
 
-      val letting =
-        aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
-          incomes = Seq(
-            fhlIncome(1200.01),
-            fhlIncome(799.99)
-          ),
-          expenses = Seq(
-            fhlExpense(200, FinancialCosts),
-            fhlExpense(200, ProfessionalFees),
-            fhlExpense(49.99, PremisesRunningCosts),
-            fhlExpense(50, Other)
-          ),
-          balancingCharges = Seq(
-            fhlBalancingCharge(10),
-            fhlBalancingCharge(20)
-          ),
-          privateUseAdjustment = Seq(
-            fhlPrivateUseAdjustment(50)
-          ),
-          allowances = Some(Allowances(capitalAllowance = Some(100)))
-        )
+      val letting = FurnishedHolidayLettingBuilder(capitalAllowance = 100)
+        .incomes(1200.01, 799.99)
+        .expenses(
+          (FinancialCosts, 200),
+          (ProfessionalFees, 200),
+          (PremisesRunningCosts, 49.99),
+          (Other, 50))
+        .balancingCharges(10, 20)
+        .privateUseAdjustments(50)
+        .create()
 
       FurnishedHolidayLetting.AdjustedProfits(letting) shouldBe 1480
 
     }
 
     "be rounded down to the nearest pound" in {
-        val letting = aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
-          incomes = Seq(
-            fhlIncome(1299.01)
-          ),
-          allowances = Some(Allowances(
-            capitalAllowance = Some(0.02)
-          ))
-        )
+      val letting =  FurnishedHolidayLettingBuilder(capitalAllowance = 0.02)
+        .incomes(1299.01)
+        .create()
 
       FurnishedHolidayLetting.AdjustedProfits(letting) shouldBe 1298
     }
 
     "be 0 if (Expenses + CapitalAllowance) is greater than (Incomes + BalancingCharges + PrivateUseAdjustment)" in {
 
-      val letting =
-        aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
-          incomes = Seq(
-            fhlIncome(2000)
-          ),
-          expenses = Seq(
-            fhlExpense(4000, FinancialCosts)
-          ),
-          adjustments = Some(Adjustments(
-            lossBroughtForward = Some(1000)
-          ))
-        )
+      val letting = FurnishedHolidayLettingBuilder()
+        .incomes(2000)
+        .expenses((FinancialCosts, 4000))
+        .lossBroughtForward(1000)
+        .create()
 
       FurnishedHolidayLetting.AdjustedProfits(letting) shouldBe 0
     }
@@ -94,41 +67,36 @@ class FurnishedHolidayLettingSpec extends UnitSpec {
   "Incomes" should {
 
     "be empty there are no self employments" in {
-
       FurnishedHolidayLetting.Incomes(SelfAssessment()) shouldBe empty
     }
 
     "be computed for a single holiday letting" in {
-      val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
-        aFurnishedHolidayLetting(furnishedHolidayLettingId).copy(
-          incomes = Seq(
-            fhlIncome(1200.01)
-          )
-        )
-      ))
 
-      FurnishedHolidayLetting.Incomes(selfAssessment) should contain theSameElementsAs Seq(
-        FurnishedHolidayLettingIncome(furnishedHolidayLettingId, profit = 1200)
-      )
+      val letting = FurnishedHolidayLettingBuilder()
+        .incomes(1200.01)
+        .create()
+
+      val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(letting))
+
+      FurnishedHolidayLetting.Incomes(selfAssessment).head.profit shouldBe 1200
     }
 
     "be computed for multiple self employments" in {
 
-      val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(
-        aFurnishedHolidayLetting("se1").copy(
-          incomes = Seq(
-            fhlIncome(1200)
-          )),
-        aFurnishedHolidayLetting("se2").copy(
-          incomes = Seq(
-            fhlIncome(800)
-          ))
-      ))
+      val letting1 = FurnishedHolidayLettingBuilder()
+        .incomes(1200)
+        .create()
 
-      FurnishedHolidayLetting.Incomes(selfAssessment) should contain theSameElementsAs Seq(
-        FurnishedHolidayLettingIncome("se1", profit = 1200),
-        FurnishedHolidayLettingIncome("se2", profit = 800)
-      )
+      val letting2 = FurnishedHolidayLettingBuilder()
+        .incomes(800)
+        .create()
+
+      val selfAssessment = SelfAssessment(furnishedHolidayLettings = Seq(letting1, letting2))
+
+      val result = FurnishedHolidayLetting.Incomes(selfAssessment)
+
+      result.head.profit shouldBe 1200
+      result(1).profit shouldBe 800
     }
   }
 
@@ -141,11 +109,11 @@ class FurnishedHolidayLettingSpec extends UnitSpec {
       val ukPropertyTwo = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 15000)).lossBroughtForward(12500).create()
       val ukPropertyThree = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 1500)).lossBroughtForward(7000).create()
 
-      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
-      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
-      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
-      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
-      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
 
       FurnishedHolidayLetting.UK.CappedTotalLossBroughtForward(SelfAssessment(
           ukProperties = Seq(ukPropertyOne, ukPropertyTwo, ukPropertyThree),
@@ -160,11 +128,11 @@ class FurnishedHolidayLettingSpec extends UnitSpec {
       val ukPropertyTwo = UKPropertyBuilder().lossBroughtForward(1250).create()
       val ukPropertyThree = UKPropertyBuilder().lossBroughtForward(7000).create()
 
-      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(3500).lossBroughtForward(2500).create()
-      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
-      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
-      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
-      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(3500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
 
       FurnishedHolidayLetting.UK.CappedTotalLossBroughtForward(SelfAssessment(
         ukProperties = Seq(ukPropertyOne, ukPropertyTwo, ukPropertyThree),
@@ -175,11 +143,11 @@ class FurnishedHolidayLettingSpec extends UnitSpec {
     }
 
     "FHL Total(LBF) + Excess UK Property LBF capped at FHL Total(AdjustedProfit) when there is no UK Property Income data" in {
-      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(3500).lossBroughtForward(2500).create()
-      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
-      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
-      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
-      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(3500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(500).lossBroughtForward(300).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(500).lossBroughtForward(200).create()
 
       FurnishedHolidayLetting.UK.CappedTotalLossBroughtForward(SelfAssessment(
         furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree,
@@ -193,12 +161,12 @@ class FurnishedHolidayLettingSpec extends UnitSpec {
     "FHL Total(LBF) capped at FHL Total(AdjustedProfit) for EEA FHL" +
       "i.e CapAt(FHL.EEA.Total(LBF), FHL.EEA.Total(AdjustedProfit))" in {
 
-      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
-      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
-      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
 
-      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(3050).lossBroughtForward(3100).create()
-      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(1950).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(3050).lossBroughtForward(3100).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(1950).lossBroughtForward(2500).create()
 
       FurnishedHolidayLetting.EEA.CappedTotalLossBroughtForward(SelfAssessment(
         furnishedHolidayLettings = Seq(furnishedHolidayLettingOne, furnishedHolidayLettingTwo, furnishedHolidayLettingThree,
@@ -216,12 +184,12 @@ class FurnishedHolidayLettingSpec extends UnitSpec {
       val ukPropertyTwo = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 15000)).lossBroughtForward(12500).create()
       val ukPropertyThree = UKPropertyBuilder().incomes((ukproperty.IncomeType.RentIncome, 1500)).lossBroughtForward(7000).create()
 
-      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
-      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
-      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
+      val furnishedHolidayLettingOne = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(6500).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingTwo = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(5000).lossBroughtForward(2000).create()
+      val furnishedHolidayLettingThree = FurnishedHolidayLettingBuilder(location = PropertyLocationType.UK).incomes(1500).lossBroughtForward(6000).create()
 
-      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(3050).lossBroughtForward(3100).create()
-      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder().propertyLocation(PropertyLocationType.EEA).incomes(1950).lossBroughtForward(2500).create()
+      val furnishedHolidayLettingFour = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(3050).lossBroughtForward(3100).create()
+      val furnishedHolidayLettingFive = FurnishedHolidayLettingBuilder(location = PropertyLocationType.EEA).incomes(1950).lossBroughtForward(2500).create()
 
       FurnishedHolidayLetting.CappedTotalLossBroughtForward(SelfAssessment(
         ukProperties = Seq(ukPropertyOne, ukPropertyTwo, ukPropertyThree),

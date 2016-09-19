@@ -24,7 +24,7 @@ class SwitchPensionContributionOnSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -59,7 +59,7 @@ class SwitchPensionContributionOffSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -105,7 +105,7 @@ class SwitchCharitableGivingsOnSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -151,7 +151,7 @@ class SwitchCharitableGivingsOffSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -186,7 +186,7 @@ class SwitchBlindPersonOnSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -221,7 +221,7 @@ class SwitchBlindPersonOffSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -254,7 +254,7 @@ class SwitchStudentLoanOnSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -287,7 +287,7 @@ class SwitchStudentLoanOffSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -319,7 +319,7 @@ class SwitchTaxRefundedOrSetOffOnSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -351,7 +351,7 @@ class SwitchTaxRefundedOrSetOffOffSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -383,7 +383,7 @@ class SwitchChildBenefitOnSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)
@@ -415,7 +415,7 @@ class SwitchChildBenefitOffSpec extends BaseFunctionalSpec {
            |  "childBenefit": {
            |    "amount": 1234.34,
            |    "numberOfChildren": 3,
-           |    "dateBenefitStopped": "2016-04-05"
+           |    "dateBenefitStopped": "2016-04-06"
            |  }
            |}
         """.stripMargin)

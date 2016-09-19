@@ -24,13 +24,13 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{FeatureSwitchedTaxProperties, SourceTypes, TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object TaxYearDiscoveryController extends BaseController with Links {
+object TaxYearDiscoveryController extends TaxYearDiscoveryController {
   override val context: String = AppContext.apiGatewayLinkContext
   private val taxYearPropertiesService = TaxYearPropertiesService()
 
@@ -59,11 +59,14 @@ object TaxYearDiscoveryController extends BaseController with Links {
       implicit request =>
         if (FeatureSwitchedTaxProperties.atLeastOnePropertyIsEnabled)
           withJsonBody[TaxYearProperties] { taxYearProperties =>
-            taxYearPropertiesService.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
-              if (updated) Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
-              else BadRequest(Json.toJson(ErrorFeatureSwitched))
+            validateRequest(taxYearProperties, taxYear.taxYear) match {
+              case Some(invalidPart) => Future.successful(BadRequest(Json.toJson(InvalidRequest(ErrorCode.INVALID_REQUEST, "Invalid request", Seq(invalidPart)))))
+              case None => taxYearPropertiesService.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
+                if (updated) Ok(halResource(obj(), buildSourceHalLinks(utr, taxYear)))
+                else BadRequest(Json.toJson(ErrorFeatureSwitched))
+              }
             }
           }
         else Future.successful(NotImplemented(Json.toJson(ErrorNotImplemented)))
-  }
+    }
 }

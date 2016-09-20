@@ -8,7 +8,22 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class DocumentationSpec extends BaseFunctionalSpec {
 
-  override lazy val app = FakeApplication(additionalConfiguration = Map("Test.white-listing.enabled" -> false))
+  override lazy val app = FakeApplication(additionalConfiguration = Map(
+    "Test.white-listing.enabled" -> false,
+    "Test.feature-switch.self-employments.enabled" -> true,
+    "Test.feature-switch.unearned-incomes.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
+    "Test.feature-switch.employments.enabled" -> true,
+    "Test.feature-switch.uk-properties.enabled" -> true,
+
+    "Test.feature-switch.blindPerson.enabled" -> true,
+    "Test.feature-switch.charitableGivings.enabled" -> true,
+    "Test.feature-switch.childBenefit.enabled" -> true,
+    "Test.feature-switch.pensionContributions.enabled" -> true,
+    "Test.feature-switch.studentLoan.enabled" -> true,
+    "Test.feature-switch.taxRefundedOrSetOff.enabled" -> true))
 
   "Request to /api/definition" should {
     "return 200 with json response" in {

@@ -1,6 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.sandbox
 
 import play.api.libs.json.Json._
+import play.api.test.FakeApplication
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.Income
@@ -8,6 +9,15 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
+
+  override lazy val app = FakeApplication(additionalConfiguration = Map(
+    "Test.feature-switch.self-employments.enabled" -> true,
+    "Test.feature-switch.unearned-incomes.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
+    "Test.feature-switch.employments.enabled" -> true,
+    "Test.feature-switch.uk-properties.enabled" -> true))
 
   val sourceId = BSONObjectID.generate.stringify
   val summaryId = BSONObjectID.generate.stringify

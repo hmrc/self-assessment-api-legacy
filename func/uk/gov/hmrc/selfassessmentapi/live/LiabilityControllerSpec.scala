@@ -1,12 +1,22 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json.toJson
+import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.SourceType.Employments
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.UkTaxPaid
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class LiabilityControllerSpec extends BaseFunctionalSpec {
+
+  override lazy val app = FakeApplication(additionalConfiguration = Map(
+    "Test.feature-switch.self-employments.enabled" -> true,
+    "Test.feature-switch.unearned-incomes.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
+    "Test.feature-switch.employments.enabled" -> true,
+    "Test.feature-switch.uk-properties.enabled" -> true))
 
   "request liability" should {
 

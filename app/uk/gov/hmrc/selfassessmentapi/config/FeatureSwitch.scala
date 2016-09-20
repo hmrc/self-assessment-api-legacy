@@ -18,6 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.config
 
 import play.api.Configuration
 import uk.gov.hmrc.selfassessmentapi.config.AppContext._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, TaxYearPropertyType}
 
 case class FeatureSwitch(value: Option[Configuration]) {
@@ -37,6 +38,12 @@ case class FeatureSwitch(value: Option[Configuration]) {
 
   def isEnabled(source: TaxYearPropertyType): Boolean = value match {
     case Some(config) => FeatureConfig(config).isSourceEnabled(source.name)
+    case None => DEFAULT_VALUE
+  }
+
+  def isEnabled(propertyType: PropertyLocationType): Boolean = value match {
+    case Some(config) =>
+      FeatureConfig(config).isSourceEnabled(s"furnished-holiday-lettings.${propertyType.toString.toLowerCase}")
     case None => DEFAULT_VALUE
   }
 

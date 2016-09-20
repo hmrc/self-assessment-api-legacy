@@ -31,6 +31,11 @@ class FHLFeatureSwitchUKOnSpec extends BaseFunctionalSpec {
           .post(s"/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
         .thenAssertThat()
           .statusIs(201)
+
+      when()
+        .post(s"/sandbox/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+      .thenAssertThat()
+        .statusIs(201)
     }
   }
 }
@@ -60,6 +65,11 @@ class FHLFeatureSwitchUKOffSpec extends BaseFunctionalSpec {
           .userIsAuthorisedForTheResource(saUtr)
         .when()
           .post(s"/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+        .thenAssertThat()
+          .statusIs(400)
+
+        .when()
+          .post(s"/sandbox/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
         .thenAssertThat()
           .statusIs(400)
     }
@@ -93,6 +103,11 @@ class FHLFeatureSwitchEEAOnSpec extends BaseFunctionalSpec {
         .post(s"/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
       .thenAssertThat()
         .statusIs(201)
+
+      .when()
+        .post(s"/sandbox/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+      .thenAssertThat()
+        .statusIs(201)
     }
   }
 }
@@ -122,6 +137,11 @@ class FHLFeatureSwitchEEAOffSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
       .when()
         .post(s"/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+      .thenAssertThat()
+        .statusIs(400)
+
+      when()
+        .post(s"/sandbox/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
       .thenAssertThat()
         .statusIs(400)
     }

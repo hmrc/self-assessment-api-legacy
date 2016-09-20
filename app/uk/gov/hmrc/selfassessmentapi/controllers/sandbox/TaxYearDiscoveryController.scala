@@ -46,7 +46,7 @@ object TaxYearDiscoveryController extends TaxYearDiscoveryController {
             case Some(invalidPart) => Future.successful(BadRequest(Json.toJson(InvalidRequest(ErrorCode.INVALID_REQUEST, "Invalid request", Seq(invalidPart)))))
             case None => service.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
               if (updated) Ok(halResource(obj(), discoveryLinks(utr, taxYear)))
-              else NotImplemented(Json.toJson(ErrorFeatureSwitched))
+              else BadRequest(Json.toJson(ErrorFeatureSwitched))
             }
           }
 

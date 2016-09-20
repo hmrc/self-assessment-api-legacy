@@ -35,6 +35,12 @@ class SwitchPensionContributionOnSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .statusIs(200)
     }
   }
 }
@@ -68,6 +74,12 @@ class SwitchPensionContributionOffSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .put(s"/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .isBadRequest
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }
@@ -116,6 +128,12 @@ class SwitchCharitableGivingsOnSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .statusIs(200)
     }
   }
 }
@@ -162,6 +180,12 @@ class SwitchCharitableGivingsOffSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .isBadRequest
     }
   }
 }
@@ -197,6 +221,12 @@ class SwitchBlindPersonOnSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .statusIs(200)
     }
   }
 }
@@ -230,6 +260,12 @@ class SwitchBlindPersonOffSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .put(s"/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .isBadRequest
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }
@@ -298,6 +334,12 @@ class SwitchStudentLoanOffSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .isBadRequest
     }
   }
 }
@@ -328,6 +370,12 @@ class SwitchTaxRefundedOrSetOffOnSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .put(s"/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .statusIs(200)
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
     }
@@ -362,6 +410,12 @@ class SwitchTaxRefundedOrSetOffOffSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .isBadRequest
     }
   }
 }
@@ -394,6 +448,12 @@ class SwitchChildBenefitOnSpec extends BaseFunctionalSpec {
         .put(s"/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .statusIs(200)
     }
   }
 }
@@ -424,6 +484,12 @@ class SwitchChildBenefitOffSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(saUtr)
         .when()
         .put(s"/$saUtr/$taxYear", Some(payload))
+        .thenAssertThat()
+        .isBadRequest
+
+      given()
+        .when()
+        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }

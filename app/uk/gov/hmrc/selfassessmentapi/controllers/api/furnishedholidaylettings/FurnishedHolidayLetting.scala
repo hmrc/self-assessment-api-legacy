@@ -16,9 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings
 
+import play.api.Play
+import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson.enumFormat
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
@@ -38,17 +41,22 @@ case class FurnishedHolidayLetting(id: Option[SourceId] = None,
 object FurnishedHolidayLetting extends JsonMarshaller[FurnishedHolidayLetting]{
 
   implicit val writes = Json.writes[FurnishedHolidayLetting]
+  private val maybeSwitch = Play.maybeApplication.map(_ => FeatureSwitch(AppContext.featureSwitch))
 
   implicit val reads: Reads[FurnishedHolidayLetting] = (
     Reads.pure(None) and
       (__ \ "propertyLocation").read[PropertyLocationType] and
       (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments]
-    ) (FurnishedHolidayLetting.apply _)
+    ) (FurnishedHolidayLetting.apply _).filter(ValidationError("Invalid property location.", ErrorCode.INVALID_REQUEST))
+  { fhl => maybeSwitch.forall(_.isEnabled(fhl.propertyLocation)) }
 
 
-  override def example(id: Option[SourceId]): FurnishedHolidayLetting = FurnishedHolidayLetting(
-    id, PropertyLocationType.UK,
-    Some(Allowances(Some(BigDecimal(1000.00)))),
-    Some(Adjustments(Some(BigDecimal(500.00)))))
+  override def example(id: Option[SourceId]): FurnishedHolidayLetting = {
+
+    FurnishedHolidayLetting(
+      id, PropertyLocationType.UK,
+      Some(Allowances(Some(BigDecimal(1000.00)))),
+      Some(Adjustments(Some(BigDecimal(500.00)))))
+  }
 }

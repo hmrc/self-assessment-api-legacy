@@ -1,10 +1,21 @@
 package uk.gov.hmrc.selfassessmentapi.sandbox
 
 import java.util.UUID
+
+import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SourceControllerSpec extends BaseFunctionalSpec {
+
+  override lazy val app = FakeApplication(additionalConfiguration = Map(
+    "Test.feature-switch.self-employments.enabled" -> true,
+    "Test.feature-switch.unearned-incomes.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
+    "Test.feature-switch.employments.enabled" -> true,
+    "Test.feature-switch.uk-properties.enabled" -> true))
 
   val sourceId = UUID.randomUUID().toString
 

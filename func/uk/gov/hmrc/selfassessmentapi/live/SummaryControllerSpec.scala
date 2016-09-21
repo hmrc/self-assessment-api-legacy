@@ -1,9 +1,9 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SummaryType, SourceTypes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, SummaryType}
 import SourceTypes._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
+import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes.GoodsAndServicesOwnUses
@@ -12,6 +12,15 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.U
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
+
+  override lazy val app = FakeApplication(additionalConfiguration = Map(
+    "Test.feature-switch.self-employments.enabled" -> true,
+    "Test.feature-switch.unearned-incomes.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
+    "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
+    "Test.feature-switch.employments.enabled" -> true,
+    "Test.feature-switch.uk-properties.enabled" -> true))
 
   private def exampleSummaryTypeValue(summaryType: SummaryType): String = {
     (summaryType.example() \ "type").asOpt[String] match {

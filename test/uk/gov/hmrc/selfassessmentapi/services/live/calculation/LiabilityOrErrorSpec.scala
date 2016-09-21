@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.services.live.calculation
 
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{UkTaxPaidForEmployment, ErrorCode}
-import uk.gov.hmrc.selfassessmentapi.{LiabilitySugar, UnitSpec}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, UkTaxPaidForEmployment}
+import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.TaxDeducted
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.LiabilityBuilder
 
 class LiabilityOrErrorSpec extends UnitSpec {
   "LiabilityOrError.validate" should {
@@ -29,7 +30,7 @@ class LiabilityOrErrorSpec extends UnitSpec {
                                         UkTaxPaidForEmployment("", -300.33),
                                         UkTaxPaidForEmployment("", 0)))
 
-      val liability = LiabilitySugar.aLiability(taxDeducted = taxDeducted)
+      val liability = LiabilityBuilder().withTaxDeducted(taxDeducted).create()
 
       LiabilityOrError(liability) shouldBe liability
     }
@@ -40,7 +41,7 @@ class LiabilityOrErrorSpec extends UnitSpec {
           UkTaxPaidForEmployment("", -300.33),
           UkTaxPaidForEmployment("", 256.84)))
 
-      val liability = LiabilitySugar.aLiability(taxDeducted = taxDeducted)
+      val liability = LiabilityBuilder().withTaxDeducted(taxDeducted).create()
 
       LiabilityOrError(liability) shouldBe liability
     }
@@ -51,7 +52,7 @@ class LiabilityOrErrorSpec extends UnitSpec {
           UkTaxPaidForEmployment("", -300.33),
           UkTaxPaidForEmployment("", -22)))
 
-      val liability = LiabilitySugar.aLiability(taxDeducted = taxDeducted)
+      val liability = LiabilityBuilder().withTaxDeducted(taxDeducted).create()
 
       val result = LiabilityOrError(liability)
       result.fold({ errors =>

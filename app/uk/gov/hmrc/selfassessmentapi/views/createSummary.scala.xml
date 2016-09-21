@@ -2,23 +2,19 @@
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summaryId: SummaryId)
+@(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, summaryType : SummaryType, sourceId: SourceId, summaryId: SummaryId)
 
 <endpoint>
-    <name>Create Summary</name>
-    <description>This endpoint creates a summary for the specified source</description>
+    <name>Create @{summaryType.name} for @{sourceType.name}</name>
+    <description>This endpoint creates a @{summaryType.name} for @{sourceType.name}</description>
     <section id="resource">
         <title>Resource</title>
-        <resource><![CDATA[POST /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}]]></resource>
+        <resource><![CDATA[POST /self-assessment/{utr}/{tax-year}/@{sourceType.name}/{@{sourceType.name}-id}/@{summaryType.name}]]></resource>
     </section>
-    @partials.sourcePathParams(saUtr, taxYear, Some(sourceId), Some(selfemployment.SummaryTypes.Incomes), None)
+    @partials.sourcePathParams(saUtr, taxYear, sourceType, Some(summaryType), Some(sourceId), None)
     @partials.requestHeaders(true)
     @partials.authorisation(true)
-    @enabledSourceTypes.map { sourceType =>
-        @enabledSummaries(sourceType).map { summaryType =>
-            @partials.summaryWriteRequest("POST", saUtr, taxYear, sourceType, sourceId, summaryType, None)
-        }
-    }
+    @partials.summaryWriteRequest("POST", saUtr, taxYear, sourceType, summaryType, sourceId, None)
     <section id="sample-response">
         <title>Sample Response</title>
         <httpStatus>201 (CREATED)</httpStatus>

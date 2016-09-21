@@ -46,8 +46,8 @@ object Helpers extends HalSupport with Links {
     prettyPrint(hal.json)
   }
 
-  def sourceLinkResponse(utr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = {
-    sourceModelResponse(obj(), utr, taxYear, SourceTypes.SelfEmployments, sourceId)
+  def sourceLinkResponse(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
+    sourceModelResponse(obj(), utr, taxYear, sourceType, sourceId)
   }
 
   def sourceModelResponse(jsValue: JsValue, utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
@@ -69,7 +69,7 @@ object Helpers extends HalSupport with Links {
     prettyPrint(hal.json)
   }
 
-  def resolveCustomerResponse(utr: SaUtr) = {
+  def resolveTaxpayerResponse(utr: SaUtr) = {
     val hal = halResource(obj(), Set(HalLink("self-assessment", discoverTaxYearsHref(utr))))
     prettyPrint(hal.json)
   }

@@ -2,24 +2,22 @@
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId)
+@(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, sourceId: SourceId)
 
 <endpoint>
-    <name>Create a source of income</name>
-    <description>This endpoint creates a source of income</description>
+    <name>Create a @{sourceType.name} source of income</name>
+    <description>This endpoint creates a @{sourceType.name} source of income</description>
     <section id="resource">
         <title>Resource</title>
-        <resource><![CDATA[POST /self-assessment/{utr}/{taxYear}/{source}]]></resource>
+        <resource><![CDATA[POST /self-assessment/{utr}/{tax-year}/@{sourceType.name}]]></resource>
     </section>
-    @partials.sourcePathParams(saUtr, taxYear, None, None, None)
+    @partials.sourcePathParams(saUtr, taxYear, sourceType, None, None, None)
     @partials.requestHeaders(true)
     @partials.authorisation(true)
-    @enabledSourceTypes.map { sourceType =>
-        @partials.sourceWriteRequest("POST", saUtr, taxYear, sourceType, None)
-    }
+    @partials.sourceWriteRequest("POST", saUtr, taxYear, sourceType, None)
     <section id="sample-response">
         <title>Sample Response</title>
         <httpStatus>201 (CREATED)</httpStatus>
-        <json>@sourceLinkResponse(saUtr, taxYear, sourceId)</json>
+        <json>@sourceLinkResponse(saUtr, taxYear, sourceType, sourceId)</json>
     </section>
 </endpoint>

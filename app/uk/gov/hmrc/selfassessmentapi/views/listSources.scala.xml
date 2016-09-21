@@ -2,18 +2,16 @@
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId)
+@(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, sourceId: SourceId)
 <endpoint>
-    <name>Retrieve Sources</name>
-    <description>This endpoint rerieves all the sources of income of the type specified</description>
+    <name>Retrieve all @{sourceType.name}</name>
+    <description>This endpoint retrieves all the @{sourceType.name} sources of income</description>
     <section id="resource">
         <title>Resource</title>
-        <resource><![CDATA[GET /self-assessment/{utr}/{taxYear}/{source}]]></resource>
+        <resource><![CDATA[GET /self-assessment/{utr}/{tax-year}/@{sourceType.name}]]></resource>
     </section>
-    @partials.sourcePathParams(saUtr, taxYear, None, None, None)
+    @partials.sourcePathParams(saUtr, taxYear, sourceType, None, None, None)
     @partials.requestHeaders(false)
     @partials.authorisation(false)
-    @enabledSourceTypes.map { sourceType =>
-        @partials.sourceListResponse(saUtr, taxYear, sourceType, sourceId)
-    }
+    @partials.sourceListResponse(saUtr, taxYear, sourceType, sourceId)
 </endpoint>

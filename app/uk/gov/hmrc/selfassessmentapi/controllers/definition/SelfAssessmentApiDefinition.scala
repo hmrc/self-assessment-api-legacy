@@ -17,7 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.APIStatus.APIStatus
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.AuthType._
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.HttpMethod._
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.ResourceThrottlingTier._
+import uk.gov.hmrc.selfassessmentapi.views.Helpers
 
 class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
 
@@ -47,132 +52,52 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
             version = "1.0",
             access = buildWhiteListingAccess(),
             status = apiStatus,
-            endpoints = Seq(
+            endpoints = sourceAndSummaryEndpoints ++ Seq(
               Endpoint(
                 uriPattern = "/",
-                endpointName = "Resolve Customer",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                endpointName = "Resolve Taxpayer",
+                method = GET,
+                authType = USER,
+                throttlingTier = UNLIMITED,
                 scope = Some(readScope)
               ),
               Endpoint(
                 uriPattern = "/{utr}",
                 endpointName = "Discover Tax Years",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                method = GET,
+                authType = USER,
+                throttlingTier = UNLIMITED,
                 scope = Some(readScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}",
+                uriPattern = "/{utr}/{tax-year}",
                 endpointName = "Discover Tax Year",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                method = GET,
+                authType = USER,
+                throttlingTier = UNLIMITED,
                 scope = Some(readScope)
               ),Endpoint(
-                uriPattern = "/{utr}/{taxYear}",
+                uriPattern = "/{utr}/{tax-year}",
                 endpointName = "Update Tax Year",
-                method = HttpMethod.PUT,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                method = PUT,
+                authType = USER,
+                throttlingTier = UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}",
-                endpointName = "Retrieve Source",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}",
-                endpointName = "Retrieve Sources",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}",
-                endpointName = "Create Source",
-                method = HttpMethod.POST,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}",
-                endpointName = "Update Source",
-                method = HttpMethod.PUT,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}",
-                endpointName = "Delete Source",
-                method = HttpMethod.DELETE,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}",
-                endpointName = "Create Summary",
-                method = HttpMethod.POST,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
-                endpointName = "Update Summary",
-                method = HttpMethod.PUT,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
-                endpointName = "Delete Summary",
-                method = HttpMethod.DELETE,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}",
-                endpointName = "Retrieve Summary",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/{source}/{sourceId}/{summary}",
-                endpointName = "Retrieve Summaries",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
-                scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{taxYear}/liability",
+                uriPattern = "/{utr}/{tax-year}/liability",
                 endpointName = "Request Liability",
-                method = HttpMethod.POST,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                method = POST,
+                authType = USER,
+                throttlingTier = UNLIMITED,
                 scope = Some(writeScope)
               ),
               Endpoint(
-                uriPattern = "/{utr}/{taxYear}/liability",
+                uriPattern = "/{utr}/{tax-year}/liability",
                 endpointName = "Retrieve Liability",
-                method = HttpMethod.GET,
-                authType = AuthType.USER,
-                throttlingTier = ResourceThrottlingTier.UNLIMITED,
+                method = GET,
+                authType = USER,
+                throttlingTier = UNLIMITED,
                 scope = Some(readScope)
               )
             )
@@ -181,6 +106,46 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
         requiresTrust = None
       )
     )
+
+  private lazy val sourceAndSummaryEndpoints = Helpers.enabledSourceTypes.toSeq.flatMap { sourceType =>
+    val uri: String = s"/{utr}/{tax-year}/${sourceType.name}"
+    val uriWithId: String = s"$uri/{${sourceType.name}-id}"
+    val updateEndpoint =  sourceType match  {
+      case SourceTypes.Employments | SourceTypes.UnearnedIncomes =>  Nil
+      case _ => Seq(Endpoint(uriPattern = uriWithId, endpointName = s"Update ${sourceType.name}", method = PUT,
+        authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope)))
+    }
+    Seq(
+      Endpoint(uriPattern = uri, endpointName = s"Create ${sourceType.name}", method = POST,
+        authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope)),
+      Endpoint(uriPattern = uriWithId, endpointName = s"Retrieve ${sourceType.name}", method = GET,
+        authType = USER, throttlingTier = UNLIMITED, scope = Some(readScope)),
+      Endpoint(uriPattern = uriWithId, endpointName = s"Delete ${sourceType.name}", method = DELETE,
+        authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope)),
+      Endpoint(uriPattern = uri, endpointName = s"Retrieve all ${sourceType.name}", method = GET,
+        authType = USER, throttlingTier = UNLIMITED, scope = Some(readScope))
+    )  ++ updateEndpoint ++  summaryEndpoints(sourceType)
+  }
+
+  private lazy val summaryEndpoints : SourceType => Seq[Endpoint]  = { sourceType =>
+    sourceType.summaryTypes.toSeq.flatMap { summaryType =>
+      val uri: String = s"/{utr}/{tax-year}/${sourceType.name}/{${sourceType.name}-id}/${summaryType.name}"
+      val uriWithId: String = s"$uri/{${summaryType.name}-id}"
+      Seq(
+        Endpoint(uriPattern = uri, endpointName = s"Create ${sourceType.name} ${summaryType.name}", method = POST,
+          authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope)),
+        Endpoint(uriPattern = uriWithId, endpointName = s"Retrieve ${sourceType.name} ${summaryType.name}", method = GET,
+          authType = USER, throttlingTier = UNLIMITED, scope = Some(readScope)),
+        Endpoint(uriPattern = uriWithId, endpointName = s"Update ${sourceType.name} ${summaryType.name}", method = PUT,
+          authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope)),
+        Endpoint(uriPattern = uriWithId, endpointName = s"Delete ${sourceType.name} ${summaryType.name}", method = DELETE,
+          authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope)),
+        Endpoint(uriPattern = uri, endpointName = s"Retrieve all ${sourceType.name} ${summaryType.name}", method = GET,
+          authType = USER, throttlingTier = UNLIMITED, scope = Some(readScope))
+      )
+    }
+  }
+
 
   private def buildWhiteListingAccess(): Option[Access] = {
     val featureSwitch = FeatureSwitch(AppContext.featureSwitch)

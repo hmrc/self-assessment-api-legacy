@@ -2,7 +2,7 @@
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(method: String, saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryType: SummaryType, summaryId: Option[SummaryId])
+@(method: String, saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, summaryType: SummaryType, sourceId: SourceId, summaryId: Option[SummaryId])
 
 <section id="@(s"sample-request-${sourceType.name}-${summaryType.name}")">
     <title>@(summaryType.title) request</title>

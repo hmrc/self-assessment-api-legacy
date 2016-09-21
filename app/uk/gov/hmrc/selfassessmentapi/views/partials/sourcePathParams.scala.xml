@@ -2,7 +2,7 @@
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceId: Option[SourceId], summaryType: Option[SummaryType], summaryId: Option[SummaryId])
+@(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, summaryType: Option[SummaryType], sourceId: Option[SourceId], summaryId: Option[SummaryId])
 <section id="path-parameters">
     <title>Path Parameters</title>
     <table>
@@ -13,70 +13,30 @@
         </headings>
         <rows>
             @basePathParams(saUtr, Some(taxYear))
-            <row>
-                <cell>
-                    <code>source</code>
-                </cell>
-                <cell>
-                    <code>String</code>
-                </cell>
-                <cell>The type of source</cell>
-            </row>
             @sourceId.map { sId =>
                 <row>
                     <cell>
-                        <code>sourceId</code>
+                        <code>@{sourceType.name}-id</code>
                     </cell>
                     <cell>
                         <code>String</code>
                     </cell>
-                    <cell>The source id</cell>
+                    <cell>The @{sourceType.name} id</cell>
                 </row>
                 @summaryType.map { st =>
-                    <row>
-                        <cell>
-                            <code>summary</code>
-                        </cell>
-                        <cell>
-                            <code>String</code>
-                        </cell>
-                        <cell>The type of summary</cell>
-                    </row>
                     @summaryId.map { id =>
                         <row>
                             <cell>
-                                <code>summaryId</code>
+                                <code>@{st.name}-id</code>
                             </cell>
                             <cell>
                                 <code>String</code>
                             </cell>
-                            <cell>The summary id</cell>
+                            <cell>The @{st.name} id</cell>
                         </row>
                     }
                 }
             }
         </rows>
     </table>
-    @if(summaryType.isDefined) {
-        Summary types are specific to the sources:
-
-        <table>
-            <headings>
-                <cell>Source</cell>
-                <cell>Summary types</cell>
-            </headings>
-            <rows>
-            @enabledSourceTypes.map { sourceType =>
-                <row>
-                    <cell>
-                        <code>@(sourceType.name)</code>
-                    </cell>
-                    <cell>
-                        <code>@enabledSummaries(sourceType).map(_.name).mkString(", ")</code>
-                    </cell>
-                </row>
-            }
-            </rows>
-        </table>
-    }
 </section>

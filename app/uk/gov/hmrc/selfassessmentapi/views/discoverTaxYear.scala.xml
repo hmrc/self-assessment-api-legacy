@@ -10,7 +10,7 @@
     <description>This endpoint provides links to the self assessment entry points for the specified tax year</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}</resource>
+        <resource>GET /self-assessment/{utr}/{tax-year}</resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>

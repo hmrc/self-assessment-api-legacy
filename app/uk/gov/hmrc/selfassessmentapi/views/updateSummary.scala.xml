@@ -2,23 +2,19 @@
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summaryId: SummaryId)
+@(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, summaryType : SummaryType, sourceId: SourceId, summaryId: SummaryId)
 
 <endpoint>
-    <name>Update Summary</name>
-    <description>This endpoint updates a summary for the specified source</description>
+    <name>Update @{summaryType.name} for @{sourceType.name}</name>
+    <description>This endpoint updates a @{summaryType.name} for @{sourceType.name}</description>
     <section id="resource">
         <title>Resource</title>
-        <resource><![CDATA[PUT /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}/{summaryId}]]></resource>
+        <resource><![CDATA[PUT /self-assessment/{utr}/{tax-year}/@{sourceType.name}/{@{sourceType.name}-id}/@{summaryType.name}/{@{summaryType.name}-id}]]></resource>
     </section>
-    @partials.sourcePathParams(saUtr, taxYear, Some(sourceId), Some(selfemployment.SummaryTypes.Incomes), Some(summaryId))
+    @partials.sourcePathParams(saUtr, taxYear, sourceType, Some(summaryType), Some(sourceId), Some(summaryId))
     @partials.requestHeaders(true)
     @partials.authorisation(true)
-    @enabledSourceTypes.map { sourceType =>
-        @enabledSummaries(sourceType).map { summaryType =>
-            @partials.summaryWriteRequest("PUT", saUtr, taxYear, sourceType, sourceId, summaryType, Some(summaryId))
-        }
-    }
+    @partials.summaryWriteRequest("PUT", saUtr, taxYear, sourceType, summaryType, sourceId, Some(summaryId))
     <section id="sample-response">
         <title>Sample Response</title>
         <httpStatus>200 (OK)</httpStatus>

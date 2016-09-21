@@ -8,7 +8,7 @@
     <description>This endpoint retrieves a liability estimate</description>
     <section id="resource">
         <title>Resource</title>
-        <resource>GET /self-assessment/{utr}/{taxYear}/liability</resource>
+        <resource>GET /self-assessment/{utr}/{tax-year}/liability</resource>
     </section>
     @partials.liabilityPathParams(saUtr, taxYear)
     @partials.requestHeaders(false)

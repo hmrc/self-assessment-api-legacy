@@ -9,7 +9,7 @@
     <description>This endpoint updates a tax year</description>
     <section id="resource">
         <title>Resource</title>
-        <resource><![CDATA[PUT /self-assessment/{utr}/{taxYear}]]></resource>
+        <resource><![CDATA[PUT /self-assessment/{utr}/{tax-year}]]></resource>
     </section>
     <section id="path-parameters">
         <title>Path Parameters</title>

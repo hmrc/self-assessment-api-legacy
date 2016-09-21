@@ -3,8 +3,8 @@
 
 @(saUtr: SaUtr)
 <endpoint>
-    <name>Resolve Customer</name>
-    <description>This endpoint resolves a customer identifier from the provided Authorisation Bearer token</description>
+    <name>Resolve Taxpayer</name>
+    <description>This endpoint resolves the Taxpayer identifier from the provided Authorisation Bearer token</description>
     <section id="resource">
         <title>Resource</title>
         <resource>GET /self-assessment</resource>
@@ -14,6 +14,6 @@
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>200 (OK)</httpStatus>
-        <json>@resolveCustomerResponse(saUtr)</json>
+        <json>@resolveTaxpayerResponse(saUtr)</json>
     </section>
 </endpoint>

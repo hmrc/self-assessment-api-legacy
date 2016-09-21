@@ -2,20 +2,16 @@
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, summaryId: SummaryId)
+@(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, summaryType : SummaryType, sourceId: SourceId, summaryId: SummaryId)
 <endpoint>
-    <name>Retrieve Summaries</name>
-    <description>This endpoint rerieves all summaries for the specified source and summary type</description>
+    <name>Retrieve all @{summaryType.name} for @{sourceType.name}</name>
+    <description>This endpoint retrieves all @{summaryType.name} for @{sourceType.name}</description>
     <section id="resource">
         <title>Resource</title>
-        <resource><![CDATA[GET /self-assessment/{utr}/{taxYear}/{source}/{sourceId}/{summary}]]></resource>
+        <resource><![CDATA[GET /self-assessment/{utr}/{tax-year}/@{sourceType.name}/{@{sourceType.name}-id}/@{summaryType.name}]]></resource>
     </section>
-    @partials.sourcePathParams(saUtr, taxYear, Some(sourceId), Some(selfemployment.SummaryTypes.Incomes), None)
+    @partials.sourcePathParams(saUtr, taxYear, sourceType,  Some(summaryType), Some(sourceId), None)
     @partials.requestHeaders(false)
     @partials.authorisation(false)
-    @enabledSourceTypes.map { sourceType =>
-        @enabledSummaries(sourceType).map { summaryType =>
-            @partials.summaryListResponse(saUtr, taxYear, sourceType, sourceId, summaryType, summaryId)
-        }
-    }
+    @partials.summaryListResponse(saUtr, taxYear, sourceType, summaryType, sourceId, summaryId)
 </endpoint>

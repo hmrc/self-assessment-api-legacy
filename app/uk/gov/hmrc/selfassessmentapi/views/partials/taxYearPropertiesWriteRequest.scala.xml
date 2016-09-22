@@ -10,7 +10,7 @@
     <resource>@method /self-assessment/@saUtr/@taxYear</resource>
 
         <description>Updates tax year properties</description>
-        <json>@prettyPrint(toJson(FeatureSwitchedTaxProperties()))</json>
+        <json>@prettyPrint(toJson(FeatureSwitchedTaxYearProperties()))</json>
 
         @for(taxYearPropertyType <- FeatureSwitchedTaxYearPropertyTypes.types) {
             @if(taxYearPropertyType.fieldDescriptions.nonEmpty) {

@@ -57,7 +57,7 @@ object TaxYearDiscoveryController extends TaxYearDiscoveryController {
   final def updateTaxYearProperties(utr: SaUtr, taxYear: TaxYear) =
     Action.async(parse.json) {
       implicit request =>
-        if (FeatureSwitchedTaxProperties.atLeastOnePropertyIsEnabled)
+        if (FeatureSwitchedTaxYearProperties.atLeastOnePropertyIsEnabled)
           withJsonBody[TaxYearProperties] { taxYearProperties =>
             validateRequest(taxYearProperties, taxYear.taxYear) match {
               case Some(invalidPart) => Future.successful(BadRequest(Json.toJson(InvalidRequest(ErrorCode.INVALID_REQUEST, "Invalid request", Seq(invalidPart)))))

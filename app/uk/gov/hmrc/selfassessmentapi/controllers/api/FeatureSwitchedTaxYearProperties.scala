@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.pensioncontribution.{Pensio
 import uk.gov.hmrc.selfassessmentapi.controllers.api.studentsloan.{StudentLoan, StudentLoans}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.taxrefundedorsetoff.{TaxRefundedOrSetOff, TaxRefundedOrSetOffs}
 
-object FeatureSwitchedTaxProperties {
+object FeatureSwitchedTaxYearProperties {
 
   private val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
 

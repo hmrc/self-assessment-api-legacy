@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{FeatureSwitchedTaxYearProperties, SourceType, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.APIStatus.APIStatus
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.AuthType._
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.HttpMethod._
@@ -28,6 +28,68 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
 
   private val readScope = "read:self-assessment"
   private val writeScope = "write:self-assessment"
+
+  val firstEndpoints: Seq[Endpoint] = {
+    Seq(Endpoint(
+      uriPattern = "/",
+      endpointName = "Resolve Taxpayer",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope)
+    ),
+    Endpoint(
+      uriPattern = "/{utr}",
+      endpointName = "Discover Tax Years",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope)
+    ),
+    Endpoint(
+      uriPattern = "/{utr}/{tax-year}",
+      endpointName = "Discover Tax Year",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope)
+    ))
+  }
+
+  private val lastEndpoints: Seq[Endpoint] = {
+    Seq(Endpoint(
+      uriPattern = "/{utr}/{tax-year}/liability",
+      endpointName = "Request Liability",
+      method = POST,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(writeScope)
+    ),
+    Endpoint(
+      uriPattern = "/{utr}/{tax-year}/liability",
+      endpointName = "Retrieve Liability",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope)
+    ))
+  }
+
+  private val switchedEndpoints = {
+    if (FeatureSwitchedTaxYearProperties.atLeastOnePropertyIsEnabled) {
+      Seq(
+        Endpoint(
+          uriPattern = "/{utr}/{tax-year}",
+          endpointName = "Update Tax Year",
+          method = PUT,
+          authType = USER,
+          throttlingTier = UNLIMITED,
+          scope = Some(writeScope)))
+    }
+    else Seq()
+  }
+
+  private val filteredEndpoints = firstEndpoints ++ switchedEndpoints
 
   val definition: Definition =
     Definition(
@@ -52,55 +114,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
             version = "1.0",
             access = buildWhiteListingAccess(),
             status = apiStatus,
-            endpoints = sourceAndSummaryEndpoints ++ Seq(
-              Endpoint(
-                uriPattern = "/",
-                endpointName = "Resolve Taxpayer",
-                method = GET,
-                authType = USER,
-                throttlingTier = UNLIMITED,
-                scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}",
-                endpointName = "Discover Tax Years",
-                method = GET,
-                authType = USER,
-                throttlingTier = UNLIMITED,
-                scope = Some(readScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{tax-year}",
-                endpointName = "Discover Tax Year",
-                method = GET,
-                authType = USER,
-                throttlingTier = UNLIMITED,
-                scope = Some(readScope)
-              ),Endpoint(
-                uriPattern = "/{utr}/{tax-year}",
-                endpointName = "Update Tax Year",
-                method = PUT,
-                authType = USER,
-                throttlingTier = UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{tax-year}/liability",
-                endpointName = "Request Liability",
-                method = POST,
-                authType = USER,
-                throttlingTier = UNLIMITED,
-                scope = Some(writeScope)
-              ),
-              Endpoint(
-                uriPattern = "/{utr}/{tax-year}/liability",
-                endpointName = "Retrieve Liability",
-                method = GET,
-                authType = USER,
-                throttlingTier = UNLIMITED,
-                scope = Some(readScope)
-              )
-            )
+            endpoints = sourceAndSummaryEndpoints ++ filteredEndpoints
           )
         ),
         requiresTrust = None

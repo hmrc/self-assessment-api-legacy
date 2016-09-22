@@ -25,6 +25,7 @@ object SourceType {
 
   case object UKProperties extends SourceType {
     override val name = "uk-properties"
+    override val documentationName = "UK Properties"
 
     override def example(sourceId: Option[SourceId] = None): JsValue = toJson(UKProperty.example(sourceId))
 

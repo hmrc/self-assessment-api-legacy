@@ -62,31 +62,31 @@ object Documentation extends BaseController with Links {
   private val utr = SaUtr("2234567890")
   private val taxYear = TaxYear("2016-17")
 
-  private lazy val updateTaxYearPropertiesPage = if (FeatureSwitchedTaxProperties.atLeastOnePropertyIsEnabled) {
+  private lazy val updateTaxYearPropertiesPage = if (FeatureSwitchedTaxYearProperties.atLeastOnePropertyIsEnabled) {
     Seq(EndpointDocumentation("Update Tax Year", uk.gov.hmrc.selfassessmentapi.views.xml.updateTaxYear(utr, taxYear)))
   } else Seq.empty[EndpointDocumentation]
 
   private lazy val sourceAndSummaryDocumentation = Helpers.enabledSourceTypes.toSeq.flatMap { sourceType =>
     val updateEndpoint =  sourceType match  {
       case SourceTypes.Employments | SourceTypes.UnearnedIncomes =>  Nil
-      case _ => Seq(EndpointDocumentation(s"Update ${sourceType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.updateSource(utr, taxYear, sourceType, sourceId)))
+      case _ => Seq(EndpointDocumentation(s"Update ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.updateSource(utr, taxYear, sourceType, sourceId)))
     }
     Seq(
-      EndpointDocumentation(s"Create ${sourceType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.createSource(utr, taxYear, sourceType, sourceId)),
-      EndpointDocumentation(s"Retrieve ${sourceType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.readSource(utr, taxYear, sourceType, sourceId)),
-      EndpointDocumentation(s"Delete ${sourceType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceType, sourceId)),
-      EndpointDocumentation(s"Retrieve all ${sourceType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceType, sourceId))
+      EndpointDocumentation(s"Create ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.createSource(utr, taxYear, sourceType, sourceId)),
+      EndpointDocumentation(s"Retrieve ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.readSource(utr, taxYear, sourceType, sourceId)),
+      EndpointDocumentation(s"Delete ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceType, sourceId)),
+      EndpointDocumentation(s"Retrieve all ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceType, sourceId))
     ) ++ updateEndpoint ++ summaryDocumentation(sourceType)
   }
 
   private lazy val summaryDocumentation: SourceType => Seq[EndpointDocumentation] = { sourceType =>
     sourceType.summaryTypes.toSeq.flatMap { summaryType =>
       Seq(
-        EndpointDocumentation(s"Create ${sourceType.name} ${summaryType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
-        EndpointDocumentation(s"Retrieve ${sourceType.name} ${summaryType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
-        EndpointDocumentation(s"Update ${sourceType.name} ${summaryType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.updateSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
-        EndpointDocumentation(s"Delete ${sourceType.name} ${summaryType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
-        EndpointDocumentation(s"Retrieve all ${sourceType.name} ${summaryType.name}", uk.gov.hmrc.selfassessmentapi.views.xml.listSummaries(utr, taxYear, sourceType, summaryType, sourceId, summaryId))
+        EndpointDocumentation(s"Create ${sourceType.documentationName} ${summaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
+        EndpointDocumentation(s"Retrieve ${sourceType.documentationName} ${summaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
+        EndpointDocumentation(s"Update ${sourceType.documentationName} ${summaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.updateSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
+        EndpointDocumentation(s"Delete ${sourceType.documentationName} ${summaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
+        EndpointDocumentation(s"Retrieve all ${sourceType.documentationName} ${summaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.listSummaries(utr, taxYear, sourceType, summaryType, sourceId, summaryId))
       )
     }
   }

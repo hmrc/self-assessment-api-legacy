@@ -20,5 +20,6 @@ import play.api.libs.json.JsValue
 
 trait SummaryType extends Documentable {
   val name: String
+  val documentationName: String
   def example(id: Option[SummaryId] = None): JsValue
 }

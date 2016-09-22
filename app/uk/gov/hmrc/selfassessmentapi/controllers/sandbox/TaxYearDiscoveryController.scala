@@ -23,7 +23,7 @@ import play.api.mvc.hal._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, FeatureSwitchedTaxProperties, TaxYear, TaxYearProperties}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, FeatureSwitchedTaxYearProperties, TaxYear, TaxYearProperties}
 import uk.gov.hmrc.selfassessmentapi.services.sandbox.TaxYearPropertiesService
 import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
@@ -39,7 +39,7 @@ object TaxYearDiscoveryController extends TaxYearDiscoveryController {
   }
 
   final def update(utr: SaUtr, taxYear: TaxYear) = Action.async(parse.json) { implicit request =>
-    if (FeatureSwitchedTaxProperties.atLeastOnePropertyIsEnabled)
+    if (FeatureSwitchedTaxYearProperties.atLeastOnePropertyIsEnabled)
       withJsonBody[TaxYearProperties] {
         taxYearProperties =>
           validateRequest(taxYearProperties, taxYear.taxYear) match {

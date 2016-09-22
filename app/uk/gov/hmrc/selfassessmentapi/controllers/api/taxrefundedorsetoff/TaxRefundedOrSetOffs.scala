@@ -23,6 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case object TaxRefundedOrSetOffs extends TaxYearPropertyType {
   override val name: String = "taxRefundedOrSetOff"
+  override val documentationName = "Tax Refunded or Set Off"
   override val example: JsValue = toJson(TaxRefundedOrSetOff.example())
 
   override def description(action: String): String = s"$action a taxRefundedOrSetOff"

@@ -26,6 +26,7 @@ object SourceType {
   case object UnearnedIncomes extends SourceType {
 
     override val name: String = "unearned-incomes"
+    override val documentationName = "Unearned Incomes"
     override val summaryTypes : Set[SummaryType]= Set(SavingsIncomes, Dividends, Benefits)
     override def example(sourceId: Option[SourceId] = None): JsValue = toJson(UnearnedIncome.example(sourceId))
 

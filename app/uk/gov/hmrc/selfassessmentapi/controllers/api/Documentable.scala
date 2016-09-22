@@ -40,6 +40,7 @@ case class FullFieldDescription(source: String, name: String, `type`: String, de
 
 trait Documentable {
   val title: String
+  val documentationName: String
   def description(action: String): String
   val fieldDescriptions: Seq[FieldDescription] = Nil
 }

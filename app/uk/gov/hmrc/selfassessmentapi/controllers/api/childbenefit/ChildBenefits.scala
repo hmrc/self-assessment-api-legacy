@@ -24,6 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case object ChildBenefits extends TaxYearPropertyType {
   override val name: String = "childBenefit"
+  override val documentationName = "Child Benefit"
   override val example: JsValue = toJson(ChildBenefit.example())
   override def description(action: String): String = s"$action a childBenefit"
   override val title: String = "Sample child benefit"

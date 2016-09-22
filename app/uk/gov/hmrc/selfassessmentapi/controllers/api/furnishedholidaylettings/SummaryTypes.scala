@@ -24,6 +24,7 @@ object SummaryTypes {
 
   case object Incomes extends SummaryType {
     override val name = "incomes"
+    override val documentationName = "Incomes"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(Income.example(id))
     override val title = "Sample furnished holiday lettings income"
     override def description(action: String) = s"$action a furnished holiday lettings income summary for the specified source"
@@ -35,6 +36,7 @@ object SummaryTypes {
 
   case object Expenses extends SummaryType {
     override val name = "expenses"
+    override val documentationName = "Expenses"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(Expense.example(id))
     override val title = "Sample expenses"
     override def description(action: String) = s"$action an expense for the specified source"
@@ -46,6 +48,7 @@ object SummaryTypes {
 
   case object PrivateUseAdjustments extends SummaryType {
     override val name = "private-use-adjustments"
+    override val documentationName = "Private Use Adjustments"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(PrivateUseAdjustment.example(id))
     override val title = "Sample furnished holiday lettings private use adjustment"
     override def description(action: String) = s"$action a private use adjustment summary for the specified source"
@@ -56,6 +59,7 @@ object SummaryTypes {
 
   case object BalancingCharges extends SummaryType {
     override val name = "balancing-charges"
+    override val documentationName = "Balancing Charges"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(BalancingCharge.example(id))
     override val title = "Sample furnished holiday lettings balancing charge"
     override def description(action: String) = s"$action a furnished holiday lettings balancing charge summary for the specified source"

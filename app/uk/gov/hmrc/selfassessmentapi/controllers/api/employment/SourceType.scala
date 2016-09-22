@@ -25,6 +25,7 @@ object SourceType {
   case object Employments extends SourceType {
 
     override val name: String = "employments"
+    override val documentationName = "Employments"
     override val summaryTypes : Set[SummaryType] = Set(Incomes, Benefits, Expenses, UkTaxesPaid)
     override def example(sourceId: Option[SourceId] = None) = toJson(Employment.example(sourceId))
 

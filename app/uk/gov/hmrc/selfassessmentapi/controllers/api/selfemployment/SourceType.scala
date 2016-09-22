@@ -26,6 +26,7 @@ object SourceType {
 
   case object SelfEmployments extends SourceType {
     override val name = "self-employments"
+    override val documentationName = "Self Employments"
 
     override def example(sourceId: Option[SourceId] = None): JsValue = toJson(SelfEmployment.example(sourceId))
 

@@ -24,6 +24,7 @@ object SummaryTypes {
 
   case object Incomes extends SummaryType {
     override val name = "incomes"
+    override val documentationName = "Incomes"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(Income.example(id))
     override val title = "Sample UK property incomes"
     override def description(action: String) = s"$action an income for the specified UK Property"
@@ -35,6 +36,7 @@ object SummaryTypes {
 
   case object Expenses extends SummaryType {
     override val name = "expenses"
+    override val documentationName = "Expenses"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(Expense.example(id))
     override val title = "Sample UK property expenses"
     override def description(action: String) = s"$action an expense for the specified UK Property"
@@ -46,6 +48,7 @@ object SummaryTypes {
 
   case object TaxesPaid extends SummaryType {
     override val name = "taxes-paid"
+    override val documentationName = "Taxes Paid"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(TaxPaid.example(id))
     override val title = "Sample UK property taxes paid"
     override def description(action: String) = s"$action a tax paid for the specified UK Property"
@@ -56,6 +59,7 @@ object SummaryTypes {
 
   case object BalancingCharges extends SummaryType {
     override val name = "balancing-charges"
+    override val documentationName = "Balancing Charges"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(BalancingCharge.example(id))
     override val title = "Sample UK property balancing charges"
     override def description(action: String) = s"$action a balancing charge for the specified UK Property"
@@ -67,6 +71,7 @@ object SummaryTypes {
 
   case object PrivateUseAdjustments extends SummaryType {
     override val name = "private-use-adjustments"
+    override val documentationName = "Private Use Adjustments"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(PrivateUseAdjustment.example(id))
     override val title = "Sample UK property private use adjustment"
     override def description(action: String) = s"$action a private use adjustment for the specified UK Property"

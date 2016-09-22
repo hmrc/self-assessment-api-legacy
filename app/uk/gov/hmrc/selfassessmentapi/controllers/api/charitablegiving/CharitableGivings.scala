@@ -22,6 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 case object CharitableGivings extends TaxYearPropertyType {
 
   override val name = "charitableGivings"
+  override val documentationName = "Charitable Givings"
 
   override val title = "Sample charitable givings"
 

@@ -22,6 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 case object BlindPersons extends TaxYearPropertyType {
   override val name: String = "blindPerson"
+  override val documentationName = "Blind Person"
   override val example: JsValue = toJson(BlindPerson.example())
 
   override def description(action: String): String = s"$action a blindPerson"

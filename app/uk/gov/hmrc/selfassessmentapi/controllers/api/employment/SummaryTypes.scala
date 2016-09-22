@@ -24,6 +24,7 @@ object SummaryTypes {
 
   case object Incomes extends SummaryType {
     override val name = "incomes"
+    override val documentationName = "Incomes"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(Income.example(id))
     override val title = "Sample Employments incomes"
     override def description(action: String) = s"$action an income for the specified source"
@@ -35,6 +36,7 @@ object SummaryTypes {
 
   case object Benefits extends SummaryType {
     override val name = "benefits"
+    override val documentationName = "Benefits"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(Benefit.example(id))
     override val title = "Sample employment benefits"
     override def description(action: String) = s"$action a benefit for the specified source"
@@ -46,6 +48,7 @@ object SummaryTypes {
 
   case object Expenses extends SummaryType {
     override val name = "expenses"
+    override val documentationName = "Expenses"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(Expense.example(id))
     override val title = "Sample Employments expenses"
     override def description(action: String) = s"$action an expense for the specified source"
@@ -57,6 +60,7 @@ object SummaryTypes {
 
   case object UkTaxesPaid extends SummaryType {
     override val name = "uk-taxes-paid"
+    override val documentationName = "UK Taxes Paid"
     override def example(id: Option[SummaryId] = None): JsValue = toJson(UkTaxPaid.example(id))
     override val title = "Sample UK Taxes paid"
     override def description(action: String) = s"$action an UK Tax paid for the specified source"

@@ -23,6 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearPropertyType
 
 case object PensionContributions extends TaxYearPropertyType {
   override val name: String = "pensionContributions"
+  override val documentationName = "Pension Contributions"
   override val example: JsValue = toJson(PensionContribution.example())
 
   override def description(action: String): String = s"$action a pensionContributions"
@@ -40,6 +41,7 @@ case object PensionContributions extends TaxYearPropertyType {
 
 case object PensionSavings extends TaxYearPropertyType {
   override val name: String = "pensionSavings"
+  override val documentationName = "Pension Savings"
   override val example: JsValue = toJson(PensionSaving.example())
   override val title: String = "Sample pension savings"
 

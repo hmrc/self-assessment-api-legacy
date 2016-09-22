@@ -52,6 +52,15 @@ class PensionSavingsChargesSpec extends UnitSpec {
           TaxBandSummary("additionalHigherRate", 41999, "45%", 18899.55)
         )
     }
+
+    "round up the Pension Contribution Excess to the nearest pound" in {
+      PensionSavingsCharges.IncomeTaxBandSummary(totalTaxableIncome = 31999, ukPensionContribution = 40000, pensionContributionExcess = 200000.01) should contain theSameElementsInOrderAs
+        Seq(
+          TaxBandSummary("basicRate", 40001, "20%", 8000.2),
+          TaxBandSummary("higherRate", 118000, "40%", 47200),
+          TaxBandSummary("additionalHigherRate", 42000, "45%", 18900)
+        )
+    }
   }
 
 

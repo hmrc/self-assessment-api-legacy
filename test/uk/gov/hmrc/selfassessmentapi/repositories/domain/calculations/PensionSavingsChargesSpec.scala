@@ -102,8 +102,12 @@ class PensionSavingsChargesSpec extends UnitSpec {
         val contribution = Print(BigDecimal(pensionContribution.toInt)).as("ukPensionContribution")
         val contributionExcess = Print(BigDecimal(pensionContributionExcess.toInt)).as("pensionContributionExcess")
 
-        val taxBands = PensionSavingsCharges.IncomeTaxBandSummary(totalTaxableIncome = totalTaxables,
-          ukPensionContribution = contribution, pensionContributionExcess  = contributionExcess)
+        val taxBands = PensionSavingsCharges.IncomeTaxBandSummary(SelfAssessmentBuilder()
+          .withEmployments(EmploymentBuilder().withSalary(totalTaxables))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(contribution)
+                                                           .pensionSavings(excessOfAnnualAllowance = contributionExcess))
+          .create()
+        )
 
         PensionSavingsCharges.IncomeTax(taxBands) shouldBe BigDecimal(incomeTaxCalculated)
 

@@ -43,10 +43,10 @@ case class SelfEmploymentBuilder(objectID: BSONObjectID = BSONObjectID.generate)
     this
   }
 
-  def withAdjustments(outstandingBusinessIncome: BigDecimal, lossBroughtForward: BigDecimal,
-                      averagingAdjustment: BigDecimal, overlapReliefUsed: BigDecimal,
-                      basisAdjustment: BigDecimal, includedNonTaxableProfits: BigDecimal,
-                      accountingAdjustment: BigDecimal) = {
+  def withAdjustments(outstandingBusinessIncome: BigDecimal = 0, lossBroughtForward: BigDecimal = 0,
+                      averagingAdjustment: BigDecimal = 0, overlapReliefUsed: BigDecimal = 0,
+                      basisAdjustment: BigDecimal = 0, includedNonTaxableProfits: BigDecimal = 0,
+                      accountingAdjustment: BigDecimal = 0) = {
     selfEmployment = selfEmployment.copy(adjustments = selfEmployment.adjustments.map(_.copy(
       outstandingBusinessIncome = Some(outstandingBusinessIncome),
       lossBroughtForward = Some(lossBroughtForward),

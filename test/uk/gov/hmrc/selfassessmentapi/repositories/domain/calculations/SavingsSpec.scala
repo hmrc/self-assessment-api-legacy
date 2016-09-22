@@ -395,7 +395,7 @@ class SavingsSpec extends UnitSpec {
         ("32000", "12000", "500", "0", "500", "11000", "500", "0"),
         ("100000", "12000", "0", "0", "500", "0", "11500", "0"),
         ("140000", "12000", "0", "0", "0", "0", "10000", "2000"),
-        ("140000", "12000", "5000", "0", "0", "0", "12000", "0"),
+        ("140000", "12000", "5000", "0", "500", "0", "11500", "0"),
         ("150000", "12000", "0", "0", "0", "0", "0", "12000"),
         ("60000", "85000", "0", "0", "500", "0", "84500", "0"),
         ("80000", "85000", "0", "0", "0", "0", "70000", "15000"),
@@ -409,21 +409,12 @@ class SavingsSpec extends UnitSpec {
                                                   startingRateAmount: String, nilRateAmount: String, basicRateTaxAmount: String,
                                                   higherRateTaxAmount: String, additionalHigherRateAmount: String) =>
 
-        val totalIncomeReceived = Totals.IncomeReceived(totalNonSavings = BigDecimal(totalProfitFromSelfEmployments.toInt),
-          totalSavings = BigDecimal(totalSavingsIncome.toInt), totalDividends = 0)
-        val personalAllowance = Print(Deductions.PersonalAllowance(totalIncomeReceived, 0, 0)).as("PersonalAllowance")
-        val totalDeduction = Deductions.Total(incomeTaxRelief = 0, personalAllowance = personalAllowance, retirementAnnuityContract = 0)
-        val totalNonSavingsTaxableIncome = Print(NonSavings.TotalTaxableIncome(BigDecimal(totalProfitFromSelfEmployments.toInt),
-          totalDeduction)).as("TotalTaxableProfits")
-        val savingStartingRate = Print(Savings.StartingRate(totalNonSavingsTaxableIncome)).as("StartingSavingRate")
-        val totalTaxableIncome = Totals.TaxableIncome(totalIncomeReceived = totalIncomeReceived, totalDeduction = totalDeduction)
-        val personalSavingsAllowance = Print(Savings.PersonalAllowance(totalTaxableIncome = totalTaxableIncome)).as("PersonalSavingsAllowance")
-        val taxableSavingsIncome = Print(Savings.TotalTaxableIncome(totalSavingsIncome = totalSavingsIncome.toInt, totalDeduction =
-          totalDeduction, totalNonSavingsIncome = totalProfitFromSelfEmployments.toInt)).as("Savings.TaxableIncome")
-
-        val bandAllocations = Savings.IncomeTaxBandSummary(taxableSavingsIncome = taxableSavingsIncome, startingSavingsRate = savingStartingRate,
-          personalSavingsAllowance = personalSavingsAllowance, taxableNonSavingsIncome = totalNonSavingsTaxableIncome,
-          ukPensionContributions = BigDecimal(ukPensionContributions.toInt))
+        val bandAllocations = Savings.IncomeTaxBandSummary(SelfAssessmentBuilder()
+          .withUnearnedIncomes(UnearnedIncomeBuilder().withUntaxedSavings(totalSavingsIncome.toInt))
+          .withSelfEmployments(SelfEmploymentBuilder().withTurnover(totalProfitFromSelfEmployments.toInt))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(ukPensionContributions.toInt))
+          .create()
+        )
 
         println(bandAllocations)
         println("====================================================================================")
@@ -442,7 +433,7 @@ class SavingsSpec extends UnitSpec {
         ("0", "17001", "0", "0.2"),
         ("0", "17005", "0", "1"),
         ("0", "20000", "0", "600"),
-        ("0", "43000", "0", "5300"),
+        ("0", "43000", "0", "5200"),
         ("0", "43001", "0", "5300.4"),
         ("0", "43005", "0", "5302"),
         ("0", "100000", "0", "28100"),
@@ -451,34 +442,35 @@ class SavingsSpec extends UnitSpec {
         ("0", "150001", "0", "52600.45"),
         ("0", "150005", "0", "52602.25"),
         ("0", "160000", "0", "57100"),
-        ("11000", "32000", "0", "5300"),
+        ("11000", "32000", "0", "5200"),
         ("11000", "32001", "0", "5300.4"),
         ("11000", "32005", "0", "5302"),
         ("11000", "89000", "0", "28100"),
         ("11000", "150000", "0", "56350"),
         ("11000", "150001", "0", "56350.45"),
-        ("11000", "150001", "20000", "51800.40"),
+        ("11000", "150001", "20000", "51700.40"),
         ("11000", "150005", "0", "56352.25"),
         ("11000", "160000", "0", "60850"),
-        ("11000", "160000", "30000", "53800")
+        ("11000", "160000", "30000", "53700")
       )
 
       TableDrivenPropertyChecks.forAll(inputs) { (nonSavingsIncome: String, savingsIncome: String, ukPensionContributions: String, savingsIncomeTax: String) =>
+
         val nonSavings = BigDecimal(nonSavingsIncome.toInt)
         val savings = BigDecimal(savingsIncome.toInt)
+        val ukPensionContribs = BigDecimal(ukPensionContributions.toInt)
+
         Print(savings).as("savings")
         Print(nonSavings).as("nonSavings")
-        Print(BigDecimal(ukPensionContributions.toInt)).as("ukPensionContributions")
+        Print(ukPensionContribs).as("ukPensionContributions")
 
-        val allowance = Print(Deductions.PersonalAllowance(nonSavings + savings, 0, 0)).as("personalAllowance")
-        val deduction = Deductions.Total(0, allowance, 0)
 
-        val startingSavingsRate = Print(Savings.StartingRate(NonSavings.TotalTaxableIncome(nonSavings, deduction))).as("startingSavingsRate")
-        val taxableSavingsIncome = Print(Savings.TotalTaxableIncome(savings, deduction, nonSavings)).as("taxableSavingsIncome")
-        val personalSavingsAllowance = Print(Savings.PersonalAllowance(nonSavings + savings)).as("personalSavingsAllowance")
-        val profitFromSelfEmployments = Print(SelfEmployment.TotalTaxableProfit(nonSavings, deduction)).as("nonSavingsIncome")
-        val savingsIncomeBandAllocation = Savings.IncomeTaxBandSummary(taxableSavingsIncome, startingSavingsRate, personalSavingsAllowance,profitFromSelfEmployments,
-          ukPensionContributions = BigDecimal(ukPensionContributions.toInt))
+        val savingsIncomeBandAllocation = Savings.IncomeTaxBandSummary(SelfAssessmentBuilder()
+          .withUnearnedIncomes(UnearnedIncomeBuilder().withUntaxedSavings(savings))
+          .withSelfEmployments(SelfEmploymentBuilder().withTurnover(nonSavings))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(ukPensionContribs))
+          .create()
+        )
 
         println(savingsIncomeBandAllocation)
         println("==============================")

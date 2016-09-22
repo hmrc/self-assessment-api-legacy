@@ -184,17 +184,23 @@ class NonSavingsSpec extends UnitSpec {
     "be equal to" in {
       val inputs = Table(
         ("TotalTaxableProfits", "UkPensionContributions", "NonSavingsIncomeTax"),
-        ("20001", "1000", "4000.20"),
-        ("31999", "1000", "6399.80"),
-        ("33001", "0", "6800.40"),
-        ("33001", "1000", "6600.40"),
-        ("89002", "0", "29200.80"),
+        ("31001", "1000", "4000.20"),
+        ("42999", "1000", "6399.80"),
+        ("44001", "0", "6800.40"),
+        ("44001", "1000", "6600.40"),
+        ("100002", "0", "29201.20"),
         ("160003", "0", "58101.35"),
         ("160003", "10000", "55601.35")
       )
       TableDrivenPropertyChecks.forAll(inputs) { (totalTaxableProfits: String, ukPensionContributions: String, nonSavingsIncomeTax: String) =>
-        NonSavings.IncomeTax(NonSavings.IncomeTaxBandSummary(totalNonSavingsTaxableIncome = BigDecimal(totalTaxableProfits.toInt),
-          ukPensionContributions = BigDecimal(ukPensionContributions.toInt))) shouldBe BigDecimal(nonSavingsIncomeTax.toDouble)
+        NonSavings.IncomeTax(
+          NonSavings.IncomeTaxBandSummary(
+            SelfAssessmentBuilder()
+              .withEmployments(EmploymentBuilder().withSalary(totalTaxableProfits.toInt))
+              .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(ukPensionContributions.toInt))
+              .create()
+          )
+        ) shouldBe BigDecimal(nonSavingsIncomeTax.toDouble)
       }
     }
   }

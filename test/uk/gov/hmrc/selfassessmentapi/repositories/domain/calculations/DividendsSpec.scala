@@ -253,7 +253,8 @@ class DividendsSpec extends UnitSpec {
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(5000))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(5000))
           .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(18000))
-          .create()) should contain theSameElementsInOrderAs
+          .create()
+      ) should contain theSameElementsInOrderAs
         Seq(
           TaxBandSummary("nilRate", 5000.0, "0%", 0.0),
           TaxBandSummary("basicRate", 12000.0, "7.5%", 900),
@@ -295,22 +296,18 @@ class DividendsSpec extends UnitSpec {
                                                   totalDividends:String, nilRateAmount: String, basicRateTaxAmount: String,
                                                   higherRateTaxAmount: String, additionalHigherRateAmount: String) =>
 
-        val incomeTaxRelief = 0
         val profits = BigDecimal(totalProfits.toInt)
         val savings = BigDecimal(totalSavingsIncome.toInt)
         val dividends = BigDecimal(totalDividends.toInt)
         val ukPensionsContributions = BigDecimal(ukPensionContributions.toInt)
 
-        val personalAllowance = Print(Deductions.PersonalAllowance(totalIncomeReceived = profits + savings + dividends, incomeTaxRelief,
-          pensionContribution = 0)).as("personalAllowance")
-        val totalDeduction = Print(Deductions.Total(incomeTaxRelief, personalAllowance, 0)).as("totalDeduction")
-        val taxableProfitFromSelfEmployments = Print(SelfEmployment.TotalTaxableProfit(profits, totalDeduction)).as("taxableProfits")
-        val taxableSavingsIncome = Print(Savings.TotalTaxableIncome(savings, totalDeduction, profits)).as("taxableSavingsIncome")
-        val taxableDividendIncome = Print(Dividends.TotalTaxableIncome(dividends, profits, savings, totalDeduction)).as("taxableDividendIncome")
-        val personalDividendAllowance = Print(Dividends.PersonalAllowance(taxableDividendIncome)).as("personalDividendAllowance")
-
-        val dividendIncomeTax = Dividends.IncomeTaxBandSummary(taxableProfitFromSelfEmployments, taxableSavingsIncome, taxableDividendIncome,
-          personalDividendAllowance, ukPensionContribution = ukPensionsContributions)
+        val dividendIncomeTax = Dividends.IncomeTaxBandSummary(
+          SelfAssessmentBuilder()
+            .withSelfEmployments(SelfEmploymentBuilder().withTurnover(profits))
+            .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(dividends).withUntaxedSavings(savings))
+            .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(ukPensionsContributions))
+            .create()
+        )
 
         println(dividendIncomeTax.map(_.taxableAmount))
         println("==========================================")

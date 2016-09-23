@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SelfAssessment, TaxBandAllocation, TaxBandSummary}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{RoundUp, SelfAssessment, TaxBandAllocation, TaxBandSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{IncomeTax, TaxBand}
 
 object PensionSavingsCharges {
@@ -42,7 +42,7 @@ object PensionSavingsCharges {
       val basicTaxBand = TaxBand.BasicTaxBand(reductionInUpperBound = totalTaxableIncome, additionsToUpperBound = ukPensionContribution)
       val higherTaxBand = TaxBand.HigherTaxBand(basicTaxBand, totalTaxableIncome, ukPensionContribution)
       Seq(basicTaxBand, higherTaxBand, TaxBand.AdditionalHigherTaxBand(higherTaxBand)).map { taxBand =>
-        TaxBandAllocation(taxBand.allocate2(pensionContributionExcess), taxBand).toTaxBandSummary
+        TaxBandAllocation(taxBand.allocate2(RoundUp(pensionContributionExcess)), taxBand).toTaxBandSummary
       }
     }
 

@@ -75,7 +75,13 @@ class PensionSavingsChargesSpec extends UnitSpec {
     }
 
     "round up the Pension Contribution Excess to the nearest pound" in {
-      PensionSavingsCharges.IncomeTaxBandSummary(totalTaxableIncome = 31999, ukPensionContribution = 40000, pensionContributionExcess = 200000.01) should contain theSameElementsInOrderAs
+      PensionSavingsCharges.IncomeTaxBandSummary(SelfAssessmentBuilder()
+        .withEmployments(EmploymentBuilder().withSalary(30999))
+        .withSelfEmployments(SelfEmploymentBuilder().withTurnover(12000))
+        .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(40000)
+          .pensionSavings(excessOfAnnualAllowance = 200000.01))
+        .create()
+      ) should contain theSameElementsInOrderAs
         Seq(
           TaxBandSummary("basicRate", 40001, "20%", 8000.2),
           TaxBandSummary("higherRate", 118000, "40%", 47200),

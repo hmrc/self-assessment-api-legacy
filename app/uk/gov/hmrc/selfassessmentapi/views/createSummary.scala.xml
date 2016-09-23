@@ -5,8 +5,8 @@
 @(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, summaryType : SummaryType, sourceId: SourceId, summaryId: SummaryId)
 
 <endpoint>
-    <name>Create @{summaryType.name} for @{sourceType.name}</name>
-    <description>This endpoint creates a @{summaryType.name} for @{sourceType.name}</description>
+    <name>Create @{summaryType.documentationName} for @{sourceType.documentationName}</name>
+    <description>This endpoint creates a @{summaryType.documentationName} for @{sourceType.documentationName}</description>
     <section id="resource">
         <title>Resource</title>
         <resource><![CDATA[POST /self-assessment/{utr}/{tax-year}/@{sourceType.name}/{@{sourceType.name}-id}/@{summaryType.name}]]></resource>

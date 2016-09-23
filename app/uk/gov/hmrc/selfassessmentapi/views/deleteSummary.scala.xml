@@ -3,8 +3,8 @@
 
 @(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, summaryType : SummaryType, sourceId: SourceId, summaryId: SummaryId)
 <endpoint>
-    <name>Delete @{summaryType.name} for @{sourceType.name}</name>
-    <description>This endpoint deletes a @{summaryType.name} for @{sourceType.name}</description>
+    <name>Delete @{summaryType.documentationName} for @{sourceType.documentationName}</name>
+    <description>This endpoint deletes a @{summaryType.documentationName} for @{sourceType.documentationName}</description>
     <section id="resource">
         <title>Resource</title>
         <resource><![CDATA[DELETE /self-assessment/{utr}/{tax-year}/@{sourceType.name}/{@{sourceType.name}-id}/@{summaryType.name}/{@{summaryType.name}-id}]]></resource>

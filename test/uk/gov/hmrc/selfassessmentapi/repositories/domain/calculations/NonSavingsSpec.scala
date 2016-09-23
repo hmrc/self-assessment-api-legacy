@@ -104,7 +104,7 @@ class NonSavingsSpec extends UnitSpec {
       NonSavings.IncomeTaxBandSummary(
         SelfAssessmentBuilder()
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(33001))
-          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(100))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(100))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(10000))
           .create()
       ) should contain theSameElementsAs
@@ -153,7 +153,7 @@ class NonSavingsSpec extends UnitSpec {
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(120003))
           .withFurnishedHolidayLettings(FurnishedHolidayLettingBuilder().incomes(10000))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(10000))
-          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(100))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(100))
           .create()
       ) should contain theSameElementsAs
         Seq(
@@ -168,7 +168,7 @@ class NonSavingsSpec extends UnitSpec {
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(130000))
           .withFurnishedHolidayLettings(FurnishedHolidayLettingBuilder().incomes(10000))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(10000))
-          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(1000))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(1000))
           .create()
       ) should contain theSameElementsAs
         Seq(
@@ -197,7 +197,7 @@ class NonSavingsSpec extends UnitSpec {
           NonSavings.IncomeTaxBandSummary(
             SelfAssessmentBuilder()
               .withEmployments(EmploymentBuilder().withSalary(totalTaxableProfits.toInt))
-              .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(ukPensionContributions.toInt))
+              .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(ukPensionContributions.toInt))
               .create()
           )
         ) shouldBe BigDecimal(nonSavingsIncomeTax.toDouble)

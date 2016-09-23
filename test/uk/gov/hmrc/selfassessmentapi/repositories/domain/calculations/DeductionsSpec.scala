@@ -52,6 +52,7 @@ class DeductionsSpec extends UnitSpec {
   "RetirementAnnuityContract" should {
     "be sum of the retirement annuity contributions, overseas pensions and employer pension contributions" in {
       val taxYearProperties = TaxYearPropertiesBuilder()
+        .withPensionContributions()
         .retirementAnnuityContract(500.73)
         .overseasPension(500.23)
         .employerScheme(500.11)
@@ -70,6 +71,7 @@ class DeductionsSpec extends UnitSpec {
   "PensionContribution" should {
     "be sum of the retirement annuity contributions, overseas pensions, employer pension contributions and uk registered pension" in {
       val taxYearProperties = TaxYearPropertiesBuilder()
+        .withPensionContributions()
         .retirementAnnuityContract(500)
         .overseasPension(500)
         .employerScheme(500)

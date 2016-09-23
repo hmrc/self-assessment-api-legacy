@@ -32,7 +32,7 @@ class PensionSavingsChargesSpec extends UnitSpec {
         .withUnearnedIncomes(UnearnedIncomeBuilder().withUntaxedSavings(30999))
         .withEmployments(EmploymentBuilder().withSalary(6000))
         .withSelfEmployments(SelfEmploymentBuilder().withTurnover(6000))
-        .withTaxYearProperties(TaxYearPropertiesBuilder().pensionSavings(excessOfAnnualAllowance = 2000))
+        .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().pensionSavings(excessOfAnnualAllowance = 2000))
         .create()
       ) should contain theSameElementsInOrderAs
         Seq(
@@ -47,7 +47,8 @@ class PensionSavingsChargesSpec extends UnitSpec {
         .withUnearnedIncomes(UnearnedIncomeBuilder().withUntaxedSavings(30999))
         .withEmployments(EmploymentBuilder().withSalary(6000))
         .withSelfEmployments(SelfEmploymentBuilder().withTurnover(6000))
-        .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(1500)
+        .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions()
+                                                         .ukRegisteredPension(1500)
                                                          .pensionSavings(excessOfAnnualAllowance = 2000))
         .create()
       ) should contain theSameElementsInOrderAs
@@ -63,7 +64,8 @@ class PensionSavingsChargesSpec extends UnitSpec {
         .withUnearnedIncomes(UnearnedIncomeBuilder().withUntaxedSavings(31999))
         .withEmployments(EmploymentBuilder().withSalary(6000))
         .withSelfEmployments(SelfEmploymentBuilder().withTurnover(5000))
-        .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(40000)
+        .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions()
+                                                         .ukRegisteredPension(40000)
                                                          .pensionSavings(excessOfAnnualAllowance = 200000))
         .create()
       ) should contain theSameElementsInOrderAs
@@ -78,7 +80,7 @@ class PensionSavingsChargesSpec extends UnitSpec {
       PensionSavingsCharges.IncomeTaxBandSummary(SelfAssessmentBuilder()
         .withEmployments(EmploymentBuilder().withSalary(30999))
         .withSelfEmployments(SelfEmploymentBuilder().withTurnover(12000))
-        .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(40000)
+        .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(40000)
           .pensionSavings(excessOfAnnualAllowance = 200000.01))
         .create()
       ) should contain theSameElementsInOrderAs
@@ -119,7 +121,8 @@ class PensionSavingsChargesSpec extends UnitSpec {
 
         val taxBands = PensionSavingsCharges.IncomeTaxBandSummary(SelfAssessmentBuilder()
           .withEmployments(EmploymentBuilder().withSalary(totalTaxables))
-          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(contribution)
+          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions()
+                                                           .ukRegisteredPension(contribution)
                                                            .pensionSavings(excessOfAnnualAllowance = contributionExcess))
           .create()
         )

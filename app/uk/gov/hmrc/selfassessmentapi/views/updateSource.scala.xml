@@ -5,8 +5,8 @@
 @(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, sourceId: SourceId)
 
 <endpoint>
-    <name>Update a @{sourceType.name} source of income</name>
-    <description>This endpoint updates a @{sourceType.name} source of income</description>
+    <name>Update a @{sourceType.documentationName} source of income</name>
+    <description>This endpoint updates a @{sourceType.documentationName} source of income</description>
     <section id="resource">
         <title>Resource</title>
         <resource><![CDATA[PUT /self-assessment/{utr}/{tax-year}/@{sourceType.name}/{@{sourceType.name}-id}]]></resource>

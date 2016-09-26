@@ -4,8 +4,8 @@
 
 @(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, sourceId: SourceId)
 <endpoint>
-    <name>Retrieve all @{sourceType.name}</name>
-    <description>This endpoint retrieves all the @{sourceType.name} sources of income</description>
+    <name>Retrieve all @{sourceType.documentationName}</name>
+    <description>This endpoint retrieves all the @{sourceType.documentationName} sources of income</description>
     <section id="resource">
         <title>Resource</title>
         <resource><![CDATA[GET /self-assessment/{utr}/{tax-year}/@{sourceType.name}]]></resource>

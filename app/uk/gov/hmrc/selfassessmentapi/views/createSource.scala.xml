@@ -5,8 +5,8 @@
 @(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, sourceId: SourceId)
 
 <endpoint>
-    <name>Create a @{sourceType.name} source of income</name>
-    <description>This endpoint creates a @{sourceType.name} source of income</description>
+    <name>Create a @{sourceType.documentationName} source of income</name>
+    <description>This endpoint creates a @{sourceType.documentationName} source of income</description>
     <section id="resource">
         <title>Resource</title>
         <resource><![CDATA[POST /self-assessment/{utr}/{tax-year}/@{sourceType.name}]]></resource>

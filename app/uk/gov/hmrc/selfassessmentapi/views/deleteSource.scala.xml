@@ -3,8 +3,8 @@
 
 @(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, sourceId: SourceId)
 <endpoint>
-    <name>Delete @{sourceType.name}</name>
-    <description>This endpoint deletes a @{sourceType.name} source of income</description>
+    <name>Delete @{sourceType.documentationName}</name>
+    <description>This endpoint deletes a @{sourceType.documentationName} source of income</description>
     <section id="resource">
         <title>Resource</title>
         <resource><![CDATA[DELETE /self-assessment/{utr}/{tax-year}/@{sourceType.name}/{@{sourceType.name}-id}]]></resource>

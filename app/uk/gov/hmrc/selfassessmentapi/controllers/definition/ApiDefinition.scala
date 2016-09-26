@@ -18,6 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.APIStatus.APIStatus
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.AuthType.AuthType
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.GroupName.GroupName
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.HttpMethod.HttpMethod
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.ResourceThrottlingTier.ResourceThrottlingTier
 
@@ -77,6 +78,7 @@ case class Endpoint(
                      authType: AuthType,
                      throttlingTier: ResourceThrottlingTier,
                      scope: Option[String] = None,
+                     groupName : GroupName,
                      queryParameters: Option[Seq[Parameter]] = None)
 
 case class Parameter(name: String, required: Boolean = false)
@@ -101,4 +103,13 @@ object HttpMethod extends Enumeration {
 object ResourceThrottlingTier extends Enumeration {
   type ResourceThrottlingTier = Value
   val UNLIMITED = Value
+}
+
+object GroupName extends Enumeration {
+  type GroupName = Value
+  val Taxpayer, Liability, Employments = Value
+  val SelfEmployments = Value("Self Employments")
+  val UKProperties = Value("UK Properties")
+  val FurnishedHolidayLettings = Value("Furnished Holiday Lettings")
+  val UnearnedIncomes = Value("Unearned Incomes")
 }

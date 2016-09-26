@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.domain
 
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{CapAt, FlooredAt, PositiveOrZero, RoundDownToPennies}
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 sealed trait TaxBand {
   def name: String
@@ -56,7 +56,7 @@ object TaxBand {
                           override val chargedAt: BigDecimal = 20) extends TaxBand {
     val defaultUpperBound = 32000
     override def name: String = "basicRate"
-    override val upperBound = Some(FlooredAt(defaultUpperBound - reductionInUpperBound + additionsToUpperBound, lowerBound - 1))
+    override val upperBound = Some(FlooredAt(RoundUp(defaultUpperBound - reductionInUpperBound + additionsToUpperBound), lowerBound - 1))
     override lazy val lowerBound = precedingTaxBand.flatMap(_.upperBound).getOrElse(BigDecimal(0)) + 1
     override def toString = s"BasicTaxBand($lowerBound:${upperBound.get})"
   }
@@ -65,7 +65,7 @@ object TaxBand {
                            override val chargedAt: BigDecimal = 40) extends TaxBand {
     private val defaultUpperBound = 150000
     override def name: String = "higherRate"
-    override val upperBound = Some(FlooredAt(defaultUpperBound - reductionInUpperBound + additionsToUpperBound, lowerBound - 1))
+    override val upperBound = Some(FlooredAt(RoundUp(defaultUpperBound - reductionInUpperBound + additionsToUpperBound), lowerBound - 1))
     override lazy val lowerBound = precedingTaxBand.upperBound.getOrElse(BigDecimal(0)) + 1
     override def toString = s"HigherTaxBand($lowerBound:${upperBound.get})"
   }

@@ -44,7 +44,7 @@ class LiabilityMongoRepository(implicit mongo: () => DB)
   override def indexes: Seq[Index] =
     Seq(
         Index(Seq(("data.saUtr", Ascending), ("data.taxYear", Ascending)),
-              name = Some("ui_utr_taxyear"),
+              name = Some("liabilities_utr_taxyear"),
               unique = true))
 
   def save[T <: LiabilityResult](liabilityResult: T): Future[T] = {

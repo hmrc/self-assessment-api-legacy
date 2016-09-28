@@ -80,7 +80,7 @@ object Documentation extends BaseController with Links {
   }
 
   private lazy val summaryDocumentation: SourceType => Seq[EndpointDocumentation] = { sourceType =>
-    sourceType.summaryTypes.toSeq.flatMap { summaryType =>
+    Helpers.enabledSummaries(sourceType).toSeq.flatMap { summaryType =>
       Seq(
         EndpointDocumentation(s"Create ${sourceType.documentationName} ${summaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.createSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),
         EndpointDocumentation(s"Retrieve ${sourceType.documentationName} ${summaryType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.readSummary(utr, taxYear, sourceType, summaryType, sourceId, summaryId)),

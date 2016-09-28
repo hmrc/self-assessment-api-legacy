@@ -162,7 +162,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
   }
 
   private lazy val summaryEndpoints : SourceType => Seq[Endpoint]  = { sourceType =>
-    sourceType.summaryTypes.toSeq.flatMap { summaryType =>
+    Helpers.enabledSummaries(sourceType).toSeq.flatMap { summaryType =>
       val uri: String = s"/{utr}/{tax-year}/${sourceType.name}/{${sourceType.name}-id}/${summaryType.name}"
       val uriWithId: String = s"$uri/{${summaryType.name}-id}"
       Seq(

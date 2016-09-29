@@ -37,7 +37,8 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
     "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
     "Test.feature-switch.employments.enabled" -> true,
-    "Test.feature-switch.uk-properties.enabled" -> true))
+    "Test.feature-switch.uk-properties.enabled" -> true,
+    "Test.source-limits.self-employments" -> false))
 
   val ok: Regex = "20.".r
 

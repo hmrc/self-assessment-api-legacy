@@ -16,9 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment
 
+import play.api.libs.json.JsValue
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.http.NotImplementedException
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
-import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
+import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorResult, GenericErrorResult, SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes.{BalancingCharges, Expenses, GoodsAndServicesOwnUses, Incomes}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
@@ -26,7 +29,22 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
 import uk.gov.hmrc.selfassessmentapi.repositories.live.SelfEmploymentRepository
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
+
 object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmployments.name) {
+
+  private val limitSelfEmployments: Boolean = AppContext.sourceLimits.flatMap(_.getBoolean("self-employments")).getOrElse(false)
+
+  override def create(saUtr: SaUtr, taxYear: TaxYear, jsValue: JsValue): Either[ErrorResult, Future[String]] = {
+    val numSelfEmployments = Await.result(repository.list(saUtr, taxYear), Duration.Inf).size
+
+    if (limitSelfEmployments && numSelfEmployments >= 1) {
+      Left(GenericErrorResult(s"You may only create a maximum of 1 self-employments. Current number of self-employments: $numSelfEmployments"))
+    } else {
+      super.create(saUtr, taxYear, jsValue)
+    }
+  }
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {

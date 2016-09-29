@@ -20,14 +20,16 @@ import org.joda.time.DateTime
 import play.api.Logger
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.repositories._
-import uk.gov.hmrc.selfassessmentapi.repositories.live.{UnearnedIncomeRepository, UnearnedIncomeMongoRepository, SelfEmploymentRepository, SelfEmploymentMongoRepository}
+import uk.gov.hmrc.selfassessmentapi.repositories.live._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
 class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: SelfEmploymentMongoRepository,
-                               uiRepo : UnearnedIncomeMongoRepository, jobRepo: JobHistoryMongoRepository) {
+                               uiRepo : UnearnedIncomeMongoRepository, empRepo: EmploymentMongoRepository,
+                               fhlRepo: FurnishedHolidayLettingsMongoRepository, ukPropertyRepo: UKPropertiesMongoRepository,
+                               jobRepo: JobHistoryMongoRepository) {
 
   def deleteExpiredData(lastModifiedDate: DateTime): Future[Int] = {
     Logger.info(s"Deleting records older than lastModifiedDate : $lastModifiedDate ")
@@ -51,6 +53,9 @@ class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: Se
         saRepo.delete(record.saUtr, record.taxYear)
         seRepo.delete(record.saUtr, record.taxYear)
         uiRepo.delete(record.saUtr, record.taxYear)
+        empRepo.delete(record.saUtr, record.taxYear)
+        fhlRepo.delete(record.saUtr, record.taxYear)
+        ukPropertyRepo.delete(record.saUtr, record.taxYear)
       }
     }
   }
@@ -65,5 +70,7 @@ class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: Se
 
 object DeleteExpiredDataService {
   def apply() = new DeleteExpiredDataService(SelfAssessmentRepository(), SelfEmploymentRepository(),
-    UnearnedIncomeRepository(), JobHistoryRepository())
+                                             UnearnedIncomeRepository(), EmploymentRepository(),
+                                             FurnishedHolidayLettingsRepository(), UKPropertiesRepository(),
+                                             JobHistoryRepository())
 }

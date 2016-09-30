@@ -16,22 +16,28 @@
 
 package uk.gov.hmrc.selfassessmentapi.jobs
 
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeApplication
+import uk.gov.hmrc.selfassessmentapi.TestApplication
 import uk.gov.hmrc.selfassessmentapi.config.MicroserviceGlobal
-import uk.gov.hmrc.selfassessmentapi.{TestApplication, MongoEmbeddedDatabase, UnitSpec}
 
 
-class DeleteExpiredDataJobEnabledSpec extends TestApplication {
+class JobDisabledSpec extends TestApplication {
 
-  override lazy val app = FakeApplication(additionalConfiguration = Map("Test.scheduling.deleteExpiredDataJob.enabled" -> true))
+  override lazy val app = FakeApplication(additionalConfiguration = Map("Test.scheduling.deleteExpiredDataJob.enabled" -> false,
+    "Test.scheduling.dropMongoCollectionJob.enabled" -> false))
 
   "DeleteExpiredDataJob" should {
 
-    "Be added to the scheduler jobs when enabled" in {
-      MicroserviceGlobal.createScheduledJobs().size shouldBe 1
-      MicroserviceGlobal.createScheduledJobs().head shouldBe DeleteExpiredDataJob
+    "Not be added to the scheduler jobs when disabled" in {
+      MicroserviceGlobal.createScheduledJobs().size shouldBe 0
+    }
+
+  }
+
+  "DropMongoCollectionJob" should {
+
+    "Not be added to the scheduler jobs when disabled" in {
+      MicroserviceGlobal.createScheduledJobs().size shouldBe 0
     }
 
   }

@@ -21,8 +21,8 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{Income, _}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{_}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceRepository, SandboxSummaryRepository}
 
 object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmployments.name) {

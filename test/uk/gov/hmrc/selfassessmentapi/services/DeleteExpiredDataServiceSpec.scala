@@ -53,7 +53,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
   "deleteExpiredData" should {
 
-    "delete only the expired records (older than the lastModifiedDate) and not the latest records which have not expired" in {
+    "delete only the expired records (older than the lastModifiedDate) and not the latest records which have not expired" ignore {
       val lastModifiedDate = DateTime.now.minusWeeks(1)
       val saUtr2 = generateSaUtr()
       val saUtr3 = generateSaUtr()

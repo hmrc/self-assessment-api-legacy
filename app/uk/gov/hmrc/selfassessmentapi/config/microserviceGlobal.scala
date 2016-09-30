@@ -38,7 +38,7 @@ import uk.gov.hmrc.play.scheduling._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.{NotFound => _, NotImplemented => _}
 import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorBadRequest, ErrorNotImplemented, UnknownSummaryException}
-import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
+import uk.gov.hmrc.selfassessmentapi.jobs.{DropMongoCollectionJob, DeleteExpiredDataJob}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -145,11 +145,15 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 
-  def createScheduledJobs() : Seq[DeleteExpiredDataJob.type] = {
-    if (AppContext.deleteExpiredDataJob.getBoolean("enabled").getOrElse(false))
-      Seq(DeleteExpiredDataJob)
-    else
-      Seq()
+  def createScheduledJobs(): Seq[ExclusiveScheduledJob] = {
+    val expiredJobEnabled: Boolean = AppContext.deleteExpiredDataJob.getBoolean("enabled").getOrElse(false)
+    val dropMongoJobEnabled: Boolean = AppContext.dropMongoCollectionJob.getBoolean("enabled").getOrElse(false)
+    (expiredJobEnabled, dropMongoJobEnabled) match {
+      case (true, true) => Seq(DeleteExpiredDataJob, DropMongoCollectionJob)
+      case (true, false) => Seq(DeleteExpiredDataJob)
+      case (false, true) => Seq(DropMongoCollectionJob)
+      case _ => Seq()
+    }
   }
 
   override def onError(request : RequestHeader, ex: Throwable) = {

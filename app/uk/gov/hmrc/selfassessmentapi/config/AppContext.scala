@@ -36,6 +36,7 @@ object AppContext extends ServicesConfig {
   lazy val authEnabled: Boolean = current.configuration.getBoolean(s"auth.enabled").getOrElse(true)
   lazy val auditEnabled: Boolean = current.configuration.getBoolean(s"audit.enabled").getOrElse(true)
   def deleteExpiredDataJob = current.configuration.getConfig(s"$env.scheduling.deleteExpiredDataJob").getOrElse(throw new RuntimeException(s"$env.scheduling.deleteExpiredDataJob is not configured"))
+  def dropMongoCollectionJob = current.configuration.getConfig(s"$env.scheduling.dropMongoCollectionJob").getOrElse(throw new RuntimeException(s"$env.scheduling.dropMongoCollectionJob is not configured"))
 
   val supportedTaxYears: Set[String] = Set("2016-17")
 }

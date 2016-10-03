@@ -21,7 +21,7 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDouble, BSONElement, BSONNull, BSONObjectID, BSONString, Producer}
+import reactivemongo.bson.{BSONBoolean, BSONDateTime, BSONDocument, BSONDouble, BSONElement, BSONInteger, BSONNull, BSONObjectID, BSONString, BSONValue, Producer}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
@@ -96,33 +96,107 @@ class SelfAssessmentMongoRepository(implicit mongo: () => DB)
   def updateTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear, taxYearProperties: TaxYearProperties): Future[Unit] = {
     val now = DateTime.now(DateTimeZone.UTC)
 
-    val pensionContributionModifiers:BSONDocument =
-      taxYearProperties.pensionContributions
-        .map(pensionContributions =>
-            BSONDocument(
-              lastModifiedDateTimeModfier(now),
-              "taxYearProperties" -> BSONDocument(
-                "pensionContributions" -> BSONDocument(
-                  Seq(
-                    "ukRegisteredPension" -> pensionContributions.ukRegisteredPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                    "retirementAnnuity" -> pensionContributions.retirementAnnuity.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                    "employerScheme" -> pensionContributions.employerScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                    "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-                    "pensionSavings" -> BSONDocument(Seq(
-                      "excessOfAnnualAllowance" -> pensionContributions.pensionSavings.map(_.excessOfAnnualAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull),
-                      "taxPaidByPensionScheme" -> pensionContributions.pensionSavings.map(_.taxPaidByPensionScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull)
-                    )))))))
-        .getOrElse(BSONDocument(
-          lastModifiedDateTimeModfier(now),
-          "pensionContributions" -> BSONNull))
     for {
       result <- atomicUpsert(
         BSONDocument("saUtr" -> saUtr.utr, "taxYear" -> taxYear.taxYear),
         BSONDocument(
           setOnInsert(now),
-          "$set" -> pensionContributionModifiers
+          "$set" -> constructTaxYearPropertiesBson(taxYearProperties, now)
         ))
     } yield ()
+  }
+
+  private def constructTaxYearPropertiesBson(taxYearProperties: TaxYearProperties, now: DateTime): BSONDocument = {
+    BSONDocument(
+      lastModifiedDateTimeModfier(now),
+      "taxYearProperties" -> BSONDocument(
+        taxYearPensionContributionsBson(taxYearProperties),
+        taxYearCharitableGivingsBson(taxYearProperties),
+        taxYearBlindPersonBson(taxYearProperties),
+        taxYearStudentLoanBson(taxYearProperties),
+        taxYearTaxRefundedOrSetOffBson(taxYearProperties),
+        taxYearChildBenefitBson(taxYearProperties)
+      )
+    )
+  }
+
+  private def taxYearPensionContributionsBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
+    taxYearProperties.pensionContributions
+      .map(pensionContributions =>
+            "pensionContributions" -> BSONDocument(
+              Seq(
+                "ukRegisteredPension" -> pensionContributions.ukRegisteredPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                "retirementAnnuity" -> pensionContributions.retirementAnnuity.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                "employerScheme" -> pensionContributions.employerScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                "overseasPension" -> pensionContributions.overseasPension.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                "pensionSavings" -> BSONDocument(Seq(
+                  "excessOfAnnualAllowance" -> pensionContributions.pensionSavings.map(_.excessOfAnnualAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull),
+                  "taxPaidByPensionScheme" -> pensionContributions.pensionSavings.map(_.taxPaidByPensionScheme.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)).getOrElse(BSONNull)
+                )))))
+      .getOrElse("pensionContributions" -> BSONNull)
+  }
+
+  private def taxYearCharitableGivingsBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
+    taxYearProperties.charitableGivings
+      .map(charitableGivings =>
+        "charitableGivings" -> BSONDocument(Seq(
+            "giftAidPayments" -> charitableGivings.giftAidPayments.map(giftAid =>
+              BSONDocument(Seq(
+                "totalInTaxYear" -> giftAid.totalInTaxYear.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                "oneOff" -> giftAid.oneOff.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                "toNonUkCharities" -> giftAid.toNonUkCharities.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                "carriedBackToPreviousTaxYear" -> giftAid.carriedBackToPreviousTaxYear.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+                "carriedFromNextTaxYear" -> giftAid.carriedFromNextTaxYear.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
+              ))).getOrElse(BSONNull),
+            "sharesSecurities" -> charitableGivings.sharesSecurities.map(sharesAndSecs =>
+              BSONDocument(Seq(
+                "totalInTaxYear" -> BSONDouble(sharesAndSecs.totalInTaxYear.doubleValue()),
+                "toNonUkCharities" -> sharesAndSecs.toNonUkCharities.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
+              ))).getOrElse(BSONNull),
+            "landProperties" -> charitableGivings.landProperties.map(landProperties =>
+            BSONDocument(Seq(
+              "totalInTaxYear" -> BSONDouble(landProperties.totalInTaxYear.doubleValue()),
+              "toNonUkCharities" -> landProperties.toNonUkCharities.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
+            ))).getOrElse(BSONNull)
+          ))).getOrElse("charitableGivings" -> BSONNull)
+  }
+
+  private def taxYearBlindPersonBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
+    taxYearProperties.blindPerson
+      .map(blindPerson =>
+      "blindPerson" -> BSONDocument(Seq(
+        "country" -> blindPerson.country.map(x => BSONString(x.toString)).getOrElse(BSONNull),
+        "registrationAuthority" -> blindPerson.registrationAuthority.map(BSONString).getOrElse(BSONNull),
+        "spouseSurplusAllowance" -> blindPerson.spouseSurplusAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
+        "wantSpouseToUseSurplusAllowance" -> blindPerson.wantSpouseToUseSurplusAllowance.map(BSONBoolean).getOrElse(BSONNull)
+      ))).getOrElse("blindPerson" -> BSONNull)
+  }
+
+  private def taxYearStudentLoanBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
+    taxYearProperties.studentLoan
+      .map(loan =>
+      "studentLoan" -> BSONDocument(Seq(
+        "planType" -> BSONString(loan.planType.toString),
+        "deductedByEmployers" -> loan.deductedByEmployers.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
+      ))).getOrElse("studentLoan" -> BSONNull)
+  }
+
+  def taxYearTaxRefundedOrSetOffBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
+    taxYearProperties.taxRefundedOrSetOff
+      .map(taxRefundedOrSetOff =>
+      "taxRefundedOrSetOff" -> BSONDocument(Seq(
+        "amount" -> BSONDouble(taxRefundedOrSetOff.amount.doubleValue())
+      ))).getOrElse("taxRefundedOrSetOff" -> BSONNull)
+  }
+
+  def taxYearChildBenefitBson(taxYearProperties: TaxYearProperties): (String, BSONValue) = {
+    taxYearProperties.childBenefit
+      .map(childBenefit =>
+      "childBenefit" -> BSONDocument(Seq(
+        "amount" -> BSONDouble(childBenefit.amount.doubleValue()),
+        "numberOfChildren" -> BSONInteger(childBenefit.numberOfChildren),
+        "dateBenefitStopped" -> childBenefit.dateBenefitStopped.map(x => BSONString(x.toString)).getOrElse(BSONNull)
+      ))).getOrElse("childBenefit" -> BSONNull)
   }
 
   def findTaxYearProperties(saUtr: SaUtr, taxYear: TaxYear): Future[Option[TaxYearProperties]] = {

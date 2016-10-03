@@ -364,7 +364,7 @@ class SavingsSpec extends UnitSpec {
         .withUnearnedIncomes(UnearnedIncomeBuilder().withUntaxedSavings(149001))
         .withEmployments(EmploymentBuilder().withSalary(500))
         .withSelfEmployments(SelfEmploymentBuilder().withTurnover(500))
-        .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(500))
+        .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(500))
         .create()
       ) should contain theSameElementsInOrderAs
         Seq(
@@ -412,7 +412,7 @@ class SavingsSpec extends UnitSpec {
         val bandAllocations = Savings.IncomeTaxBandSummary(SelfAssessmentBuilder()
           .withUnearnedIncomes(UnearnedIncomeBuilder().withUntaxedSavings(totalSavingsIncome.toInt))
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(totalProfitFromSelfEmployments.toInt))
-          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(ukPensionContributions.toInt))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(ukPensionContributions.toInt))
           .create()
         )
 
@@ -468,7 +468,7 @@ class SavingsSpec extends UnitSpec {
         val savingsIncomeBandAllocation = Savings.IncomeTaxBandSummary(SelfAssessmentBuilder()
           .withUnearnedIncomes(UnearnedIncomeBuilder().withUntaxedSavings(savings))
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(nonSavings))
-          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(ukPensionContribs))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(ukPensionContribs))
           .create()
         )
 

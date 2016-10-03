@@ -151,7 +151,7 @@ class DividendsSpec extends UnitSpec {
     "be calculated when NonSavingsIncome = 0, ukPensionContributions is present and TaxableSavingIncome is all in Basic Rate band" in {
       Dividends.IncomeTaxBandSummary(
         SelfAssessmentBuilder()
-          .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(500))
+          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(500))
           .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(43001))
           .create()
       ) should contain theSameElementsInOrderAs
@@ -234,7 +234,7 @@ class DividendsSpec extends UnitSpec {
        SelfAssessmentBuilder()
          .withSelfEmployments(SelfEmploymentBuilder().withTurnover(250))
          .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
-         .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(500))
+         .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(500))
          .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(149001)
                                                      .withTaxedSavings(400))
          .create()
@@ -305,7 +305,7 @@ class DividendsSpec extends UnitSpec {
           SelfAssessmentBuilder()
             .withSelfEmployments(SelfEmploymentBuilder().withTurnover(profits))
             .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(dividends).withUntaxedSavings(savings))
-            .withTaxYearProperties(TaxYearPropertiesBuilder().ukRegisteredPension(ukPensionsContributions))
+            .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(ukPensionsContributions))
             .create()
         )
 

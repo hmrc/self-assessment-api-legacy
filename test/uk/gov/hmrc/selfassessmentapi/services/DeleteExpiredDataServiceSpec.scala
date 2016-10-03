@@ -56,7 +56,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
    * Inserts a self-assessment in to the database and verifies that it is removed correctly
    * along with any additional data that was inserted in `block`.
    */
-  private def withInsertSelfAssessment(block: () => Unit): Unit = {
+  private def withInsertSelfAssessment(block: => Unit): Unit = {
     val sa1 = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now().minusMonths(1), DateTime.now().minusMonths(1))
     val sa2 = SelfAssessment(BSONObjectID.generate, saUtr2, taxYear, DateTime.now().minusMonths(2), DateTime.now().minusMonths(2))
     val latestSa3 = SelfAssessment(BSONObjectID.generate, saUtr3, taxYear, DateTime.now().minusDays(1), DateTime.now().minusDays(1))
@@ -68,11 +68,12 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
     whenReady(service.deleteExpiredData(lastModifiedDate)) { _ =>
       val saRecords = saRepo.findAll()
 
-      whenReady(saRecords) { _ =>
-        saRecords.size shouldBe 1
-        saRecords.head.saUtr == latestSa3.saUtr && saRecords.head.taxYear == latestSa3.taxYear shouldBe true
+      whenReady(saRecords) { records =>
+        records.size shouldBe 1
+        records.head.saUtr shouldBe latestSa3.saUtr
+        records.head.taxYear shouldBe latestSa3.taxYear
 
-        block()
+        block
       }
     }
   }
@@ -86,13 +87,13 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
       insertSelfEmploymentRecords(se1, se2, latestSe3)
 
-      withInsertSelfAssessment { () =>
+      withInsertSelfAssessment {
         val seRecords = seRepo.findAll()
 
-        whenReady(seRecords) { _ =>
-          seRecords.size shouldBe 1
-          seRecords.head.saUtr shouldBe latestSe3.saUtr
-          seRecords.head.taxYear shouldBe latestSe3.taxYear
+        whenReady(seRecords) { records =>
+          records.size shouldBe 1
+          records.head.saUtr shouldBe latestSe3.saUtr
+          records.head.taxYear shouldBe latestSe3.taxYear
         }
       }
     }
@@ -104,13 +105,13 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
       insertEmploymentRecords(emp1, emp2, latestEmp3)
 
-      withInsertSelfAssessment { () =>
+      withInsertSelfAssessment {
         val empRecords = empRepo.findAll()
 
-        whenReady(empRecords) { _ =>
-          empRecords.size shouldBe 1
-          empRecords.head.saUtr shouldBe latestEmp3.saUtr
-          empRecords.head.taxYear shouldBe latestEmp3.taxYear
+        whenReady(empRecords) { records =>
+          records.size shouldBe 1
+          records.head.saUtr shouldBe latestEmp3.saUtr
+          records.head.taxYear shouldBe latestEmp3.taxYear
         }
       }
     }
@@ -122,13 +123,13 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
       insertFHLRecords(fhl1, fhl2, latestFhl3)
 
-      withInsertSelfAssessment { () =>
+      withInsertSelfAssessment {
         val fhlRecords = fhlRepo.findAll()
 
-        whenReady(fhlRecords) { _ =>
-          fhlRecords.size shouldBe 1
-          fhlRecords.head.saUtr shouldBe latestFhl3.saUtr
-          fhlRecords.head.taxYear shouldBe latestFhl3.taxYear
+        whenReady(fhlRecords) { records =>
+          records.size shouldBe 1
+          records.head.saUtr shouldBe latestFhl3.saUtr
+          records.head.taxYear shouldBe latestFhl3.taxYear
         }
       }
     }
@@ -140,13 +141,13 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
       insertUKPropertyRecords(property1, property2, latestProperty3)
 
-      withInsertSelfAssessment { () =>
+      withInsertSelfAssessment {
         val propertyRecords = ukPropertyRepo.findAll()
 
-        whenReady(propertyRecords) { _ =>
-          propertyRecords.size shouldBe 1
-          propertyRecords.head.saUtr shouldBe latestProperty3.saUtr
-          propertyRecords.head.taxYear shouldBe latestProperty3.taxYear
+        whenReady(propertyRecords) { records =>
+          records.size shouldBe 1
+          records.head.saUtr shouldBe latestProperty3.saUtr
+          records.head.taxYear shouldBe latestProperty3.taxYear
         }
       }
     }

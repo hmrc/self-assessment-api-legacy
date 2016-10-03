@@ -28,7 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{SelfEmployment => _}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{Employment, JobHistory, SelfAssessment, SelfEmployment, FurnishedHolidayLettings, UKProperties}
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{ Employment, FurnishedHolidayLettings, JobHistory, SelfAssessment, SelfEmployment, UKProperties, UnearnedIncome }
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.repositories.{JobHistoryMongoRepository, SelfAssessmentMongoRepository}
 
@@ -57,8 +57,8 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
    * along with any additional data that was inserted in `block`.
    */
   private def withInsertSelfAssessment(block: => Unit): Unit = {
-    val sa1 = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now().minusMonths(1), DateTime.now().minusMonths(1))
-    val sa2 = SelfAssessment(BSONObjectID.generate, saUtr2, taxYear, DateTime.now().minusMonths(2), DateTime.now().minusMonths(2))
+    val sa1 = SelfAssessment(BSONObjectID.generate, saUtr, taxYear, DateTime.now().minusMonths(2), DateTime.now().minusMonths(2))
+    val sa2 = SelfAssessment(BSONObjectID.generate, saUtr2, taxYear, DateTime.now().minusMonths(1), DateTime.now().minusMonths(1))
     val latestSa3 = SelfAssessment(BSONObjectID.generate, saUtr3, taxYear, DateTime.now().minusDays(1), DateTime.now().minusDays(1))
 
     insertSelfAssessmentRecords(sa1, sa2, latestSa3)
@@ -79,6 +79,24 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   }
 
   "deleteExpiredData" should {
+
+    "delete only the expired records (older than the lastModifiedDate) and not the latest records for unearned incomes" in {
+      val ui1 = UnearnedIncome.create(saUtr, taxYear, unearnedincome.UnearnedIncome.example())
+      val ui2 = UnearnedIncome.create(saUtr2, taxYear, unearnedincome.UnearnedIncome.example())
+      val latestUi = UnearnedIncome.create(saUtr3, taxYear, unearnedincome.UnearnedIncome.example())
+
+      insertUnearnedIncome(ui1, ui2, latestUi)
+
+      withInsertSelfAssessment {
+        val uiRecords = uiRepo.findAll()
+
+        whenReady(uiRecords) { records =>
+          records.size shouldBe 1
+          records.head.saUtr shouldBe latestUi.saUtr
+          records.head.taxYear shouldBe latestUi.taxYear
+        }
+      }
+    }
 
     "delete only the expired records (older than the lastModifiedDate) and not the latest records for self-employments" in {
       val se1 = SelfEmployment.create(saUtr, taxYear, selfemployment.SelfEmployment.example())
@@ -251,6 +269,14 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
       verify(jobRepo).abortJob(1)
     }
 
+  }
+
+  private def insertUnearnedIncome(records: UnearnedIncome*) = {
+    records.foreach {
+      record =>
+        val futureWrite = uiRepo.insert(record)
+        whenReady(futureWrite)(identity)
+    }
   }
 
   private def insertSelfAssessmentRecords(records: SelfAssessment*) = {

@@ -82,10 +82,10 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
     "delete only the expired records (older than the lastModifiedDate) and not the latest records for unearned incomes" in {
       val ui1 = UnearnedIncome.create(saUtr, taxYear, unearnedincome.UnearnedIncome.example())
-      val ui2 = UnearnedIncome.create(saUtr2, taxYear, unearnedincome.UnearnedIncome.example())
+//      val ui2 = UnearnedIncome.create(saUtr2, taxYear, unearnedincome.UnearnedIncome.example())
       val latestUi = UnearnedIncome.create(saUtr3, taxYear, unearnedincome.UnearnedIncome.example())
 
-      insertUnearnedIncome(ui1, ui2, latestUi)
+      insertUnearnedIncome(ui1, latestUi)
 
       withInsertSelfAssessment {
         val uiRecords = uiRepo.findAll()
@@ -136,10 +136,10 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
     "delete only the expired records (older than the lastModifiedDate) and not the latest records for FHLs" in {
       val fhl1 = FurnishedHolidayLettings.create(saUtr, taxYear, furnishedholidaylettings.FurnishedHolidayLetting.example())
-      val fhl2 = FurnishedHolidayLettings.create(saUtr2, taxYear, furnishedholidaylettings.FurnishedHolidayLetting.example())
+//      val fhl2 = FurnishedHolidayLettings.create(saUtr2, taxYear, furnishedholidaylettings.FurnishedHolidayLetting.example())
       val latestFhl3 = FurnishedHolidayLettings.create(saUtr3, taxYear, furnishedholidaylettings.FurnishedHolidayLetting.example())
 
-      insertFHLRecords(fhl1, fhl2, latestFhl3)
+      insertFHLRecords(fhl1, latestFhl3)
 
       withInsertSelfAssessment {
         val fhlRecords = fhlRepo.findAll()
@@ -154,10 +154,10 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
 
     "delete only the expired records (older than the lastModifiedDate) and not the latest records for UK properties" in {
       val property1 = UKProperties.create(saUtr, taxYear, ukproperty.UKProperty.example())
-      val property2 = UKProperties.create(saUtr2, taxYear, ukproperty.UKProperty.example())
+//      val property2 = UKProperties.create(saUtr2, taxYear, ukproperty.UKProperty.example())
       val latestProperty3 = UKProperties.create(saUtr3, taxYear, ukproperty.UKProperty.example())
 
-      insertUKPropertyRecords(property1, property2, latestProperty3)
+      insertUKPropertyRecords(property1, latestProperty3)
 
       withInsertSelfAssessment {
         val propertyRecords = ukPropertyRepo.findAll()

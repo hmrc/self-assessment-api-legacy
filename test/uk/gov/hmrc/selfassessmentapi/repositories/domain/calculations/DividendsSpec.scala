@@ -182,8 +182,8 @@ class DividendsSpec extends UnitSpec {
         SelfAssessmentBuilder()
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(11250))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
-          .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(30999)
-                                                      .withTaxedSavings(400))
+          .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(30999))
+          .withSavings(BankBuilder().withTaxedInterest(400))
           .create()
       ) should contain theSameElementsInOrderAs
         Seq(
@@ -199,8 +199,8 @@ class DividendsSpec extends UnitSpec {
         SelfAssessmentBuilder()
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(11250))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
-          .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(31001)
-                                                      .withTaxedSavings(400))
+          .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(31001))
+          .withSavings(BankBuilder().withTaxedInterest(400))
           .create()
       ) should contain theSameElementsInOrderAs
         Seq(
@@ -217,8 +217,8 @@ class DividendsSpec extends UnitSpec {
         SelfAssessmentBuilder()
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(250))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
-          .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(149001)
-                                                      .withTaxedSavings(400))
+          .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(149001))
+          .withSavings(BankBuilder().withTaxedInterest(400))
           .create()
       ) should contain theSameElementsInOrderAs
         Seq(
@@ -235,8 +235,8 @@ class DividendsSpec extends UnitSpec {
          .withSelfEmployments(SelfEmploymentBuilder().withTurnover(250))
          .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(500))
-         .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(149001)
-                                                     .withTaxedSavings(400))
+         .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(149001))
+         .withSavings(BankBuilder().withTaxedInterest(400))
          .create()
      ) should contain theSameElementsInOrderAs
        Seq(
@@ -304,7 +304,8 @@ class DividendsSpec extends UnitSpec {
         val dividendIncomeTax = Dividends.IncomeTaxBandSummary(
           SelfAssessmentBuilder()
             .withSelfEmployments(SelfEmploymentBuilder().withTurnover(profits))
-            .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(dividends).withUntaxedSavings(savings))
+            .withUnearnedIncomes(UnearnedIncomeBuilder().withUKDividends(dividends))
+            .withSavings(BankBuilder().withUntaxedInterest(savings))
             .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(ukPensionsContributions))
             .create()
         )

@@ -22,8 +22,9 @@ object SourceTypes {
   val UKProperties = ukproperty.SourceType.UKProperties
   val Employments = employment.SourceType.Employments
   val UnearnedIncomes = unearnedincome.SourceType.UnearnedIncomes
+  val Banks = bank.SourceType.Banks
 
-  val types: Set[SourceType] = Set(SelfEmployments, FurnishedHolidayLettings, UKProperties, Employments, UnearnedIncomes)
+  val types: Set[SourceType] = Set(SelfEmployments, FurnishedHolidayLettings, UKProperties, Employments, UnearnedIncomes, Banks)
   private val typesByName = types.map(x => x.name -> x).toMap
   def fromName(name: String): Option[SourceType] = typesByName.get(name)
 }

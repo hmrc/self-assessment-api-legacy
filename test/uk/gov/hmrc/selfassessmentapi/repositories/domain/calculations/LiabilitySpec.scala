@@ -259,13 +259,13 @@ class LiabilitySpec extends UnitSpec {
 
     "correctly compute values for savings" in {
 
-      val unearnedIncome = UnearnedIncomeBuilder()
-        .withUntaxedSavings(150000.73)
-        .withTaxedSavings(5000.23)
+      val bank = BankBuilder()
+        .withUntaxedInterest(150000.73)
+        .withTaxedInterest(5000.23)
         .create()
 
 
-      ComputeLiabilityFor(unearnedIncomes = Seq(unearnedIncome))
+      ComputeLiabilityFor(banks = Seq(bank))
         .andAssertThat()
         .incomeTaxReliefIs(0)
         .personalAllowanceIs(0)
@@ -383,10 +383,13 @@ class LiabilitySpec extends UnitSpec {
         .create()
 
       val unearnedIncome = UnearnedIncomeBuilder()
-        .withUntaxedSavings(150000.73)
-        .withTaxedSavings(5000.23)
         .withUKDividends(75000.33)
         .withOtherUKDividends(125000.25)
+        .create()
+
+      val bank = BankBuilder()
+        .withUntaxedInterest(150000.73)
+        .withTaxedInterest(5000.23)
         .create()
 
       ComputeLiabilityFor(
@@ -394,7 +397,8 @@ class LiabilitySpec extends UnitSpec {
         selfEmployments = Seq(selfEmployments),
         ukProperties = Seq(ukProperties),
         unearnedIncomes = Seq(unearnedIncome),
-        furnishedHolidayLettings = Seq(furnishedHolidayLetting))
+        furnishedHolidayLettings = Seq(furnishedHolidayLetting),
+        banks = Seq(bank))
         .andAssertThat()
         .personalAllowanceIs(0)
         .incomeTaxReliefIs(1502)
@@ -464,14 +468,14 @@ class LiabilitySpec extends UnitSpec {
         .privateUseAdjustments(750.65)
         .create()
 
-      val unearnedIncome = UnearnedIncomeBuilder()
-        .withUntaxedSavings(2000.73, 2000.23)
-        .create()
+      val bank = BankBuilder()
+        .withUntaxedInterest(2000.73, 2000.23)
+        .create
 
       ComputeLiabilityFor(
         selfEmployments = Seq(selfEmployments),
         ukProperties = Seq(ukProperties),
-        unearnedIncomes = Seq(unearnedIncome),
+        banks = Seq(bank),
         furnishedHolidayLettings = Seq(furnishedHolidayLetting))
         .andAssertThat()
         .personalAllowanceIs(11000)
@@ -501,9 +505,13 @@ class LiabilitySpec extends UnitSpec {
 }
 
 case class ComputeLiabilityFor(employments: Seq[Employment] = Nil, selfEmployments: Seq[SelfEmployment] = Nil,
-                               ukProperties: Seq[UKProperties] = Nil, unearnedIncomes: Seq[UnearnedIncome] = Nil, furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Nil) {
+                               ukProperties: Seq[UKProperties] = Nil, unearnedIncomes: Seq[UnearnedIncome] = Nil,
+                               furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Nil, banks: Seq[Bank] = Nil) {
   def andAssertThat() = LiabilityResultAssertions(Liability.create(SaUtr("123456789"), TaxYear("2016-17"),
-    api.SelfAssessment(employments = employments, selfEmployments = selfEmployments, ukProperties = ukProperties, unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings)))
+    api.SelfAssessment(
+      employments = employments, selfEmployments = selfEmployments,
+      ukProperties = ukProperties, unearnedIncomes = unearnedIncomes,
+      furnishedHolidayLettings = furnishedHolidayLettings, banks = banks)))
 }
 
 case class LiabilityResultAssertions(liability: Liability) extends Matchers {

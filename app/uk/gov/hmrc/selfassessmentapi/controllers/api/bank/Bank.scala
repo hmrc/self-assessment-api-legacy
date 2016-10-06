@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.api.bank
 
-import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
+import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{JsonMarshaller, SourceId}
 
-class UnearnedIncomeSpec extends JsonSpec {
+case class Bank(id: Option[SourceId] = None)
 
-  "format" should {
-    "round trip valid UnearnedIncome json" in {
-      roundTripJson(UnearnedIncome())
-    }
-  }
+object Bank extends JsonMarshaller[Bank] {
+  override implicit val writes = Json.writes[Bank]
+  override implicit val reads = Reads.pure(None).map(Bank(_))
+
+  override def example(id: Option[String]) = Bank(id)
 }

@@ -22,8 +22,8 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.SummaryTypes.Interests
 
 object SourceType {
   object Banks extends SourceType {
-    override val name = "bank"
-    override val documentationName = "Bank"
+    override val name = "banks"
+    override val documentationName = "Banks"
 
     override def example(id: Option[SummaryId] = None): JsValue = Json.toJson(Bank.example(id))
 

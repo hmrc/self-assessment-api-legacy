@@ -22,7 +22,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
     "Test.feature-switch.employments.enabled" -> true,
     "Test.feature-switch.uk-properties.enabled" -> true,
-    "Test.feature-switch.bank.enabled" -> true,
+    "Test.feature-switch.banks.enabled" -> true,
     "Test.source-limits.self-employments" -> false))
 
   private def exampleSummaryTypeValue(summaryType: SummaryType): String = {

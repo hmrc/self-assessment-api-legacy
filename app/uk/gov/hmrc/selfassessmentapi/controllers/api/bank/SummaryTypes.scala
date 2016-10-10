@@ -21,8 +21,8 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.{FullFieldDescription, Posi
 
 object SummaryTypes {
   case object Interests extends SummaryType {
-    override val name = "interest"
-    override val documentationName = "Interest"
+    override val name = "interests"
+    override val documentationName = "Interests"
 
     override def example(id: Option[SummaryId]): JsValue = Json.toJson(Interest.example(id))
 

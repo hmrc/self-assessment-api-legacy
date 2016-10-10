@@ -41,7 +41,7 @@ object BanksRepository extends MongoDbConnection {
 }
 
 class BanksMongoRepository(implicit mongo: () => DB) extends ReactiveRepository[Bank, BSONObjectID](
-  "bank",
+  "banks",
   mongo,
   domainFormat = Bank.mongoFormats,
   idFormat = ReactiveMongoFormats.objectIdFormats)
@@ -50,10 +50,10 @@ class BanksMongoRepository(implicit mongo: () => DB) extends ReactiveRepository[
   self =>
 
   override def indexes: Seq[Index] = Seq(
-    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("bank_utr_taxyear"), unique = false),
-    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending)), name = Some("bank_utr_taxyear_sourceid"), unique = true),
-    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("interests.summaryId", Ascending)), name = Some("bank_utr_taxyear_source_interestsid"), unique = true),
-    Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("bank_last_modified"), unique = false)
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("banks_utr_taxyear"), unique = false),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending)), name = Some("banks_utr_taxyear_sourceid"), unique = true),
+    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("interests.summaryId", Ascending)), name = Some("banks_utr_taxyear_source_interestsid"), unique = true),
+    Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("banks_last_modified"), unique = false)
   )
 
   override def create(saUtr: SaUtr, taxYear: TaxYear, bank: ApiBank): Future[SourceId] = {

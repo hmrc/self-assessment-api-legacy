@@ -35,6 +35,7 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                        furnishedHolidayLettingsRepo: FurnishedHolidayLettingsMongoRepository,
                        liabilityRepo: LiabilityMongoRepository,
                        ukPropertiesRepo: UKPropertiesMongoRepository,
+                       savingsRepo: BanksMongoRepository,
                        taxYearPropertiesService: TaxYearPropertiesService,
                        featureSwitch: FeatureSwitch) {
 
@@ -58,11 +59,12 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       selfEmployments <- if (isSourceEnabled(SelfEmployments)) selfEmploymentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[SelfEmployment]())
       unearnedIncomes <- if (isSourceEnabled(UnearnedIncomes)) unearnedIncomeRepo.findAll(saUtr, taxYear) else Future.successful(Seq[UnearnedIncome]())
       ukProperties <- if (isSourceEnabled(SourceTypes.UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[UKProperties]())
+      banks <- if (isSourceEnabled(SourceTypes.Banks)) savingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[Bank]())
       taxYearProperties <- taxYearPropertiesService.findTaxYearProperties(saUtr, taxYear)
       furnishedHolidayLettings <- if (isSourceEnabled(SourceTypes.FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[FurnishedHolidayLettings]())
       liability = Liability.create(saUtr, taxYear, SelfAssessment(employments = employments, selfEmployments = selfEmployments,
         ukProperties = ukProperties, unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings,
-        taxYearProperties = taxYearProperties))
+        taxYearProperties = taxYearProperties, banks = banks))
       liability <- liabilityRepo.save(LiabilityOrError(liability))
     } yield
       liability match {
@@ -83,6 +85,7 @@ object LiabilityService {
                                                   FurnishedHolidayLettingsRepository(),
                                                   LiabilityRepository(),
                                                   UKPropertiesRepository(),
+                                                  BanksRepository(),
                                                   TaxYearPropertiesService(),
                                                   FeatureSwitch(AppContext.featureSwitch))
 

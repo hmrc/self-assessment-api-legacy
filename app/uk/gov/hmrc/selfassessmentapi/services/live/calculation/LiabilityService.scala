@@ -36,6 +36,7 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
                        liabilityRepo: LiabilityMongoRepository,
                        ukPropertiesRepo: UKPropertiesMongoRepository,
                        taxYearPropertiesService: TaxYearPropertiesService,
+                       dividendsRepo: DividendMongoRepository,
                        featureSwitch: FeatureSwitch) {
 
   def find(saUtr: SaUtr, taxYear: TaxYear): Future[Option[Either[controllers.LiabilityErrors, api.Liability]]] = {
@@ -58,11 +59,12 @@ class LiabilityService(employmentRepo: EmploymentMongoRepository,
       selfEmployments <- if (isSourceEnabled(SelfEmployments)) selfEmploymentRepo.findAll(saUtr, taxYear) else Future.successful(Seq[SelfEmployment]())
       unearnedIncomes <- if (isSourceEnabled(UnearnedIncomes)) unearnedIncomeRepo.findAll(saUtr, taxYear) else Future.successful(Seq[UnearnedIncome]())
       ukProperties <- if (isSourceEnabled(SourceTypes.UKProperties)) ukPropertiesRepo.findAll(saUtr, taxYear) else Future.successful(Seq[UKProperties]())
+      dividends <- if (isSourceEnabled(SourceTypes.Dividends)) dividendsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[MongoDividend]())
       taxYearProperties <- taxYearPropertiesService.findTaxYearProperties(saUtr, taxYear)
       furnishedHolidayLettings <- if (isSourceEnabled(SourceTypes.FurnishedHolidayLettings)) furnishedHolidayLettingsRepo.findAll(saUtr, taxYear) else Future.successful(Seq[FurnishedHolidayLettings]())
       liability = Liability.create(saUtr, taxYear, SelfAssessment(employments = employments, selfEmployments = selfEmployments,
         ukProperties = ukProperties, unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings,
-        taxYearProperties = taxYearProperties))
+        dividends = dividends, taxYearProperties = taxYearProperties))
       liability <- liabilityRepo.save(LiabilityOrError(liability))
     } yield
       liability match {
@@ -84,6 +86,7 @@ object LiabilityService {
                                                   LiabilityRepository(),
                                                   UKPropertiesRepository(),
                                                   TaxYearPropertiesService(),
+                                                  DividendRepository(),
                                                   FeatureSwitch(AppContext.featureSwitch))
 
   def apply() = service

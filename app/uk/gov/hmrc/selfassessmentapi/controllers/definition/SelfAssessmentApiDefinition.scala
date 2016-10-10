@@ -131,14 +131,13 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
       )
     )
 
-  private lazy val resolveGroupName : SourceType => GroupName =  { sourceType =>
-    sourceType match {
-      case SourceTypes.Employments => Employments
-      case SourceTypes.SelfEmployments => SelfEmployments
-      case SourceTypes.UKProperties => UKProperties
-      case SourceTypes.FurnishedHolidayLettings => FurnishedHolidayLettings
-      case SourceTypes.UnearnedIncomes => UnearnedIncomes
-    }
+  private lazy val resolveGroupName : SourceType => GroupName = {
+    case SourceTypes.Employments => Employments
+    case SourceTypes.SelfEmployments => SelfEmployments
+    case SourceTypes.UKProperties => UKProperties
+    case SourceTypes.FurnishedHolidayLettings => FurnishedHolidayLettings
+    case SourceTypes.UnearnedIncomes => UnearnedIncomes
+    case SourceTypes.Dividends => Dividends
   }
 
   private lazy val sourceAndSummaryEndpoints = Helpers.enabledSourceTypes.toSeq.flatMap { sourceType =>

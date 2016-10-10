@@ -283,12 +283,12 @@ class LiabilitySpec extends UnitSpec {
 
     "correctly compute values for dividends" in {
 
-      val unearnedIncome = UnearnedIncomeBuilder()
+      val dividends = DividendBuilder()
         .withUKDividends(75000.33)
         .withOtherUKDividends(125000.25)
         .create()
 
-      ComputeLiabilityFor(unearnedIncomes = Seq(unearnedIncome))
+      ComputeLiabilityFor(dividends = Seq(dividends))
         .andAssertThat()
         .incomeTaxReliefIs(0)
         .personalAllowanceIs(0)
@@ -382,17 +382,21 @@ class LiabilitySpec extends UnitSpec {
         .privateUseAdjustments(750.65)
         .create()
 
-      val unearnedIncome = UnearnedIncomeBuilder()
-        .withUntaxedSavings(150000.73)
-        .withTaxedSavings(5000.23)
+      val dividends = DividendBuilder()
         .withUKDividends(75000.33)
         .withOtherUKDividends(125000.25)
+        .create()
+
+      val unearnedIncome = UnearnedIncomeBuilder()
+        .withTaxedSavings(5000.23)
+        .withUntaxedSavings(150000.73)
         .create()
 
       ComputeLiabilityFor(
         employments = Seq(employments),
         selfEmployments = Seq(selfEmployments),
         ukProperties = Seq(ukProperties),
+        dividends = Seq(dividends),
         unearnedIncomes = Seq(unearnedIncome),
         furnishedHolidayLettings = Seq(furnishedHolidayLetting))
         .andAssertThat()
@@ -501,9 +505,13 @@ class LiabilitySpec extends UnitSpec {
 }
 
 case class ComputeLiabilityFor(employments: Seq[Employment] = Nil, selfEmployments: Seq[SelfEmployment] = Nil,
-                               ukProperties: Seq[UKProperties] = Nil, unearnedIncomes: Seq[UnearnedIncome] = Nil, furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Nil) {
+                               ukProperties: Seq[UKProperties] = Nil, unearnedIncomes: Seq[UnearnedIncome] = Nil,
+                               furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Nil,
+                               dividends: Seq[MongoDividend] = Nil) {
   def andAssertThat() = LiabilityResultAssertions(Liability.create(SaUtr("123456789"), TaxYear("2016-17"),
-    api.SelfAssessment(employments = employments, selfEmployments = selfEmployments, ukProperties = ukProperties, unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings)))
+    api.SelfAssessment(employments = employments, selfEmployments = selfEmployments, ukProperties = ukProperties,
+                       unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings,
+                       dividends = dividends)))
 }
 
 case class LiabilityResultAssertions(liability: Liability) extends Matchers {

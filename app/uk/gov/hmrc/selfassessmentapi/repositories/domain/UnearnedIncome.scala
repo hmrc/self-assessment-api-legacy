@@ -22,9 +22,8 @@ import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.BenefitType.BenefitType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{Benefit, Dividend, SavingsIncome}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{Benefit, SavingsIncome}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, _}
 
 case class UnearnedIncomesSavingsIncomeSummary(summaryId: SummaryId,
@@ -97,38 +96,6 @@ object UnearnedIncomesBenefitSummary {
   }
 }
 
-case class UnearnedIncomesDividendSummary(summaryId: SummaryId,
-                                          `type`: DividendType,
-                                          amount: BigDecimal) extends Summary {
-  val arrayName = UnearnedIncomesDividendSummary.arrayName
-
-  def toDividend: Dividend =
-    Dividend(id = Some(summaryId),
-      `type` = `type`,
-      amount = amount)
-
-  def toBsonDocument = BSONDocument(
-    "summaryId" -> summaryId,
-    "amount" -> BSONDouble(amount.doubleValue()),
-    "type" -> BSONString(`type`.toString)
-  )
-}
-
-object UnearnedIncomesDividendSummary {
-
-  val arrayName = "dividends"
-
-  implicit val format = Json.format[UnearnedIncomesDividendSummary]
-
-  def toMongoSummary(dividend: Dividend, id: Option[SummaryId] = None): UnearnedIncomesDividendSummary = {
-    UnearnedIncomesDividendSummary(
-      summaryId = id.getOrElse(BSONObjectID.generate.stringify),
-      `type` = dividend.`type`,
-      amount = dividend.amount
-    )
-  }
-}
-
 case class UnearnedIncome(id: BSONObjectID,
                           sourceId: SourceId,
                           saUtr: SaUtr,
@@ -136,7 +103,6 @@ case class UnearnedIncome(id: BSONObjectID,
                           lastModifiedDateTime: DateTime,
                           createdDateTime: DateTime,
                           savings: Seq[UnearnedIncomesSavingsIncomeSummary] = Nil,
-                          dividends: Seq[UnearnedIncomesDividendSummary] = Nil,
                           benefits: Seq[UnearnedIncomesBenefitSummary] = Nil) extends SourceMetadata {
 
   def toUnearnedIncome = unearnedincome.UnearnedIncome(id = Some(sourceId))

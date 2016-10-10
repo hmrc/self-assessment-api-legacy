@@ -47,6 +47,11 @@ class SelfAssessmentBuilder {
     this
   }
 
+  def withDividends(dividends: DividendBuilder*) = {
+    selfAssessment = selfAssessment.copy(dividends = dividends.map(_.create()))
+    this
+  }
+
   def withTaxYearProperties(taxYearProperties: TaxYearPropertiesBuilder) = {
     selfAssessment = selfAssessment.copy(taxYearProperties = Some(taxYearProperties.create()))
     this

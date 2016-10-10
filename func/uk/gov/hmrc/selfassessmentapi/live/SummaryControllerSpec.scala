@@ -55,7 +55,8 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     SelfEmployments -> SelfEmployments.summaryTypes,
     UnearnedIncomes -> UnearnedIncomes.summaryTypes,
     FurnishedHolidayLettings -> FurnishedHolidayLettings.summaryTypes,
-    UKProperties -> UKProperties.summaryTypes)
+    UKProperties -> UKProperties.summaryTypes,
+    Dividends -> Dividends.summaryTypes)
 
   "I" should {
     "be able to create, get, update and delete all summaries for all sources" in {

@@ -14,7 +14,7 @@
 @taxYear.map { ty =>
     <row>
         <cell>
-            <code>taxYear</code>
+            <code>tax-year</code>
         </cell>
         <cell>
             <code>String</code>

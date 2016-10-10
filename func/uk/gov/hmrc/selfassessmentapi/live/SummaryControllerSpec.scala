@@ -9,6 +9,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.S
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes.GoodsAndServicesOwnUses
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.SourceType.UKProperties
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.SourceType.Banks
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
@@ -21,6 +22,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
     "Test.feature-switch.employments.enabled" -> true,
     "Test.feature-switch.uk-properties.enabled" -> true,
+    "Test.feature-switch.bank.enabled" -> true,
     "Test.source-limits.self-employments" -> false))
 
   private def exampleSummaryTypeValue(summaryType: SummaryType): String = {
@@ -56,7 +58,8 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     UnearnedIncomes -> UnearnedIncomes.summaryTypes,
     FurnishedHolidayLettings -> FurnishedHolidayLettings.summaryTypes,
     UKProperties -> UKProperties.summaryTypes,
-    Dividends -> Dividends.summaryTypes)
+    Dividends -> Dividends.summaryTypes,
+    Banks -> Banks.summaryTypes)
 
   "I" should {
     "be able to create, get, update and delete all summaries for all sources" in {

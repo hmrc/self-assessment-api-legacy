@@ -52,6 +52,11 @@ class SelfAssessmentBuilder {
     this
   }
 
+  def withSavings(banks: BankBuilder*) = {
+    selfAssessment = selfAssessment.copy(banks = banks.map(_.create()))
+    this
+  }
+
   def withTaxYearProperties(taxYearProperties: TaxYearPropertiesBuilder) = {
     selfAssessment = selfAssessment.copy(taxYearProperties = Some(taxYearProperties.create()))
     this

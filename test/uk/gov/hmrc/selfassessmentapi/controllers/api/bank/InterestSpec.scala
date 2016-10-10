@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.api.bank
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
-import ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SavingsIncomeType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.InterestType._
 
-class SavingsIncomeSpec extends JsonSpec {
+class InterestSpec extends JsonSpec {
 
   "format" should {
 
-    "round trip valid SavingsIncome json" in {
-      roundTripJson(SavingsIncome(`type` = InterestFromBanksTaxed, amount = BigDecimal(1000.99)))
+    "round trip valid Income json" in {
+      roundTripJson(Interest(`type` = Taxed, amount = BigDecimal(1000.99)))
     }
   }
 
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
-        assertValidationError[SavingsIncome](
-          SavingsIncome(`type` = InterestFromBanksTaxed, amount = testAmount),
-          Map("/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid savings-income with more than 2 decimal places")
+        assertValidationError[Interest](
+          Interest(`type` = Taxed, amount = testAmount),
+          Map("/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid income with more than 2 decimal places")
       }
     }
 
-    "reject invalid SavingsIncome type" in {
+    "reject invalid Income type" in {
       val json = Json.parse(
         """
           |{ "type": "FOO",
@@ -48,13 +47,13 @@ class SavingsIncomeSpec extends JsonSpec {
           |}
         """.stripMargin)
 
-      assertValidationError[SavingsIncome](
+      assertValidationError[Interest](
         json, Map("/type" -> NO_VALUE_FOUND), "should fail with invalid type")
     }
 
     "reject negative amount" in {
-      val seIncome = SavingsIncome(`type` = InterestFromBanksTaxed, amount = BigDecimal(-1000.12))
-      assertValidationError[SavingsIncome](
+      val seIncome = Interest(`type` = Taxed, amount = BigDecimal(-1000.12))
+      assertValidationError[Interest](
         seIncome, Map("/amount" -> INVALID_MONETARY_AMOUNT), "should fail with INVALID_MONETARY_AMOUNT error")
     }
   }

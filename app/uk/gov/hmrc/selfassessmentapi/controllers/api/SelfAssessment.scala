@@ -26,7 +26,8 @@ case class SelfAssessment(employments: Seq[Employment] = Seq(),
                           dividends: Seq[MongoDividend] = Seq(),
                           ukProperties: Seq[UKProperties] = Seq(),
                           taxYearProperties: Option[TaxYearProperties] = None,
-                          furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Seq()) {
+                          furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Seq(),
+                          banks: Seq[Bank] = Seq()) {
   private def furnishedHolidayLettingsFor(propertyLocationType: PropertyLocationType) = furnishedHolidayLettings.filter(_.propertyLocation == propertyLocationType)
   def eeaFurnishedHolidayLettings = furnishedHolidayLettingsFor(PropertyLocationType.EEA)
   def ukFurnishedHolidayLettings = furnishedHolidayLettingsFor(PropertyLocationType.UK)

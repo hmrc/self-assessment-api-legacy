@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.live.furnishedholidaylettings.F
 import uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment.SelfEmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.ukproperty.UKPropertySourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.unearnedincome.UnearnedIncomeSourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.live.bank.BankSourceHandler
 
 trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.SourceTypeSupport {
   def sourceHandler(sourceType: SourceType): SourceHandler[_] = sourceType match {
@@ -35,6 +36,7 @@ trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.Source
     case Employments => EmploymentSourceHandler
     case UKProperties => UKPropertySourceHandler
     case Dividends => DividendSourceHandler
+    case Banks => BankSourceHandler
     case _ => throw new NotImplementedException(s"${sourceType.name} is not implemented")
   }
 }

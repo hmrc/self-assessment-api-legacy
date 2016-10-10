@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.live.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.live.bank
 
 import uk.gov.hmrc.play.http.NotImplementedException
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SummaryTypes.Benefits
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{Benefit, UnearnedIncome}
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.repositories.live.UnearnedIncomeRepository
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.{Interest, Bank}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.SourceType.Banks
+import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.SummaryTypes.Interests
+import uk.gov.hmrc.selfassessmentapi.repositories.live.BanksRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
 
-object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {
+object BankSourceHandler extends SourceHandler(Bank, Banks.name) {
+  override val repository = SourceRepositoryWrapper(BanksRepository())
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Benefits => Some(SummaryHandler(SummaryRepositoryWrapper(UnearnedIncomeRepository().BenefitRepository), Benefit, Benefits.name))
-      case _ => throw new NotImplementedException(s"${UnearnedIncomes.name} ${summaryType.name} is not implemented")
+      case Interests => Some(SummaryHandler(SummaryRepositoryWrapper(BanksRepository().InterestRepository), Interest, Interests.name))
+      case _ => throw new NotImplementedException(s"${Banks.name} ${summaryType.name} is not implemented")
     }
   }
-
-  override val repository = SourceRepositoryWrapper(UnearnedIncomeRepository())
 }

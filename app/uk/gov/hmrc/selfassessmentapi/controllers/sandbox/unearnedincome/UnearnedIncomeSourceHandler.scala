@@ -26,10 +26,6 @@ import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceReposito
 object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] =
     summaryType match {
-      case SavingsIncomes => Some(SummaryHandler(new SandboxSummaryRepository[SavingsIncome] {
-        override def example(id: Option[SummaryId]) = SavingsIncome.example(id)
-        override implicit val writes = SavingsIncome.writes
-      }, SavingsIncome, SavingsIncomes.name))
       case Benefits => Some(SummaryHandler(new SandboxSummaryRepository[Benefit] {
         override def example(id: Option[SummaryId]) = Benefit.example(id)
         override implicit val writes = Benefit.writes

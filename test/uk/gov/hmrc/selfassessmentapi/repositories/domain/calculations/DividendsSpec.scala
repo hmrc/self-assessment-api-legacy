@@ -183,7 +183,7 @@ class DividendsSpec extends UnitSpec {
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(11250))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
           .withDividends(DividendBuilder().withUKDividends(30999))
-          .withUnearnedIncomes(UnearnedIncomeBuilder().withTaxedSavings(400))
+          .withSavings(BankBuilder().withTaxedInterest(400))
           .create()
       ) should contain theSameElementsInOrderAs
         Seq(
@@ -200,7 +200,7 @@ class DividendsSpec extends UnitSpec {
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(11250))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
           .withDividends(DividendBuilder().withUKDividends(31001))
-          .withUnearnedIncomes(UnearnedIncomeBuilder().withTaxedSavings(400))
+          .withSavings(BankBuilder().withTaxedInterest(400))
           .create()
       ) should contain theSameElementsInOrderAs
         Seq(
@@ -218,7 +218,7 @@ class DividendsSpec extends UnitSpec {
           .withSelfEmployments(SelfEmploymentBuilder().withTurnover(250))
           .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
           .withDividends(DividendBuilder().withUKDividends(149001))
-          .withUnearnedIncomes(UnearnedIncomeBuilder().withTaxedSavings(400))
+          .withSavings(BankBuilder().withTaxedInterest(400))
           .create()
       ) should contain theSameElementsInOrderAs
         Seq(
@@ -236,7 +236,7 @@ class DividendsSpec extends UnitSpec {
          .withUkProperties(UKPropertyBuilder().withRentIncomes(250))
          .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(500))
          .withDividends(DividendBuilder().withUKDividends(149001))
-         .withUnearnedIncomes(UnearnedIncomeBuilder().withTaxedSavings(400))
+         .withSavings(BankBuilder().withTaxedInterest(400))
          .create()
      ) should contain theSameElementsInOrderAs
        Seq(
@@ -305,7 +305,7 @@ class DividendsSpec extends UnitSpec {
           SelfAssessmentBuilder()
             .withSelfEmployments(SelfEmploymentBuilder().withTurnover(profits))
             .withDividends(DividendBuilder().withUKDividends(dividends))
-            .withUnearnedIncomes(UnearnedIncomeBuilder().withTaxedSavings(savings))
+            .withSavings(BankBuilder().withUntaxedInterest(savings))
             .withTaxYearProperties(TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(ukPensionsContributions))
             .create()
         )

@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.api.bank
 
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
 
-class UnearnedIncomeSpec extends JsonSpec {
-
+class BankSpec extends JsonSpec {
   "format" should {
-    "round trip valid UnearnedIncome json" in {
-      roundTripJson(UnearnedIncome())
+    "round trip valid Savings json" in {
+      roundTripJson(Bank())
     }
   }
 }

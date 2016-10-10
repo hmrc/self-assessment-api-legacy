@@ -21,8 +21,8 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.Benefit
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.BenefitType.BenefitType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{Benefit, SavingsIncome}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, _}
 
 case class UnearnedIncomesBenefitSummary(summaryId: SummaryId,

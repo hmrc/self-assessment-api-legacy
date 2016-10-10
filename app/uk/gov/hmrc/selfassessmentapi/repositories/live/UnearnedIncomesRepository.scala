@@ -53,7 +53,6 @@ class UnearnedIncomeMongoRepository(implicit mongo: () => DB)
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending)), name = Some("ui_utr_taxyear"), unique = false),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending)), name = Some("ui_utr_taxyear_sourceid"), unique = true),
-    Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("dividends.summaryId", Ascending)), name = Some("ui_utr_taxyear_source_dividendsid"), unique = true),
     Index(Seq(("saUtr", Ascending), ("taxYear", Ascending), ("sourceId", Ascending), ("benefits.summaryId", Ascending)), name = Some("ui_utr_taxyear_source_benefitsid"), unique = true),
     Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("ui_last_modified"), unique = false))
 

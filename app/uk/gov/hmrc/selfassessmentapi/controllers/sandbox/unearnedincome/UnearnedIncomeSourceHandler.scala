@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
 
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SummaryTypes.{Benefits, SavingsIncomes}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SummaryTypes.Benefits
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{UnearnedIncome, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}

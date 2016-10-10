@@ -22,17 +22,15 @@ import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
 import uk.gov.hmrc.selfassessmentapi.controllers.api.dividend.{Dividend, DividendIncome}
-import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
 
   private val mongoRepository = new DividendMongoRepository
-  private val unearnedIncomeMongoRepository: SourceRepository[Dividend] = mongoRepository
-  private val summariesMap: Map[JsonMarshaller[_], SummaryRepository[_]] = Map(DividendIncome -> mongoRepository.DividendIncomeRepository)
+  private val unearnedIncomeMongoRepository = mongoRepository
+  private val summariesMap = Map(DividendIncome -> mongoRepository.DividendIncomeRepository)
 
   override def beforeEach() {
     await(mongoRepository.drop)
@@ -41,7 +39,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
 
   val saUtr = generateSaUtr()
 
-  def unearnedIncome(): Dividend = Dividend.example()
+  def unearnedIncome() = Dividend.example()
 
   "delete by Id" should {
     "return true when unearned income is deleted" in {
@@ -72,7 +70,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
 
       await(unearnedIncomeMongoRepository.delete(saUtr, taxYear))
 
-      val found: Seq[_] = await(unearnedIncomeMongoRepository.list(saUtr, taxYear))
+      val found = await(unearnedIncomeMongoRepository.list(saUtr, taxYear))
 
       found shouldBe empty
     }
@@ -83,7 +81,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
       val source2 = await(unearnedIncomeMongoRepository.create(saUtr2, taxYear, unearnedIncome()))
 
       await(unearnedIncomeMongoRepository.delete(saUtr, taxYear))
-      val found: Seq[Dividend] = await(unearnedIncomeMongoRepository.list(saUtr2, taxYear))
+      val found = await(unearnedIncomeMongoRepository.list(saUtr2, taxYear))
 
       found.flatMap(_.id) should contain theSameElementsAs Seq(source2)
     }
@@ -99,7 +97,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
       } yield source.copy(id = Some(id))
 
 
-      val found: Seq[_] = await(unearnedIncomeMongoRepository.list(saUtr, taxYear))
+      val found = await(unearnedIncomeMongoRepository.list(saUtr, taxYear))
 
       found should contain theSameElementsAs sources
     }
@@ -108,7 +106,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
       val source1 = await(unearnedIncomeMongoRepository.create(saUtr, taxYear, unearnedIncome()))
       await(unearnedIncomeMongoRepository.create(generateSaUtr(), taxYear, unearnedIncome()))
 
-      val found: Seq[Dividend] = await(unearnedIncomeMongoRepository.list(saUtr, taxYear))
+      val found = await(unearnedIncomeMongoRepository.list(saUtr, taxYear))
 
       found.flatMap(_.id) should contain theSameElementsAs Seq(source1)
     }
@@ -146,8 +144,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
         summaryId.isDefined shouldEqual true
         val dbSummaries = await(repo.list(saUtr, taxYear, sourceId))
 
-        val found = dbSummaries.get
-        found.headOption shouldEqual Some(summaryItem.example(id = summaryId))
+        dbSummaries.get.headOption shouldEqual Some(summaryItem.example(id = summaryId))
       }
     }
 
@@ -161,8 +158,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
 
         val summaries = await(repo.list(saUtr, taxYear, sourceId))
 
-        val found = summaries.get
-        found should contain theSameElementsAs Seq(summaryItem.example(id = summaryId), summaryItem.example(id = summaryId1))
+        summaries.get should contain theSameElementsAs Seq(summaryItem.example(id = summaryId), summaryItem.example(id = summaryId1))
       }
     }
 
@@ -194,9 +190,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterE
         val sourceId = await(unearnedIncomeMongoRepository.create(saUtr, taxYear, unearnedIncome()))
         val summary = summaryItem.example()
         val summaryId = await(repo.create(saUtr, taxYear, sourceId, cast(summary))).get
-        val found = await(repo.findById(saUtr, taxYear, sourceId, summaryId))
-
-        found shouldEqual Some(summaryItem.example(id = Some(summaryId)))
+        await(repo.findById(saUtr, taxYear, sourceId, summaryId)) shouldEqual Some(summaryItem.example(id = Some(summaryId)))
       }
     }
   }

@@ -58,31 +58,31 @@ object DividendIncomeSummary {
   }
 }
 
-case class MongoDividend(id: BSONObjectID,
-                         sourceId: SourceId,
-                         saUtr: SaUtr,
-                         taxYear: TaxYear,
-                         lastModifiedDateTime: DateTime,
-                         createdDateTime: DateTime,
-                         incomes: Seq[DividendIncomeSummary] = Nil) extends SourceMetadata {
+case class Dividend(id: BSONObjectID,
+                    sourceId: SourceId,
+                    saUtr: SaUtr,
+                    taxYear: TaxYear,
+                    lastModifiedDateTime: DateTime,
+                    createdDateTime: DateTime,
+                    incomes: Seq[DividendIncomeSummary] = Nil) extends SourceMetadata {
 
   def toDividend = dividend.Dividend(id = Some(sourceId))
 }
 
-object MongoDividend {
+object Dividend {
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val localDateFormat = ReactiveMongoFormats.localDateFormats
 
   implicit val mongoFormats = ReactiveMongoFormats.mongoEntity({
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
-    Format(Json.reads[MongoDividend], Json.writes[MongoDividend])
+    Format(Json.reads[Dividend], Json.writes[Dividend])
   })
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, se: dividend.Dividend): MongoDividend = {
+  def create(saUtr: SaUtr, taxYear: TaxYear, se: dividend.Dividend): Dividend = {
     val id = BSONObjectID.generate
     val now = DateTime.now(DateTimeZone.UTC)
-    MongoDividend(
+    Dividend(
       id = id,
       sourceId = id.stringify,
       saUtr = saUtr,

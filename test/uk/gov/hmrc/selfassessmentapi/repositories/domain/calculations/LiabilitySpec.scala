@@ -507,7 +507,7 @@ class LiabilitySpec extends UnitSpec {
 case class ComputeLiabilityFor(employments: Seq[Employment] = Nil, selfEmployments: Seq[SelfEmployment] = Nil,
                                ukProperties: Seq[UKProperties] = Nil, unearnedIncomes: Seq[UnearnedIncome] = Nil,
                                furnishedHolidayLettings: Seq[FurnishedHolidayLettings] = Nil,
-                               dividends: Seq[MongoDividend] = Nil,  banks: Seq[Bank] = Nil) {
+                               dividends: Seq[Dividend] = Nil, banks: Seq[Bank] = Nil) {
   def andAssertThat() = LiabilityResultAssertions(Liability.create(SaUtr("123456789"), TaxYear("2016-17"),
     api.SelfAssessment(employments = employments, selfEmployments = selfEmployments, ukProperties = ukProperties,
                        unearnedIncomes = unearnedIncomes, furnishedHolidayLettings = furnishedHolidayLettings,

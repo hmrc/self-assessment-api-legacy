@@ -29,7 +29,7 @@ import scala.concurrent.{Await, Future}
 class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: SelfEmploymentMongoRepository,
                                uiRepo : UnearnedIncomeMongoRepository, empRepo: EmploymentMongoRepository,
                                fhlRepo: FurnishedHolidayLettingsMongoRepository, ukPropertyRepo: UKPropertiesMongoRepository,
-                               divRepo: DividendMongoRepository, jobRepo: JobHistoryMongoRepository) {
+                               divRepo: DividendMongoRepository, bankRepo: BanksMongoRepository, jobRepo: JobHistoryMongoRepository) {
 
   def deleteExpiredData(lastModifiedDate: DateTime): Future[Int] = {
     Logger.info(s"Deleting records older than lastModifiedDate : $lastModifiedDate ")
@@ -56,6 +56,7 @@ class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: Se
         empRepo.delete(record.saUtr, record.taxYear)
         fhlRepo.delete(record.saUtr, record.taxYear)
         divRepo.delete(record.saUtr, record.taxYear)
+        bankRepo.delete(record.saUtr, record.taxYear)
         ukPropertyRepo.delete(record.saUtr, record.taxYear)
       }
     }
@@ -73,5 +74,5 @@ object DeleteExpiredDataService {
   def apply() = new DeleteExpiredDataService(SelfAssessmentRepository(), SelfEmploymentRepository(),
                                              UnearnedIncomeRepository(), EmploymentRepository(),
                                              FurnishedHolidayLettingsRepository(), UKPropertiesRepository(),
-                                             DividendRepository(), JobHistoryRepository())
+                                             DividendRepository(), BanksRepository(), JobHistoryRepository())
 }

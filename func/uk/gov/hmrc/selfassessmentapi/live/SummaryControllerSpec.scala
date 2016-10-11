@@ -58,6 +58,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
     UnearnedIncomes -> UnearnedIncomes.summaryTypes,
     FurnishedHolidayLettings -> FurnishedHolidayLettings.summaryTypes,
     UKProperties -> UKProperties.summaryTypes,
+    Dividends -> Dividends.summaryTypes,
     Banks -> Banks.summaryTypes)
 
   "I" should {

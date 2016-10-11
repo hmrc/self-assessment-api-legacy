@@ -6,6 +6,7 @@ import play.api.libs.json.Json.{parse, toJson}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, SourceType, SourceTypes}
 import ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
 import play.api.test.FakeApplication
+import uk.gov.hmrc.selfassessmentapi.controllers.api.dividend.SourceType.Dividends
 import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.SourceType.Banks
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.Employment
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.SourceType.Employments
@@ -61,6 +62,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
                                                         """.stripMargin),
       error = ExpectedError(path = "/rentARoomRelief", code = "INVALID_MONETARY_AMOUNT")),
     Employments -> ErrorScenario(invalidInput = toJson(Employment.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok)),
+    Dividends -> ErrorScenario(invalidInput = toJson(Dividends.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok)),
     Banks -> ErrorScenario(invalidInput = toJson(Banks.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok))
   )
 
@@ -75,6 +77,8 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     UKProperties -> UpdateScenario(updatedValue = toJson(UKProperty.example().copy(rentARoomRelief = Some(7777))),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     Employments -> UpdateScenario(updatedValue = toJson(Employment.example()),
+      expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
+    Dividends -> UpdateScenario(updatedValue = toJson(Dividends.example()),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     Banks -> UpdateScenario(updatedValue = toJson(Banks.example()),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = ""))

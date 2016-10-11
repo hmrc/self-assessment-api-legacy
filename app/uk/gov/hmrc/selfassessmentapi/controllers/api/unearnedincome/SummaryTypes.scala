@@ -23,18 +23,6 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 object SummaryTypes {
 
-  case object Dividends extends SummaryType {
-    override val name = "dividends"
-    override val documentationName = "Dividends"
-    override def example(id: Option[SummaryId] = None): JsValue = toJson(Dividend.example(id))
-    override val title = "Sample unearned income dividends"
-    override def description(action: String) = s"$action a dividend for the specified source"
-    override val fieldDescriptions = Seq(
-      FullFieldDescription("unearned income", "type", "Enum", s"Type of dividends income (one of the following: ${DividendType.values.mkString(", ")})"),
-      PositiveMonetaryFieldDescription("unearned income", "amount", "Dividend income from the UK sources, split by dividend types - Dividend from UK companies and Other Dividends.")
-    )
-  }
-
   case object Benefits extends SummaryType {
     override val name = "benefits"
     override val documentationName = "Benefits"

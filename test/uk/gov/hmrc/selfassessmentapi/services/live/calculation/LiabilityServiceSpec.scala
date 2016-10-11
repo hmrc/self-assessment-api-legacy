@@ -42,6 +42,7 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
   private val unearnedIncomeRepo = mock[UnearnedIncomeMongoRepository]
   private val ukPropertyRepo = mock[UKPropertiesMongoRepository]
   private val furnishedHolidayLettingsRepo = mock[FurnishedHolidayLettingsMongoRepository]
+  private val dividendsRepo = mock[DividendMongoRepository]
   private val banksRepo = mock[BanksMongoRepository]
   private val taxYearPropertiesService = mock[TaxYearPropertiesService]
   private val featureSwitch = mock[FeatureSwitch]
@@ -53,6 +54,7 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
                                              ukPropertyRepo,
                                              banksRepo,
                                              taxYearPropertiesService,
+                                             dividendsRepo,
                                              featureSwitch)
 
   "calculate" should {

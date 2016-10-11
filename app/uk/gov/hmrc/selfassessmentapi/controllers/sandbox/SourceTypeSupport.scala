@@ -25,6 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty.UKPropertySo
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome.UnearnedIncomeSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.bank.BankSourceHandler
 import SourceTypes._
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.dividend.DividendSourceHandler
 
 trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.SourceTypeSupport {
 
@@ -34,6 +35,7 @@ trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.Source
     case UKProperties => UKPropertySourceHandler
     case Employments => EmploymentSourceHandler
     case UnearnedIncomes => UnearnedIncomeSourceHandler
+    case Dividends => DividendSourceHandler
     case Banks => BankSourceHandler
   }
 }

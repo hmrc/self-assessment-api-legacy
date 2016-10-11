@@ -18,26 +18,25 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.builders
 
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.TestUtils._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.{UnearnedIncome, UnearnedIncomesDividendSummary}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.dividend.DividendIncomeType._
+import uk.gov.hmrc.selfassessmentapi.repositories.domain.{DividendIncomeSummary, Dividend}
 
-case class UnearnedIncomeBuilder(objectID: BSONObjectID = BSONObjectID.generate) {
-  import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
+case class DividendBuilder(objectID: BSONObjectID = BSONObjectID.generate) {
 
-  private var unearnedIncomes: UnearnedIncome = UnearnedIncome(objectID, objectID.stringify, generateSaUtr(), taxYear, now, now)
+  private var mongoDividends: Dividend = Dividend(objectID, objectID.stringify, generateSaUtr(), taxYear, now, now)
 
-  private def withDividends(dividends: (DividendType, BigDecimal)*) = {
-    unearnedIncomes = unearnedIncomes.copy(dividends = unearnedIncomes.dividends ++ dividends.map(dividend => UnearnedIncomesDividendSummary("", dividend._1, dividend._2)))
+  private def withDividends(dividends: (DividendIncomeType, BigDecimal)*) = {
+    mongoDividends = mongoDividends.copy(incomes = mongoDividends.incomes ++ dividends.map(dividend => DividendIncomeSummary("", dividend._1, dividend._2)))
     this
   }
 
   def withUKDividends(dividends: BigDecimal*) = {
-    withDividends(dividends.map((FromUKCompanies, _)):_*)
+    withDividends(dividends.map((FromUKCompanies, _)): _*)
   }
 
   def withOtherUKDividends(dividends: BigDecimal*) = {
-    withDividends(dividends.map((FromOtherUKSources, _)):_*)
+    withDividends(dividends.map((FromOtherUKSources, _)): _*)
   }
 
-  def create() = unearnedIncomes
-
+  def create() = mongoDividends
 }

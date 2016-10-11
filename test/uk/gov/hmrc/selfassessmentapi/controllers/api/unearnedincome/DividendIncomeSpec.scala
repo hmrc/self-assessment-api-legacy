@@ -17,30 +17,30 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
-import ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.DividendType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.dividend.DividendIncomeType.FromUKCompanies
+import uk.gov.hmrc.selfassessmentapi.controllers.api.dividend.{DividendIncome, DividendIncomeType}
 
-class DividendSpec extends JsonSpec {
+class DividendIncomeSpec extends JsonSpec {
 
   "format" should {
 
     "round trip valid Expenses json" in {
-      roundTripJson(Dividend(`type` = FromUKCompanies, amount = BigDecimal(1000.99)))
+      roundTripJson(DividendIncome(`type` = FromUKCompanies, amount = BigDecimal(1000.99)))
     }
   }
 
   "validate" should {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
-        assertValidationError[Dividend](
-          Dividend(`type` = FromUKCompanies, amount = testAmount),
+        assertValidationError[DividendIncome](
+          DividendIncome(`type` = FromUKCompanies, amount = testAmount),
           Map("/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid dividend with more than 2 decimal places")
       }
     }
 
-    "reject invalid Dividend type" in {
+    "reject invalid DividendIncome type" in {
       val json = Json.parse(
         """
           |{ "type": "FOO",
@@ -48,13 +48,13 @@ class DividendSpec extends JsonSpec {
           |}
         """.stripMargin)
 
-      assertValidationError[Dividend](
+      assertValidationError[DividendIncome](
         json, Map("/type" -> NO_VALUE_FOUND), "should fail with invalid type")
     }
 
     "reject negative amount" in {
-      val seIncome = Dividend(`type` = FromUKCompanies, amount = BigDecimal(-1000.12))
-      assertValidationError[Dividend](
+      val seIncome = DividendIncome(`type` = FromUKCompanies, amount = BigDecimal(-1000.12))
+      assertValidationError[DividendIncome](
         seIncome, Map("/amount" -> INVALID_MONETARY_AMOUNT), "should fail with INVALID_MONETARY_AMOUNT error")
     }
   }

@@ -16,31 +16,49 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment
 
+import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType.ExpenseType
 
-
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
-  val CoGBought, CISPaymentsToSubcontractors, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts, AdminCosts,
-  AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other = Value
+  val CoGBought, CISPaymentsToSubcontractors, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts,
+  AdminCosts, AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other =
+    Value
   implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
 }
 
-case class Expense(id: Option[SummaryId] = None, `type`: ExpenseType, amount: BigDecimal)
+case class Expense(id: Option[SummaryId] = None,
+                   `type`: ExpenseType,
+                   totalAmount: BigDecimal,
+                   disallowableAmount: Option[BigDecimal] = Some(0))
 
 object Expense extends JsonMarshaller[Expense] {
 
   implicit val writes = Json.writes[Expense]
+
   implicit val reads: Reads[Expense] = (
     Reads.pure(None) and
       (__ \ "type").read[ExpenseType] and
-      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount"))
-    ) (Expense.apply _)
+      (__ \ "totalAmount").read[BigDecimal](positiveAmountValidator("totalAmount")) and
+      (__ \ "disallowableAmount").readNullable[BigDecimal](positiveAmountValidator("disallowableAmount"))
+  )(Expense.apply _)
+    .filter(ValidationError(
+      "the disallowableAmount for Depreciation & Loss/Profit on Sale of Assets must be the same as the totalAmount",
+      DEPRECIATION_DISALLOWABLE_AMOUNT)) { expense =>
+      expense.`type` != ExpenseType.Depreciation || (expense.disallowableAmount.isDefined &&
+      expense.disallowableAmount.forall(_ == expense.totalAmount))
+    }
+    .filter(ValidationError("disallowableAmount must be less than or equal to the totalAmount",
+                            INVALID_DISALLOWABLE_AMOUNT)) { expense =>
+      expense.`type` == ExpenseType.Depreciation || expense.disallowableAmount.forall(_ <= expense.totalAmount)
+    }
 
-  override def example(id: Option[SummaryId]) = Expense(id, ExpenseType.CISPaymentsToSubcontractors, BigDecimal(1000))
+  override def example(id: Option[SummaryId]) =
+    Expense(id, ExpenseType.CISPaymentsToSubcontractors, BigDecimal(1000), Some(BigDecimal(200)))
 }

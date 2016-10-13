@@ -35,8 +35,8 @@ object ExpenseType extends Enumeration {
 
 case class Expense(id: Option[SummaryId] = None,
                    `type`: ExpenseType,
-                   totalAmount: BigDecimal,
-                   disallowableAmount: Option[BigDecimal] = Some(0))
+                   amount: BigDecimal,
+                   disallowableAmount: BigDecimal)
 
 object Expense extends JsonMarshaller[Expense] {
 
@@ -45,20 +45,19 @@ object Expense extends JsonMarshaller[Expense] {
   implicit val reads: Reads[Expense] = (
     Reads.pure(None) and
       (__ \ "type").read[ExpenseType] and
-      (__ \ "totalAmount").read[BigDecimal](positiveAmountValidator("totalAmount")) and
-      (__ \ "disallowableAmount").readNullable[BigDecimal](positiveAmountValidator("disallowableAmount"))
+      (__ \ "amount").read[BigDecimal](positiveAmountValidator("amount")) and
+      (__ \ "disallowableAmount").read[BigDecimal](positiveAmountValidator("disallowableAmount"))
   )(Expense.apply _)
     .filter(ValidationError(
-      "the disallowableAmount for Depreciation & Loss/Profit on Sale of Assets must be the same as the totalAmount",
+      "the disallowableAmount for Depreciation & Loss/Profit on Sale of Assets must be the same as the amount",
       DEPRECIATION_DISALLOWABLE_AMOUNT)) { expense =>
-      expense.`type` != ExpenseType.Depreciation || (expense.disallowableAmount.isDefined &&
-      expense.disallowableAmount.forall(_ == expense.totalAmount))
+      expense.`type` != ExpenseType.Depreciation || expense.disallowableAmount == expense.amount
     }
-    .filter(ValidationError("disallowableAmount must be less than or equal to the totalAmount",
+    .filter(ValidationError("disallowableAmount must be less than or equal to the amount",
                             INVALID_DISALLOWABLE_AMOUNT)) { expense =>
-      expense.`type` == ExpenseType.Depreciation || expense.disallowableAmount.forall(_ <= expense.totalAmount)
+      expense.`type` == ExpenseType.Depreciation || expense.disallowableAmount <= expense.amount
     }
 
   override def example(id: Option[SummaryId]) =
-    Expense(id, ExpenseType.CISPaymentsToSubcontractors, BigDecimal(1000), Some(BigDecimal(200)))
+    Expense(id, ExpenseType.CISPaymentsToSubcontractors, BigDecimal(1000), BigDecimal(200))
 }

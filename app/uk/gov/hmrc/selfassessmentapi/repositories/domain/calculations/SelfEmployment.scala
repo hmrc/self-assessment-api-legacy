@@ -45,7 +45,7 @@ object SelfEmployment {
 
       val profitReductions = {
         val adjustments = selfEmployment.adjustments.map { a => Sum(a.includedNonTaxableProfits, a.overlapReliefUsed) }
-        selfEmployment.expenses.filterNot(_.`type` == ExpenseType.Depreciation).map(_.totalAmount).sum + totalAllowances(selfEmployment) + adjustments.getOrElse(0)
+        Total(selfEmployment.expenses.filterNot(_.`type` == ExpenseType.Depreciation)) + totalAllowances(selfEmployment) + adjustments.getOrElse(0)
       }
 
       PositiveOrZero(profitIncreases - profitReductions)

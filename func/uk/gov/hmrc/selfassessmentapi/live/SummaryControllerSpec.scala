@@ -9,7 +9,8 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.S
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes.GoodsAndServicesOwnUses
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.SourceType.UKProperties
 import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, SummaryType, selfemployment}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, SummaryType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SummaryControllerSpec extends BaseFunctionalSpec {
@@ -37,23 +38,16 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       UKProperties.summaryTypes
 
   private def invalidRequestBody(summaryType: SummaryType) = {
-    val amountField: String = getAmountField(summaryType)
     if (invalidAmountTestData.contains(summaryType)) {
-      Some(Json.parse(s"""{"$amountField":1000.123}"""))
+      Some(Json.parse(s"""{"amount":1000.123}"""))
     } else {
-      Some(Json.parse(s"""{"type":"InvalidType", "$amountField":1000.00, "taxDeduction":1000.00}"""))
+      Some(Json.parse(s"""{"type":"InvalidType", "amount":1000.00, "taxDeduction":1000.00}"""))
     }
   }
 
-  private def getAmountField(summaryType: SummaryType): String = summaryType match {
-    case selfemployment.SummaryTypes.Expenses => "totalAmount"
-    case _ => "amount"
-  }
-
   private def invalidErrorResponse(summaryType: SummaryType): (String, String) = {
-    val amountField: String = getAmountField(summaryType)
     if (invalidAmountTestData.contains(summaryType)) {
-      (s"/$amountField", "INVALID_MONETARY_AMOUNT")
+      ("/amount", "INVALID_MONETARY_AMOUNT")
     } else {
       ("/type", "NO_VALUE_FOUND")
     }
@@ -108,12 +102,15 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .statusIs(200)
             .body(_ \ "type")
             .is(exampleSummaryTypeValue(summaryType))
-            .body(_ \ getAmountField(summaryType))
-            .is((summaryType.example() \ getAmountField(summaryType)).as[BigDecimal])
+            .body(_ \ "amount")
+            .is((summaryType.example() \ "amount").as[BigDecimal])
             .when()
             .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%", Some(Json.parse({
-              val amountField: String = getAmountField(summaryType)
-              s"""{"type":"${exampleSummaryTypeValue(summaryType)}", "$amountField":1200.00, "taxDeduction":1000.00}"""
+              val maybeDisallowableAmount = summaryType match {
+                case selfemployment.SummaryTypes.Expenses => """"disallowableAmount": 0, """
+                case _ => ""
+              }
+              s"""{"type":"${exampleSummaryTypeValue(summaryType)}", "amount":1200.00, $maybeDisallowableAmount "taxDeduction":1000.00}"""
             })))
             .thenAssertThat()
             .statusIs(200)
@@ -127,7 +124,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .statusIs(200)
             .body(_ \ "type")
             .is(exampleSummaryTypeValue(summaryType))
-            .body(_ \ getAmountField(summaryType))
+            .body(_ \ "amount")
             .is(1200.00)
             .when()
             .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")

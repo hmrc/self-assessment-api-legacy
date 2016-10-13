@@ -63,20 +63,20 @@ object SelfEmploymentIncomeSummary {
 
 case class SelfEmploymentExpenseSummary(summaryId: SummaryId,
                                         `type`: ExpenseType,
-                                        totalAmount: BigDecimal,
-                                        disallowableAmount: Option[BigDecimal]) extends Summary {
+                                        amount: BigDecimal,
+                                        disallowableAmount: BigDecimal) extends Summary with AmountHolder {
   val arrayName = SelfEmploymentExpenseSummary.arrayName
 
   def toExpense: Expense =
     Expense(id = Some(summaryId),
       `type` = `type`,
-      totalAmount = totalAmount,
+      amount = amount,
       disallowableAmount = disallowableAmount)
 
   def toBsonDocument = BSONDocument(
     "summaryId" -> summaryId,
-    "totalAmount" -> BSONDouble(totalAmount.doubleValue()),
-    "disallowableAmount" -> BSONDouble(disallowableAmount.getOrElse(BigDecimal(0)).doubleValue()),
+    "amount" -> BSONDouble(amount.doubleValue()),
+    "disallowableAmount" -> BSONDouble(disallowableAmount.doubleValue()),
     "type" -> BSONString(`type`.toString)
   )
 }
@@ -91,7 +91,7 @@ object SelfEmploymentExpenseSummary {
     SelfEmploymentExpenseSummary(
       summaryId = id.getOrElse(BSONObjectID.generate.stringify),
       `type` = expense.`type`,
-      totalAmount = expense.totalAmount,
+      amount = expense.amount,
       disallowableAmount = expense.disallowableAmount
     )
   }
@@ -204,7 +204,7 @@ case class SelfEmployment(id: BSONObjectID,
   }
 
   private def profitReductions: BigDecimal = {
-    val expenses = Some(this.expenses.filterNot(_.`type` == selfemployment.ExpenseType.Depreciation).map(_.totalAmount).sum)
+    val expenses = Some(this.expenses.filterNot(_.`type` == selfemployment.ExpenseType.Depreciation).map(_.amount).sum)
     val allowances = this.allowances.map(_.total)
     val adjustments = this.adjustments.map { a => Sum(a.includedNonTaxableProfits, a.overlapReliefUsed) }
 

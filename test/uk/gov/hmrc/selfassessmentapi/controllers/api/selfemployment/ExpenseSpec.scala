@@ -30,12 +30,12 @@ class ExpenseSpec extends JsonSpec with GeneratorDrivenPropertyChecks {
 
     val genValidExpense = for {
       expenseType <- Gen.oneOf(ExpenseType.values.toList)
-      totalAmount <- amountGen(1000, 5000)
+      amount <- amountGen(1000, 5000)
       disallowableAmount <- { // wrap if in a block to get proper indentation
-        if (expenseType == ExpenseType.Depreciation) Gen.const(totalAmount)
-        else amountGen(1, totalAmount - 1)
+        if (expenseType == ExpenseType.Depreciation) Gen.const(amount)
+        else amountGen(0, amount - 1)
       }
-    } yield Expense(`type` = expenseType, totalAmount = totalAmount, disallowableAmount = Some(disallowableAmount))
+    } yield Expense(`type` = expenseType, amount = amount, disallowableAmount = disallowableAmount)
 
     "round trip Expense json" in forAll(genValidExpense) { expense =>
       roundTripJson(expense)
@@ -46,33 +46,34 @@ class ExpenseSpec extends JsonSpec with GeneratorDrivenPropertyChecks {
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach {
         testAmount =>
-          val seExpense = Expense(`type` = CISPaymentsToSubcontractors, totalAmount = testAmount)
+          val seExpense = Expense(`type` = CISPaymentsToSubcontractors, amount = testAmount, disallowableAmount = 0)
           assertValidationError[Expense](seExpense,
-                                         Map("/totalAmount" -> INVALID_MONETARY_AMOUNT),
+                                         Map("/amount" -> INVALID_MONETARY_AMOUNT),
                                          "Expected invalid self-employment-income")
       }
     }
 
     "reject negative monetary amounts" in {
       Seq(BigDecimal(-1000.12), BigDecimal(-10.12)).foreach { testAmount =>
-        val seExpense = Expense(`type` = CISPaymentsToSubcontractors, totalAmount = testAmount)
+        val seExpense = Expense(`type` = CISPaymentsToSubcontractors, amount = testAmount, disallowableAmount = 0)
         assertValidationError[Expense](seExpense,
-                                       Map("/totalAmount" -> INVALID_MONETARY_AMOUNT),
+                                       Map("/amount" -> INVALID_MONETARY_AMOUNT),
                                        "Expected invalid self-employment-income")
       }
     }
 
     "reject negative amount" in {
-      val seExpense = Expense(`type` = CISPaymentsToSubcontractors, totalAmount = BigDecimal(-1000.12))
+      val seExpense = Expense(`type` = CISPaymentsToSubcontractors, amount = BigDecimal(-1000.12), disallowableAmount = 0)
       assertValidationError[Expense](seExpense,
-                                     Map("/totalAmount" -> INVALID_MONETARY_AMOUNT),
+                                     Map("/amount" -> INVALID_MONETARY_AMOUNT),
                                      "Expected negative self-employment expense")
     }
 
     "reject invalid Expense category" in {
       val json = Json.parse("""
           |{ "type": "BAZ",
-          |"totalAmount" : 10000.45
+          |"amount" : 10000.45,
+          |"disallowableAmount": 0
           |}
         """.stripMargin)
 
@@ -83,9 +84,9 @@ class ExpenseSpec extends JsonSpec with GeneratorDrivenPropertyChecks {
 
     val genExpenseWithInvalidDisallowableAmount = for {
       expenseType <- Gen.oneOf((ExpenseType.values - ExpenseType.Depreciation).toList)
-      totalAmount <- amountGen(1000, 5000)
-      disallowableAmount <- amountGen(totalAmount + 1, totalAmount + 1000)
-    } yield Expense(`type` = expenseType, totalAmount = totalAmount, disallowableAmount = Some(disallowableAmount))
+      amount <- amountGen(1000, 5000)
+      disallowableAmount <- amountGen(amount + 1, amount + 1000)
+    } yield Expense(`type` = expenseType, amount = amount, disallowableAmount = disallowableAmount)
 
     "reject Expense with disallowable amount greater than total amount" in forAll(
       genExpenseWithInvalidDisallowableAmount) { expense =>
@@ -95,10 +96,10 @@ class ExpenseSpec extends JsonSpec with GeneratorDrivenPropertyChecks {
     }
 
     val genInvalidDepreciationExpense = for {
-      totalAmount <- amountGen(1000, 5000)
-      optDisallowableAmount <- Gen.option(amountGen(1, totalAmount - 1))
+      amount <- amountGen(1000, 5000)
+      disallowableAmount <- amountGen(0, amount - 1)
     } yield
-      Expense(`type` = ExpenseType.Depreciation, totalAmount = totalAmount, disallowableAmount = optDisallowableAmount)
+      Expense(`type` = ExpenseType.Depreciation, amount = amount, disallowableAmount = disallowableAmount)
 
     "reject Depreciation Expense where disallowable amount is different than total amount" in forAll(
       genInvalidDepreciationExpense) { expense =>

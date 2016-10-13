@@ -188,7 +188,6 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for self-employments" in {
-      import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
 
       val selfEmployment = SelfEmploymentBuilder()
           .withAllowances(
@@ -228,7 +227,6 @@ class LiabilitySpec extends UnitSpec {
     }
 
     "correctly compute values for UK properties" in {
-      import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
 
       val ukProperty = UKPropertyBuilder(rentARoomRelief = 500.25)
         .withAllowances(annualInvestmentAllowance = 200,

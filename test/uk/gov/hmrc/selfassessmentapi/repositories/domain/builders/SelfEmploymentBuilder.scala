@@ -96,24 +96,27 @@ case class SelfEmploymentBuilder(objectID: BSONObjectID = BSONObjectID.generate)
   }
 
   def withPremisesRunningCosts(costs: BigDecimal*) = {
-    expenses(costs.map(cost => Expense(`type` = ExpenseType.PremisesRunningCosts, totalAmount = cost)))
+    expenses(
+      costs.map(cost => Expense(`type` = ExpenseType.PremisesRunningCosts, amount = cost, disallowableAmount = 0)))
   }
 
   def withAdminCosts(adminCosts: BigDecimal*) = {
-    expenses(adminCosts.map(adminCost => Expense(`type` = ExpenseType.AdminCosts, totalAmount = adminCost)))
+    expenses(adminCosts.map(adminCost =>
+      Expense(`type` = ExpenseType.AdminCosts, amount = adminCost, disallowableAmount = 0)))
   }
 
   def withBadDebt(badDebts: BigDecimal*) = {
-    expenses(badDebts.map(badDebt => Expense(`type` = ExpenseType.BadDebt, totalAmount = badDebt)))
+    expenses(badDebts.map(badDebt => Expense(`type` = ExpenseType.BadDebt, amount = badDebt, disallowableAmount = 0)))
   }
 
   def withCISPaymentsToSubcontractors(paymentsToSubcontractors: BigDecimal*) = {
     expenses(paymentsToSubcontractors.map(amount =>
-      Expense(`type` = ExpenseType.CISPaymentsToSubcontractors, totalAmount = amount)))
+      Expense(`type` = ExpenseType.CISPaymentsToSubcontractors, amount = amount, disallowableAmount = 0)))
   }
 
   def withDepreciation(deprecations: BigDecimal*) = {
-    expenses(deprecations.map(amount => Expense(`type` = ExpenseType.Depreciation, totalAmount = amount)))
+    expenses(
+      deprecations.map(amount => Expense(`type` = ExpenseType.Depreciation, amount = amount, disallowableAmount = 0)))
   }
 
   private def balancingCharges(balancingCharges: (BalancingChargeType, BigDecimal)*) = {

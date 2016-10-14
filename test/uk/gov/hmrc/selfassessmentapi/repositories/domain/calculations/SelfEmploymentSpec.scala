@@ -24,8 +24,6 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 class SelfEmploymentSpec extends UnitSpec {
 
-  private val selfEmploymentId = "selfEmploymentId"
-
   "TotalTaxableProfit" should {
     "be TotalProfit - TotalDeduction" in {
       calculations.SelfEmployment.TotalTaxableProfit(totalProfit = 10000, totalDeduction = 5000) shouldBe 5000
@@ -117,13 +115,25 @@ class SelfEmploymentSpec extends UnitSpec {
 
       val selfEmployment = SelfEmploymentBuilder()
         .withTurnover(2000)
-        .withAdminCosts(100)
-        .withBadDebt(50.01)
-        .withCISPaymentsToSubcontractors(49.99)
-        .withDepreciation(1000000)
+        .withAdminCosts((100, 0))
+        .withBadDebt((50.01, 0))
+        .withCISPaymentsToSubcontractors((49.99, 0))
+        .withDepreciation((1000000, 1000000))
         .create()
 
       calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1800)
+    }
+
+    "deduct disallowable expenses from expenses increasing the profit" in {
+
+      val selfEmployment = SelfEmploymentBuilder()
+        .withTurnover(2000)
+        .withAdminCosts((100, 50))
+        .withBadDebt((50.01, 25))
+        .withCISPaymentsToSubcontractors((49.99, 25))
+        .create()
+
+      calculations.SelfEmployment.Profit(selfEmployment) shouldBe BigDecimal(1900)
     }
 
     "subtract all allowances from profit" in {
@@ -215,7 +225,7 @@ class SelfEmploymentSpec extends UnitSpec {
 
       val selfEmployment = SelfEmploymentBuilder()
         .withTurnover(2000)
-        .withAdminCosts(4000)
+        .withAdminCosts((4000, 0))
         .withAdjustments(
           lossBroughtForward = 1000,
           outstandingBusinessIncome = 0,

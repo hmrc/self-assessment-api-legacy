@@ -206,7 +206,7 @@ class LiabilitySpec extends UnitSpec {
             outstandingBusinessIncome = 123.45,
             accountingAdjustment = 0)
           .withTurnover(200000.22)
-          .withPremisesRunningCosts(12334.56)
+          .withPremisesRunningCosts((12334.56, 0))
           .withBpraBalancingCharges(500.25)
           .goodsAndServicesOwnUse(200.02)
           .create()
@@ -353,7 +353,7 @@ class LiabilitySpec extends UnitSpec {
           outstandingBusinessIncome = 123.45,
           accountingAdjustment = 0)
         .withTurnover(200000.22)
-        .withPremisesRunningCosts(12334.56)
+        .withPremisesRunningCosts((12334.56, 0))
         .withBpraBalancingCharges(500.25)
         .goodsAndServicesOwnUse(200.02)
         .create()
@@ -439,7 +439,7 @@ class LiabilitySpec extends UnitSpec {
           outstandingBusinessIncome = 123.45,
           accountingAdjustment = 0)
         .withTurnover(30000.22)
-        .withPremisesRunningCosts(12334.56)
+        .withPremisesRunningCosts((12334.56, 0))
         .withBpraBalancingCharges(500.25)
         .goodsAndServicesOwnUse(200.02)
         .create()

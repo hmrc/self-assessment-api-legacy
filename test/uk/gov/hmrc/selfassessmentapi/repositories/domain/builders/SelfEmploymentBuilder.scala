@@ -95,29 +95,37 @@ case class SelfEmploymentBuilder(objectID: BSONObjectID = BSONObjectID.generate)
     this
   }
 
-  def withPremisesRunningCosts(costs: BigDecimal*) = {
-    expenses(
-      costs.map(cost => Expense(`type` = ExpenseType.PremisesRunningCosts, amount = cost, disallowableAmount = 0)))
-  }
+  def withPremisesRunningCosts(costs: (BigDecimal, BigDecimal)*) =
+    expenses(costs.map {
+      case (amount, disallowableAmount) =>
+        Expense(`type` = ExpenseType.PremisesRunningCosts, amount = amount, disallowableAmount = disallowableAmount)
+    })
 
-  def withAdminCosts(adminCosts: BigDecimal*) = {
-    expenses(adminCosts.map(adminCost =>
-      Expense(`type` = ExpenseType.AdminCosts, amount = adminCost, disallowableAmount = 0)))
-  }
+  def withAdminCosts(adminCosts: (BigDecimal, BigDecimal)*) =
+    expenses(adminCosts.map {
+      case (amount, disallowableAmount) =>
+        Expense(`type` = ExpenseType.AdminCosts, amount = amount, disallowableAmount = disallowableAmount)
+    })
 
-  def withBadDebt(badDebts: BigDecimal*) = {
-    expenses(badDebts.map(badDebt => Expense(`type` = ExpenseType.BadDebt, amount = badDebt, disallowableAmount = 0)))
-  }
+  def withBadDebt(badDebts: (BigDecimal, BigDecimal)*) =
+    expenses(badDebts.map {
+      case (amount, disallowableAmount) =>
+        Expense(`type` = ExpenseType.BadDebt, amount = amount, disallowableAmount = disallowableAmount)
+    })
 
-  def withCISPaymentsToSubcontractors(paymentsToSubcontractors: BigDecimal*) = {
-    expenses(paymentsToSubcontractors.map(amount =>
-      Expense(`type` = ExpenseType.CISPaymentsToSubcontractors, amount = amount, disallowableAmount = 0)))
-  }
+  def withCISPaymentsToSubcontractors(paymentsToSubcontractors: (BigDecimal, BigDecimal)*) =
+    expenses(paymentsToSubcontractors.map {
+      case (amount, disallowableAmount) =>
+        Expense(`type` = ExpenseType.CISPaymentsToSubcontractors,
+                amount = amount,
+                disallowableAmount = disallowableAmount)
+    })
 
-  def withDepreciation(deprecations: BigDecimal*) = {
-    expenses(
-      deprecations.map(amount => Expense(`type` = ExpenseType.Depreciation, amount = amount, disallowableAmount = 0)))
-  }
+  def withDepreciation(deprecations: (BigDecimal, BigDecimal)*) =
+    expenses(deprecations.map {
+      case (amount, disallowableAmount) =>
+        Expense(`type` = ExpenseType.Depreciation, amount = amount, disallowableAmount = disallowableAmount)
+    })
 
   private def balancingCharges(balancingCharges: (BalancingChargeType, BigDecimal)*) = {
     selfEmployment =

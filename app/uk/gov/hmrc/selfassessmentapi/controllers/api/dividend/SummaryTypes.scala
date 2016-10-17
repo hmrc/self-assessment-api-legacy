@@ -30,7 +30,7 @@ object SummaryTypes {
     override def description(action: String) = s"$action an income for the specified source"
     override val fieldDescriptions = Seq(
       FullFieldDescription("dividends", "type", "Enum", s"Type of income (one of the following: ${DividendIncomeType.values.mkString(", ")})"),
-      PositiveMonetaryFieldDescription("dividends", "amount", "Income from the business including turnover (from takings, fees & sales) earned or received by the business before expenses, and other business income not included within turnover.")
+      PositiveMonetaryFieldDescription("dividends", "amount", "Income from the business including turnover (from takings, fees & sales) earned or received by the business before expenses, and other business income not included within turnover")
     )
   }
 }

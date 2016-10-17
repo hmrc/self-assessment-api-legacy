@@ -32,7 +32,7 @@ object SummaryTypes {
     override val fieldDescriptions = Seq(
       FullFieldDescription("unearned income", "type", "Enum", s"Type of benefit (one of the following: ${BenefitType.values.mkString(", ")})"),
       PositiveMonetaryFieldDescription("unearned income", "amount", "Pension, annuities and state benefits from UK, split by type - state pension, state pension lump sum, Other pensions, " +
-        "retirement annuities and taxable triviality payments, Incapacity Benefits, Jobseeker’s allowance.")
+        "retirement annuities and taxable triviality payments, Incapacity Benefits, Jobseeker’s allowance")
     )
   }
 

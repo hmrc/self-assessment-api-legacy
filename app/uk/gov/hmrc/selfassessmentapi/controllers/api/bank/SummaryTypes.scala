@@ -32,7 +32,7 @@ object SummaryTypes {
 
     override val fieldDescriptions = Seq(
       FullFieldDescription("bank", "type", "Enum", s"Type of bank interest (one of the following: ${InterestType.values.mkString(", ")})"),
-      PositiveMonetaryFieldDescription("bank", "amount", "Interest income from UK banks and building societies, split by interest types - Taxed interest and Untaxed interest.")
+      PositiveMonetaryFieldDescription("bank", "amount", "Interest income from UK banks and building societies, split by interest types - Taxed interest and Untaxed interest")
     )
   }
 }

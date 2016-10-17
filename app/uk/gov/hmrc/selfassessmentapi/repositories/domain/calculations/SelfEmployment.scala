@@ -24,8 +24,10 @@ import uk.gov.hmrc.selfassessmentapi.repositories._
 object SelfEmployment {
 
   object TotalTaxableProfit {
-    def apply(selfAssessment: SelfAssessment): BigDecimal = apply(TotalProfit(selfAssessment), Deductions.Total(selfAssessment))
-    def apply(totalProfit: BigDecimal, totalDeduction: BigDecimal): BigDecimal = PositiveOrZero(totalProfit - totalDeduction)
+    def apply(selfAssessment: SelfAssessment): BigDecimal =
+      apply(TotalProfit(selfAssessment), Deductions.Total(selfAssessment))
+    def apply(totalProfit: BigDecimal, totalDeduction: BigDecimal): BigDecimal =
+      PositiveOrZero(totalProfit - totalDeduction)
   }
 
   object TotalProfit {
@@ -38,14 +40,19 @@ object SelfEmployment {
 
     def apply(selfEmployment: domain.SelfEmployment) = {
       val profitIncreases = {
-        val adjustments = selfEmployment.adjustments.map(a => Sum(a.basisAdjustment, a.accountingAdjustment, a.averagingAdjustment))
-        Total(selfEmployment.incomes) + Total(selfEmployment.balancingCharges) + Total(selfEmployment.goodsAndServicesOwnUse) +
+        val adjustments =
+          selfEmployment.adjustments.map(a => Sum(a.basisAdjustment, a.accountingAdjustment, a.averagingAdjustment))
+        Total(selfEmployment.incomes) + Total(selfEmployment.balancingCharges) + Total(
+          selfEmployment.goodsAndServicesOwnUse) +
           adjustments.getOrElse(0)
       }
 
       val profitReductions = {
-        val adjustments = selfEmployment.adjustments.map { a => Sum(a.includedNonTaxableProfits, a.overlapReliefUsed) }
-        Total(selfEmployment.expenses.filterNot(_.`type` == ExpenseType.Depreciation)) + totalAllowances(selfEmployment) + adjustments.getOrElse(0)
+        val adjustments = selfEmployment.adjustments.map { a =>
+          Sum(a.includedNonTaxableProfits, a.overlapReliefUsed)
+        }
+        selfEmployment.expenses.map(expense => expense.amount - expense.disallowableAmount).sum + totalAllowances(
+          selfEmployment) + adjustments.getOrElse(0)
       }
 
       PositiveOrZero(profitIncreases - profitReductions)
@@ -53,8 +60,12 @@ object SelfEmployment {
 
     def totalAllowances(selfEmployment: domain.SelfEmployment) = {
       selfEmployment.allowances.map { a =>
-        Sum(CapAt(a.annualInvestmentAllowance, annualInvestmentAllowanceThreshold), a.capitalAllowanceMainPool, a.capitalAllowanceSpecialRatePool,
-          a.businessPremisesRenovationAllowance, a.enhancedCapitalAllowance, a.allowancesOnSales)
+        Sum(CapAt(a.annualInvestmentAllowance, annualInvestmentAllowanceThreshold),
+            a.capitalAllowanceMainPool,
+            a.capitalAllowanceSpecialRatePool,
+            a.businessPremisesRenovationAllowance,
+            a.enhancedCapitalAllowance,
+            a.allowancesOnSales)
       }.sum
     }
   }
@@ -67,19 +78,22 @@ object SelfEmployment {
 
   object Incomes {
     def apply(selfAssessment: SelfAssessment) = selfAssessment.selfEmployments.map { selfEmployment =>
-      SelfEmploymentIncome(selfEmployment.sourceId, profit = RoundDown(Profit(selfEmployment)),
-        taxableProfit = TaxableProfit(selfEmployment))
+      SelfEmploymentIncome(selfEmployment.sourceId,
+                           profit = RoundDown(Profit(selfEmployment)),
+                           taxableProfit = TaxableProfit(selfEmployment))
     }
   }
 
   object TaxableProfit {
     def apply(selfEmployment: domain.SelfEmployment): BigDecimal =
-      RoundDown(PositiveOrZero(Profit(selfEmployment) - CapAt(LossBroughtForward(selfEmployment), AdjustedProfit(selfEmployment))))
+      RoundDown(
+        PositiveOrZero(
+          Profit(selfEmployment) - CapAt(LossBroughtForward(selfEmployment), AdjustedProfit(selfEmployment))))
   }
 
-
   object LossBroughtForward {
-    def apply(selfEmployment: domain.SelfEmployment) = ValueOrZero(selfEmployment.adjustments.flatMap(_.lossBroughtForward))
+    def apply(selfEmployment: domain.SelfEmployment) =
+      ValueOrZero(selfEmployment.adjustments.flatMap(_.lossBroughtForward))
   }
 
   object TotalLossBroughtForward {

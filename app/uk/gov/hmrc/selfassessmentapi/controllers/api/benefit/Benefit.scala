@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.api.benefit
 
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 
-case class UnearnedIncome(id: Option[SourceId] = None)
+case class Benefit(id: Option[SourceId] = None)
 
-object UnearnedIncome extends JsonMarshaller[UnearnedIncome] {
+object Benefit extends JsonMarshaller[Benefit] {
 
-  implicit val writes = Json.writes[UnearnedIncome]
+  implicit val writes = Json.writes[Benefit]
 
-  implicit val reads = Reads.pure(None).map(UnearnedIncome(_))
+  implicit val reads = Reads.pure(None).map(Benefit(_))
 
-  override def example(id : Option[SourceId]) = UnearnedIncome(id)
+  override def example(id : Option[SourceId]) = Benefit(id)
 }

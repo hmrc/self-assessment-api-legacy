@@ -3,11 +3,11 @@ package uk.gov.hmrc.selfassessmentapi.live
 import org.joda.time.LocalDate
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.{parse, toJson}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, SourceType, SourceTypes}
-import ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.controllers.api.dividend.SourceType.Dividends
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
 import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.SourceType.Banks
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.SourceType.Benefits
+import uk.gov.hmrc.selfassessmentapi.controllers.api.dividend.SourceType.Dividends
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.Employment
 import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.SourceType.Employments
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.FurnishedHolidayLetting
@@ -18,8 +18,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SelfEmployme
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.SourceType.UKProperties
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.UKProperty
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.UnearnedIncome
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 import scala.util.matching.Regex
@@ -34,7 +33,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
   override lazy val app = FakeApplication(additionalConfiguration = Map(
     "Test.feature-switch.self-employments.enabled" -> true,
-    "Test.feature-switch.unearned-incomes.enabled" -> true,
+    "Test.feature-switch.benefits.enabled" -> true,
     "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
     "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
     "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
@@ -48,7 +47,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
   val errorScenarios: Map[SourceType, ErrorScenario] = Map(
     SelfEmployments -> ErrorScenario(invalidInput = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().plusDays(1))),
       error = ExpectedError(path = "/commencementDate", code = s"$COMMENCEMENT_DATE_NOT_IN_THE_PAST")),
-    UnearnedIncomes -> ErrorScenario(invalidInput = toJson(UnearnedIncome.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok)),
+    Benefits -> ErrorScenario(invalidInput = toJson(Benefits.example()), error = ExpectedError(path = "", code = "", httpStatusCode = ok)),
     FurnishedHolidayLettings -> ErrorScenario(invalidInput = parse(s"""
                                                                       |{
                                                                       |  "propertyLocation": "The Moon"
@@ -70,7 +69,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
   val updateScenarios: Map[SourceType, UpdateScenario] = Map(
     SelfEmployments -> UpdateScenario(updatedValue = toJson(SelfEmployment.example().copy(commencementDate = LocalDate.now().minusDays(1))),
       expectedUpdate = ExpectedUpdate(path = _ \ "commencementDate", value = LocalDate.now().minusDays(1).toString("yyyy-MM-dd"))),
-    UnearnedIncomes -> UpdateScenario(updatedValue = toJson(UnearnedIncome.example()),
+    Benefits -> UpdateScenario(updatedValue = toJson(Benefits.example()),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     FurnishedHolidayLettings -> UpdateScenario(updatedValue = toJson(FurnishedHolidayLetting.example().copy(propertyLocation = EEA)),
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),

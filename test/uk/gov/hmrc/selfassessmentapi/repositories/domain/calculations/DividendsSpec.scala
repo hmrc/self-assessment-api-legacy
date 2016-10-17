@@ -48,56 +48,56 @@ class DividendsSpec extends UnitSpec {
     }
 
     "be calculated for a single one uk dividend for a single income source" in {
-      val unearnedIncome = DividendBuilder()
+      val dividend = DividendBuilder()
         .withUKDividends(1000)
         .create()
 
-      Dividends.FromUK(SelfAssessment(dividends = Seq(unearnedIncome))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncome.sourceId, BigDecimal(1000)))
+      Dividends.FromUK(SelfAssessment(dividends = Seq(dividend))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = dividend.sourceId, BigDecimal(1000)))
     }
 
     "be calculated for multiple uk dividends from a single income source" in {
-      val unearnedIncome = DividendBuilder()
+      val dividend = DividendBuilder()
         .withUKDividends(1000, 2000)
         .create()
 
-      Dividends.FromUK(SelfAssessment(dividends = Seq(unearnedIncome))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncome.sourceId, BigDecimal(3000)))
+      Dividends.FromUK(SelfAssessment(dividends = Seq(dividend))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = dividend.sourceId, BigDecimal(3000)))
     }
 
     "be round down to nearest pound for a single dividend" in {
-      val unearnedIncome = DividendBuilder()
+      val dividend = DividendBuilder()
         .withUKDividends(1000.50)
         .create()
 
-      Dividends.FromUK(SelfAssessment(dividends = Seq(unearnedIncome))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncome.sourceId, BigDecimal(1000)))
+      Dividends.FromUK(SelfAssessment(dividends = Seq(dividend))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = dividend.sourceId, BigDecimal(1000)))
     }
 
     "be round down to nearest pound for multiple dividends" in {
-      val unearnedIncome = DividendBuilder()
+      val dividend = DividendBuilder()
         .withUKDividends(1000.90, 2000.99)
         .create()
 
-      Dividends.FromUK(SelfAssessment(dividends = Seq(unearnedIncome))) shouldBe
-        Seq(DividendsFromUKSources(sourceId = unearnedIncome.sourceId, BigDecimal(3001)))
+      Dividends.FromUK(SelfAssessment(dividends = Seq(dividend))) shouldBe
+        Seq(DividendsFromUKSources(sourceId = dividend.sourceId, BigDecimal(3001)))
     }
 
   }
 
   "TotalDividends" should {
     "be sum of all dividends across multiple sources which have been rounded at source level" in {
-      val unearnedIncomeOne = DividendBuilder()
+      val dividendOne = DividendBuilder()
         .withUKDividends(1000.50)
         .withOtherUKDividends(2000.99)
         .create()
 
-      val unearnedIncomeTwo = DividendBuilder()
+      val dividendTwo = DividendBuilder()
         .withUKDividends(3000.50)
         .withOtherUKDividends(4000.999)
         .create()
 
-      Dividends.TotalIncome(SelfAssessment(dividends = Seq(unearnedIncomeOne, unearnedIncomeTwo))) shouldBe 10002
+      Dividends.TotalIncome(SelfAssessment(dividends = Seq(dividendOne, dividendTwo))) shouldBe 10002
     }
   }
 

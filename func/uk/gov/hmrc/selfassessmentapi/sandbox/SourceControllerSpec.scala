@@ -10,7 +10,7 @@ class SourceControllerSpec extends BaseFunctionalSpec {
 
   override lazy val app = FakeApplication(additionalConfiguration = Map(
     "Test.feature-switch.self-employments.enabled" -> true,
-    "Test.feature-switch.unearned-incomes.enabled" -> true,
+    "Test.feature-switch.benefits.enabled" -> true,
     "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
     "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
     "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,

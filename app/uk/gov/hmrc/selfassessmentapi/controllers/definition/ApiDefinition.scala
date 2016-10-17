@@ -111,7 +111,7 @@ object GroupName extends Enumeration {
   val SelfEmployments = Value("Self Employments")
   val UKProperties = Value("UK Properties")
   val FurnishedHolidayLettings = Value("Furnished Holiday Lettings")
-  val UnearnedIncomes = Value("Unearned Incomes")
+  val Benefits = Value("Benefits")
   val Dividends = Value("Dividends")
   val Banks = Value("Banks")
 }

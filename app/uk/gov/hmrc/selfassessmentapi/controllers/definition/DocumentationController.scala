@@ -73,10 +73,12 @@ object Documentation extends BaseController with Links {
     }
     Seq(
       EndpointDocumentation(s"Create ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.createSource(utr, taxYear, sourceType, sourceId)),
-      EndpointDocumentation(s"Retrieve ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.readSource(utr, taxYear, sourceType, sourceId)),
+      EndpointDocumentation(s"Retrieve ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.readSource(utr, taxYear, sourceType, sourceId))
+    ) ++ updateEndpoint ++
+    Seq(
       EndpointDocumentation(s"Delete ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.deleteSource(utr, taxYear, sourceType, sourceId)),
       EndpointDocumentation(s"Retrieve All ${sourceType.documentationName}", uk.gov.hmrc.selfassessmentapi.views.xml.listSources(utr, taxYear, sourceType, sourceId))
-    ) ++ updateEndpoint ++ summaryDocumentation(sourceType)
+    ) ++ summaryDocumentation(sourceType)
   }
 
   private lazy val summaryDocumentation: SourceType => Seq[EndpointDocumentation] = { sourceType =>

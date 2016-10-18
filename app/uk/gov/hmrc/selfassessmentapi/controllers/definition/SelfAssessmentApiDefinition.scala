@@ -153,12 +153,14 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
       Endpoint(uriPattern = uri, endpointName = s"Create ${sourceType.documentationName}", method = POST,
         authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope), groupName =  resolveGroupName(sourceType)),
       Endpoint(uriPattern = uriWithId, endpointName = s"Retrieve ${sourceType.documentationName}", method = GET,
-        authType = USER, throttlingTier = UNLIMITED, scope = Some(readScope), groupName =  resolveGroupName(sourceType)),
+        authType = USER, throttlingTier = UNLIMITED, scope = Some(readScope), groupName =  resolveGroupName(sourceType))
+    ) ++ updateEndpoint ++
+    Seq(
       Endpoint(uriPattern = uriWithId, endpointName = s"Delete ${sourceType.documentationName}", method = DELETE,
         authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope), groupName =  resolveGroupName(sourceType)),
       Endpoint(uriPattern = uri, endpointName = s"Retrieve All ${sourceType.documentationName}", method = GET,
         authType = USER, throttlingTier = UNLIMITED, scope = Some(readScope), groupName =  resolveGroupName(sourceType))
-    )  ++ updateEndpoint ++  summaryEndpoints(sourceType)
+    )  ++ summaryEndpoints(sourceType)
   }
 
   private lazy val summaryEndpoints : SourceType => Seq[Endpoint]  = { sourceType =>

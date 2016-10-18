@@ -80,7 +80,7 @@ class DividendMongoRepository(implicit mongo: () => DB)
     We need to perform updates manually as we are using one collection per source and it includes the arrays of summaries. This
     update is however partial so we should only update the fields provided and not override the summary arrays.
    */
-  override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, unearnedIncome: ApiDividend): Future[Boolean] = {
+  override def update(saUtr: SaUtr, taxYear: TaxYear, id: SourceId, dividend: ApiDividend): Future[Boolean] = {
     val modifiers = BSONDocument(Seq(modifierStatementLastModified))
     for {
       result <- atomicUpdate(

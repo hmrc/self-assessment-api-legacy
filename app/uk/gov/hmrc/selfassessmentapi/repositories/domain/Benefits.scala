@@ -21,19 +21,19 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.{BSONDocument, BSONDouble, BSONObjectID, BSONString}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.Benefit
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.BenefitType.BenefitType
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.Income
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.BenefitType.BenefitType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{TaxYear, _}
 
-case class UnearnedIncomesBenefitSummary(summaryId: SummaryId,
-                                         `type`: BenefitType,
-                                         amount: BigDecimal,
-                                         taxDeduction: BigDecimal) extends Summary {
+case class BenefitIncomeSummary(summaryId: SummaryId,
+                                `type`: BenefitType,
+                                amount: BigDecimal,
+                                taxDeduction: BigDecimal) extends Summary {
 
-  val arrayName = UnearnedIncomesBenefitSummary.arrayName
+  val arrayName = BenefitIncomeSummary.arrayName
 
-  def toBenefit: Benefit =
-    Benefit(id = Some(summaryId),
+  def toBenefit: Income =
+    Income(id = Some(summaryId),
       `type` = `type`,
       amount = amount,
       taxDeduction = taxDeduction)
@@ -46,14 +46,14 @@ case class UnearnedIncomesBenefitSummary(summaryId: SummaryId,
   )
 }
 
-object UnearnedIncomesBenefitSummary {
+object BenefitIncomeSummary {
 
-  val arrayName = "benefits"
+  val arrayName = "incomes"
 
-  implicit val format = Json.format[UnearnedIncomesBenefitSummary]
+  implicit val format = Json.format[BenefitIncomeSummary]
 
-  def toMongoSummary(income: Benefit, id: Option[SummaryId] = None): UnearnedIncomesBenefitSummary = {
-    UnearnedIncomesBenefitSummary(
+  def toMongoSummary(income: Income, id: Option[SummaryId] = None): BenefitIncomeSummary = {
+    BenefitIncomeSummary(
       summaryId = id.getOrElse(BSONObjectID.generate.stringify),
       `type` = income.`type`,
       amount = income.amount,
@@ -62,31 +62,31 @@ object UnearnedIncomesBenefitSummary {
   }
 }
 
-case class UnearnedIncome(id: BSONObjectID,
-                          sourceId: SourceId,
-                          saUtr: SaUtr,
-                          taxYear: TaxYear,
-                          lastModifiedDateTime: DateTime,
-                          createdDateTime: DateTime,
-                          benefits: Seq[UnearnedIncomesBenefitSummary] = Nil) extends SourceMetadata {
+case class Benefits(id: BSONObjectID,
+                    sourceId: SourceId,
+                    saUtr: SaUtr,
+                    taxYear: TaxYear,
+                    lastModifiedDateTime: DateTime,
+                    createdDateTime: DateTime,
+                    incomes: Seq[BenefitIncomeSummary] = Nil) extends SourceMetadata {
 
-  def toUnearnedIncome = unearnedincome.UnearnedIncome(id = Some(sourceId))
+  def toUnearnedIncome = benefit.Benefit(id = Some(sourceId))
 }
 
-object UnearnedIncome {
+object Benefits {
   implicit val dateTimeFormat = ReactiveMongoFormats.dateTimeFormats
   implicit val localDateFormat = ReactiveMongoFormats.localDateFormats
 
   implicit val mongoFormats = ReactiveMongoFormats.mongoEntity({
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
-    Format(Json.reads[UnearnedIncome], Json.writes[UnearnedIncome])
+    Format(Json.reads[Benefits], Json.writes[Benefits])
   })
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, se: unearnedincome.UnearnedIncome): UnearnedIncome = {
+  def create(saUtr: SaUtr, taxYear: TaxYear, se: benefit.Benefit): Benefits = {
     val id = BSONObjectID.generate
     val now = DateTime.now(DateTimeZone.UTC)
-    UnearnedIncome(
+    Benefits(
       id = id,
       sourceId = id.stringify,
       saUtr = saUtr,

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.api.benefit
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 import ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.BenefitType._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.BenefitType._
 
 class BenefitsSpec extends JsonSpec {
 
   "format" should {
 
     "round trip valid Benefit json" in {
-      roundTripJson(Benefit(`type` = JobSeekersAllowance, amount = BigDecimal(2000.49), taxDeduction = BigDecimal(300.00)))
+      roundTripJson(Income(`type` = JobSeekersAllowance, amount = BigDecimal(2000.49), taxDeduction = BigDecimal(300.00)))
     }
   }
 
@@ -41,27 +41,27 @@ class BenefitsSpec extends JsonSpec {
           |}
         """.stripMargin)
 
-      assertValidationError[Benefit](
+      assertValidationError[Income](
         json, Map("/type" -> NO_VALUE_FOUND), "Should fail with invalid type")
     }
 
     "reject amounts with more than 2 decimal values" in {
       Seq(BigDecimal(1000.123), BigDecimal(1000.1234), BigDecimal(1000.12345), BigDecimal(1000.123456789)).foreach { testAmount =>
-        assertValidationError[Benefit](
-          Benefit(`type` = JobSeekersAllowance, amount = testAmount, taxDeduction = BigDecimal(304.00)),
+        assertValidationError[Income](
+          Income(`type` = JobSeekersAllowance, amount = testAmount, taxDeduction = BigDecimal(304.00)),
           Map("/amount" -> INVALID_MONETARY_AMOUNT), "Expected invalid benefits amount with more than 2 decimal places")
       }
     }
 
     "reject negative amount" in {
-      val benefits = Benefit(`type` = JobSeekersAllowance, amount = BigDecimal(-1000.12), taxDeduction = BigDecimal(300.09))
-      assertValidationError[Benefit](
+      val benefits = Income(`type` = JobSeekersAllowance, amount = BigDecimal(-1000.12), taxDeduction = BigDecimal(300.09))
+      assertValidationError[Income](
         benefits, Map("/amount" -> INVALID_MONETARY_AMOUNT), "Expected negative amount")
     }
 
     "reject tax deductions greater than the amount" in {
-      val benefits = Benefit(`type` = JobSeekersAllowance, amount = BigDecimal(5000.00), taxDeduction = BigDecimal(6000.00))
-      assertValidationError[Benefit](
+      val benefits = Income(`type` = JobSeekersAllowance, amount = BigDecimal(5000.00), taxDeduction = BigDecimal(6000.00))
+      assertValidationError[Income](
         benefits, Map("" -> INVALID_TAX_DEDUCTION_AMOUNT), "Expected tax deductions amount greater than amount")
     }
   }

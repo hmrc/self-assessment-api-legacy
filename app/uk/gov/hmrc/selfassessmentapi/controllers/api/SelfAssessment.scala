@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain._
 
 case class SelfAssessment(employments: Seq[Employment] = Seq(),
                           selfEmployments: Seq[SelfEmployment] = Seq(),
-                          unearnedIncomes: Seq[UnearnedIncome] = Seq(),
+                          benefits: Seq[Benefits] = Seq(),
                           dividends: Seq[Dividend] = Seq(),
                           ukProperties: Seq[UKProperties] = Seq(),
                           taxYearProperties: Option[TaxYearProperties] = None,

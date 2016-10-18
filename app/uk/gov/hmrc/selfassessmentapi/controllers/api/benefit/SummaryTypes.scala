@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.api.benefit
 
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
@@ -23,16 +23,16 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 object SummaryTypes {
 
-  case object Benefits extends SummaryType {
-    override val name = "benefits"
-    override val documentationName = "Benefits"
-    override def example(id: Option[SummaryId] = None): JsValue = toJson(Benefit.example(id))
-    override val title = "Sample unearned income benefits"
-    override def description(action: String) = s"$action a benefit for the specified source"
+  case object Incomes extends SummaryType {
+    override val name = "incomes"
+    override val documentationName = "Benefit Incomes"
+    override def example(id: Option[SummaryId] = None): JsValue = toJson(Income.example(id))
+    override val title = "Sample benefit income"
+    override def description(action: String) = s"$action a benefit income for the specified source"
     override val fieldDescriptions = Seq(
-      FullFieldDescription("unearned income", "type", "Enum", s"Type of benefit (one of the following: ${BenefitType.values.mkString(", ")})"),
-      PositiveMonetaryFieldDescription("unearned income", "amount", "Pension, annuities and state benefits from UK, split by type - state pension, state pension lump sum, Other pensions, " +
-        "retirement annuities and taxable triviality payments, Incapacity Benefits, Jobseeker’s allowance")
+      FullFieldDescription("benefit income", "type", "Enum", s"Type of benefit (one of the following: ${BenefitType.values.mkString(", ")})"),
+      PositiveMonetaryFieldDescription("benefit income", "amount", "Pension, annuities and state benefits from UK, split by type - state pension, state pension lump sum, Other pensions, " +
+        "retirement annuities and taxable triviality payments, Incapacity Benefits, Jobseeker’s allowance.")
     )
   }
 

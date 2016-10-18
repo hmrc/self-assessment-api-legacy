@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.sandbox.benefit
 
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SummaryTypes.Benefits
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{UnearnedIncome, _}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes.Benefits
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.SummaryTypes.Incomes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.{Benefit, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SummaryType, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
 import uk.gov.hmrc.selfassessmentapi.repositories.sandbox.{SandboxSourceRepository, SandboxSummaryRepository}
 
-object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {
+object BenefitSourceHandler extends SourceHandler(Benefit, Benefits.name) {
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] =
     summaryType match {
-      case Benefits => Some(SummaryHandler(new SandboxSummaryRepository[Benefit] {
-        override def example(id: Option[SummaryId]) = Benefit.example(id)
-        override implicit val writes = Benefit.writes
-      }, Benefit, Benefits.name))
+      case Incomes => Some(SummaryHandler(new SandboxSummaryRepository[Income] {
+        override def example(id: Option[SummaryId]) = Income.example(id)
+        override implicit val writes = Income.writes
+      }, Income, Incomes.name))
       case _ => None
     }
 
-  override val repository = new SandboxSourceRepository[UnearnedIncome] {
-    override implicit val writes = UnearnedIncome.writes
-    override def example(id: SourceId) = UnearnedIncome.example().copy(id = Some(id))
+  override val repository = new SandboxSourceRepository[Benefit] {
+    override implicit val writes = Benefit.writes
+    override def example(id: SourceId) = Benefit.example().copy(id = Some(id))
   }
 }

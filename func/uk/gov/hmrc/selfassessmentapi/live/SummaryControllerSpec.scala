@@ -8,7 +8,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.So
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes.GoodsAndServicesOwnUses
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.SourceType.UKProperties
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.UnearnedIncomes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.SourceType.Benefits
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, SummaryType}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment
 import uk.gov.hmrc.support.BaseFunctionalSpec
@@ -17,7 +17,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
 
   override lazy val app = FakeApplication(
     additionalConfiguration = Map("Test.feature-switch.self-employments.enabled" -> true,
-                                  "Test.feature-switch.unearned-incomes.enabled" -> true,
+                                  "Test.feature-switch.benefits.enabled" -> true,
                                   "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
                                   "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
                                   "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
@@ -56,7 +56,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
   private val implementedSummaries = Map[SourceType, Set[SummaryType]](
     Employments -> Employments.summaryTypes,
     SelfEmployments -> SelfEmployments.summaryTypes,
-    UnearnedIncomes -> UnearnedIncomes.summaryTypes,
+    Benefits -> Benefits.summaryTypes,
     FurnishedHolidayLettings -> FurnishedHolidayLettings.summaryTypes,
     UKProperties -> UKProperties.summaryTypes,
     Dividends -> Dividends.summaryTypes,

@@ -39,7 +39,7 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
   private val liabilityRepo = mock[LiabilityMongoRepository]
   private val employmentRepo = mock[EmploymentMongoRepository]
   private val selfEmploymentRepo = mock[SelfEmploymentMongoRepository]
-  private val unearnedIncomeRepo = mock[UnearnedIncomeMongoRepository]
+  private val benefitRepo = mock[BenefitsMongoRepository]
   private val ukPropertyRepo = mock[UKPropertiesMongoRepository]
   private val furnishedHolidayLettingsRepo = mock[FurnishedHolidayLettingsMongoRepository]
   private val dividendsRepo = mock[DividendMongoRepository]
@@ -48,7 +48,7 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
   private val featureSwitch = mock[FeatureSwitch]
   private val service = new LiabilityService(employmentRepo,
                                              selfEmploymentRepo,
-                                             unearnedIncomeRepo,
+                                             benefitRepo,
                                              furnishedHolidayLettingsRepo,
                                              liabilityRepo,
                                              ukPropertyRepo,
@@ -103,21 +103,21 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
       verifyNoMoreInteractions(selfEmploymentRepo)
     }
 
-    "get unearned incomes sources from repository when Unearned Incomes source is switched on" in {
-      when(featureSwitch.isEnabled(UnearnedIncomes)).thenReturn(true)
-      when(unearnedIncomeRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+    "get benefits sources from repository when benefits source is switched on" in {
+      when(featureSwitch.isEnabled(Benefits)).thenReturn(true)
+      when(benefitRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
 
       await(service.calculate(saUtr, taxYear))
 
-      verify(unearnedIncomeRepo).findAll(saUtr, taxYear)
+      verify(benefitRepo).findAll(saUtr, taxYear)
     }
 
-    "not get unearned incomes sources from repository when Unearned Incomes source is switched off" in {
-      when(featureSwitch.isEnabled(UnearnedIncomes)).thenReturn(false)
+    "not get benefit source from repository when benefit source is switched off" in {
+      when(featureSwitch.isEnabled(Benefits)).thenReturn(false)
 
       await(service.calculate(saUtr, taxYear))
 
-      verifyNoMoreInteractions(unearnedIncomeRepo)
+      verifyNoMoreInteractions(benefitRepo)
     }
 
     "get UK property sources from repository when the UK property source is switched on" in {

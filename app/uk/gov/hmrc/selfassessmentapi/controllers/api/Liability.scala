@@ -232,14 +232,14 @@ object Liability {
   }
 
   private def exampleInterestFromUKBanksAndBuildingSocieties = {
-    if (FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.UnearnedIncomes))
+    if (FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.Benefits))
       Seq(InterestFromUKBanksAndBuildingSocieties("interest-income-1", 100),
           InterestFromUKBanksAndBuildingSocieties("interest-income-2", 200))
     else Seq()
   }
 
   private def exampleDividendsFromUKSources = {
-    if (FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.UnearnedIncomes))
+    if (FeatureSwitch(AppContext.featureSwitch).isEnabled(SourceTypes.Benefits))
       Seq(DividendsFromUKSources("dividend-income-1", 1000), DividendsFromUKSources("dividend-income-2", 2000))
     else Seq()
   }

@@ -136,7 +136,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
     case SourceTypes.SelfEmployments => SelfEmployments
     case SourceTypes.UKProperties => UKProperties
     case SourceTypes.FurnishedHolidayLettings => FurnishedHolidayLettings
-    case SourceTypes.UnearnedIncomes => UnearnedIncomes
+    case SourceTypes.Benefits => Benefits
     case SourceTypes.Dividends => Dividends
     case SourceTypes.Banks => Banks
   }
@@ -145,7 +145,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
     val uri: String = s"/{utr}/{tax-year}/${sourceType.name}"
     val uriWithId: String = s"$uri/{${sourceType.name}-id}"
     val updateEndpoint =  sourceType match  {
-      case SourceTypes.Employments | SourceTypes.UnearnedIncomes | SourceTypes.Banks | SourceTypes.Dividends =>  Nil
+      case SourceTypes.Employments | SourceTypes.Benefits | SourceTypes.Banks | SourceTypes.Dividends =>  Nil
       case _ => Seq(Endpoint(uriPattern = uriWithId, endpointName = s"Update ${sourceType.documentationName}", method = PUT,
         authType = USER, throttlingTier = UNLIMITED, scope = Some(writeScope), groupName =  resolveGroupName(sourceType)))
     }

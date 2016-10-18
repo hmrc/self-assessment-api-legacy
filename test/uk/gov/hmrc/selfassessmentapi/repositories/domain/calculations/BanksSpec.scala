@@ -29,7 +29,7 @@ class SavingsSpec extends UnitSpec {
   "Interest from UK banks and building societies" should {
 
     "calculate rounded down interest when there are multiple interest of both taxed and unTaxed from uk banks and building societies from" +
-      " multiple unearned income source" in {
+      " multiple benefit sources" in {
 
       val banksOne = BankBuilder()
         .withTaxedInterest(100.50)
@@ -46,7 +46,7 @@ class SavingsSpec extends UnitSpec {
           api.InterestFromUKBanksAndBuildingSocieties(sourceId = banksTwo.sourceId, BigDecimal(777)))
     }
 
-    "calculate interest when there is one taxed interest from uk banks and building societies from a single unearned income source" in {
+    "calculate interest when there is one taxed interest from uk banks and building societies from a single benefit source" in {
       val bank = BankBuilder()
         .withTaxedInterest(100)
         .create()
@@ -56,7 +56,7 @@ class SavingsSpec extends UnitSpec {
 
     }
 
-    "calculate interest when there are multiple taxed interest from uk banks and building societies from a single unearned income source" in {
+    "calculate interest when there are multiple taxed interest from uk banks and building societies from a single benefit source" in {
       val bank = BankBuilder()
         .withTaxedInterest(100, 200)
         .create()
@@ -65,7 +65,7 @@ class SavingsSpec extends UnitSpec {
         Seq(api.InterestFromUKBanksAndBuildingSocieties(bank.sourceId, BigDecimal(375)))
     }
 
-    "calculate round down interest when there is one taxed interest from uk banks and building societies from a single unearned income " +
+    "calculate round down interest when there is one taxed interest from uk banks and building societies from a single benefit source income " +
       "source" in {
       val bank = BankBuilder()
         .withTaxedInterest(100.50)
@@ -75,8 +75,7 @@ class SavingsSpec extends UnitSpec {
         Seq(api.InterestFromUKBanksAndBuildingSocieties(bank.sourceId, BigDecimal(125)))
     }
 
-    "calculate round down interest when there are multiple taxed interest from uk banks and building societies from a single unearned " +
-      "income source" in {
+    "calculate round down interest when there are multiple taxed interest from uk banks and building societies from a single bank source" in {
       val bank = BankBuilder()
         .withTaxedInterest(100.90, 200.99)
         .create()
@@ -86,7 +85,7 @@ class SavingsSpec extends UnitSpec {
 
     }
 
-    "calculate interest when there is one unTaxed interest from uk banks and building societies from a single unearned income source" in {
+    "calculate interest when there is one unTaxed interest from uk banks and building societies from a single bank source" in {
       val bank = BankBuilder()
         .withUntaxedInterest(100)
         .create()
@@ -96,8 +95,7 @@ class SavingsSpec extends UnitSpec {
 
     }
 
-    "calculate interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned income " +
-      "source" in {
+    "calculate interest when there are multiple unTaxed interest from uk banks and building societies" in {
       val bank = BankBuilder()
         .withUntaxedInterest(100, 200)
         .create()
@@ -107,8 +105,7 @@ class SavingsSpec extends UnitSpec {
     }
 
 
-    "calculate rounded down interest when there is one unTaxed interest from uk banks and building societies from a single unearned " +
-      "income source" in {
+    "calculate rounded down interest when there is one unTaxed interest from uk banks and building societies" in {
       val bank = BankBuilder()
         .withUntaxedInterest(100.50)
         .create()
@@ -117,8 +114,7 @@ class SavingsSpec extends UnitSpec {
         Seq(api.InterestFromUKBanksAndBuildingSocieties(bank.sourceId, BigDecimal(100)))
     }
 
-    "calculate rounded down interest when there are multiple unTaxed interest from uk banks and building societies from a single unearned" +
-      " income source" in {
+    "calculate rounded down interest when there are multiple unTaxed interest from uk banks and building societies" in {
       val bank = BankBuilder()
         .withUntaxedInterest(100.50, 200.99)
         .create()
@@ -251,7 +247,7 @@ class SavingsSpec extends UnitSpec {
       Savings.TotalTaxPaid(SelfAssessment(banks = Seq(savingTwo))) shouldBe 1405.92
     }
 
-    "be equal to RoundUpToPennies(RoundUp(Sum(Taxed Interest)) * 100/80 - Sum(Taxed Interest)) for multiple unearned income sources" in {
+    "be equal to RoundUpToPennies(RoundUp(Sum(Taxed Interest)) * 100/80 - Sum(Taxed Interest)) for multiple bank sources" in {
       val savingOne = BankBuilder()
         .withTaxedInterest(786.78)
         .withUntaxedInterest(2500.00)

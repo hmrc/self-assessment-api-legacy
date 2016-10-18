@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.live.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.live.benefit
 
 import uk.gov.hmrc.play.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SourceType.UnearnedIncomes
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.SummaryTypes.Benefits
-import uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome.{Benefit, UnearnedIncome}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.SourceType.Benefits
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.SummaryTypes.Incomes
+import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.{Income, Benefit}
 import uk.gov.hmrc.selfassessmentapi.controllers.{SourceHandler, SummaryHandler}
-import uk.gov.hmrc.selfassessmentapi.repositories.live.UnearnedIncomeRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.live.BenefitsRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepositoryWrapper, SummaryRepositoryWrapper}
 
-object UnearnedIncomeSourceHandler extends SourceHandler(UnearnedIncome, UnearnedIncomes.name) {
+object BenefitSourceHandler extends SourceHandler(Benefit, Benefits.name) {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Benefits => Some(SummaryHandler(SummaryRepositoryWrapper(UnearnedIncomeRepository().BenefitRepository), Benefit, Benefits.name))
-      case _ => throw new NotImplementedException(s"${UnearnedIncomes.name} ${summaryType.name} is not implemented")
+      case Incomes => Some(SummaryHandler(SummaryRepositoryWrapper(BenefitsRepository().BenefitRepository), Income, Benefits.name))
+      case _ => throw new NotImplementedException(s"${Benefits.name} ${summaryType.name} is not implemented")
     }
   }
 
-  override val repository = SourceRepositoryWrapper(UnearnedIncomeRepository())
+  override val repository = SourceRepositoryWrapper(BenefitsRepository())
 }

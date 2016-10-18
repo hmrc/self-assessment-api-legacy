@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.api.unearnedincome
+package uk.gov.hmrc.selfassessmentapi.controllers.api.benefit
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._

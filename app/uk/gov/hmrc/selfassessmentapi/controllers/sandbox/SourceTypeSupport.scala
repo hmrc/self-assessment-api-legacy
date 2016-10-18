@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.employment.EmploymentSo
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.furnishedholidaylettings.FurnishedHolidayLettingsSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.selfemployment.SelfEmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.ukproperty.UKPropertySourceHandler
-import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.unearnedincome.UnearnedIncomeSourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.benefit.BenefitSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.bank.BankSourceHandler
 import SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.dividend.DividendSourceHandler
@@ -34,7 +34,7 @@ trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.Source
     case FurnishedHolidayLettings => FurnishedHolidayLettingsSourceHandler
     case UKProperties => UKPropertySourceHandler
     case Employments => EmploymentSourceHandler
-    case UnearnedIncomes => UnearnedIncomeSourceHandler
+    case Benefits => BenefitSourceHandler
     case Dividends => DividendSourceHandler
     case Banks => BankSourceHandler
   }

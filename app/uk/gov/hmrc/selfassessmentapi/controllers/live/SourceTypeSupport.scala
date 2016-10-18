@@ -25,13 +25,13 @@ import uk.gov.hmrc.selfassessmentapi.controllers.live.employment.EmploymentSourc
 import uk.gov.hmrc.selfassessmentapi.controllers.live.furnishedholidaylettings.FurnishedHolidayLettingsSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment.SelfEmploymentSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.ukproperty.UKPropertySourceHandler
-import uk.gov.hmrc.selfassessmentapi.controllers.live.unearnedincome.UnearnedIncomeSourceHandler
+import uk.gov.hmrc.selfassessmentapi.controllers.live.benefit.BenefitSourceHandler
 import uk.gov.hmrc.selfassessmentapi.controllers.live.bank.BankSourceHandler
 
 trait SourceTypeSupport extends uk.gov.hmrc.selfassessmentapi.controllers.SourceTypeSupport {
   def sourceHandler(sourceType: SourceType): SourceHandler[_] = sourceType match {
     case SelfEmployments => SelfEmploymentSourceHandler
-    case UnearnedIncomes => UnearnedIncomeSourceHandler
+    case Benefits => BenefitSourceHandler
     case FurnishedHolidayLettings => FurnishedHolidayLettingsSourceHandler
     case Employments => EmploymentSourceHandler
     case UKProperties => UKPropertySourceHandler

@@ -33,7 +33,7 @@ class TotalIncomeSpec extends UnitSpec {
       Totals.IncomeReceived(totalNonSavings = 0, totalSavings = 250, totalDividends = 0) shouldBe 250
     }
 
-    "calculate total income if there is no income from self employments but has dividends from unearned income" in {
+    "calculate total income if there is no income from self employments but has dividends" in {
       Totals.IncomeReceived(totalNonSavings = 0, totalSavings = 0, totalDividends = 3000) shouldBe 3000
     }
   }

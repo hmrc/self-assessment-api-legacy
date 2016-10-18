@@ -27,7 +27,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
 class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: SelfEmploymentMongoRepository,
-                               uiRepo : UnearnedIncomeMongoRepository, empRepo: EmploymentMongoRepository,
+                               benRepo : BenefitsMongoRepository, empRepo: EmploymentMongoRepository,
                                fhlRepo: FurnishedHolidayLettingsMongoRepository, ukPropertyRepo: UKPropertiesMongoRepository,
                                divRepo: DividendMongoRepository, bankRepo: BanksMongoRepository, jobRepo: JobHistoryMongoRepository) {
 
@@ -47,12 +47,12 @@ class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: Se
     }
   }
 
-  private def deleteRecords(records: Seq[SelfAssessment]): Future[Unit] = {
+  private def deleteRecords(records: Seq[SelfAssessment]): Future[Unit] =
     Future.successful {
       records.foreach { record =>
         saRepo.delete(record.saUtr, record.taxYear)
         seRepo.delete(record.saUtr, record.taxYear)
-        uiRepo.delete(record.saUtr, record.taxYear)
+        benRepo.delete(record.saUtr, record.taxYear)
         empRepo.delete(record.saUtr, record.taxYear)
         fhlRepo.delete(record.saUtr, record.taxYear)
         divRepo.delete(record.saUtr, record.taxYear)
@@ -60,19 +60,16 @@ class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository, seRepo: Se
         ukPropertyRepo.delete(record.saUtr, record.taxYear)
       }
     }
-  }
 
-  private def abortJob(jobNumber: Int, t: Throwable) = {
+  private def abortJob(jobNumber: Int, t: Throwable) =
     for {
       _ <- jobRepo.abortJob(jobNumber)
     } yield throw t
-  }
-
 }
 
 object DeleteExpiredDataService {
   def apply() = new DeleteExpiredDataService(SelfAssessmentRepository(), SelfEmploymentRepository(),
-                                             UnearnedIncomeRepository(), EmploymentRepository(),
+                                             BenefitsRepository(), EmploymentRepository(),
                                              FurnishedHolidayLettingsRepository(), UKPropertiesRepository(),
                                              DividendRepository(), BanksRepository(), JobHistoryRepository())
 }

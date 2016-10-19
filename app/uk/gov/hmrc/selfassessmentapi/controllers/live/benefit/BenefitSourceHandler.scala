@@ -29,7 +29,7 @@ object BenefitSourceHandler extends SourceHandler(Benefit, Benefits.name) {
 
   override def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]] = {
     summaryType match {
-      case Incomes => Some(SummaryHandler(SummaryRepositoryWrapper(BenefitsRepository().BenefitRepository), Income, Benefits.name))
+      case Incomes => Some(SummaryHandler(SummaryRepositoryWrapper(BenefitsRepository().BenefitRepository), Income, Incomes.name))
       case _ => throw new NotImplementedException(s"${Benefits.name} ${summaryType.name} is not implemented")
     }
   }

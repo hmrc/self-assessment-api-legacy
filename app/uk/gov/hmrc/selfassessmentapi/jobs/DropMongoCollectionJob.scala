@@ -31,36 +31,36 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object DropMongoCollectionJob extends ExclusiveScheduledJob {
 
-  override val name = "DropMongoCollectionJob"
+  override val name = "DropMongoCollectionsJob"
 
   override lazy val initialDelay = AppContext.dropMongoCollectionJob.getMilliseconds("initialDelay").getOrElse(throw new IllegalStateException("Config key not found: initialDelay")) millisecond
 
   override lazy val interval = AppContext.dropMongoCollectionJob.getMilliseconds("interval").getOrElse(throw new IllegalStateException("Config key not found: interval")) millisecond
 
-  private val reposToBeDropped = Seq(EmploymentRepository(), SelfEmploymentRepository(), FurnishedHolidayLettingsRepository(), BanksRepository(),
+  private val reposToBeCreated = Seq(EmploymentRepository(), SelfEmploymentRepository(), FurnishedHolidayLettingsRepository(), BanksRepository(),
     BenefitsRepository(), DividendRepository(), LiabilityRepository(), UKPropertiesRepository())
 
-  private lazy val dropMongoCollection = new DropMongoLiabilityCollection(reposToBeDropped)
+  private lazy val dropMongoCollection = new DropMongoLiabilityCollection(reposToBeCreated)
 
   override lazy val isRunning = super.isRunning.flatMap(isRunning => if (isRunning) Future(true) else dropMongoCollection.isLatestJobInProgress)
 
   override def executeInMutex(implicit ec: ExecutionContext): Future[Result] = {
-    dropMongoCollection.dropMongoCollection().map { msg =>
+    dropMongoCollection.dropAndRecreateMongoDatabase().map { msg =>
       Logger.info(s"Finished $name.")
       Result(msg)
     }
   }
 
 
-  private class DropMongoLiabilityCollection(reposToBeDropped: Seq[ReactiveRepository[_, _]]) {
+  private class DropMongoLiabilityCollection(reposToBeCreated: Seq[ReactiveRepository[_, _]]) {
     private val jobRepo = JobHistoryRepository()
 
     def isLatestJobInProgress: Future[Boolean] = {
       jobRepo.isLatestJobInProgress
     }
 
-    def dropMongoCollection(): Future[String] = {
-      Logger.info(s"Starting $name drop the mongo liability collection.")
+    def dropAndRecreateMongoDatabase(): Future[String] = {
+      Logger.info(s"Starting $name drop the mongo database and created collections.")
 
       jobRepo.startJob().flatMap { job =>
         val dropDB = for {
@@ -70,7 +70,7 @@ object DropMongoCollectionJob extends ExclusiveScheduledJob {
         dropDB.flatMap { dropDB =>
 
           val result = Future.sequence {
-            reposToBeDropped.map { repo =>
+            reposToBeCreated.map { repo =>
               for {
                 status <- repo.ensureIndexes
               } yield status

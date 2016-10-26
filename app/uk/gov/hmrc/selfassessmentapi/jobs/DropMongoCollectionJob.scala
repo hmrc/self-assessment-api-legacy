@@ -17,10 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.jobs
 
 import play.Logger
+import play.modules.reactivemongo.ReactiveMongoPlugin
+import play.api.Play.current
+import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.play.scheduling.ExclusiveScheduledJob
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.repositories.live.{LiabilityMongoRepository, LiabilityRepository}
-import uk.gov.hmrc.selfassessmentapi.repositories.{JobHistoryMongoRepository, JobHistoryRepository}
+import uk.gov.hmrc.selfassessmentapi.repositories.JobHistoryRepository
+import uk.gov.hmrc.selfassessmentapi.repositories.live._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -34,7 +37,10 @@ object DropMongoCollectionJob extends ExclusiveScheduledJob {
 
   override lazy val interval = AppContext.dropMongoCollectionJob.getMilliseconds("interval").getOrElse(throw new IllegalStateException("Config key not found: interval")) millisecond
 
-  private lazy val dropMongoCollection = new DropMongoLiabilityCollection(LiabilityRepository(), JobHistoryRepository())
+  private val reposToBeDropped = Seq(EmploymentRepository(), SelfEmploymentRepository(), FurnishedHolidayLettingsRepository(), BanksRepository(),
+    BenefitsRepository(), DividendRepository(), LiabilityRepository(), UKPropertiesRepository())
+
+  private lazy val dropMongoCollection = new DropMongoLiabilityCollection(reposToBeDropped)
 
   override lazy val isRunning = super.isRunning.flatMap(isRunning => if (isRunning) Future(true) else dropMongoCollection.isLatestJobInProgress)
 
@@ -46,7 +52,8 @@ object DropMongoCollectionJob extends ExclusiveScheduledJob {
   }
 
 
-  private class DropMongoLiabilityCollection(repo: LiabilityMongoRepository, jobRepo: JobHistoryMongoRepository) {
+  private class DropMongoLiabilityCollection(reposToBeDropped: Seq[ReactiveRepository[_, _]]) {
+    private val jobRepo = JobHistoryRepository()
 
     def isLatestJobInProgress: Future[Boolean] = {
       jobRepo.isLatestJobInProgress
@@ -56,18 +63,36 @@ object DropMongoCollectionJob extends ExclusiveScheduledJob {
       Logger.info(s"Starting $name drop the mongo liability collection.")
 
       jobRepo.startJob().flatMap { job =>
-        repo.drop.map { status =>
-          jobRepo.completeJob(job.jobNumber, 0)
-          if (status)
-            s"$name Completed. Dropped the mongo liability collection successfully."
-          else
-            s"$name Completed. Could not drop the mongo liability collection."
-        }.recover {
-          case ex: Throwable =>
-            jobRepo.abortJob(job.jobNumber)
-            Logger.warn(ex.getMessage)
-            ex.getMessage
+        val dropDB = for {
+          _ <- ReactiveMongoPlugin.mongoConnector.db().drop()
+        } yield true
+
+        dropDB.flatMap { dropDB =>
+
+          val result = Future.sequence {
+            reposToBeDropped.map { repo =>
+              for {
+                status <- repo.ensureIndexes
+              } yield status
+            }
+          }
+
+          result.map { resultSeq =>
+            jobRepo.completeJob(job.jobNumber, 0)
+            val status = resultSeq.flatten.forall(_ == true)
+            if (dropDB && status)
+              s"$name Completed. Dropped the mongo database and created collections successfully."
+            else
+              s"$name Completed. Could not drop the mongo database and create collections."
+          }.recover {
+            case ex: Throwable =>
+              jobRepo.abortJob(job.jobNumber)
+              Logger.warn(ex.getMessage)
+              ex.getMessage
+          }
+
         }
+
       }
 
     }

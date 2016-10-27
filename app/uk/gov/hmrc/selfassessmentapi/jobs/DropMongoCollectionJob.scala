@@ -17,13 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.jobs
 
 import play.Logger
-import play.modules.reactivemongo.ReactiveMongoPlugin
 import play.api.Play.current
+import play.modules.reactivemongo.ReactiveMongoPlugin
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.play.scheduling.ExclusiveScheduledJob
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.repositories.JobHistoryRepository
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
+import uk.gov.hmrc.selfassessmentapi.repositories.{JobHistoryRepository, SelfAssessmentRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -38,9 +38,9 @@ object DropMongoCollectionJob extends ExclusiveScheduledJob {
   override lazy val interval = AppContext.dropMongoCollectionJob.getMilliseconds("interval").getOrElse(throw new IllegalStateException("Config key not found: interval")) millisecond
 
   private val reposToBeCreated = Seq(EmploymentRepository(), SelfEmploymentRepository(), FurnishedHolidayLettingsRepository(), BanksRepository(),
-    BenefitsRepository(), DividendRepository(), LiabilityRepository(), UKPropertiesRepository())
+    BenefitsRepository(), DividendRepository(), LiabilityRepository(), SelfAssessmentRepository(), JobHistoryRepository(), UKPropertiesRepository())
 
-  private lazy val dropMongoCollection = new DropMongoLiabilityCollection(reposToBeCreated)
+  private lazy val dropMongoCollection = new RecreateMongoDatabase(reposToBeCreated)
 
   override lazy val isRunning = super.isRunning.flatMap(isRunning => if (isRunning) Future(true) else dropMongoCollection.isLatestJobInProgress)
 
@@ -52,7 +52,7 @@ object DropMongoCollectionJob extends ExclusiveScheduledJob {
   }
 
 
-  private class DropMongoLiabilityCollection(reposToBeCreated: Seq[ReactiveRepository[_, _]]) {
+  private class RecreateMongoDatabase(reposToBeCreated: Seq[ReactiveRepository[_, _]]) {
     private val jobRepo = JobHistoryRepository()
 
     def isLatestJobInProgress: Future[Boolean] = {

@@ -17,10 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.jobs
 
 import com.codahale.metrics.Gauge
-import com.kenshoo.play.metrics.MetricsRegistry
+import com.kenshoo.play.metrics.Metrics
 import org.joda.time.{DateTime, LocalTime}
 import play.Logger
-import play.api.Configuration
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.play.scheduling.ExclusiveScheduledJob
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.repositories.{JobHistoryMongoRepository, JobHistoryRepository}
@@ -111,7 +111,9 @@ object DeleteExpiredDataJob extends ExclusiveScheduledJob {
     }
 
     private def monitorGauge(name: String, gauge: Gauge[_]) = {
-      val defaultRegistry = MetricsRegistry.defaultRegistry
+      val metrics = Play.current.injector.instanceOf[Metrics]
+
+      val defaultRegistry = metrics.defaultRegistry
       defaultRegistry.remove(name)
       defaultRegistry.register(name, gauge)
     }

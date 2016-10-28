@@ -15,7 +15,7 @@
  */
 
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
-
+import play.api.http.LazyHttpErrorHandler
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Xml
@@ -26,7 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.definition.JsonFormatters._
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, Links}
 import uk.gov.hmrc.selfassessmentapi.views.Helpers
 
-trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationController {
+abstract class DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationController(LazyHttpErrorHandler) {
 
   def apiDefinition: Definition
 

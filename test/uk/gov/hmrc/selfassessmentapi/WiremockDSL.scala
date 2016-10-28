@@ -17,14 +17,15 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.client.{MappingBuilder, UrlMatchingStrategy, WireMock}
+import com.github.tomakehurst.wiremock.client.{MappingBuilder, WireMock}
+import com.github.tomakehurst.wiremock.matching.UrlPattern
 
 trait WiremockDSL {
 
   def given() = new Givens()
 
   class Givens() {
-    def get(strategy: UrlMatchingStrategy) = new Result(WireMock.get(strategy))
+    def get(strategy: UrlPattern) = new Result(WireMock.get(strategy))
 
     class Result(mappingBuilder: MappingBuilder) {
       def returns(responseBody: String) = {

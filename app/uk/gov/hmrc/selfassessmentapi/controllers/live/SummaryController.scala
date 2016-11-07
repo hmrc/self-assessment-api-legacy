@@ -16,34 +16,34 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 object SummaryController extends uk.gov.hmrc.selfassessmentapi.controllers.SummaryController with SourceTypeSupport {
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) =
+  def create(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) =
     FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
-      request => super.createSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName)
+      request => super.createSummary(request, nino, taxYear, sourceType, sourceId, summaryTypeName)
     }
 
-  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
+  def read(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
     FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
-      super.readSummary(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
+      super.readSummary(nino, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
     }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
+  def update(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
     FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
-      request => super.updateSummary(request, saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
+      request => super.updateSummary(request, nino, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
     }
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
+  def delete(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) =
     FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
-      super.deleteSummary(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
+      super.deleteSummary(nino, taxYear, sourceType, sourceId, summaryTypeName, summaryId)
     }
 
-  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) =
+  def list(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) =
     FeatureSwitchAction(sourceType, summaryTypeName).asyncFeatureSwitch {
-      super.listSummaries(saUtr, taxYear, sourceType, sourceId, summaryTypeName)
+      super.listSummaries(nino, taxYear, sourceType, sourceId, summaryTypeName)
     }
 }

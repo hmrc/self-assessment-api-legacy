@@ -156,7 +156,7 @@ object SelfEmploymentGoodsAndServicesOwnUseSummary {
 }
 
 case class TaxYearProperties(id: BSONObjectID,
-                             saUtr: SaUtr,
+                             nino: Nino,
                              taxYear: TaxYear,
                              lastModifiedDateTime: DateTime,
                              createdDateTime: DateTime,
@@ -181,7 +181,7 @@ object TaxYearProperties {
 
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: SourceId,
-                          saUtr: SaUtr,
+                          nino: Nino,
                           taxYear: TaxYear,
                           lastModifiedDateTime: DateTime,
                           createdDateTime: DateTime,
@@ -233,13 +233,13 @@ object SelfEmployment {
     Format(Json.reads[SelfEmployment], Json.writes[SelfEmployment])
   })
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, se: selfemployment.SelfEmployment): SelfEmployment = {
+  def create(nino: Nino, taxYear: TaxYear, se: selfemployment.SelfEmployment): SelfEmployment = {
     val id = BSONObjectID.generate
     val now = DateTime.now(DateTimeZone.UTC)
     SelfEmployment(
       id = id,
       sourceId = id.stringify,
-      saUtr = saUtr,
+      nino = nino,
       taxYear = taxYear,
       lastModifiedDateTime = now,
       createdDateTime = now,

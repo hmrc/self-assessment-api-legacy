@@ -21,12 +21,13 @@ import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.config.FeatureSwitch
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceTypes
 import SourceTypes._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.LiabilityResult
 import uk.gov.hmrc.selfassessmentapi.repositories.live._
 import uk.gov.hmrc.selfassessmentapi.services.live.TaxYearPropertiesService
@@ -35,7 +36,7 @@ import scala.concurrent.Future
 
 class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
 
-  private val saUtr = generateSaUtr()
+  private val nino = NinoGenerator().nextNino()
   private val liabilityRepo = mock[LiabilityMongoRepository]
   private val selfEmploymentRepo = mock[SelfEmploymentMongoRepository]
   private val benefitRepo = mock[BenefitsMongoRepository]
@@ -57,7 +58,7 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
 
   "calculate" should {
 
-    when(taxYearPropertiesService.findTaxYearProperties(any[SaUtr], any[TaxYear])).thenReturn(Future.successful(None))
+    when(taxYearPropertiesService.findTaxYearProperties(any[Nino], any[TaxYear])).thenReturn(Future.successful(None))
 
     // Stub save and calculate methods to return the same item they are given.
     when(liabilityRepo.save(any[LiabilityResult])).thenAnswer(new Answer[Future[LiabilityResult]] {
@@ -69,68 +70,68 @@ class LiabilityServiceSpec extends UnitSpec with MockitoSugar {
 
     "get self employment sources from repository when Self Employment source is switched on" in {
       when(featureSwitch.isEnabled(SelfEmployments)).thenReturn(true)
-      when(selfEmploymentRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+      when(selfEmploymentRepo.findAll(nino, taxYear)).thenReturn(Seq())
 
-      await(service.calculate(saUtr, taxYear))
+      await(service.calculate(nino, taxYear))
 
-      verify(selfEmploymentRepo).findAll(saUtr, taxYear)
+      verify(selfEmploymentRepo).findAll(nino, taxYear)
     }
 
     "not get self employment sources from repository when Self Employment source is switched off" in {
       when(featureSwitch.isEnabled(SelfEmployments)).thenReturn(false)
 
-      await(service.calculate(saUtr, taxYear))
+      await(service.calculate(nino, taxYear))
 
       verifyNoMoreInteractions(selfEmploymentRepo)
     }
 
     "get benefits sources from repository when benefits source is switched on" in {
       when(featureSwitch.isEnabled(Benefits)).thenReturn(true)
-      when(benefitRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+      when(benefitRepo.findAll(nino, taxYear)).thenReturn(Seq())
 
-      await(service.calculate(saUtr, taxYear))
+      await(service.calculate(nino, taxYear))
 
-      verify(benefitRepo).findAll(saUtr, taxYear)
+      verify(benefitRepo).findAll(nino, taxYear)
     }
 
     "not get benefit source from repository when benefit source is switched off" in {
       when(featureSwitch.isEnabled(Benefits)).thenReturn(false)
 
-      await(service.calculate(saUtr, taxYear))
+      await(service.calculate(nino, taxYear))
 
       verifyNoMoreInteractions(benefitRepo)
     }
 
     "get UK property sources from repository when the UK property source is switched on" in {
       when(featureSwitch.isEnabled(UKProperties)).thenReturn(true)
-      when(ukPropertyRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+      when(ukPropertyRepo.findAll(nino, taxYear)).thenReturn(Seq())
 
-      await(service.calculate(saUtr, taxYear))
+      await(service.calculate(nino, taxYear))
 
-      verify(ukPropertyRepo).findAll(saUtr, taxYear)
+      verify(ukPropertyRepo).findAll(nino, taxYear)
     }
 
     "not get UK property sources from repository when the UK property source is switched off" in {
       when(featureSwitch.isEnabled(UKProperties)).thenReturn(false)
 
-      await(service.calculate(saUtr, taxYear))
+      await(service.calculate(nino, taxYear))
 
       verifyNoMoreInteractions(ukPropertyRepo)
     }
 
     "get savings from repository when the Savings source is switched on" in {
       when(featureSwitch.isEnabled(Banks)).thenReturn(true)
-      when(banksRepo.findAll(saUtr, taxYear)).thenReturn(Seq())
+      when(banksRepo.findAll(nino, taxYear)).thenReturn(Seq())
 
-      await(service.calculate(saUtr, taxYear))
+      await(service.calculate(nino, taxYear))
 
-      verify(banksRepo).findAll(saUtr, taxYear)
+      verify(banksRepo).findAll(nino, taxYear)
     }
 
     "get savings from repository when the Savings source is switched off" in {
       when(featureSwitch.isEnabled(Banks)).thenReturn(false)
 
-      await(service.calculate(saUtr, taxYear))
+      await(service.calculate(nino, taxYear))
 
       verifyNoMoreInteractions(banksRepo)
     }

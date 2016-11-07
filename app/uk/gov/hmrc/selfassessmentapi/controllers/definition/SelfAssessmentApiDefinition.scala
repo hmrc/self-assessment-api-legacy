@@ -32,60 +32,60 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
 
   val firstEndpoints: Seq[Endpoint] = {
     Seq(Endpoint(
-          uriPattern = "/",
-          endpointName = "Resolve Taxpayer",
-          method = GET,
-          authType = USER,
-          throttlingTier = UNLIMITED,
-          scope = Some(readScope),
-          groupName = Taxpayer
-        ),
-        Endpoint(
-          uriPattern = "/{utr}",
-          endpointName = "Discover Tax Years",
-          method = GET,
-          authType = USER,
-          throttlingTier = UNLIMITED,
-          scope = Some(readScope),
-          groupName = Taxpayer
-        ),
-        Endpoint(
-          uriPattern = "/{utr}/{tax-year}",
-          endpointName = "Discover Tax Year",
-          method = GET,
-          authType = USER,
-          throttlingTier = UNLIMITED,
-          scope = Some(readScope),
-          groupName = Taxpayer
-        ))
+      uriPattern = "/",
+      endpointName = "Resolve Taxpayer",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope),
+      groupName = Taxpayer
+    ),
+    Endpoint(
+      uriPattern = "/{nino}",
+      endpointName = "Discover Tax Years",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope),
+      groupName = Taxpayer
+    ),
+    Endpoint(
+      uriPattern = "/{nino}/{tax-year}",
+      endpointName = "Discover Tax Year",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope),
+      groupName = Taxpayer
+    ))
   }
 
   private val lastEndpoints: Seq[Endpoint] = {
     Seq(Endpoint(
-          uriPattern = "/{utr}/{tax-year}/liability",
-          endpointName = "Request Liability",
-          method = POST,
-          authType = USER,
-          throttlingTier = UNLIMITED,
-          scope = Some(writeScope),
-          groupName = Liability
-        ),
-        Endpoint(
-          uriPattern = "/{utr}/{tax-year}/liability",
-          endpointName = "Retrieve Liability",
-          method = GET,
-          authType = USER,
-          throttlingTier = UNLIMITED,
-          scope = Some(readScope),
-          groupName = Liability
-        ))
+      uriPattern = "/{nino}/{tax-year}/liability",
+      endpointName = "Request Liability",
+      method = POST,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(writeScope),
+      groupName = Liability
+    ),
+    Endpoint(
+      uriPattern = "/{nino}/{tax-year}/liability",
+      endpointName = "Retrieve Liability",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope),
+      groupName = Liability
+    ))
   }
 
   private val switchedEndpoints = {
     if (FeatureSwitchedTaxYearProperties.atLeastOnePropertyIsEnabled) {
       Seq(
         Endpoint(
-          uriPattern = "/{utr}/{tax-year}",
+          uriPattern = "/{nino}/{tax-year}",
           endpointName = "Update Tax Year",
           method = PUT,
           authType = USER,
@@ -139,7 +139,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
   }
 
   private lazy val sourceAndSummaryEndpoints = Helpers.enabledSourceTypes.toSeq.flatMap { sourceType =>
-    val uri: String = s"/{utr}/{tax-year}/${sourceType.name}"
+    val uri: String = s"/{nino}/{tax-year}/${sourceType.name}"
     val uriWithId: String = s"$uri/{${sourceType.name}-id}"
     val updateEndpoint = sourceType match {
       case SourceTypes.Benefits | SourceTypes.Banks | SourceTypes.Dividends => Nil
@@ -189,7 +189,7 @@ class SelfAssessmentApiDefinition(apiContext: String, apiStatus: APIStatus) {
 
   private lazy val summaryEndpoints: SourceType => Seq[Endpoint] = { sourceType =>
     Helpers.enabledSummaries(sourceType).toSeq.flatMap { summaryType =>
-      val uri: String = s"/{utr}/{tax-year}/${sourceType.name}/{${sourceType.name}-id}/${summaryType.name}"
+      val uri: String = s"/{nino}/{tax-year}/${sourceType.name}/{${sourceType.name}-id}/${summaryType.name}"
       val uriWithId: String = s"$uri/{${summaryType.name}-id}"
       Seq(
         Endpoint(uriPattern = uri,

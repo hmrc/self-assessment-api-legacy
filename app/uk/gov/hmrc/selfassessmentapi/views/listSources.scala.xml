@@ -1,8 +1,8 @@
-@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.domain.Nino
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, sourceId: SourceId)
+@(nino: Nino, taxYear: TaxYear, sourceType : SourceType, sourceId: SourceId)
 <endpoint>
     <name>Retrieve all @{sourceType.documentationName}</name>
     <description>This endpoint retrieves all the @{sourceType.documentationName} sources of income</description>
@@ -10,8 +10,8 @@
         <title>Resource</title>
         <resource><![CDATA[GET /self-assessment/{utr}/{tax-year}/@{sourceType.name}]]></resource>
     </section>
-    @partials.sourcePathParams(saUtr, taxYear, sourceType, None, None, None)
+    @partials.sourcePathParams(nino, taxYear, sourceType, None, None, None)
     @partials.requestHeaders(false)
     @partials.authorisation(false)
-    @partials.sourceListResponse(saUtr, taxYear, sourceType, sourceId)
+    @partials.sourceListResponse(nino, taxYear, sourceType, sourceId)
 </endpoint>

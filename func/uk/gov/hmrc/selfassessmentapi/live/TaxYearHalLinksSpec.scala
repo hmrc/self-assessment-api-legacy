@@ -13,13 +13,13 @@ class TaxYearHalLinksSpec extends BaseFunctionalSpec {
   "Request to discover tax year" should {
     "only have Hal links for enabled sources" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear")
+        .get(s"/nino/$nino/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLinksForEnabledSourceTypes(saUtr, taxYear)
+        .bodyHasLinksForEnabledSourceTypes(nino, taxYear)
     }
   }
 

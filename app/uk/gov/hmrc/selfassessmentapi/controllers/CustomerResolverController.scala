@@ -21,9 +21,10 @@ import play.api.hal.HalLink
 import play.api.libs.json.JsObject
 import play.api.mvc.Action
 import play.api.mvc.hal._
-import uk.gov.hmrc.domain.{SaUtr, SaUtrGenerator}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,16 +33,15 @@ trait CustomerResolverController extends BaseController with Links {
 
   val confidenceLevel: ConfidenceLevel
 
-  def saUtr(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] = {
-      val utrGenerator = new SaUtrGenerator()
-      Future.successful(Some(utrGenerator.nextSaUtr))
+  def nino(confidenceLevel: ConfidenceLevel)(implicit hc: HeaderCarrier): Future[Option[Nino]] = {
+      Future.successful(Some(NinoGenerator().nextNino()))
   }
 
   final def resolve = Action.async { request =>
-    saUtr(confidenceLevel)(hc(request)).map {
-      case Some(saUtr) =>
+    nino(confidenceLevel)(hc(request)).map {
+      case Some(nino) =>
         val links = Set(
-          HalLink("self-assessment", discoverTaxYearsHref(saUtr))
+          HalLink("self-assessment", discoverTaxYearsHref(nino))
         )
         Ok(halResource(JsObject(Nil), links))
       case None =>

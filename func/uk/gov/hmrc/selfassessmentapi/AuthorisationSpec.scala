@@ -10,9 +10,9 @@ class AuthorisationSpec extends BaseFunctionalSpec {
   "if the user is not authorised for the resource they" should {
     "receive 401" in {
       given()
-        .userIsNotAuthorisedForTheResource(saUtr)
+        .userIsNotAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear/self-employments/$selfEmploymentId")
+        .get(s"/nino/$nino/$taxYear/self-employments/$selfEmploymentId")
         .thenAssertThat()
         .statusIs(401)
         .contentTypeIsJson()

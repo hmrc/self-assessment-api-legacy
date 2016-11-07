@@ -1,7 +1,7 @@
-@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.domain.Nino
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-@(saUtr: SaUtr, taxYear: TaxYear)
+@(nino: Nino, taxYear: TaxYear)
 <section id="path-parameters">
     <title>Path Parameters</title>
     <table>
@@ -11,7 +11,7 @@
             <cell>Description</cell>
         </headings>
         <rows>
-            @basePathParams(saUtr, Some(taxYear))
+            @basePathParams(nino, Some(taxYear))
         </rows>
     </table>
 </section>

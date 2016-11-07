@@ -1,8 +1,8 @@
-@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.domain.Nino
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 
-@(saUtr: SaUtr, taxYear: TaxYear, sourceType : SourceType, summaryType: Option[SummaryType], sourceId: Option[SourceId], summaryId: Option[SummaryId])
+@(nino: Nino, taxYear: TaxYear, sourceType : SourceType, summaryType: Option[SummaryType], sourceId: Option[SourceId], summaryId: Option[SummaryId])
 <section id="path-parameters">
     <title>Path Parameters</title>
     <table>
@@ -12,7 +12,7 @@
             <cell>Description</cell>
         </headings>
         <rows>
-            @basePathParams(saUtr, Some(taxYear))
+            @basePathParams(nino, Some(taxYear))
             @sourceId.map { sId =>
                 <row>
                     <cell>

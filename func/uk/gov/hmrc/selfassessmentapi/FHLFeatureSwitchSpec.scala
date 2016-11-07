@@ -26,14 +26,14 @@ class FHLFeatureSwitchUKOnSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
         given()
-          .userIsAuthorisedForTheResource(saUtr)
+          .userIsAuthorisedForTheResource(nino)
         .when()
-          .post(s"/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+          .post(s"/nino/$nino/$taxYear/furnished-holiday-lettings", Some(payload))
         .thenAssertThat()
           .statusIs(201)
 
       when()
-        .post(s"/sandbox/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+        .post(s"/sandbox/nino/$nino/$taxYear/furnished-holiday-lettings", Some(payload))
       .thenAssertThat()
         .statusIs(201)
     }
@@ -62,14 +62,14 @@ class FHLFeatureSwitchUKOffSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
         given()
-          .userIsAuthorisedForTheResource(saUtr)
+          .userIsAuthorisedForTheResource(nino)
         .when()
-          .post(s"/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+          .post(s"/nino/$nino/$taxYear/furnished-holiday-lettings", Some(payload))
         .thenAssertThat()
           .statusIs(400)
 
         .when()
-          .post(s"/sandbox/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+          .post(s"/sandbox/nino/$nino/$taxYear/furnished-holiday-lettings", Some(payload))
         .thenAssertThat()
           .statusIs(400)
     }
@@ -98,14 +98,14 @@ class FHLFeatureSwitchEEAOnSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
       .when()
-        .post(s"/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+        .post(s"/nino/$nino/$taxYear/furnished-holiday-lettings", Some(payload))
       .thenAssertThat()
         .statusIs(201)
 
       .when()
-        .post(s"/sandbox/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+        .post(s"/sandbox/nino/$nino/$taxYear/furnished-holiday-lettings", Some(payload))
       .thenAssertThat()
         .statusIs(201)
     }
@@ -134,14 +134,14 @@ class FHLFeatureSwitchEEAOffSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
       .when()
-        .post(s"/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+        .post(s"/nino/$nino/$taxYear/furnished-holiday-lettings", Some(payload))
       .thenAssertThat()
         .statusIs(400)
 
       when()
-        .post(s"/sandbox/$saUtr/$taxYear/furnished-holiday-lettings", Some(payload))
+        .post(s"/sandbox/nino/$nino/$taxYear/furnished-holiday-lettings", Some(payload))
       .thenAssertThat()
         .statusIs(400)
     }

@@ -21,7 +21,7 @@ import play.api.libs.json.Json._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.mvc.hal._
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceType
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
@@ -39,8 +39,8 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
     handler.getOrElse(throw UnknownSummaryException(sourceType, summaryTypeName))
   }
 
-  protected def createSummary(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = {
-    handler(sourceType, summaryTypeName).create(saUtr, taxYear, sourceId, request.body) match {
+  protected def createSummary(request: Request[JsValue], nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = {
+    handler(sourceType, summaryTypeName).create(nino, taxYear, sourceId, request.body) match {
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
@@ -49,22 +49,22 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
           }
         }
       case Right(futOptId) => futOptId.map {
-        case Some(id) => Created(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, id)))))
+        case Some(id) => Created(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(nino, taxYear, sourceType, sourceId, summaryTypeName, id)))))
         case _ => notFound
       }
     }
   }
 
-  protected def readSummary(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
-    handler(sourceType, summaryTypeName).findById(saUtr, taxYear, sourceId, summaryId) map {
+  protected def readSummary(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
+    handler(sourceType, summaryTypeName).findById(nino, taxYear, sourceId, summaryId) map {
       case Some(summary) =>
-        Ok(halResource(summary, Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
+        Ok(halResource(summary, Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(nino, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
       case None => notFound
     }
   }
 
-  protected def updateSummary(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
-    handler(sourceType, summaryTypeName).update(saUtr, taxYear, sourceId, summaryId, request.body) match {
+  protected def updateSummary(request: Request[JsValue], nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
+    handler(sourceType, summaryTypeName).update(nino, taxYear, sourceId, summaryId, request.body) match {
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
@@ -73,7 +73,7 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
           }
         }
       case Right(optResult) => optResult.map {
-        case true => Ok(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
+        case true => Ok(halResource(obj(), Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(nino, taxYear, sourceType, sourceId, summaryTypeName, summaryId)))))
         case false => notFound
       }
     }
@@ -81,20 +81,20 @@ trait SummaryController extends BaseController with Links with SourceTypeSupport
   }
 
 
-  protected def deleteSummary(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
-    handler(sourceType, summaryTypeName).delete(saUtr, taxYear, sourceId, summaryId) map {
+  protected def deleteSummary(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String, summaryId: SummaryId) = {
+    handler(sourceType, summaryTypeName).delete(nino, taxYear, sourceId, summaryId) map {
       case true => NoContent
       case false => notFound
     }
   }
 
-  protected def listSummaries(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = {
+  protected def listSummaries(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId, summaryTypeName: String) = {
     val svc = handler(sourceType, summaryTypeName)
-    svc.find(saUtr, taxYear, sourceId) map { summaries =>
+    svc.find(nino, taxYear, sourceId) map { summaries =>
       val json = toJson(summaries.map(summary => halResource(summary.json,
-        Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName, summary.id))))))
+        Set(HalLink("self", sourceTypeAndSummaryTypeIdHref(nino, taxYear, sourceType, sourceId, summaryTypeName, summary.id))))))
 
-      Ok(halResourceList(svc.listName, json, sourceTypeAndSummaryTypeHref(saUtr, taxYear, sourceType, sourceId, summaryTypeName)))
+      Ok(halResourceList(svc.listName, json, sourceTypeAndSummaryTypeHref(nino, taxYear, sourceType, sourceId, summaryTypeName)))
     }
   }
 

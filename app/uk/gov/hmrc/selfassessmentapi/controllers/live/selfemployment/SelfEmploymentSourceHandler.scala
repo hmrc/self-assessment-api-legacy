@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.live.selfemployment
 
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SummaryType
@@ -36,13 +36,13 @@ object SelfEmploymentSourceHandler extends SourceHandler(SelfEmployment, SelfEmp
 
   private val limitSelfEmployments: Boolean = AppContext.sourceLimits.flatMap(_.getBoolean("self-employments")).getOrElse(false)
 
-  override def create(saUtr: SaUtr, taxYear: TaxYear, jsValue: JsValue): Either[ErrorResult, Future[String]] = {
-    val numSelfEmployments = Await.result(repository.list(saUtr, taxYear), Duration.Inf).size
+  override def create(nino: Nino, taxYear: TaxYear, jsValue: JsValue): Either[ErrorResult, Future[String]] = {
+    val numSelfEmployments = Await.result(repository.list(nino, taxYear), Duration.Inf).size
 
     if (limitSelfEmployments && numSelfEmployments >= 1) {
       Left(GenericErrorResult(s"You may only create a maximum of 1 self-employments. Current number of self-employments: $numSelfEmployments"))
     } else {
-      super.create(saUtr, taxYear, jsValue)
+      super.create(nino, taxYear, jsValue)
     }
   }
 

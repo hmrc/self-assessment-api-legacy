@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers
 
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, TaxYear, SourceType}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SourceType, TaxYear}
 
 trait Links {
 
@@ -25,24 +25,24 @@ trait Links {
 
   private def createLink(endpointUrl: String) = s"$context$endpointUrl"
 
-  def discoverTaxYearsHref(utr: SaUtr): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearsDiscoveryController.discoverTaxYears(utr).url)
+  def discoverTaxYearsHref(nino: Nino): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearsDiscoveryController.discoverTaxYears(nino).url)
 
-  def discoverTaxYearHref(utr: SaUtr, taxYear: TaxYear): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearDiscoveryController.discoverTaxYear(utr, taxYear).url)
+  def discoverTaxYearHref(nino: Nino, taxYear: TaxYear): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.TaxYearDiscoveryController.discoverTaxYear(nino, taxYear).url)
 
-  def liabilityHref(utr: SaUtr, taxYear: TaxYear): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(utr, taxYear).url)
+  def liabilityHref(nino: Nino, taxYear: TaxYear): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.LiabilityController.retrieveLiability(nino, taxYear).url)
 
-  def sourceIdHref(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SourceController.read(utr, taxYear, sourceType, seId).url)
+  def sourceIdHref(nino: Nino, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SourceController.read(nino, taxYear, sourceType, seId).url)
 
-  def sourceHref(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SourceController.list(utr, taxYear, sourceType).url)
+  def sourceHref(nino: Nino, taxYear: TaxYear, sourceType: SourceType): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SourceController.list(nino, taxYear, sourceType).url)
 
-  def sourceTypeAndSummaryTypeHref(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId, summaryTypeName: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SummaryController.list(utr, taxYear, sourceType, seId, summaryTypeName).url)
+  def sourceTypeAndSummaryTypeHref(nino: Nino, taxYear: TaxYear, sourceType: SourceType, seId: SourceId, summaryTypeName: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SummaryController.list(nino, taxYear, sourceType, seId, summaryTypeName).url)
 
-  def sourceTypeAndSummaryTypeIdHref(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId, summaryTypeName: String, id: String): String =
-    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SummaryController.read(utr, taxYear, sourceType, seId, summaryTypeName, id).url)
+  def sourceTypeAndSummaryTypeIdHref(nino: Nino, taxYear: TaxYear, sourceType: SourceType, seId: SourceId, summaryTypeName: String, id: String): String =
+    createLink(uk.gov.hmrc.selfassessmentapi.controllers.live.routes.SummaryController.read(nino, taxYear, sourceType, seId, summaryTypeName, id).url)
 }

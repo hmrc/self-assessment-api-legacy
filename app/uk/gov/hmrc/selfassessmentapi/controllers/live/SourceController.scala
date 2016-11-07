@@ -16,29 +16,29 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.live
 
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 object SourceController extends uk.gov.hmrc.selfassessmentapi.controllers.SourceController with SourceTypeSupport {
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
-    request => super.createSource(request, saUtr, taxYear, sourceType)
+  def create(nino: Nino, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
+    request => super.createSource(request, nino, taxYear, sourceType)
   }
 
-  def read(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
-    super.readSource(saUtr, taxYear, sourceType, sourceId)
+  def read(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
+    super.readSource(nino, taxYear, sourceType, sourceId)
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
-    request => super.updateSource(request, saUtr, taxYear, sourceType, sourceId)
+  def update(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
+    request => super.updateSource(request, nino, taxYear, sourceType, sourceId)
   }
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
-    super.deleteSource(saUtr, taxYear, sourceType, sourceId)
+  def delete(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
+    super.deleteSource(nino, taxYear, sourceType, sourceId)
   }
 
-  def list(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
-    super.listSources(saUtr, taxYear, sourceType)
+  def list(nino: Nino, taxYear: TaxYear, sourceType: SourceType) = FeatureSwitchAction(sourceType).asyncFeatureSwitch {
+    super.listSources(nino, taxYear, sourceType)
   }
 }

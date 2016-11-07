@@ -20,7 +20,7 @@ import play.api.hal.HalLink
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Action
 import play.api.mvc.hal._
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
 import uk.gov.hmrc.selfassessmentapi.services.live.calculation.LiabilityService
@@ -33,21 +33,21 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
 
   private val liabilityService = LiabilityService()
 
-  override def requestLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    liabilityService.calculate(utr, taxYear) map { _ =>
+  override def requestLiability(nino: Nino, taxYear: TaxYear) = Action.async { request =>
+    liabilityService.calculate(nino, taxYear) map { _ =>
       val links = Set(
-          HalLink("self", liabilityHref(utr, taxYear))
+          HalLink("self", liabilityHref(nino, taxYear))
       )
       Accepted(halResource(JsObject(Nil), links))
     }
   }
 
-  override def retrieveLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    liabilityService.find(utr, taxYear) map {
+  override def retrieveLiability(nino: Nino, taxYear: TaxYear) = Action.async { request =>
+    liabilityService.find(nino, taxYear) map {
       case Some(Left(error)) =>
         Forbidden(Json.toJson(error))
       case Some(Right(liability)) =>
-        val links = Set(HalLink("self", liabilityHref(utr, taxYear)))
+        val links = Set(HalLink("self", liabilityHref(nino, taxYear)))
         Ok(halResource(Json.toJson(liability), links))
       case _ => notFound
     }

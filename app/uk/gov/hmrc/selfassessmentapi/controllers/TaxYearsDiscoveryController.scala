@@ -21,7 +21,7 @@ import play.api.libs.json.JsObject
 import play.api.mvc.Action
 import play.api.mvc.hal._
 import uk.gov.hmrc.api.controllers.HeaderValidator
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
 
@@ -30,9 +30,9 @@ import scala.concurrent.Future
 trait TaxYearsDiscoveryController
     extends BaseController with HeaderValidator with Links {
 
-  final def discoverTaxYears(utr: SaUtr) = Action.async { request =>
-      val taxYearLinks = AppContext.supportedTaxYears.map(taxYear => HalLink(taxYear, discoverTaxYearHref(utr, TaxYear(taxYear))))
-      val links = taxYearLinks + HalLink("self", discoverTaxYearsHref(utr))
+  final def discoverTaxYears(nino: Nino) = Action.async { request =>
+      val taxYearLinks = AppContext.supportedTaxYears.map(taxYear => HalLink(taxYear, discoverTaxYearHref(nino, TaxYear(taxYear))))
+      val links = taxYearLinks + HalLink("self", discoverTaxYearsHref(nino))
      Future.successful(Ok(halResource(JsObject(Nil), links)))
     }
 }

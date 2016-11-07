@@ -7,12 +7,13 @@ import org.skyscreamer.jsonassert.JSONAssert.assertEquals
 import org.skyscreamer.jsonassert.JSONCompareMode.LENIENT
 import play.api.libs.json._
 import uk.gov.hmrc.api.controllers.ErrorNotFound
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.TestApplication
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, SummaryType}
+import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 
 import scala.collection.mutable
 import scala.util.matching.Regex
@@ -20,7 +21,7 @@ import scala.util.matching.Regex
 
 trait BaseFunctionalSpec extends TestApplication {
 
-  protected val saUtr = generateSaUtr()
+  protected val nino = NinoGenerator().nextNino()
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String]) extends
     UrlInterpolation {
@@ -36,7 +37,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def sourceIdFromHal() = {
       getLinkFromBody("self") flatMap { link =>
-        s"/self-assessment/\\d+/$taxYear/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
+        s"/self-assessment/nino/\\w+/$taxYear/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
           firstMatch.group(1)
         }
       }
@@ -44,7 +45,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def summaryIdFromHal() = {
       getLinkFromBody("self") flatMap { link =>
-        s"/self-assessment/\\d+/$taxYear/[\\w-]+/\\w+/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
+        s"/self-assessment/nino/\\w+/$taxYear/[\\w-]+/\\w+/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
           firstMatch.group(1)
         }
       }
@@ -64,27 +65,27 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
-    def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, saUtr: SaUtr, taxYear: String) = {
+    def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, nino: Nino, taxYear: String) = {
       sourceType.summaryTypes.foreach { summaryType =>
-        bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
+        bodyHasLink(summaryType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
       }
       this
     }
 
-    def bodyHasSummaryLinks(sourceType: SourceType, saUtr: SaUtr, taxYear: String) = {
+    def bodyHasSummaryLinks(sourceType: SourceType, nino: Nino, taxYear: String) = {
       sourceType.summaryTypes.foreach { summaryType =>
-        bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
+        bodyHasLink(summaryType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
       }
       this
     }
 
-    def bodyHasSummaryLink(sourceType: SourceType, summaryType: SummaryType, saUtr: SaUtr, taxYear: String) = {
-      bodyHasLink(summaryType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
+    def bodyHasSummaryLink(sourceType: SourceType, summaryType: SummaryType, nino: Nino, taxYear: String) = {
+      bodyHasLink(summaryType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
       this
     }
 
-    def bodyDoesNotHaveSummaryLink(sourceType: SourceType, summaryType: SummaryType, saUtr: SaUtr, taxYear: String) = {
-      val hrefPattern = s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+/${summaryType.name}".r
+    def bodyDoesNotHaveSummaryLink(sourceType: SourceType, summaryType: SummaryType, nino: Nino, taxYear: String) = {
+      val hrefPattern = s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r
       getLinkFromBody(summaryType.name) match {
         case Some(href) => hrefPattern findFirstIn href match {
           case Some(v) => fail(s"$summaryType Hal link found.")
@@ -95,20 +96,20 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
-    def bodyHasLinksForAllSourceTypes(saUtr: SaUtr, taxYear: String) = {
+    def bodyHasLinksForAllSourceTypes(nino: Nino, taxYear: String) = {
       SourceTypes.types.foreach { sourceType =>
-        bodyHasLink(sourceType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}")
+        bodyHasLink(sourceType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}")
       }
       this
     }
 
-    def bodyHasLinksForSourceType(sourceType: SourceType, saUtr: SaUtr, taxYear: String) = {
-      bodyHasLink(sourceType.name, s"/self-assessment/$saUtr/$taxYear/${sourceType.name}")
+    def bodyHasLinksForSourceType(sourceType: SourceType, nino: Nino, taxYear: String) = {
+      bodyHasLink(sourceType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}")
       this
     }
 
-    def bodyDoesNotHaveLinksForSourceType(sourceType: SourceType, saUtr: SaUtr, taxYear: String) = {
-      val hrefPattern = s"/self-assessment/$saUtr/$taxYear/${sourceType.name}".r
+    def bodyDoesNotHaveLinksForSourceType(sourceType: SourceType, nino: Nino, taxYear: String) = {
+      val hrefPattern = s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}".r
       getLinkFromBody(sourceType.name) match {
         case Some(href) => hrefPattern findFirstIn href match {
           case Some(v) => fail(s"$sourceType Hal link found.")
@@ -119,12 +120,12 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
-    def bodyHasLinksForEnabledSourceTypes(saUtr: SaUtr, taxYear: String) = {
+    def bodyHasLinksForEnabledSourceTypes(nino: Nino, taxYear: String) = {
       SourceTypes.types.filter { source =>
         AppContext.featureSwitch.exists { config =>
           FeatureConfig(config).isSourceEnabled(source.name)
         }
-      } foreach { sourceType => bodyHasLinksForSourceType(sourceType, saUtr, taxYear) }
+      } foreach { sourceType => bodyHasLinksForSourceType(sourceType, nino, taxYear) }
       this
     }
 
@@ -410,26 +411,26 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def when() = new HttpVerbs()
 
-    def userIsNotAuthorisedForTheResource(utr: SaUtr) = {
-      stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
-      stubFor(get(urlPathEqualTo(s"/authorise/write/sa/$utr")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
+    def userIsNotAuthorisedForTheResource(nino: Nino) = {
+      stubFor(get(urlPathEqualTo(s"/authorise/read/paye/$nino")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
+      stubFor(get(urlPathEqualTo(s"/authorise/write/paye/$nino")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
       this
     }
 
-    def userIsAuthorisedForTheResource(utr: SaUtr) = {
-      stubFor(get(urlPathEqualTo(s"/authorise/read/sa/$utr")).willReturn(aResponse().withStatus(200)))
-      stubFor(get(urlPathEqualTo(s"/authorise/write/sa/$utr")).willReturn(aResponse().withStatus(200)))
+    def userIsAuthorisedForTheResource(nino: Nino) = {
+      stubFor(get(urlPathEqualTo(s"/authorise/read/paye/$nino")).willReturn(aResponse().withStatus(200)))
+      stubFor(get(urlPathEqualTo(s"/authorise/write/paye/$nino")).willReturn(aResponse().withStatus(200)))
       this
     }
 
-    def userIsEnrolledInSa(utr: SaUtr) = {
+    def userIsEnrolledInSa(nino: Nino) = {
       val json =
         s"""
            |{
            |    "accounts": {
-           |        "sa": {
-           |            "link": "/sa/individual/$utr",
-           |            "utr": "$utr"
+           |        "paye": {
+           |            "link": "/paye/$nino",
+           |            "nino": "$nino"
            |        }
            |    },
            |    "confidenceLevel": 500

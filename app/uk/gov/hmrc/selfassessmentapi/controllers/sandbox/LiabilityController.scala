@@ -20,7 +20,7 @@ import play.api.hal.HalLink
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.hal._
 import play.api.mvc.Action
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers.api.Liability
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
@@ -31,17 +31,17 @@ object LiabilityController extends uk.gov.hmrc.selfassessmentapi.controllers.Lia
 
   override val context: String = AppContext.apiGatewayLinkContext
 
-  override def requestLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
+  override def requestLiability(nino: Nino, taxYear: TaxYear) = Action.async { request =>
       val links = Set(
-        HalLink("self", liabilityHref(utr, taxYear))
+        HalLink("self", liabilityHref(nino, taxYear))
       )
     Future.successful(Accepted(halResource(JsObject(Nil), links)))
   }
 
-  override def retrieveLiability(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
+  override def retrieveLiability(nino: Nino, taxYear: TaxYear) = Action.async { request =>
     val liability = createLiability
     val links = Set(
-      HalLink("self", liabilityHref(utr, taxYear))
+      HalLink("self", liabilityHref(nino, taxYear))
     )
     Future.successful(Ok(halResource(Json.toJson(liability), links)))
   }

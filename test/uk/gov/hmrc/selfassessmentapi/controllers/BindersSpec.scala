@@ -23,22 +23,22 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
 class BindersSpec extends UnitSpec {
 
-  "saUtrBinder.bind" should {
+  "ninoBinder.bind" should {
 
-    "return Right with a SaUtr instance for a valid utr string" in {
-      val utr = generateSaUtr()
+    "return Right with a Nino instance for a valid utr string" in {
+      val nino = generateNino
       implicit val pathBindable = PathBindable.bindableString
 
-      val result = Binders.saUtrBinder.bind("saUtr", utr.utr)
-      result shouldEqual Right(utr)
+      val result = Binders.ninoBinder.bind("nino", nino.nino)
+      result shouldEqual Right(nino)
     }
 
-    "return Left for an ivalid utr string" in {
-      val utr = "invalid"
+    "return Left for an ivalid nino string" in {
+      val nino = "invalid"
       implicit val pathBindable = PathBindable.bindableString
 
-      val result = Binders.saUtrBinder.bind("saUtr", utr)
-      result shouldEqual Left("ERROR_SA_UTR_INVALID")
+      val result = Binders.ninoBinder.bind("nino", nino)
+      result shouldEqual Left("ERROR_NINO_INVALID")
     }
   }
 

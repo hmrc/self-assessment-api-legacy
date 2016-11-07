@@ -27,30 +27,30 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
     "be visible in live" in {
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear/${SelfEmployments.name}")
+        .get(s"/nino/$nino/$taxYear/${SelfEmployments.name}")
         .thenAssertThat()
         .statusIs(200)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/incomes")
+        .get(s"/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/incomes")
         .thenAssertThat()
         .statusIs(200)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
+        .get(s"/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
         .thenAssertThat()
         .isNotImplemented
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
+        .get(s"/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
         .thenAssertThat()
         .isNotImplemented
     }
@@ -58,30 +58,30 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
     "be visible in sandbox" in {
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/sandbox/$saUtr/$taxYear/${SelfEmployments.name}")
+        .get(s"/sandbox/nino/$nino/$taxYear/${SelfEmployments.name}")
         .thenAssertThat()
         .statusIs(200)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/sandbox/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/incomes")
+        .get(s"/sandbox/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/incomes")
         .thenAssertThat()
         .statusIs(200)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/sandbox/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
+        .get(s"/sandbox/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
         .thenAssertThat()
         .isNotImplemented
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/sandbox/$saUtr/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
+        .get(s"/sandbox/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
         .thenAssertThat()
         .isNotImplemented
     }

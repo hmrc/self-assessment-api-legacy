@@ -64,37 +64,37 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
-            .userIsAuthorisedForTheResource(saUtr)
+            .userIsAuthorisedForTheResource(nino)
             .when()
-            .get(s"/$saUtr/$taxYear/${sourceType.name}")
+            .get(s"/nino/$nino/$taxYear/${sourceType.name}")
             .thenAssertThat()
             .statusIs(200)
             .butResponseHasNo(sourceType.name)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}", Some(sourceType.example()))
             .thenAssertThat()
             .statusIs(201)
             .contentTypeIsHalJson()
-            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+            .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+".r)
             .when()
-            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+            .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%")
             .thenAssertThat()
             .statusIs(200)
             .when()
-            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}")
+            .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}")
             .thenAssertThat()
             .statusIs(200)
             .butResponseHasNo(sourceType.name, summaryType.name)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(summaryType.example()))
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(summaryType.example()))
             .thenAssertThat()
             .statusIs(201)
             .contentTypeIsHalJson()
             .bodyHasLink(
               "self",
-              s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+              s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
             .when()
-            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
             .thenAssertThat()
             .statusIs(200)
             .body(_ \ "type")
@@ -102,7 +102,7 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .body(_ \ "amount")
             .is((summaryType.example() \ "amount").as[BigDecimal])
             .when()
-            .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%", Some(Json.parse({
+            .put(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%", Some(Json.parse({
               val maybeDisallowableAmount = summaryType match {
                 case selfemployment.SummaryTypes.Expenses => """"disallowableAmount": 0, """
                 case _ => ""
@@ -114,9 +114,9 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .contentTypeIsHalJson()
             .bodyHasLink(
               "self",
-              s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+              s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
             .when()
-            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
             .thenAssertThat()
             .statusIs(200)
             .body(_ \ "type")
@@ -124,11 +124,11 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
             .body(_ \ "amount")
             .is(1200.00)
             .when()
-            .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .delete(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
             .thenAssertThat()
             .statusIs(204)
             .when()
-            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+            .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
             .withAcceptHeader()
             .thenAssertThat()
             .isNotFound
@@ -142,15 +142,15 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
-            .userIsAuthorisedForTheResource(saUtr)
+            .userIsAuthorisedForTheResource(nino)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}", Some(sourceType.example()))
             .thenAssertThat()
             .statusIs(201)
             .contentTypeIsHalJson()
-            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+            .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+".r)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}",
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}",
                   invalidRequestBody(summaryType))
             .withAcceptHeader()
             .thenAssertThat()
@@ -165,9 +165,9 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       val summaryTypes = uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SummaryTypes
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(s"/$saUtr/$taxYear/${SourceTypes.SelfEmployments.name}/1234567890/${summaryTypes.Incomes.name}",
+        .post(s"/nino/$nino/$taxYear/${SourceTypes.SelfEmployments.name}/1234567890/${summaryTypes.Incomes.name}",
               Some(summaryTypes.Incomes.example()))
         .withAcceptHeader()
         .thenAssertThat()
@@ -180,23 +180,23 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
-            .userIsAuthorisedForTheResource(saUtr)
+            .userIsAuthorisedForTheResource(nino)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}", Some(sourceType.example()))
             .thenAssertThat()
             .statusIs(201)
             .contentTypeIsHalJson()
-            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+            .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+".r)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(summaryType.example()))
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}", Some(summaryType.example()))
             .thenAssertThat()
             .statusIs(201)
             .contentTypeIsHalJson()
             .bodyHasLink(
               "self",
-              s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
+              s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%")
             .when()
-            .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%",
+            .put(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/%summaryId%",
                  invalidRequestBody(summaryType))
             .withAcceptHeader()
             .thenAssertThat()
@@ -211,15 +211,15 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
-            .userIsAuthorisedForTheResource(saUtr)
+            .userIsAuthorisedForTheResource(nino)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}", Some(sourceType.example()))
             .thenAssertThat()
             .statusIs(201)
             .contentTypeIsHalJson()
-            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+            .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+".r)
             .when()
-            .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567")
+            .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567")
             .withAcceptHeader()
             .thenAssertThat()
             .isNotFound
@@ -233,15 +233,15 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
-            .userIsAuthorisedForTheResource(saUtr)
+            .userIsAuthorisedForTheResource(nino)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}", Some(sourceType.example()))
             .thenAssertThat()
             .statusIs(201)
             .contentTypeIsHalJson()
-            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+            .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+".r)
             .when()
-            .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567")
+            .delete(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567")
             .withAcceptHeader()
             .thenAssertThat()
             .isNotFound
@@ -255,15 +255,15 @@ class SummaryControllerSpec extends BaseFunctionalSpec {
       types foreach { sourceType =>
         implementedSummaries(sourceType) foreach { summaryType =>
           given()
-            .userIsAuthorisedForTheResource(saUtr)
+            .userIsAuthorisedForTheResource(nino)
             .when()
-            .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+            .post(s"/nino/$nino/$taxYear/${sourceType.name}", Some(sourceType.example()))
             .thenAssertThat()
             .statusIs(201)
             .contentTypeIsHalJson()
-            .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
+            .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+".r)
             .when()
-            .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567",
+            .put(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%/${summaryType.name}/12334567",
                  Some(summaryType.example()))
             .withAcceptHeader()
             .thenAssertThat()

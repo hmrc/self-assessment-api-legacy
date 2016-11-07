@@ -15,106 +15,106 @@ class SourceSummaryHalLinksSpec extends BaseFunctionalSpec {
             "incomes" -> Map("enabled" -> true),
             "expenses" -> Map("enabled" -> false)))))
 
-  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
+  override lazy val app: FakeApplication = FakeApplication(additionalConfiguration = conf)
 
   "Request to discover tax year" should {
     "have Hal links for self-employments" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear")
+        .get(s"/nino/$nino/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLinksForSourceType(SelfEmployments, saUtr, taxYear)
+        .bodyHasLinksForSourceType(SelfEmployments, nino, taxYear)
     }
   }
 
   "Request to create self-employments" should {
     "have Hal links for incomes" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(s"/$saUtr/$taxYear/self-employments", Some(SelfEmployments.example()))
+        .post(s"/nino/$nino/$taxYear/self-employments", Some(SelfEmployments.example()))
         .thenAssertThat()
         .statusIs(201)
         .contentTypeIsHalJson()
-        .bodyHasSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Incomes, saUtr, taxYear)
+        .bodyHasSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Incomes, nino, taxYear)
     }
 
     "not have Hal links for expenses" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(s"/$saUtr/$taxYear/self-employments", Some(SelfEmployments.example()))
+        .post(s"/nino/$nino/$taxYear/self-employments", Some(SelfEmployments.example()))
         .thenAssertThat()
         .statusIs(201)
         .contentTypeIsHalJson()
-        .bodyDoesNotHaveSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Expenses, saUtr, taxYear)
+        .bodyDoesNotHaveSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Expenses, nino, taxYear)
     }
   }
 
   "Request to read self-employments" should {
     "have Hal links for incomes" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-          .post(s"/$saUtr/$taxYear/self-employments", Some(SelfEmployments.example()))
+          .post(s"/nino/$nino/$taxYear/self-employments", Some(SelfEmployments.example()))
           .thenAssertThat()
           .statusIs(201)
         .when()
-          .get(s"/$saUtr/$taxYear/self-employments/%sourceId%")
+          .get(s"/nino/$nino/$taxYear/self-employments/%sourceId%")
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsHalJson()
-          .bodyHasSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Incomes, saUtr, taxYear)
+          .bodyHasSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Incomes, nino, taxYear)
     }
 
     "not have Hal links for expenses" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-          .post(s"/$saUtr/$taxYear/self-employments", Some(SelfEmployments.example()))
+          .post(s"/nino/$nino/$taxYear/self-employments", Some(SelfEmployments.example()))
           .thenAssertThat()
           .statusIs(201)
         .when()
-          .get(s"/$saUtr/$taxYear/self-employments/%sourceId%")
+          .get(s"/nino/$nino/$taxYear/self-employments/%sourceId%")
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsHalJson()
-          .bodyDoesNotHaveSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Expenses, saUtr, taxYear)
+          .bodyDoesNotHaveSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Expenses, nino, taxYear)
     }
   }
 
   "Request to update self-employments" should {
     "have Hal links for incomes" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-          .post(s"/$saUtr/$taxYear/self-employments", Some(SelfEmployments.example()))
+          .post(s"/nino/$nino/$taxYear/self-employments", Some(SelfEmployments.example()))
           .thenAssertThat()
           .statusIs(201)
         .when()
-          .put(s"/$saUtr/$taxYear/self-employments/%sourceId%", Some(SelfEmployments.example()))
+          .put(s"/nino/$nino/$taxYear/self-employments/%sourceId%", Some(SelfEmployments.example()))
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsHalJson()
-          .bodyHasSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Incomes, saUtr, taxYear)
+          .bodyHasSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Incomes, nino, taxYear)
     }
 
     "not have Hal links for expenses" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-          .post(s"/$saUtr/$taxYear/self-employments", Some(SelfEmployments.example()))
+          .post(s"/nino/$nino/$taxYear/self-employments", Some(SelfEmployments.example()))
           .thenAssertThat()
           .statusIs(201)
         .when()
-          .put(s"/$saUtr/$taxYear/self-employments/%sourceId%", Some(SelfEmployments.example()))
+          .put(s"/nino/$nino/$taxYear/self-employments/%sourceId%", Some(SelfEmployments.example()))
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsHalJson()
-          .bodyDoesNotHaveSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Expenses, saUtr, taxYear)
+          .bodyDoesNotHaveSummaryLink(SelfEmployments, selfemployment.SummaryTypes.Expenses, nino, taxYear)
     }
   }
 

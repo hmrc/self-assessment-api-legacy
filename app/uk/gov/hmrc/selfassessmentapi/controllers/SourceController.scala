@@ -21,9 +21,9 @@ import play.api.libs.json.Json._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.mvc.hal._
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, TaxYear, SourceType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SourceType, TaxYear}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,8 +32,8 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
 
   override lazy val context: String = AppContext.apiGatewayLinkContext
 
-  protected def createSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = {
-    sourceHandler(sourceType).create(saUtr, taxYear, request.body) match {
+  protected def createSource(request: Request[JsValue], nino: Nino, taxYear: TaxYear, sourceType: SourceType) = {
+    sourceHandler(sourceType).create(nino, taxYear, request.body) match {
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
@@ -41,19 +41,19 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
             case ValidationErrorResult(errors) => BadRequest(Json.toJson(invalidRequest(errors)))
           }
         }
-      case Right(id) => id.map { sourceId => Created(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId))) }
+      case Right(id) => id.map { sourceId => Created(halResource(obj(), sourceLinks(nino, taxYear, sourceType, sourceId))) }
     }
   }
 
-  protected def readSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
-    sourceHandler(sourceType).findById(saUtr, taxYear, sourceId) map {
-      case Some(summary) => Ok(halResource(summary, sourceLinks(saUtr, taxYear, sourceType, sourceId)))
+  protected def readSource(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
+    sourceHandler(sourceType).findById(nino, taxYear, sourceId) map {
+      case Some(summary) => Ok(halResource(summary, sourceLinks(nino, taxYear, sourceType, sourceId)))
       case None => notFound
     }
   }
 
-  protected def updateSource(request: Request[JsValue], saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
-    sourceHandler(sourceType).update(saUtr, taxYear, sourceId, request.body) match {
+  protected def updateSource(request: Request[JsValue], nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
+    sourceHandler(sourceType).update(nino, taxYear, sourceId, request.body) match {
       case Left(errorResult) =>
         Future.successful {
           errorResult match {
@@ -62,25 +62,25 @@ trait SourceController extends BaseController with Links with SourceTypeSupport 
           }
         }
       case Right(result) => result.map {
-        case true => Ok(halResource(obj(), sourceLinks(saUtr, taxYear, sourceType, sourceId)))
+        case true => Ok(halResource(obj(), sourceLinks(nino, taxYear, sourceType, sourceId)))
         case false => notFound
       }
     }
   }
 
-  protected def deleteSource(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
-    sourceHandler(sourceType).delete(saUtr, taxYear, sourceId) map {
+  protected def deleteSource(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId) = {
+    sourceHandler(sourceType).delete(nino, taxYear, sourceId) map {
       case true => NoContent
       case false => notFound
     }
   }
 
-  protected def listSources(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType) = {
+  protected def listSources(nino: Nino, taxYear: TaxYear, sourceType: SourceType) = {
     val svc = sourceHandler(sourceType)
-    svc.find(saUtr, taxYear) map { sources =>
+    svc.find(nino, taxYear) map { sources =>
       val json = toJson(sources.map(source => halResource(source.json,
-        Set(HalLink("self", sourceIdHref(saUtr, taxYear, sourceType, source.id))))))
-      Ok(halResourceList(svc.listName, json, sourceHref(saUtr, taxYear, sourceType)))
+        Set(HalLink("self", sourceIdHref(nino, taxYear, sourceType, source.id))))))
+      Ok(halResourceList(svc.listName, json, sourceHref(nino, taxYear, sourceType)))
     }
   }
 

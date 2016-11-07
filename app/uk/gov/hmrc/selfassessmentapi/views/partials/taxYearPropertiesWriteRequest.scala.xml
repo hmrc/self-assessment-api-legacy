@@ -1,13 +1,13 @@
-@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.domain.Nino
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
 @import play.api.libs.json.Json.toJson
 
-@(method: String, saUtr: SaUtr, taxYear: TaxYear)
+@(method: String, nino: Nino, taxYear: TaxYear)
 
 <section id="sample-request-update-tax-year">
     <title>Sample tax year update request</title>
-    <resource>@method /self-assessment/@saUtr/@taxYear</resource>
+    <resource>@method /self-assessment/@nino/@taxYear</resource>
 
         <description>Updates tax year properties</description>
         <json>@prettyPrint(toJson(FeatureSwitchedTaxYearProperties()))</json>

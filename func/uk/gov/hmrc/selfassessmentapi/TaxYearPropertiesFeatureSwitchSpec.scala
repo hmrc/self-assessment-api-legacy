@@ -30,15 +30,15 @@ class SwitchPensionContributionOnSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
     }
@@ -71,15 +71,15 @@ class SwitchPensionContributionOffSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }
@@ -123,15 +123,15 @@ class SwitchCharitableGivingsOnSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
     }
@@ -175,15 +175,15 @@ class SwitchCharitableGivingsOffSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }
@@ -216,15 +216,15 @@ class SwitchBlindPersonOnSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
     }
@@ -257,15 +257,15 @@ class SwitchBlindPersonOffSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }
@@ -296,9 +296,9 @@ class SwitchStudentLoanOnSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
     }
@@ -329,15 +329,15 @@ class SwitchStudentLoanOffSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }
@@ -367,15 +367,15 @@ class SwitchTaxRefundedOrSetOffOnSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
     }
@@ -405,15 +405,15 @@ class SwitchTaxRefundedOrSetOffOffSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }
@@ -443,15 +443,15 @@ class SwitchChildBenefitOnSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
     }
@@ -481,15 +481,15 @@ class SwitchChildBenefitOffSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
 
       given()
         .when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isBadRequest
     }

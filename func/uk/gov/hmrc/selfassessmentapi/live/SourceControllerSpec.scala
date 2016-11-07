@@ -89,49 +89,46 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "be able to create, update and delete a self assessment source" in {
       SourceTypes.types.foreach { sourceType =>
         given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .get(s"/$saUtr/$taxYear/${sourceType.name}")
+          .userIsAuthorisedForTheResource(nino)
+        .when()
+          .get(s"/nino/$nino/$taxYear/${sourceType.name}")
           .withAcceptHeader()
           .thenAssertThat()
           .statusIs(200)
           .butResponseHasNo(sourceType.name)
         when()
-          .post(Some(sourceType.example()))
-          .to(s"/$saUtr/$taxYear/${sourceType.name}")
+          .post(Some(sourceType.example())).to(s"/nino/$nino/$taxYear/${sourceType.name}")
           .withAcceptHeader()
           .thenAssertThat()
           .statusIs(201)
           .contentTypeIsHalJson()
-          .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/.+".r)
-          .bodyHasSummaryLinks(sourceType, saUtr, taxYear)
-          .when()
-          .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+".r)
+          .bodyHasSummaryLinks(sourceType, nino, taxYear)
+        .when()
+          .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%")
           .withAcceptHeader()
           .thenAssertThat()
           .statusIs(200)
-          .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
-          .when()
-          .put(Some(updateScenarios(sourceType).updatedValue))
-          .at(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/%sourceId%")
+        .when()
+          .put(Some(updateScenarios(sourceType).updatedValue)).at(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%")
           .withAcceptHeader()
           .thenAssertThat()
           .statusIs(200)
-          .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
-          .when()
-          .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/%sourceId%")
+        .when()
+          .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%")
           .withAcceptHeader()
           .thenAssertThat()
           .statusIs(200)
-          .body(updateScenarios(sourceType).expectedUpdate.path)
-          .is(updateScenarios(sourceType).expectedUpdate.value)
-          .when()
-          .delete(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
+          .body(updateScenarios(sourceType).expectedUpdate.path).is(updateScenarios(sourceType).expectedUpdate.value)
+        .when()
+          .delete(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%")
           .thenAssertThat()
           .statusIs(204)
-          .when()
-          .get(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%")
-          .withAcceptHeader()
+        .when()
+        .get(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%")
+        .withAcceptHeader()
           .thenAssertThat()
           .isNotFound
       }
@@ -141,9 +138,9 @@ class SourceControllerSpec extends BaseFunctionalSpec {
   "I" should {
     "not be able to get a invalid source type" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
-        .when()
-        .get(s"/$saUtr/$taxYear/blah")
+        .userIsAuthorisedForTheResource(nino)
+      .when()
+        .get(s"/nino/$nino/$taxYear/blah")
         .withAcceptHeader()
         .thenAssertThat()
         .isNotFound
@@ -152,28 +149,28 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "not be able to get a non-existent source" in {
       SourceTypes.types.foreach { sourceType =>
         given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .get(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf")
+          .userIsAuthorisedForTheResource(nino)
+        .when()
+          .get(s"/nino/$nino/$taxYear/${sourceType.name}/asdfasdf")
           .withAcceptHeader()
           .thenAssertThat()
           .isNotFound
 
         given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf", Some(sourceType.example()))
+          .userIsAuthorisedForTheResource(nino)
+        .when()
+          .put(s"/nino/$nino/$taxYear/${sourceType.name}/asdfasdf", Some(sourceType.example()))
           .withAcceptHeader()
           .thenAssertThat()
           .isNotFound
 
         given()
-          .userIsAuthorisedForTheResource(saUtr)
+            .userIsAuthorisedForTheResource(nino)
           .when()
-          .delete(s"/$saUtr/$taxYear/${sourceType.name}/asdfasdf")
-          .withAcceptHeader()
-          .thenAssertThat()
-          .isNotFound
+            .delete(s"/nino/$nino/$taxYear/${sourceType.name}/asdfasdf")
+            .withAcceptHeader()
+            .thenAssertThat()
+            .isNotFound
 
       }
     }
@@ -181,9 +178,9 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "not be able to create a source with invalid data" in {
       SourceTypes.types.filter(errorScenarios(_).error.httpStatusCode != ok).foreach { sourceType =>
         given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).invalidInput))
+          .userIsAuthorisedForTheResource(nino)
+        .when()
+          .post(s"/nino/$nino/$taxYear/${sourceType.name}", Some(errorScenarios(sourceType).invalidInput))
           .withAcceptHeader()
           .thenAssertThat()
           .isValidationError(errorScenarios(sourceType).error.path, errorScenarios(sourceType).error.code)
@@ -193,13 +190,13 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "not be able to update a source with invalid data" in {
       SourceTypes.types.filter(errorScenarios(_).error.httpStatusCode != ok).foreach { sourceType =>
         given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .post(s"/$saUtr/$taxYear/${sourceType.name}", Some(sourceType.example()))
+          .userIsAuthorisedForTheResource(nino)
+        .when()
+          .post(s"/nino/$nino/$taxYear/${sourceType.name}", Some(sourceType.example()))
           .thenAssertThat()
           .statusIs(201)
-          .when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/%sourceId%", Some(errorScenarios(sourceType).invalidInput))
+        .when()
+          .put(s"/nino/$nino/$taxYear/${sourceType.name}/%sourceId%", Some(errorScenarios(sourceType).invalidInput))
           .thenAssertThat()
           .isValidationError(errorScenarios(sourceType).error.path, errorScenarios(sourceType).error.code)
       }
@@ -208,10 +205,9 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "not be able to update a non-existent" in {
       SourceTypes.types.foreach { sourceType =>
         given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .put(s"/$saUtr/$taxYear/${sourceType.name}/non-existent-source",
-               Some(updateScenarios(sourceType).updatedValue))
+          .userIsAuthorisedForTheResource(nino)
+        .when()
+          .put(s"/nino/$nino/$taxYear/${sourceType.name}/non-existent-source", Some(updateScenarios(sourceType).updatedValue))
           .thenAssertThat()
           .isNotFound
       }
@@ -220,9 +216,9 @@ class SourceControllerSpec extends BaseFunctionalSpec {
     "not be able to delete a non-existent" in {
       SourceTypes.types.foreach { sourceType =>
         given()
-          .userIsAuthorisedForTheResource(saUtr)
-          .when()
-          .delete(s"/$saUtr/$taxYear/${sourceType.name}/non-existent-source")
+          .userIsAuthorisedForTheResource(nino)
+        .when()
+          .delete(s"/nino/$nino/$taxYear/${sourceType.name}/non-existent-source")
           .thenAssertThat()
           .isNotFound
       }

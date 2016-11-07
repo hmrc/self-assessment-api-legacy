@@ -3,7 +3,7 @@ package uk.gov.hmrc.selfassessmentapi.live
 import play.api.test.FakeApplication
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
+class v extends BaseFunctionalSpec {
 
   override lazy val app = FakeApplication(additionalConfiguration = Map(
     "Test.feature-switch.self-employments.enabled" -> true,
@@ -18,28 +18,28 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
   "Live tax years discovery" should {
     "return a 200 response with links" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr")
+        .get(s"/nino/$nino")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr")
-        .bodyHasLink(taxYear, s"/self-assessment/$saUtr/$taxYear")
+        .bodyHasLink("self", s"/self-assessment/nino/$nino")
+        .bodyHasLink(taxYear, s"/self-assessment/nino/$nino/$taxYear")
     }
   }
 
   "Live tax year discovery" should {
     "return a 200 response status" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear")
+        .get(s"/nino/$nino/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
-        .bodyHasLink("self-employments", s"""/self-assessment/$saUtr/$taxYear/self-employments""")
+        .bodyHasLink("self", s"""/self-assessment/nino/$nino/$taxYear""")
+        .bodyHasLink("self-employments", s"""/self-assessment/nino/$nino/$taxYear/self-employments""")
     }
   }
 

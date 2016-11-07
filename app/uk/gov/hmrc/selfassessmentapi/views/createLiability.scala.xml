@@ -1,8 +1,8 @@
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
-@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.domain.Nino
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-@(saUtr: SaUtr, taxYear: TaxYear)
+@(nino: Nino, taxYear: TaxYear)
 <endpoint>
     <name>Request Liability</name>
     <description>This endpoint requests a liability estimate</description>
@@ -10,12 +10,12 @@
         <title>Resource</title>
         <resource>POST /self-assessment/{utr}/{tax-year}/liability</resource>
     </section>
-    @partials.liabilityPathParams(saUtr, taxYear)
+    @partials.liabilityPathParams(nino, taxYear)
     @partials.requestHeaders(false)
     @partials.authorisation(true)
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>202 (Accepted)</httpStatus>
-        <json>@createLiabilityResponse(saUtr, taxYear)</json>
+        <json>@createLiabilityResponse(nino, taxYear)</json>
     </section>
 </endpoint>

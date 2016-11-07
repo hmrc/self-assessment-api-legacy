@@ -1,7 +1,7 @@
-@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.domain.Nino
 @import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-@(saUtr: SaUtr, taxYear: Option[TaxYear])
+@(nino: Nino, taxYear: Option[TaxYear])
 <row>
     <cell>
         <code>utr</code>

@@ -18,25 +18,25 @@ class SelfAssessmentDiscoveryControllerSpec extends BaseFunctionalSpec {
     "return a 200 response with links to tax years" in {
       given()
         .when()
-        .get(s"/sandbox/$saUtr")
+        .get(s"/sandbox/nino/$nino")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr")
-        .bodyHasLink(taxYear, s"/self-assessment/$saUtr/$taxYear")
+        .bodyHasLink("self", s"/self-assessment/nino/$nino")
+        .bodyHasLink(taxYear, s"/self-assessment/nino/$nino/$taxYear")
     }
   }
 
   "Sandbox Self assessment tax year discovery" should {
     "return a 200 response with links to self-assessment" in {
       when()
-        .get(s"/sandbox/$saUtr/$taxYear")
+        .get(s"/sandbox/nino/$nino/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear")
-        .bodyHasLink("liability", s"/self-assessment/$saUtr/$taxYear/liability")
-        .bodyHasLinksForAllSourceTypes(saUtr, taxYear)
+        .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear")
+        .bodyHasLink("liability", s"/self-assessment/nino/$nino/$taxYear/liability")
+        .bodyHasLinksForAllSourceTypes(nino, taxYear)
     }
   }
 

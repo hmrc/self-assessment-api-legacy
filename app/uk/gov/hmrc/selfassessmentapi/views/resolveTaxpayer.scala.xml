@@ -1,7 +1,7 @@
 @import uk.gov.hmrc.selfassessmentapi.views.Helpers._
-@import uk.gov.hmrc.domain.SaUtr
+@import uk.gov.hmrc.domain.Nino
 
-@(saUtr: SaUtr)
+@(nino: Nino)
 <endpoint>
     <name>Resolve Taxpayer</name>
     <description>This endpoint resolves the Taxpayer identifier from the provided Authorisation Bearer token</description>
@@ -14,6 +14,6 @@
     <section id="sample-response">
         <title>Response</title>
         <httpStatus>200 (OK)</httpStatus>
-        <json>@resolveTaxpayerResponse(saUtr)</json>
+        <json>@resolveTaxpayerResponse(nino)</json>
     </section>
 </endpoint>

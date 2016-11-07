@@ -2,6 +2,7 @@ package uk.gov.hmrc.selfassessmentapi.live
 
 import play.api.libs.json.Json
 import play.api.test.FakeApplication
+import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentSourceHandlerLimitEnabledSpec extends BaseFunctionalSpec {
@@ -36,24 +37,24 @@ class SelfEmploymentSourceHandlerLimitEnabledSpec extends BaseFunctionalSpec {
            |}
          """.stripMargin
 
-      val saUtrTwo = generateSaUtr()
+      val nino2 = NinoGenerator().nextNino()
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
       when()
-        .post(s"/$saUtr/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
+        .post(s"/nino/$nino/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
         .thenAssertThat()
         .statusIs(201)
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
       .when()
-        .post(s"/$saUtr/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
+        .post(s"/nino/$nino/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
         .thenAssertThat()
         .statusIs(400)
       given()
-        .userIsAuthorisedForTheResource(saUtrTwo)
+        .userIsAuthorisedForTheResource(nino2)
       .when()
-        .post(s"/$saUtrTwo/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
+        .post(s"/nino/$nino2/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
         .thenAssertThat()
         .statusIs(201)
     }
@@ -93,13 +94,13 @@ class SelfEmploymentSourceHandlerLimitDisabledSpec extends BaseFunctionalSpec {
          """.stripMargin
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
       when()
-        .post(s"/$saUtr/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
+        .post(s"/nino/$nino/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
         .thenAssertThat()
         .statusIs(201)
       when()
-        .post(s"/$saUtr/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
+        .post(s"/nino/$nino/$taxYear/self-employments", Some(Json.parse(selfEmployment)))
         .thenAssertThat()
         .statusIs(201)
     }

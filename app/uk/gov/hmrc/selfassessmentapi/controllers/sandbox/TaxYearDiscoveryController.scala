@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.Json._
 import play.api.mvc.Action
 import play.api.mvc.hal._
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.controllers._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, FeatureSwitchedTaxYearProperties, TaxYear, TaxYearProperties}
@@ -34,18 +34,18 @@ object TaxYearDiscoveryController extends TaxYearDiscoveryController {
   override val context: String = AppContext.apiGatewayLinkContext
   private val service = TaxYearPropertiesService()
 
-  final def discoverTaxYear(utr: SaUtr, taxYear: TaxYear) = Action.async { request =>
-    Future.successful(Ok(halResource(toJson(service.findTaxYearProperties(utr, taxYear)), discoveryLinks(utr, taxYear))))
+  final def discoverTaxYear(nino: Nino, taxYear: TaxYear) = Action.async { request =>
+    Future.successful(Ok(halResource(toJson(service.findTaxYearProperties(nino, taxYear)), discoveryLinks(nino, taxYear))))
   }
 
-  final def update(utr: SaUtr, taxYear: TaxYear) = Action.async(parse.json) { implicit request =>
+  final def update(nino: Nino, taxYear: TaxYear) = Action.async(parse.json) { implicit request =>
     if (FeatureSwitchedTaxYearProperties.atLeastOnePropertyIsEnabled)
       withJsonBody[TaxYearProperties] {
         taxYearProperties =>
           validateRequest(taxYearProperties, taxYear.taxYear) match {
             case Some(invalidPart) => Future.successful(BadRequest(Json.toJson(InvalidRequest(ErrorCode.INVALID_REQUEST, "Invalid request", Seq(invalidPart)))))
-            case None => service.updateTaxYearProperties(utr, taxYear, taxYearProperties).map { updated =>
-              if (updated) Ok(halResource(obj(), discoveryLinks(utr, taxYear)))
+            case None => service.updateTaxYearProperties(nino, taxYear, taxYearProperties).map { updated =>
+              if (updated) Ok(halResource(obj(), discoveryLinks(nino, taxYear)))
               else BadRequest(Json.toJson(ErrorFeatureSwitched))
             }
           }

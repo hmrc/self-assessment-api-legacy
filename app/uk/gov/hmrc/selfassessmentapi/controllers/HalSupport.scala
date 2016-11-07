@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.hal.{Hal, HalLink, HalResource}
 import play.api.libs.json.{JsObject, JsValue}
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.controllers.sandbox.SourceController._
@@ -41,14 +41,14 @@ trait HalSupport {
       Set(HalLink("self", self)))
   }
 
-  private def allSourceLinks(utr: SaUtr, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): Set[HalLink] = {
+  private def allSourceLinks(nino: Nino, taxYear: TaxYear, sourceType: SourceType, seId: SourceId): Set[HalLink] = {
       sourceType.summaryTypes.map { summaryType =>
-        HalLink(summaryType.name, sourceTypeAndSummaryTypeHref(utr, taxYear, sourceType, seId, summaryType.name))
-      } + HalLink("self", sourceIdHref(utr, taxYear, sourceType, seId))
+        HalLink(summaryType.name, sourceTypeAndSummaryTypeHref(nino, taxYear, sourceType, seId, summaryType.name))
+      } + HalLink("self", sourceIdHref(nino, taxYear, sourceType, seId))
   }
 
-  def sourceLinks(saUtr: SaUtr, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId): Set[HalLink] = {
-    val allLinks = allSourceLinks(saUtr, taxYear, sourceType, sourceId)
+  def sourceLinks(nino: Nino, taxYear: TaxYear, sourceType: SourceType, sourceId: SourceId): Set[HalLink] = {
+    val allLinks = allSourceLinks(nino, taxYear, sourceType, sourceId)
 
     AppContext.featureSwitch.map(FeatureConfig) match {
       case Some(fc) => allLinks.filter { halLink =>

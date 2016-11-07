@@ -27,9 +27,9 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            | }
         """.stripMargin)
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isValidationError("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
     }
@@ -48,9 +48,9 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            | }
         """.stripMargin)
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isValidationError("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
     }
@@ -70,7 +70,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            | }
         """.stripMargin)
       when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isValidationError("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
     }
@@ -89,7 +89,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            | }
         """.stripMargin)
       when()
-        .put(s"/sandbox/$saUtr/$taxYear", Some(payload))
+        .put(s"/sandbox/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isValidationError("/taxYearProperties/childBenefit/dateBenefitStopped", "BENEFIT_STOPPED_DATE_INVALID")
     }
@@ -98,7 +98,7 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
   "if the tax year is invalid for a sandbox request, they" should {
     "receive 400" in {
       when()
-        .get(s"/sandbox/$saUtr/not-a-tax-year").withAcceptHeader()
+        .get(s"/sandbox/nino/$nino/not-a-tax-year").withAcceptHeader()
         .thenAssertThat()
         .isBadRequest("TAX_YEAR_INVALID")
     }
@@ -107,23 +107,23 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
   "if the tax year in the path is valid for a live request, they" should {
     "receive 200" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/$taxYear").withAcceptHeader()
+        .get(s"/nino/$nino/$taxYear").withAcceptHeader()
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"/self-assessment/$saUtr/$taxYear")
-        .bodyHasLink("self-employments", s"""/self-assessment/$saUtr/$taxYear/self-employments""")
+        .bodyHasLink("self", s"/self-assessment/nino/$nino/$taxYear")
+        .bodyHasLink("self-employments", s"""/self-assessment/nino/$nino/$taxYear/self-employments""")
     }
   }
 
   "if the tax year is invalid for a live request, they" should {
     "receive 400" in {
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/$saUtr/not-a-tax-year").withAcceptHeader()
+        .get(s"/nino/$nino/not-a-tax-year").withAcceptHeader()
         .thenAssertThat()
         .isBadRequest("TAX_YEAR_INVALID")
     }
@@ -149,9 +149,9 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
            |}
         """.stripMargin)
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .isValidationError("/taxYearProperties", "ONLY_PENSION_CONTRIBUTIONS_SUPPORTED")
     }
@@ -174,17 +174,17 @@ class TaxYearValidationSpec extends BaseFunctionalSpec {
         """.stripMargin)
 
       given()
-        .userIsAuthorisedForTheResource(saUtr)
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(s"/$saUtr/$taxYear", Some(payload))
+        .put(s"/nino/$nino/$taxYear", Some(payload))
         .thenAssertThat()
         .statusIs(200)
       when()
-        .get(s"/$saUtr/$taxYear").withAcceptHeader()
+        .get(s"/nino/$nino/$taxYear").withAcceptHeader()
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsHalJson()
-        .bodyHasLink("self", s"""/self-assessment/$saUtr/$taxYear""")
+        .bodyHasLink("self", s"""/self-assessment/nino/$nino/$taxYear""")
         .bodyIs(expectedJson)
     }
   }

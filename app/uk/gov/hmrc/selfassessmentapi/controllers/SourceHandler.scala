@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers
 
 import play.api.libs.json.Json.toJson
 import play.api.libs.json._
-import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.controllers.controllers._
 import uk.gov.hmrc.selfassessmentapi.repositories.SourceRepository
@@ -31,25 +31,25 @@ abstract class SourceHandler[T](jsonMarshaller: JsonMarshaller[T], val listName:
   implicit val reads = jsonMarshaller.reads
   implicit val writes = jsonMarshaller.writes
 
-  def create(saUtr: SaUtr, taxYear: TaxYear, jsValue: JsValue) = {
+  def create(nino: Nino, taxYear: TaxYear, jsValue: JsValue) = {
     validate[T, String](jsValue) {
-      repository.create(saUtr, taxYear, _)
+      repository.create(nino, taxYear, _)
     }
   }
 
-  def update(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId, jsValue: JsValue) = {
+  def update(nino: Nino, taxYear: TaxYear, sourceId: SourceId, jsValue: JsValue) = {
     validate[T, Boolean](jsValue) {
-      repository.update(saUtr, taxYear, sourceId, _)
+      repository.update(nino, taxYear, sourceId, _)
     }
   }
 
-  def findById(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = {
-    repository.findById(saUtr, taxYear, sourceId).map(_.map(toJson(_)))
+  def findById(nino: Nino, taxYear: TaxYear, sourceId: SourceId) = {
+    repository.findById(nino, taxYear, sourceId).map(_.map(toJson(_)))
   }
 
-  def find(saUtr: SaUtr, taxYear: TaxYear) = repository.listAsJsonItem(saUtr, taxYear)
+  def find(nino: Nino, taxYear: TaxYear) = repository.listAsJsonItem(nino, taxYear)
 
-  def delete(saUtr: SaUtr, taxYear: TaxYear, sourceId: SourceId) = repository.delete(saUtr, taxYear, sourceId)
+  def delete(nino: Nino, taxYear: TaxYear, sourceId: SourceId) = repository.delete(nino, taxYear, sourceId)
 
   def summaryHandler(summaryType: SummaryType): Option[SummaryHandler[_]]
 }

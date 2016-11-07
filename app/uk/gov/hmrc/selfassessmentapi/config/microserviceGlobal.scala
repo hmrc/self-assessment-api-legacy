@@ -94,8 +94,8 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
 
   private def extractIdentityResource(pathString: String, verb: HttpVerb, authConfig: AuthConfig): Option[ResourceToAuthorise] = {
     pathString match {
-      case authConfig.pattern(utr) =>
-        Some(ResourceToAuthorise(verb, Regime("sa"), AccountId(utr)))
+      case authConfig.pattern(nino) =>
+        Some(ResourceToAuthorise(verb, Regime("paye"), AccountId(nino)))
       case _ => None
     }
   }
@@ -116,7 +116,7 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
 object HeaderValidatorFilter extends Filter with HeaderValidator {
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
     val controller = rh.tags.get(Routes.ROUTE_CONTROLLER)
-    val needsHeaderValidation = controller.map(name => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation).getOrElse(true)
+    val needsHeaderValidation = controller.forall(name => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation)
 
     if (!needsHeaderValidation || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
     else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
@@ -159,7 +159,7 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
   override def onError(request : RequestHeader, ex: Throwable) = {
     super.onError(request, ex).map { result =>
       ex.getCause match {
-        case ex: UnknownSummaryException => NotFound(Json.toJson(ErrorNotFound))
+        case UnknownSummaryException(_, _) => NotFound(Json.toJson(ErrorNotFound))
         case ex: NotImplementedException => NotImplemented(Json.toJson(ErrorNotImplemented))
         case _ => result
       }

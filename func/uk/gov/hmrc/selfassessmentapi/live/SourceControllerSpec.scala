@@ -2,14 +2,12 @@ package uk.gov.hmrc.selfassessmentapi.live
 
 import org.joda.time.LocalDate
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsLookupResult, JsValue}
 import play.api.libs.json.Json.{parse, toJson}
+import play.api.libs.json.{JsLookupResult, JsValue}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
 import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.SourceType.Banks
 import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.SourceType.Benefits
 import uk.gov.hmrc.selfassessmentapi.controllers.api.dividend.SourceType.Dividends
-import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.Employment
-import uk.gov.hmrc.selfassessmentapi.controllers.api.employment.SourceType.Employments
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.FurnishedHolidayLetting
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.EEA
 import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.SourceType.FurnishedHolidayLettings
@@ -38,7 +36,6 @@ class SourceControllerSpec extends BaseFunctionalSpec {
           "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
           "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
           "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
-          "Test.feature-switch.employments.enabled" -> true,
           "Test.feature-switch.uk-properties.enabled" -> true,
           "Test.feature-switch.banks.enabled" -> true,
           "Test.source-limits.self-employments" -> false))
@@ -65,8 +62,6 @@ class SourceControllerSpec extends BaseFunctionalSpec {
                                                           |}
                                                         """.stripMargin),
                                   error = ExpectedError(path = "/rentARoomRelief", code = "INVALID_MONETARY_AMOUNT")),
-    Employments -> ErrorScenario(invalidInput = toJson(Employment.example()),
-                                 error = ExpectedError(path = "", code = "", httpStatusCode = ok)),
     Dividends -> ErrorScenario(invalidInput = toJson(Dividends.example()),
                                error = ExpectedError(path = "", code = "", httpStatusCode = ok)),
     Banks -> ErrorScenario(invalidInput = toJson(Banks.example()),
@@ -85,8 +80,6 @@ class SourceControllerSpec extends BaseFunctionalSpec {
       expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     UKProperties -> UpdateScenario(updatedValue = toJson(UKProperty.example().copy(rentARoomRelief = Some(7777))),
                                    expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
-    Employments -> UpdateScenario(updatedValue = toJson(Employment.example()),
-                                  expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     Dividends -> UpdateScenario(updatedValue = toJson(Dividends.example()),
                                 expectedUpdate = ExpectedUpdate(path = _ \ "_id", value = "")),
     Banks -> UpdateScenario(updatedValue = toJson(Banks.example()),

@@ -1,4 +1,13 @@
 
+## [0.65.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.65.0) Release Candidate. Not Yet Released to Production.
+
+* Removed 'Employments' source and its summaries
+
+* Removed 'Unearned Income' source
+   * 'savings' summary is now 'Banks' Income source. Change made based on feedback from TPV's.
+   * 'dividends' summary now 'Dividends' Income source. Change made based on feedback from TPV's.
+   * 'benefits' summary now 'Benefits' source
+
 ## [0.61.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.61.0) 10-Oct-2016
 
 * Liability endpoints have been updated to support a single liability per tax year.

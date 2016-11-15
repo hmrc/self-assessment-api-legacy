@@ -160,7 +160,7 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override def onError(request : RequestHeader, ex: Throwable) = {
     super.onError(request, ex).map { result =>
-      ex.getCause match {
+      ex match {
         case UnknownSummaryException(_, _) => NotFound(Json.toJson(ErrorNotFound))
         case ex: NotImplementedException => NotImplemented(Json.toJson(ErrorNotImplemented))
         case _ => result

@@ -19,8 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.jobs
 import java.util.concurrent.TimeUnit
 
 import play.Logger
-import play.api.Play.current
-import play.modules.reactivemongo.ReactiveMongoPlugin
+import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.collections.bson.BSONCollection
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.play.scheduling.ExclusiveScheduledJob
@@ -32,7 +31,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-object DropMongoCollectionJob extends ExclusiveScheduledJob {
+object DropMongoCollectionJob extends ExclusiveScheduledJob with MongoDbConnection {
 
   override val name = "DropMongoCollectionsJob"
 
@@ -97,7 +96,7 @@ object DropMongoCollectionJob extends ExclusiveScheduledJob {
     }
 
     private def dropUnearnedIncomes(): Future[Boolean] = {
-      val db = ReactiveMongoPlugin.mongoConnector.db()
+      val db = mongoConnector.db()
       for {
         _ <- db.collection[BSONCollection]("unearnedIncomes").drop()
       } yield true

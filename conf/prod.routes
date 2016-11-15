@@ -2,7 +2,7 @@
 ->         /                     health.Routes
 ->         /                     definition.Routes
 
-GET        /admin/metrics        com.kenshoo.play.metrics.MetricsController.metrics
+GET        /admin/metrics        @com.kenshoo.play.metrics.MetricsController.metrics
 
 ->         /sandbox              sandbox.Routes
 ->         /                     live.Routes

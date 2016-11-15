@@ -22,15 +22,17 @@ import net.ceedubs.ficus.readers.{StringReader, ValueReader}
 import play.api.libs.json.Json
 import play.api.mvc.Results._
 import play.api.mvc._
-import play.api.{Application, Configuration, Play, Routes}
+import play.api.{Application, Configuration, Play}
+import play.routing.Router.Tags
 import uk.gov.hmrc.api.config.{ServiceLocatorConfig, ServiceLocatorRegistration}
 import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, ErrorNotFound, ErrorUnauthorized, HeaderValidator}
 import uk.gov.hmrc.play.audit.filters.AuditFilter
 import uk.gov.hmrc.play.auth.controllers.{AuthConfig, AuthParamsControllerConfig}
-import uk.gov.hmrc.play.auth.microservice.connectors.{AccountId, HttpVerb, Regime, ResourceToAuthorise}
+import uk.gov.hmrc.play.auth.microservice.connectors._
 import uk.gov.hmrc.play.auth.microservice.filters.AuthorisationFilter
 import uk.gov.hmrc.play.config.{AppName, RunMode}
+import uk.gov.hmrc.play.filters.MicroserviceFilterSupport
 import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.http.{HeaderCarrier, NotImplementedException}
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
@@ -38,7 +40,7 @@ import uk.gov.hmrc.play.scheduling._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.{NotFound => _, NotImplemented => _}
 import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorBadRequest, ErrorNotImplemented, UnknownSummaryException}
-import uk.gov.hmrc.selfassessmentapi.jobs.{DropMongoCollectionJob, DeleteExpiredDataJob}
+import uk.gov.hmrc.selfassessmentapi.jobs.{DeleteExpiredDataJob, DropMongoCollectionJob}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -71,17 +73,17 @@ object AuthParamsControllerConfiguration extends AuthParamsControllerConfig {
   lazy val controllerConfigs = ControllerConfiguration.controllerConfigs
 }
 
-object MicroserviceAuditFilter extends AuditFilter with AppName {
+object MicroserviceAuditFilter extends AuditFilter with AppName with MicroserviceFilterSupport {
   override val auditConnector = MicroserviceAuditConnector
 
   override def controllerNeedsAuditing(controllerName: String) = AppContext.auditEnabled && ControllerConfiguration.controllerParamsConfig(controllerName).needsAuditing
 }
 
-object MicroserviceLoggingFilter extends LoggingFilter {
+object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSupport {
   override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.controllerParamsConfig(controllerName).needsLogging
 }
 
-object MicroserviceAuthFilter extends AuthorisationFilter {
+object MicroserviceAuthFilter extends AuthorisationFilter with MicroserviceFilterSupport {
   override lazy val authParamsConfig = AuthParamsControllerConfiguration
   override lazy val authConnector = MicroserviceAuthConnector
 
@@ -94,8 +96,7 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
 
   private def extractIdentityResource(pathString: String, verb: HttpVerb, authConfig: AuthConfig): Option[ResourceToAuthorise] = {
     pathString match {
-      case authConfig.pattern(utr) =>
-        Some(ResourceToAuthorise(verb, Regime("sa"), AccountId(utr)))
+      case authConfig.pattern(utr) => Some(RegimeAndIdResourceToAuthorise(verb, Regime("sa"), AccountId(utr)))
       case _ => None
     }
   }
@@ -113,10 +114,10 @@ object MicroserviceAuthFilter extends AuthorisationFilter {
   override def controllerNeedsAuth(controllerName: String): Boolean = AppContext.authEnabled && ControllerConfiguration.controllerParamsConfig(controllerName).needsAuth
 }
 
-object HeaderValidatorFilter extends Filter with HeaderValidator {
+object HeaderValidatorFilter extends Filter with HeaderValidator with MicroserviceFilterSupport {
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    val controller = rh.tags.get(Routes.ROUTE_CONTROLLER)
-    val needsHeaderValidation = controller.map(name => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation).getOrElse(true)
+    val controller = rh.tags.get(Tags.ROUTE_CONTROLLER)
+    val needsHeaderValidation = controller.forall(name => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation)
 
     if (!needsHeaderValidation || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
     else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
@@ -158,7 +159,7 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override def onError(request : RequestHeader, ex: Throwable) = {
     super.onError(request, ex).map { result =>
-      ex.getCause match {
+      ex match {
         case ex: UnknownSummaryException => NotFound(Json.toJson(ErrorNotFound))
         case ex: NotImplementedException => NotImplemented(Json.toJson(ErrorNotImplemented))
         case _ => result

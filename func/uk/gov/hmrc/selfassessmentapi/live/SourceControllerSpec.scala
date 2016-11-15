@@ -1,9 +1,9 @@
 package uk.gov.hmrc.selfassessmentapi.live
 
 import org.joda.time.LocalDate
-import play.api.libs.json.JsValue
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json.{parse, toJson}
-import play.api.test.FakeApplication
+import play.api.libs.json.{JsLookupResult, JsValue}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode.COMMENCEMENT_DATE_NOT_IN_THE_PAST
 import uk.gov.hmrc.selfassessmentapi.controllers.api.bank.SourceType.Banks
 import uk.gov.hmrc.selfassessmentapi.controllers.api.benefit.SourceType.Benefits
@@ -22,23 +22,24 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 import scala.util.matching.Regex
 
 case class ExpectedError(path: String, code: String, httpStatusCode: Regex = "400".r)
-case class ExpectedUpdate(path: JsValue => JsValue, value: String = "")
+case class ExpectedUpdate(path: JsValue => JsLookupResult, value: String = "")
 
 case class ErrorScenario(invalidInput: JsValue, error: ExpectedError)
 case class UpdateScenario(updatedValue: JsValue, expectedUpdate: ExpectedUpdate)
 
 class SourceControllerSpec extends BaseFunctionalSpec {
 
-  override lazy val app = FakeApplication(
-    additionalConfiguration = Map("Test.feature-switch.self-employments.enabled" -> true,
-                                  "Test.feature-switch.benefits.enabled" -> true,
-                                  "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
-                                  "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
-                                  "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
-                                  "Test.feature-switch.employments.enabled" -> true,
-                                  "Test.feature-switch.uk-properties.enabled" -> true,
-                                  "Test.feature-switch.banks.enabled" -> true,
-                                  "Test.source-limits.self-employments" -> false))
+  override lazy val app = new GuiceApplicationBuilder()
+    .configure(
+      Map("Test.feature-switch.self-employments.enabled" -> true,
+          "Test.feature-switch.benefits.enabled" -> true,
+          "Test.feature-switch.furnished-holiday-lettings.enabled" -> true,
+          "Test.feature-switch.furnished-holiday-lettings.uk.enabled" -> true,
+          "Test.feature-switch.furnished-holiday-lettings.eea.enabled" -> true,
+          "Test.feature-switch.uk-properties.enabled" -> true,
+          "Test.feature-switch.banks.enabled" -> true,
+          "Test.source-limits.self-employments" -> false))
+    .build()
 
   val ok: Regex = "20.".r
 

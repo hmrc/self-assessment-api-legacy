@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import play.api.libs.iteratee.Done
-import play.api.libs.iteratee.Input.Empty
 import play.api.libs.json._
+import play.api.libs.streams.Accumulator
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
@@ -36,7 +35,8 @@ class FeatureSwitchAction(source: SourceType, summary: String) extends ActionBui
   }
 
   def asyncFeatureSwitch(block: Request[JsValue] => Future[Result]) = {
-    val emptyJsonParser: BodyParser[JsValue] = BodyParser { request => Done(Right(JsNull), Empty) }
+
+    val emptyJsonParser: BodyParser[JsValue] = BodyParser { request => Accumulator.done(Right(JsNull)) }
 
     if (isFeatureEnabled) async(BodyParsers.parse.json)(block)
     else async[JsValue](emptyJsonParser)(_ => notImplemented)

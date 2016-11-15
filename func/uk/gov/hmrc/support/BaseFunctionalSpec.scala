@@ -1,7 +1,7 @@
 package uk.gov.hmrc.support
 
-import com.github.tomakehurst.wiremock.client.RequestPatternBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder
 import org.json.{JSONArray, JSONObject}
 import org.skyscreamer.jsonassert.JSONAssert.assertEquals
 import org.skyscreamer.jsonassert.JSONCompareMode.LENIENT
@@ -18,13 +18,12 @@ import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import scala.collection.mutable
 import scala.util.matching.Regex
 
-
 trait BaseFunctionalSpec extends TestApplication {
 
   protected val nino = NinoGenerator().nextNino()
 
-  class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String]) extends
-    UrlInterpolation {
+  class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
+      extends UrlInterpolation {
 
     if (request.startsWith("POST") || request.startsWith("PUT")) {
       Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal()) foreach {
@@ -54,13 +53,18 @@ trait BaseFunctionalSpec extends TestApplication {
     def when() = new HttpVerbs()
 
     def butResponseHasNo(sourceName: String, summaryName: String = "") = {
-      val jsValue =
-        if (summaryName.isEmpty) response.json \ "_embedded" \ sourceName
-        else response.json \ "_embedded" \ sourceName \ summaryName
+      val jsvOpt =
+        // FIXME: use \\
+        if (summaryName.isEmpty) (response.json \ "_embedded" \ sourceName).toOption
+        else (response.json \ "_embedded" \ sourceName \ summaryName).toOption
 
-      jsValue.asOpt[List[String]] match {
-        case Some(list) => list.isEmpty shouldBe true
-        case _ =>
+      jsvOpt match {
+        case Some(v) =>
+          v.asOpt[List[String]] match {
+            case Some(list) => list.isEmpty shouldBe true
+            case _ =>
+          }
+        case None => ()
       }
       this
     }
@@ -87,11 +91,12 @@ trait BaseFunctionalSpec extends TestApplication {
     def bodyDoesNotHaveSummaryLink(sourceType: SourceType, summaryType: SummaryType, nino: Nino, taxYear: String) = {
       val hrefPattern = s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r
       getLinkFromBody(summaryType.name) match {
-        case Some(href) => hrefPattern findFirstIn href match {
-          case Some(v) => fail(s"$summaryType Hal link found.")
-          case None =>
-        }
-        case unknown =>
+        case Some(href) =>
+          hrefPattern findFirstIn href match {
+            case Some(v) => fail(s"$summaryType Hal link found.")
+            case None => ()
+          }
+        case None => ()
       }
       this
     }
@@ -111,11 +116,12 @@ trait BaseFunctionalSpec extends TestApplication {
     def bodyDoesNotHaveLinksForSourceType(sourceType: SourceType, nino: Nino, taxYear: String) = {
       val hrefPattern = s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}".r
       getLinkFromBody(sourceType.name) match {
-        case Some(href) => hrefPattern findFirstIn href match {
-          case Some(v) => fail(s"$sourceType Hal link found.")
-          case None =>
-        }
-        case unknown =>
+        case Some(href) =>
+          hrefPattern findFirstIn href match {
+            case Some(v) => fail(s"$sourceType Hal link found.")
+            case None => ()
+          }
+        case None => ()
       }
       this
     }
@@ -134,28 +140,25 @@ trait BaseFunctionalSpec extends TestApplication {
     def isValidationError(error: (String, String)): Assertions = isValidationError(error._1, error._2)
 
     def isValidationError(path: String, code: String) = {
-      statusIs(400)
-        .contentTypeIsJson()
-        .body(_ \ "code").is("INVALID_REQUEST")
+      statusIs(400).contentTypeIsJson().body(_ \ "code").is("INVALID_REQUEST")
 
-      val errors = response.json \ "errors"
-      errors(0) \ "path" shouldBe JsString(path)
-      errors(0) \ "code" shouldBe JsString(code)
+      val errors = (response.json \ "errors").toOption
+      errors match {
+        case None => fail("didn't find 'errors' element in the json response")
+        case Some(e) =>
+          (e(0) \ "path").toOption shouldBe Some(JsString(path))
+          (e(0) \ "code").toOption shouldBe Some(JsString(code))
+      }
       this
     }
 
     def isBadRequest(path: String, code: String): Assertions = {
-      statusIs(400)
-        .contentTypeIsJson()
-        .body(_ \ "path").is(path)
-        .body(_ \ "code").is(code)
+      statusIs(400).contentTypeIsJson().body(_ \ "path").is(path).body(_ \ "code").is(code)
       this
     }
 
     def isBadRequest(code: String): Assertions = {
-      statusIs(400)
-        .contentTypeIsJson()
-        .body(_ \ "code").is(code)
+      statusIs(400).contentTypeIsJson().body(_ \ "code").is(code)
       this
     }
 
@@ -164,22 +167,18 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     def isNotFound = {
-      statusIs(404)
-        .contentTypeIsJson()
-        .bodyIsError(ErrorNotFound.errorCode)
+      statusIs(404).contentTypeIsJson().bodyIsError(ErrorNotFound.errorCode)
       this
     }
 
     def isNotImplemented = {
-      statusIs(501)
-        .contentTypeIsJson()
-        .bodyIsError(ErrorNotImplemented.errorCode)
+      statusIs(501).contentTypeIsJson().bodyIsError(ErrorNotImplemented.errorCode)
       this
     }
 
     def contentTypeIsXml() = contentTypeIs("application/xml")
 
-    def contentTypeIsJson() = contentTypeIs("application/json; charset=utf-8")
+    def contentTypeIsJson() = contentTypeIs("application/json")
 
     def contentTypeIsHalJson() = contentTypeIs("application/hal+json")
 
@@ -220,11 +219,12 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def bodyHasPath(path: String, valuePattern: Regex) = {
       extractPathElement[String](path) match {
-        case Some(x) => valuePattern findFirstIn x match {
-          case Some(v) =>
-          case None => fail(s"$x did not match pattern")
-        }
-        case unknown => fail(s"No value found for $path")
+        case Some(x) =>
+          valuePattern findFirstIn x match {
+            case Some(v) =>
+            case None => fail(s"$x did not match pattern")
+          }
+        case None => fail(s"No value found for $path")
       }
       this
     }
@@ -239,34 +239,43 @@ trait BaseFunctionalSpec extends TestApplication {
 
     private def extractPathElement[T](path: String)(implicit reads: Reads[T]): Option[T] = {
       val pathSeq = path.filter(!_.isWhitespace).split('\\').toSeq.filter(!_.isEmpty)
-      def op(js: JsValue, pathElement: String) = {
+      def op(js: Option[JsValue], pathElement: String) = {
         val pattern = """(.*)\((\d+)\)""".r
-        pathElement match {
-          case pattern(arrayName, index) =>
-            if (arrayName.isEmpty) js(index.toInt) else (js \ arrayName) (index.toInt)
-          case _ => js \ pathElement
+        js match {
+          case Some(v) =>
+            pathElement match {
+              case pattern(arrayName, index) =>
+                js match {
+                  case Some(v) =>
+                    if (arrayName.isEmpty) v(index.toInt).toOption else (v \ arrayName)(index.toInt).toOption
+                  case None => None
+                }
+              case _ => (v \ pathElement).toOption
+            }
+          case None => None
         }
       }
-      pathSeq.foldLeft(response.json)(op).asOpt[T]
+      pathSeq.foldLeft(Some(response.json): Option[JsValue])(op).map(jsValue => jsValue.asOpt[T]).getOrElse(None)
     }
 
-
-    private def getLinkFromBody(rel: String): Option[String] = {
+    private def getLinkFromBody(rel: String): Option[String] =
       if (response.body.isEmpty) None
-      else {
-        val links = response.json \ "_links"
-        val link = links \ rel
-        (link \ "href").asOpt[String]
-      }
-    }
+      else
+        (for {
+          links <- (response.json \ "_links").toOption
+          link <- (links \ rel).toOption
+          href <- (link \ "href").toOption
+
+        } yield href.asOpt[String]).getOrElse(None)
 
     def bodyHasLink(rel: String, hrefPattern: Regex) = {
       getLinkFromBody(rel) match {
-        case Some(href) => interpolated(hrefPattern).r findFirstIn href match {
-          case Some(v) =>
-          case None => fail(s"$href did not match pattern")
-        }
-        case unknown => fail(s"No href found for $rel")
+        case Some(href) =>
+          interpolated(hrefPattern).r findFirstIn href match {
+            case Some(v) =>
+            case None => fail(s"$href did not match pattern")
+          }
+        case None => fail(s"No href found for $rel")
       }
       this
     }
@@ -300,25 +309,32 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
-    def body(myQuery: JsValue => JsValue) = {
-      new BodyAssertions(myQuery(response.json), this)
+    def body(myQuery: JsValue => JsLookupResult) = {
+      new BodyAssertions(myQuery(response.json).toOption, this)
     }
 
     def body1(myQuery: JsValue => Seq[JsValue]) = {
       new BodyListAssertions(myQuery(response.json), this)
     }
 
-    class BodyAssertions(content: JsValue, assertions: Assertions) {
+    class BodyAssertions(content: Option[JsValue], assertions: Assertions) {
       def is(value: String) = {
-        content.asOpt[String] match {
-          case Some(actualValue) => actualValue shouldBe value
-          case _ => "" shouldBe value
+        content match {
+          case Some(v) =>
+            v.asOpt[String] match {
+              case Some(actualValue) => actualValue shouldBe value
+              case _ => "" shouldBe value
+            }
+          case None => ()
         }
         assertions
       }
 
       def is(value: BigDecimal) = {
-        content.as[BigDecimal] shouldBe value
+        content match {
+          case Some(v) => v.as[BigDecimal] shouldBe value
+          case None => ()
+        }
         assertions
       }
     }
@@ -329,10 +345,11 @@ trait BaseFunctionalSpec extends TestApplication {
         assertions
       }
     }
-
   }
 
-  class HttpRequest(method: String, path: String, body: Option[JsValue])(implicit urlPathVariables: mutable.Map[String, String]) extends UrlInterpolation {
+  class HttpRequest(method: String, path: String, body: Option[JsValue])(
+      implicit urlPathVariables: mutable.Map[String, String])
+      extends UrlInterpolation {
 
     assert(path.startsWith("/"), "please provide only a path starting with '/'")
     var addAcceptHeader = true
@@ -345,7 +362,8 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     def thenAssertThat() = {
-      implicit val carrier = if (addAcceptHeader) hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json")) else hc
+      implicit val carrier =
+        if (addAcceptHeader) hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json")) else hc
 
       withClue(s"Request $method ${interpolated(url)}") {
         method match {
@@ -369,11 +387,13 @@ trait BaseFunctionalSpec extends TestApplication {
     }
   }
 
-  class HttpPostBodyWrapper(method: String, body: Option[JsValue])(implicit urlPathVariables: mutable.Map[String, String]) {
+  class HttpPostBodyWrapper(method: String, body: Option[JsValue])(
+      implicit urlPathVariables: mutable.Map[String, String]) {
     def to(url: String) = new HttpRequest(method, url, body)
   }
 
-  class HttpPutBodyWrapper(method: String, body: Option[JsValue])(implicit urlPathVariables: mutable.Map[String, String]) {
+  class HttpPutBodyWrapper(method: String, body: Option[JsValue])(
+      implicit urlPathVariables: mutable.Map[String, String]) {
     def at(url: String) = new HttpRequest(method, url, body)
   }
 
@@ -437,8 +457,9 @@ trait BaseFunctionalSpec extends TestApplication {
            |}
       """.stripMargin
 
-      stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type",
-        "application/json")))
+      stubFor(
+        get(urlPathEqualTo(s"/auth/authority"))
+          .willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type", "application/json")))
       this
     }
 
@@ -452,11 +473,11 @@ trait BaseFunctionalSpec extends TestApplication {
            |}
       """.stripMargin
 
-      stubFor(get(urlPathEqualTo(s"/auth/authority")).willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type",
-        "application/json")))
+      stubFor(
+        get(urlPathEqualTo(s"/auth/authority"))
+          .willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type", "application/json")))
       this
     }
-
 
   }
 
@@ -465,5 +486,3 @@ trait BaseFunctionalSpec extends TestApplication {
   def when() = new HttpVerbs()
 
 }
-
-

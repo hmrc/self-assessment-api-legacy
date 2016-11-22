@@ -7,19 +7,21 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
   val selfEmploymentId = BSONObjectID.generate.stringify
 
   "if the valid content type header is sent in the request, they" should {
-    "receive 200" in {
+    "receive 204" in {
       given()
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/sandbox/nino/$nino/$taxYear/self-employments/$selfEmploymentId").withAcceptHeader()
-        .thenAssertThat().statusIs(200)
+        .get(s"/nino/$nino/self-employments").withAcceptHeader()
+        .thenAssertThat().statusIs(204)
     }
   }
 
   "if the valid content type header is missing in the request, they" should {
     "receive 406" in {
       given()
+        .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/sandbox/nino/$nino/$taxYear/self-employments/$selfEmploymentId").withoutAcceptHeader()
+        .get(s"/nino/$nino/self-employments").withoutAcceptHeader()
         .thenAssertThat()
         .statusIs(406)
         .bodyIsError("ACCEPT_HEADER_INVALID")

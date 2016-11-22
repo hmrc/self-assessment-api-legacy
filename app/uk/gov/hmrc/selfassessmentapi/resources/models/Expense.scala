@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import play.api.libs.json.Json
 
-trait LiabilityController extends BaseController {
+case class Expense(amount: Amount, disallowableAmount: Amount)
 
-  def requestLiability(nino: Nino, taxYear: TaxYear): Action[AnyContent]
-  def retrieveLiability(nino: Nino, taxYear: TaxYear) : Action[AnyContent]
-
+object Expense {
+  implicit val reads = Json.reads[Expense]
+  implicit val writes = Json.writes[Expense]
 }

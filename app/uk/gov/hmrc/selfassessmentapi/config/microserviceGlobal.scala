@@ -39,7 +39,7 @@ import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.scheduling._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.{NotFound => _, NotImplemented => _}
-import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorBadRequest, ErrorNotImplemented, UnknownSummaryException}
+import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorBadRequest, ErrorNotImplemented}
 import uk.gov.hmrc.selfassessmentapi.jobs.{DeleteExpiredDataJob, DropMongoCollectionJob}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -160,8 +160,7 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override def onError(request : RequestHeader, ex: Throwable) = {
     super.onError(request, ex).map { result =>
-      ex match {
-        case UnknownSummaryException(_, _) => NotFound(Json.toJson(ErrorNotFound))
+      ex.getCause match {
         case ex: NotImplementedException => NotImplemented(Json.toJson(ErrorNotImplemented))
         case _ => result
       }

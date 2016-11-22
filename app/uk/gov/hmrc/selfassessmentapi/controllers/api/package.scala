@@ -28,6 +28,7 @@ import scala.math.BigDecimal.RoundingMode
 package object api {
 
   type SourceId = String
+  type PeriodId = String
   type SummaryId = String
   type LiabilityId = String
   type LiabilityCalculationErrorId = String

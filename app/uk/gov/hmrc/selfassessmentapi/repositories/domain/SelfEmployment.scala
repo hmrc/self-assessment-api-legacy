@@ -233,7 +233,7 @@ object SelfEmployment {
     Format(Json.reads[SelfEmployment], Json.writes[SelfEmployment])
   })
 
-  def create(nino: Nino, taxYear: TaxYear, se: selfemployment.SelfEmployment): SelfEmployment = {
+  def create(nino: Nino, taxYear: TaxYear = TaxYear(""), se: selfemployment.SelfEmployment): SelfEmployment = {
     val id = BSONObjectID.generate
     val now = DateTime.now(DateTimeZone.UTC)
     SelfEmployment(

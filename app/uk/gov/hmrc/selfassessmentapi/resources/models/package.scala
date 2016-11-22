@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
-
-trait LiabilityController extends BaseController {
-
-  def requestLiability(nino: Nino, taxYear: TaxYear): Action[AnyContent]
-  def retrieveLiability(nino: Nino, taxYear: TaxYear) : Action[AnyContent]
-
+package object models {
+  type Amount = BigDecimal
 }

@@ -13,75 +13,16 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
   val summaryId = UUID.randomUUID().toString
 
   private val conf: Map[String, Map[SourceId, Map[SourceId, Map[SourceId, Any]]]] =
-    Map("Test" ->
-      Map("feature-switch" ->
-        Map(
-          "self-employments" -> Map("enabled" -> true, "incomes" -> Map("enabled" -> true),
-            "expenses" -> Map("enabled" -> false), "balancing-charges" -> Map("enabled" -> false),
-            "goods-and-services-own-uses" -> Map("enabled" -> false)))
-          ))
+    Map("Test" -> Map("feature-switch" -> Map("self-employments" -> Map("enabled" -> false))))
 
   override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
 
-  "self-employments and only self-employment incomes" should {
-    "be visible in live" in {
-
+  "self-employments" should {
+    "not be visible if feature Switched Off" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/nino/$nino/$taxYear/${SelfEmployments.name}")
-        .thenAssertThat()
-        .statusIs(200)
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .get(s"/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/incomes")
-        .thenAssertThat()
-        .statusIs(200)
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .get(s"/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
-        .thenAssertThat()
-        .isNotImplemented
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .get(s"/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
-        .thenAssertThat()
-        .isNotImplemented
-    }
-
-    "be visible in sandbox" in {
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .get(s"/sandbox/nino/$nino/$taxYear/${SelfEmployments.name}")
-        .thenAssertThat()
-        .statusIs(200)
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .get(s"/sandbox/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/incomes")
-        .thenAssertThat()
-        .statusIs(200)
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .get(s"/sandbox/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/expenses")
-        .thenAssertThat()
-        .isNotImplemented
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .get(s"/sandbox/nino/$nino/$taxYear/${SelfEmployments.name}/$sourceId/balancing-charges")
+        .get(s"/nino/$nino/${SelfEmployments.name}")
         .thenAssertThat()
         .isNotImplemented
     }

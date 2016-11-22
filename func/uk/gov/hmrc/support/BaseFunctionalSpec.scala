@@ -25,27 +25,16 @@ trait BaseFunctionalSpec extends TestApplication {
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
       extends UrlInterpolation {
 
-    if (request.startsWith("POST") || request.startsWith("PUT")) {
-      Map("sourceId" -> sourceIdFromHal(), "summaryId" -> summaryIdFromHal()) foreach {
-        case (name, fn) =>
-          fn map { evaluatedValue =>
-            urlPathVariables += (name -> evaluatedValue)
-          }
-      }
+    def responseContainsHeader(name: String, pattern: Regex) = {
+      response.header(name).get should fullyMatch regex pattern
+      this
     }
 
-    def sourceIdFromHal() = {
-      getLinkFromBody("self") flatMap { link =>
-        s"/self-assessment/nino/\\w+/$taxYear/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
-          firstMatch.group(1)
-        }
-      }
-    }
-
-    def summaryIdFromHal() = {
-      getLinkFromBody("self") flatMap { link =>
-        s"/self-assessment/nino/\\w+/$taxYear/[\\w-]+/\\w+/[\\w-]+/(\\w+)".r findFirstMatchIn link map { firstMatch =>
-          firstMatch.group(1)
+    if (request.startsWith("POST")) {
+      response.header("Location").map { location =>
+        location.contains("/periods") match {
+          case true => urlPathVariables += ("periodLocation" -> location)
+          case false => urlPathVariables += ("sourceLocation" -> location)
         }
       }
     }
@@ -340,6 +329,15 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     class BodyListAssertions(content: Seq[JsValue], assertions: Assertions) {
+      def matches(matcher: Regex) = {
+        content.map(_.as[String]).forall {
+          case matcher(_*) => true
+          case _ => false
+        } shouldBe true
+
+        assertions
+      }
+
       def is(value: String*) = {
         content.map(con => con.as[String]) should contain theSameElementsAs value
         assertions
@@ -351,10 +349,12 @@ trait BaseFunctionalSpec extends TestApplication {
       implicit urlPathVariables: mutable.Map[String, String])
       extends UrlInterpolation {
 
-    assert(path.startsWith("/"), "please provide only a path starting with '/'")
+    private val interpolatedPath: String = interpolated(path)
+    assert(interpolatedPath.startsWith("/"), "please provide only a path starting with '/'")
+
+    val url = s"http://localhost:$port$interpolatedPath"
     var addAcceptHeader = true
     val hc = HeaderCarrier()
-    val url = s"http://localhost:$port$path"
 
     def withoutAcceptHeader() = {
       this.addAcceptHeader = false
@@ -365,18 +365,18 @@ trait BaseFunctionalSpec extends TestApplication {
       implicit val carrier =
         if (addAcceptHeader) hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json")) else hc
 
-      withClue(s"Request $method ${interpolated(url)}") {
+      withClue(s"Request $method $url") {
         method match {
-          case "GET" => new Assertions(s"GET@$url", Http.get(interpolated(url)))
-          case "DELETE" => new Assertions(s"DELETE@$url", Http.delete(interpolated(url)))
+          case "GET" => new Assertions(s"GET@$url", Http.get(url))
+          case "DELETE" => new Assertions(s"DELETE@$url", Http.delete(url))
           case "POST" =>
             body match {
-              case Some(jsonBody) => new Assertions(s"POST@$url", Http.postJson(interpolated(url), jsonBody))
-              case None => new Assertions(s"POST@$url", Http.postEmpty(interpolated(url)))
+              case Some(jsonBody) => new Assertions(s"POST@$url", Http.postJson(url, jsonBody))
+              case None => new Assertions(s"POST@$url", Http.postEmpty(url))
             }
           case "PUT" =>
             val jsonBody = body.getOrElse(throw new RuntimeException("Body for PUT must be provided"))
-            new Assertions(s"PUT@$url", Http.putJson(interpolated(url), jsonBody))
+            new Assertions(s"PUT@$url", Http.putJson(url, jsonBody))
         }
       }
     }
@@ -399,8 +399,8 @@ trait BaseFunctionalSpec extends TestApplication {
 
   class HttpVerbs()(implicit urlPathVariables: mutable.Map[String, String] = mutable.Map()) {
 
-    def post(body: Some[JsValue]) = {
-      new HttpPostBodyWrapper("POST", body)
+    def post(body: JsValue) = {
+      new HttpPostBodyWrapper("POST", Some(body))
     }
 
     def put(body: Some[JsValue]) = {

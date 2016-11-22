@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers
+package uk.gov.hmrc.selfassessmentapi.resources.models.periods
 
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
+import com.github.nscala_time.time.OrderingImplicits
+import org.joda.time.LocalDate
+import play.api.libs.json.Json
+import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 
-trait LiabilityController extends BaseController {
+case class PeriodSummary(periodId: PeriodId, from: LocalDate, to: LocalDate)
 
-  def requestLiability(nino: Nino, taxYear: TaxYear): Action[AnyContent]
-  def retrieveLiability(nino: Nino, taxYear: TaxYear) : Action[AnyContent]
+object PeriodSummary {
+  private implicit val localDateOrdering = OrderingImplicits.LocalDateOrdering
 
+  implicit val ordering: Ordering[PeriodSummary] = Ordering.by(_.from)
+  implicit val writes = Json.writes[PeriodSummary]
 }

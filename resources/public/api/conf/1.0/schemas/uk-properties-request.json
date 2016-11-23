@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "allowances": {
+      "description": "Allowances claimed for this property",
+      "type": "object",
+      "properties": {
+        "annualInvestmentAllowance": {
+          "description": "Annual Investment Allowance can be claimed if equipment was purchased (but not cars) during the year. AIA can be claimed up to a maximum annual amount. AIA can’t be claimed for expenditure on equipment and other items for use in a dwelling house",
+          "type": "number"
+        },
+        "businessPremisesRenovationAllowance": {
+          "description": "When eligible, BPRA can be claimed for the cost of renovating or repairing business premises",
+          "type": "number"
+        },
+        "otherCapitalAllowance": {
+          "description": "The type of capital allowance and amount that can be claimed will depend on the cost, type of asset and other circumstances",
+          "type": "number"
+        },
+        "wearAndTearAllowance": {
+          "description": "For fully furnished accommodation, wear & tear allowance can be claimed up to 10% of the net rents (including chargeable premiums & reverse premiums) after deducting charges or services that a tenant would usually pay for but which are paid by you (such as Council Tax)",
+          "type": "number"
+        }
+      }
+    },
+    "adjustments": {
+      "description": "Adjustments for this property",
+      "type": "object",
+      "properties": {
+        "lossBroughtForward": {
+          "description": "If a loss was made in the previous or earlier tax years, this can be used against the profits from this tax year",
+          "type": "number"
+        }
+      },
+      "required": [ "lossBroughtForward" ]
+    },
+    "rentARoomRelief": {
+      "description": "For claiming the exempt amount (either £4,250 or £2,125, if let jointly) if any Rent a Room income has been included within Rental Income",
+      "type": "number"
+    }
+  }
+}

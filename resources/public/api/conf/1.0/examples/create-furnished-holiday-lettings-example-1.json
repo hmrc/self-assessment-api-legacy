@@ -1,0 +1,19 @@
+{
+  "_links" : {
+    "balancing-charges" : {
+      "href" : "/self-assessment/2234567890/2016-17/furnished-holiday-lettings/00d2d32d/balancing-charges"
+    },
+    "private-use-adjustments" : {
+      "href" : "/self-assessment/2234567890/2016-17/furnished-holiday-lettings/00d2d32d/private-use-adjustments"
+    },
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/furnished-holiday-lettings/00d2d32d"
+    },
+    "expenses" : {
+      "href" : "/self-assessment/2234567890/2016-17/furnished-holiday-lettings/00d2d32d/expenses"
+    },
+    "incomes" : {
+      "href" : "/self-assessment/2234567890/2016-17/furnished-holiday-lettings/00d2d32d/incomes"
+    }
+  }
+}

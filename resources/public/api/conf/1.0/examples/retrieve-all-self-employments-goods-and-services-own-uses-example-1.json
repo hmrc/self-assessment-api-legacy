@@ -1,0 +1,34 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d/goods-and-services-own-uses"
+    }
+  },
+  "_embedded" : {
+    "goods-and-services-own-uses" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d/goods-and-services-own-uses/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "amount" : 1000
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d/goods-and-services-own-uses/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "amount" : 1000
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d/goods-and-services-own-uses/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "amount" : 1000
+    } ]
+  }
+}

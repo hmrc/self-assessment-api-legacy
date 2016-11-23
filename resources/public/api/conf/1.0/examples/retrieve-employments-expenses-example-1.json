@@ -1,0 +1,10 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/employments/00d2d32d/expenses/00d2d98a"
+    }
+  },
+  "id" : "00d2d98a",
+  "type" : "TravelAndSubsistence",
+  "amount" : 10000.0
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Type of dividends income (one of the following: FromUKCompanies, FromOtherUKSources)",
+      "type": "string"
+    },
+    "amount": {
+      "description": "Dividend income from the UK sources, split by dividend types - Dividend from UK companies and Other Dividends.",
+      "type": "number"
+    }
+  },
+  "required": [ "type", "amount" ]
+}

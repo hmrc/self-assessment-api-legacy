@@ -1,0 +1,19 @@
+{
+  "_links" : {
+    "expenses" : {
+      "href" : "/self-assessment/2234567890/2016-17/employments/00d2d32d/expenses"
+    },
+    "uk-taxes-paid" : {
+      "href" : "/self-assessment/2234567890/2016-17/employments/00d2d32d/uk-taxes-paid"
+    },
+    "benefits" : {
+      "href" : "/self-assessment/2234567890/2016-17/employments/00d2d32d/benefits"
+    },
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/employments/00d2d32d"
+    },
+    "incomes" : {
+      "href" : "/self-assessment/2234567890/2016-17/employments/00d2d32d/incomes"
+    }
+  }
+}

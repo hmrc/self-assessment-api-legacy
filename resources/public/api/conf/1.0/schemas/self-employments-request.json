@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "commencementDate": {
+      "description": "Date in yyyy-dd-mm format",
+      "type": "string"
+    },
+    "allowances": {
+      "description": "Allowances claimed for this self-employment",
+      "type": "object",
+      "properties": {
+        "annualInvestmentAllowance": {
+          "description": "Annual Investment Allowance of up to £200,000 can be claimed for purchases of equipment (but not cars) on or after 6 April 2014",
+          "type": "number"
+        },
+        "capitalAllowanceMainPool": {
+          "description": "Writing down allowance of 18% can be claimed on the final balance of main pool costs. If the final balance before claiming WDA is £1,000 or less, a small pool allowance can be claimed for the full amount instead of the WDA",
+          "type": "number"
+        },
+        "capitalAllowanceSpecialRatePool": {
+          "description": "Writing down allowance of 8% can be claimed on the final balance of the special rate pool costs. If the final balance before claiming WDA is £1,000 or less, a small pool allowance can be claimed for the full amount instead of the WDA",
+          "type": "number"
+        },
+        "businessPremisesRenovationAllowance": {
+          "description": "When eligible, BPRA can be claimed for the cost of renovating or repairing unused business premises",
+          "type": "number"
+        },
+        "enhancedCapitalAllowance": {
+          "description": "100% capital allowance can be claimed for eligible capital purchases",
+          "type": "number"
+        },
+        "allowancesOnSales": {
+          "description": "If the business ceases, any balance left in the relevant pool can be claimed after either the selling price or market value has been deducted from the pool balance, as a balancing allowance instead of claiming a WDA",
+          "type": "number"
+        }
+      }
+    },
+    "adjustments": {
+      "description": "Adjustments for this self-employment",
+      "type": "object",
+      "properties": {
+        "includedNonTaxableProfits": {
+          "description": "For income, receipts and other profits that have been included in business turnover but are not taxable as business profits",
+          "type": "number"
+        },
+        "basisAdjustment": {
+          "description": "Tax is paid on the profits of the basis period for the tax year. If the basis period is not the same as the accounting period, an adjustment is needed to arrive at the profit or loss for the basis period",
+          "type": "number"
+        },
+        "overlapReliefUsed": {
+          "description": "When eligible, overlap relief can claimed if the business has overlap profits",
+          "type": "number"
+        },
+        "accountingAdjustment": {
+          "description": "If accounting practice has changed (from cash to accrual) an adjustment may be required",
+          "type": "number"
+        },
+        "averagingAdjustment": {
+          "description": "If an averaging claim changes the amount of the profit, an adjustment is required. Cannot be used if using cash basis",
+          "type": "number"
+        },
+        "lossBroughtForward": {
+          "description": "If a loss was made in the previous or earlier tax years, this can be used against the profits from this tax year. The loss claimed cannot be more than the adjusted profit for this tax year",
+          "type": "number"
+        },
+        "outstandingBusinessIncome": {
+          "description": "For other business income that hasn’t been included such as rebates received and non arm’s length reverse premiums",
+          "type": "number"
+        }
+      }
+    }
+  },
+  "required": [
+    "commencementDate"
+  ]
+}

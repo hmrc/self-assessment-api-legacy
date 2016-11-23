@@ -1,0 +1,34 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/private-use-adjustments"
+    }
+  },
+  "_embedded" : {
+    "private-use-adjustments" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/private-use-adjustments/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "amount" : 1000
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/private-use-adjustments/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "amount" : 1000
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/private-use-adjustments/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "amount" : 1000
+    } ]
+  }
+}

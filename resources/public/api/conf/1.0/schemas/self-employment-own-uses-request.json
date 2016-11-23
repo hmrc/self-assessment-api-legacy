@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Self employments goods and services for own use request",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "description": "To account for the normal sale price of goods or stock have been taken out of the business.",
+      "type": "number"
+    }
+  },
+  "required": ["amount"]
+}

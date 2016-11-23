@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Self employments income request",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Type of income (one of the following: Turnover, Other)",
+      "type": "string"
+    },
+    "amount": {
+      "description": "Income from the business including turnover (from takings, fees & sales) earned or received by the business before expenses, and other business income not included within turnover.",
+      "type": "number"
+    }
+  },
+  "required": ["type", "amount"]
+}

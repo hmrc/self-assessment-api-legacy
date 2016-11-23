@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Type of benefit (one of the following: StatePension, StatePensionLumpSum, PensionsAnnuitiesPayments, TaxableIncapacityBenefit, JobSeekersAllowance, OtherTaxableStatePensions)",
+      "type": "string"
+    },
+    "amount": {
+      "description": "Pension, annuities and state benefits from UK, split by type - state pension, state pension lump sum, Other pensions, retirement annuities and taxable triviality payments, Incapacity Benefits, Jobseeker’s allowance.",
+      "type": "number"
+    }
+  },
+  "required": [ "type", "amount" ]
+}

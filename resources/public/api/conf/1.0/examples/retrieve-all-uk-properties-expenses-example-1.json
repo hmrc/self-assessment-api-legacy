@@ -1,0 +1,37 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/expenses"
+    }
+  },
+  "_embedded" : {
+    "expenses" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/expenses/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "PremisesRunningCosts",
+      "amount" : 1000
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/expenses/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "PremisesRunningCosts",
+      "amount" : 1000
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/expenses/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "PremisesRunningCosts",
+      "amount" : 1000
+    } ]
+  }
+}

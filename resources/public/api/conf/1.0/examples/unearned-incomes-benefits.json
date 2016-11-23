@@ -1,0 +1,5 @@
+{
+  "type" : "StatePension",
+  "amount" : 1000.0,
+  "taxDeduction" : 400.0
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Create furnished holiday lettings request",
+  "type": "object",
+  "properties": {
+    "propertyLocation": {
+      "description": "The location of the property",
+      "type": "string"
+    },
+    "allowances": {
+      "description": "Allowances claimed for this property",
+      "type": "object",
+      "properties": {
+        "capitalAllowance": {
+          "description": "Amount claimed for any equipment or vehicles for your FHL (not other furnished residential lettings)",
+          "type": "number"
+        }
+      },
+      "required": ["capitalAllowance"]
+    },
+    "adjustments": {
+      "description": "Adjustments for this property",
+      "type": "object",
+      "properties": {
+        "lossBroughtForward": {
+          "description": "If a loss was made in the previous or earlier tax years, this can be used against the profits from this tax year. The loss claimed cannot be more than the adjusted profit for this tax year",
+          "type": "number"
+        }
+      },
+      "required": ["lossBroughtForward"]
+    }
+  },
+  "required": ["propertyLocation"]
+}

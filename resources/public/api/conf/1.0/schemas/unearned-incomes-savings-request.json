@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Type of savings income (one of the following: InterestFromBanksTaxed, InterestFromBanksUntaxed)",
+      "type": "string"
+    },
+    "amount": {
+      "description": "Interest income from UK banks and building societies, split by interest types - Taxed interest and Untaxed interest.",
+      "type": "number"
+    }
+  },
+  "required": [ "type", "amount" ]
+}

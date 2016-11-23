@@ -1,0 +1,10 @@
+{
+  "_links" : {
+    "2016-17" : {
+      "href" : "/self-assessment/2234567890/2016-17"
+    },
+    "self" : {
+      "href" : "/self-assessment/2234567890"
+    }
+  }
+}

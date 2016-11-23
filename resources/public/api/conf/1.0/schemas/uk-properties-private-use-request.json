@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "description": "The private use (non-business) amount of any expenses that weren’t solely for the business.",
+      "type": "number"
+    }
+  },
+  "required": [ "amount" ]
+}

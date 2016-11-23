@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Type of income (one of the following: RentIncome, PremiumsOfLeaseGrant, ReversePremiums)",
+      "type": "string"
+    },
+    "amount": {
+      "description": "Income from all UK property & land (does not include any income/profits from FHL). Split by income type",
+      "type": "number"
+    }
+  },
+  "required": [ "type", "amount" ]
+}

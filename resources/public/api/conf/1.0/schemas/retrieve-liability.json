@@ -1,0 +1,325 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string"
+            }
+          },
+          "required": [ "href" ]
+        }
+      },
+      "required": [ "self" ]
+    },
+    "income": {
+      "type": "object",
+      "properties": {
+        "incomes": {
+          "type": "object",
+          "properties": {
+            "nonSavings": {
+              "type": "object",
+              "properties": {
+                "employment": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/nonSavingsIncomeSource"
+                  }
+                },
+                "selfEmployment": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/nonSavingsIncomeSource"
+                  }
+                },
+                "ukProperties": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/nonSavingsIncomeSource"
+                  }
+                },
+                "furnishedHolidayLettings": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/nonSavingsIncomeSource"
+                  }
+                }
+              },
+              "required": [
+                "employment",
+                "selfEmployment",
+                "ukProperties",
+                "furnishedHolidayLettings"
+              ]
+            },
+            "savings": {
+              "type": "object",
+              "properties": {
+                "fromUKBanksAndBuildingSocieties": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/savingsIncomeSource"
+                  }
+                }
+              },
+              "required": [
+                "fromUKBanksAndBuildingSocieties"
+              ]
+            },
+            "dividends": {
+              "type": "object",
+              "properties": {
+                "fromUKSources": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sourceId": {
+                        "type": "string"
+                      },
+                      "totalDividend": {
+                        "description": "totalDividend is sum of all dividends from UK sources.",
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "sourceId",
+                      "totalDividend"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "fromUKSources"
+              ]
+            },
+            "total": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "nonSavings",
+            "savings",
+            "dividends",
+            "total"
+          ]
+        },
+        "deductions": {
+          "type": "object",
+          "properties": {
+            "incomeTaxRelief": {
+              "description": "incomeTaxRelief is Sum of all losses brought forward.",
+              "type": "number"
+            },
+            "personalAllowance": {
+              "description": "This is the annual personal allowance the taxpayer is entitled to. This is currently a maximum of £11,000 for the tax year. Note, Personal Allowance may be reduced/tapered dependent on the value of total income.",
+              "type": "number"
+            },
+            "retirementAnnuityContract": {
+              "type": "number"
+            },
+            "total": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "incomeTaxRelief",
+            "personalAllowance",
+            "retirementAnnuityContract",
+            "total"
+          ]
+        },
+        "totalIncomeOnWhichTaxIsDue": {
+          "description": "This is the total income on which tax is due after reliefs and allowances have been deducted (Total Income Received minus Total deductions).",
+          "type": "number"
+        }
+      },
+      "required": [
+        "incomes",
+        "deductions",
+        "totalIncomeOnWhichTaxIsDue"
+      ]
+    },
+    "incomeTaxCalculations": {
+      "type": "object",
+      "properties": {
+        "nonSavings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/taxCalculation"
+          }
+        },
+        "savings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/taxCalculation"
+          }
+        },
+        "dividends": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/taxCalculation"
+          }
+        },
+        "total": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "nonSavings",
+        "savings",
+        "dividends",
+        "total"
+      ]
+    },
+    "otherCharges": {
+      "type": "object",
+      "properties": {
+        "pensionSavings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxBand": {
+                "type": "string"
+              },
+              "taxableAmount": {
+                "type": "number"
+              },
+              "chargedAt": {
+                "type": "string"
+              },
+              "tax": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "taxBand",
+              "taxableAmount",
+              "chargedAt",
+              "tax"
+            ]
+          }
+        },
+        "total": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "pensionSavings",
+        "total"
+      ]
+    },
+    "taxDeducted": {
+      "type": "object",
+      "properties": {
+        "interestFromUk": {
+          "description": "Grossed-up Taxed interest that the tax payer received minus taxed interest",
+          "type": "number"
+        },
+        "taxPaidByPensionScheme": {
+          "type": "number"
+        },
+        "fromUkProperties": {
+          "type": "array",
+          "items": {}
+        },
+        "fromEmployments": {
+          "type": "array",
+          "items": {}
+        },
+        "total": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "interestFromUk",
+        "taxPaidByPensionScheme",
+        "fromUkProperties",
+        "fromEmployments",
+        "total"
+      ]
+    },
+    "totalTaxDue": {
+      "description": "Total Income Tax minus Total Tax Deductions (if it is positive)",
+      "type": "number"
+    },
+    "totalTaxOverpaid": {
+      "description": "Total Income Tax minus Total Tax Deductions (if it is negative)",
+      "type": "number"
+    }
+  },
+  "required": [
+    "_links",
+    "income",
+    "incomeTaxCalculations",
+    "otherCharges",
+    "taxDeducted",
+    "totalTaxDue",
+    "totalTaxOverpaid"
+  ],
+  "definitions": {
+    "nonSavingsIncomeSource": {
+      "type": "object",
+      "properties": {
+        "sourceId": {
+          "type": "string"
+        },
+        "taxableProfit": {
+          "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
+          "type": "number"
+        },
+        "profit": {
+          "description": "taxableProfit plus losses brought forward.",
+          "type": "number"
+        }
+      },
+      "required": [ "sourceId" ]
+    },
+    "savingsIncomeSource": {
+      "type": "object",
+      "properties": {
+        "sourceId": {
+          "type": "string"
+        },
+        "totalInterest": {
+          "description": "totalInterest is Grossed-up Taxed Interest plus Untaxed Interest.",
+          "type": "number"
+        }
+      },
+      "required": [ "sourceId" ]
+    },
+    "taxCalculation": {
+      "type": "object",
+      "properties": {
+        "taxBand": {
+          "description": "To indicate whether the calculation is for basic rate band or higher rate band or additional higher rate band. In Savings and Dividends income case, the tax band also includes the Starting Rate Band and Nil Rate bands.",
+          "type": "string"
+        },
+        "taxableAmount": {
+          "description": "Total Taxable Income on which the rate band and tax rate is applied.",
+          "type": "number"
+        },
+        "chargedAt": {
+          "description": "Tax percentage that is applied depending upon the band.",
+          "type": "string"
+        },
+        "tax": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "taxBand",
+        "taxableAmount",
+        "chargedAt",
+        "tax"
+      ]
+    }
+  }
+}

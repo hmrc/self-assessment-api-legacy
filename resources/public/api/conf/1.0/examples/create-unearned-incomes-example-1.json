@@ -1,0 +1,16 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d"
+    },
+    "benefits" : {
+      "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/benefits"
+    },
+    "dividends" : {
+      "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/dividends"
+    },
+    "savings" : {
+      "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/savings"
+    }
+  }
+}

@@ -1,19 +1,22 @@
-package uk.gov.hmrc.selfassessmentapi
-
-import java.util.UUID
+package uk.gov.hmrc.selfassessmentapi.featureswitch
 
 import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class FeatureSwitchSpec extends BaseFunctionalSpec {
+class SelfEmploymentFeatureSwitchSpec extends BaseFunctionalSpec {
 
-  val sourceId = UUID.randomUUID().toString
-  val summaryId = UUID.randomUUID().toString
+  //val sourceId = UUID.randomUUID().toString
 
   private val conf: Map[String, Map[SourceId, Map[SourceId, Map[SourceId, Any]]]] =
-    Map("Test" -> Map("feature-switch" -> Map("self-employments" -> Map("enabled" -> false))))
+    Map("Test" ->
+      Map("feature-switch" ->
+        Map("self-employments" ->
+          Map("enabled" -> false)
+        )
+      )
+    )
 
   override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
 
@@ -24,8 +27,10 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
         .when()
         .get(s"/ni/$nino/${SelfEmployments.name}")
         .thenAssertThat()
-        .isNotImplemented
+        .statusIs(404)
     }
   }
 
 }
+
+

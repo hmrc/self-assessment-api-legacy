@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.Pr
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, TaxYearPropertyType}
 
 case class FeatureSwitch(value: Option[Configuration]) {
-  val DEFAULT_VALUE = false
+  val DEFAULT_VALUE = true
 
   def isEnabled(sourceType: SourceType): Boolean = value match {
     case Some(config) => FeatureConfig(config).isSourceEnabled(sourceType.name)
@@ -47,14 +47,14 @@ case class FeatureSwitch(value: Option[Configuration]) {
     case None => DEFAULT_VALUE
   }
 
-  def isWhiteListingEnabled = {
+  def isWhiteListingEnabled: Boolean = {
     value match {
       case Some(config) => config.getBoolean("white-list.enabled").getOrElse(false)
       case None => false
     }
   }
 
-  def whiteListedApplicationIds = {
+  def whiteListedApplicationIds: Seq[String] = {
     value match {
       case Some(config) => config.getStringSeq("white-list.applicationIds").getOrElse(throw new RuntimeException(s"$env.feature-switch.white-list.applicationIds is not configured"))
       case None => Seq()
@@ -73,6 +73,6 @@ sealed case class FeatureConfig(config: Configuration) {
   }
 
   def isSourceEnabled(source: String): Boolean = {
-    config.getBoolean(s"$source.enabled").getOrElse(false)
+    config.getBoolean(s"$source.enabled").getOrElse(true)
   }
 }

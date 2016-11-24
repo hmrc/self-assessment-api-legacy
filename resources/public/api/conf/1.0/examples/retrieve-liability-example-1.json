@@ -7,19 +7,7 @@
   "income" : {
     "incomes" : {
       "nonSavings" : {
-        "employment" : [ {
-          "sourceId" : "employment-1",
-          "pay" : 1000,
-          "benefitsAndExpenses" : 500,
-          "allowableExpenses" : 250,
-          "total" : 1250
-        }, {
-          "sourceId" : "employment-2",
-          "pay" : 2000,
-          "benefitsAndExpenses" : 1000,
-          "allowableExpenses" : 500,
-          "total" : 2500
-        } ],
+        "employment" : [ ],
         "selfEmployment" : [ {
           "sourceId" : "self-employment-1",
           "taxableProfit" : 8200,
@@ -161,13 +149,7 @@
     "interestFromUk" : 0,
     "taxPaidByPensionScheme" : 10500,
     "fromUkProperties" : [ ],
-    "fromEmployments" : [ {
-      "sourceId" : "employment-1",
-      "taxPaid" : 4000
-    }, {
-      "sourceId" : "employment-2",
-      "taxPaid" : 5000
-    } ],
+    "fromEmployments" : [ ],
     "total" : 0
   },
   "totalTaxDue" : 25796.95,

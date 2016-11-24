@@ -65,5 +65,4 @@ class DocumentationSpec extends BaseFunctionalSpec {
       }
     }
   }
-
 }

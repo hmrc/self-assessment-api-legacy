@@ -40,6 +40,10 @@ trait DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationC
       case None => NotFound
     }
   }
+
+  def conf(version: String, file: String) = {
+    super.at(s"/public/api/conf/${version}", file)
+  }
 }
 
 object DocumentationController extends DocumentationController {

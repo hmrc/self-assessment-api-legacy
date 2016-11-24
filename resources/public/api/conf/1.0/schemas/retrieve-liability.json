@@ -29,25 +29,81 @@
                 "employment": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/nonSavingsIncomeSource"
+                    "type": "object",
+                    "properties": {
+                      "sourceId": {
+                        "type": "string"
+                      },
+                      "taxableProfit": {
+                        "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
+                        "type": "number"
+                      },
+                      "profit": {
+                        "description": "taxableProfit plus losses brought forward.",
+                        "type": "number"
+                      }
+                    },
+                    "required": [ "sourceId" ]
                   }
                 },
                 "selfEmployment": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/nonSavingsIncomeSource"
+                    "type": "object",
+                    "properties": {
+                      "sourceId": {
+                        "type": "string"
+                      },
+                      "taxableProfit": {
+                        "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
+                        "type": "number"
+                      },
+                      "profit": {
+                        "description": "taxableProfit plus losses brought forward.",
+                        "type": "number"
+                      }
+                    },
+                    "required": [ "sourceId" ]
                   }
                 },
                 "ukProperties": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/nonSavingsIncomeSource"
+                    "type": "object",
+                    "properties": {
+                      "sourceId": {
+                        "type": "string"
+                      },
+                      "taxableProfit": {
+                        "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
+                        "type": "number"
+                      },
+                      "profit": {
+                        "description": "taxableProfit plus losses brought forward.",
+                        "type": "number"
+                      }
+                    },
+                    "required": [ "sourceId" ]
                   }
                 },
                 "furnishedHolidayLettings": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/nonSavingsIncomeSource"
+                    "type": "object",
+                    "properties": {
+                      "sourceId": {
+                        "type": "string"
+                      },
+                      "taxableProfit": {
+                        "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
+                        "type": "number"
+                      },
+                      "profit": {
+                        "description": "taxableProfit plus losses brought forward.",
+                        "type": "number"
+                      }
+                    },
+                    "required": [ "sourceId" ]
                   }
                 }
               },
@@ -64,7 +120,17 @@
                 "fromUKBanksAndBuildingSocieties": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/savingsIncomeSource"
+                    "type": "object",
+                    "properties": {
+                      "sourceId": {
+                        "type": "string"
+                      },
+                      "totalInterest": {
+                        "description": "totalInterest is Grossed-up Taxed Interest plus Untaxed Interest.",
+                        "type": "number"
+                      }
+                    },
+                    "required": [ "sourceId" ]
                   }
                 }
               },
@@ -152,19 +218,88 @@
         "nonSavings": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/taxCalculation"
+            "type": "object",
+            "properties": {
+              "taxBand": {
+                "description": "To indicate whether the calculation is for basic rate band or higher rate band or additional higher rate band. In Savings and Dividends income case, the tax band also includes the Starting Rate Band and Nil Rate bands.",
+                "type": "string"
+              },
+              "taxableAmount": {
+                "description": "Total Taxable Income on which the rate band and tax rate is applied.",
+                "type": "number"
+              },
+              "chargedAt": {
+                "description": "Tax percentage that is applied depending upon the band.",
+                "type": "string"
+              },
+              "tax": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "taxBand",
+              "taxableAmount",
+              "chargedAt",
+              "tax"
+            ]
           }
         },
         "savings": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/taxCalculation"
+            "type": "object",
+            "properties": {
+              "taxBand": {
+                "description": "To indicate whether the calculation is for basic rate band or higher rate band or additional higher rate band. In Savings and Dividends income case, the tax band also includes the Starting Rate Band and Nil Rate bands.",
+                "type": "string"
+              },
+              "taxableAmount": {
+                "description": "Total Taxable Income on which the rate band and tax rate is applied.",
+                "type": "number"
+              },
+              "chargedAt": {
+                "description": "Tax percentage that is applied depending upon the band.",
+                "type": "string"
+              },
+              "tax": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "taxBand",
+              "taxableAmount",
+              "chargedAt",
+              "tax"
+            ]
           }
         },
         "dividends": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/taxCalculation"
+            "type": "object",
+            "properties": {
+              "taxBand": {
+                "description": "To indicate whether the calculation is for basic rate band or higher rate band or additional higher rate band. In Savings and Dividends income case, the tax band also includes the Starting Rate Band and Nil Rate bands.",
+                "type": "string"
+              },
+              "taxableAmount": {
+                "description": "Total Taxable Income on which the rate band and tax rate is applied.",
+                "type": "number"
+              },
+              "chargedAt": {
+                "description": "Tax percentage that is applied depending upon the band.",
+                "type": "string"
+              },
+              "tax": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "taxBand",
+              "taxableAmount",
+              "chargedAt",
+              "tax"
+            ]
           }
         },
         "total": {
@@ -228,11 +363,11 @@
         },
         "fromUkProperties": {
           "type": "array",
-          "items": {}
+          "items": { "type": "object" }
         },
         "fromEmployments": {
           "type": "array",
-          "items": {}
+          "items": { "type": "object" }
         },
         "total": {
           "type": "number"
@@ -263,63 +398,5 @@
     "taxDeducted",
     "totalTaxDue",
     "totalTaxOverpaid"
-  ],
-  "definitions": {
-    "nonSavingsIncomeSource": {
-      "type": "object",
-      "properties": {
-        "sourceId": {
-          "type": "string"
-        },
-        "taxableProfit": {
-          "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
-          "type": "number"
-        },
-        "profit": {
-          "description": "taxableProfit plus losses brought forward.",
-          "type": "number"
-        }
-      },
-      "required": [ "sourceId" ]
-    },
-    "savingsIncomeSource": {
-      "type": "object",
-      "properties": {
-        "sourceId": {
-          "type": "string"
-        },
-        "totalInterest": {
-          "description": "totalInterest is Grossed-up Taxed Interest plus Untaxed Interest.",
-          "type": "number"
-        }
-      },
-      "required": [ "sourceId" ]
-    },
-    "taxCalculation": {
-      "type": "object",
-      "properties": {
-        "taxBand": {
-          "description": "To indicate whether the calculation is for basic rate band or higher rate band or additional higher rate band. In Savings and Dividends income case, the tax band also includes the Starting Rate Band and Nil Rate bands.",
-          "type": "string"
-        },
-        "taxableAmount": {
-          "description": "Total Taxable Income on which the rate band and tax rate is applied.",
-          "type": "number"
-        },
-        "chargedAt": {
-          "description": "Tax percentage that is applied depending upon the band.",
-          "type": "string"
-        },
-        "tax": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "taxBand",
-        "taxableAmount",
-        "chargedAt",
-        "tax"
-      ]
-    }
-  }
+  ]
 }

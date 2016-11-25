@@ -29,22 +29,13 @@ annotationTypes:
       description: string
   scope:
 
-traits:
-  contentTypeHeader:
-    headers:
-      Content-Type:
-        description: Specifies the format of the request body, which must be JSON.
-        type: string
-        required: true
-        example: application/json
-
 #
 # TAXPAYER
 #
 /self-assessment:
   (group):
     name: Taxpayer
-    description: Taxpayer group
+    description: !include docs/taxpayer.md
   get:
     displayName: Resolve taxpayer
     description: This endpoint resolves the Taxpayer identifier from the provided Authorisation Bearer token
@@ -102,25 +93,8 @@ traits:
 #
       /self-employments:
         (group):
-            name: Self employment
-            description: Self employment group
-        post:
-          displayName: Create self employment
-          description: This endpoint creates a Self Employments source of income
-          is: [headers.acceptHeader, contentTypeHeader]
-          (scope): "write:self-assessment"
-          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-          body:
-            application/json:
-              type: !include schemas/self-employments-request.json
-              example: !include examples/self-employment-request.json
-          responses:
-            200:
-              body:
-                application/json:
-                  examples:
-                    example-1:
-                      value: !include examples/create-self-employments-example-1.json
+          name: Self employment
+          description: !include docs/self-employment.md
         get:
           displayName: Get all self employments
           description: This endpoint retrieves all the Self Employments sources of income
@@ -134,10 +108,27 @@ traits:
                   examples:
                     example-1:
                       value: !include examples/retrieve-all-self-employments-example-1.json
-        /{selfEmploymentsId}:
+        post:
+          displayName: Create self employment
+          description: This endpoint creates a Self Employments source of income
+          is: [headers.acceptHeader, headers.contentHeader]
+          (scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          body:
+            application/json:
+              type: !include schemas/self-employments-request.json
+              example: !include examples/self-employment-request.json
+          responses:
+            200:
+              body:
+                application/json:
+                  examples:
+                    example-1:
+                      value: !include examples/create-self-employments-example-1.json
+        /{selfEmploymentId}:
           uriParameters:
-            selfEmploymentsId:
-              description: The self-employments id
+            selfEmploymentId:
+              description: The self employment ID
               type: string
               example: ""
           get:
@@ -153,18 +144,10 @@ traits:
                     examples:
                       example-1:
                         value: !include examples/retrieve-self-employments-example-1.json
-          delete:
-            displayName: Delete self employment
-            description: This endpoint deletes a Self Employments source of income
-            is: [headers.acceptHeader]
-            (scope): "write:self-assessment"
-            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-            responses:
-              204:
           put:
             displayName: Update self employment
             description: This endpoint updates a Self Employments source of income
-            is: [headers.acceptHeader, contentTypeHeader]
+            is: [headers.acceptHeader, headers.contentHeader]
             (scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             body:
@@ -178,11 +161,32 @@ traits:
                     examples:
                       example-1:
                         value: !include examples/update-self-employments-example-1.json
+          delete:
+            displayName: Delete self employment
+            description: This endpoint deletes a Self Employments source of income
+            is: [headers.acceptHeader]
+            (scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            responses:
+              204:
           /incomes:
+            get:
+              displayName: Get all self employments incomes
+              description: This endpoint retrieves all Incomes for Self Employments
+              is: [headers.acceptHeader]
+              (scope): "read:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+              responses:
+                200:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/retrieve-all-self-employments-incomes-example-1.json
             post:
               displayName: Create self employment income
               description: This endpoint creates a Incomes for Self Employments
-              is: [headers.acceptHeader, contentTypeHeader]
+              is: [headers.acceptHeader, headers.contentHeader]
               (scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               body:
@@ -196,23 +200,11 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/create-self-employments-incomes-example-1.json
-            get:
-              displayName: Retrieve all self employments incomes
-              description: This endpoint retrieves all Incomes for Self Employments
-              is: [headers.acceptHeader]
-              (scope): "read:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
-              responses:
-                200:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/retrieve-all-self-employments-incomes-example-1.json
-            /{incomesId}:
+
+            /{incomeId}:
               uriParameters:
-                incomesId:
-                  description: The incomes id
+                incomeId:
+                  description: The income ID
                   type: string
                   example: ""
               get:
@@ -231,7 +223,7 @@ traits:
               put:
                 displayName: Update self employment income
                 description: This endpoint updates a Incomes for Self Employments
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -255,23 +247,6 @@ traits:
                 responses:
                   204:
           /expenses:
-            post:
-              displayName: Create self employment expense
-              description: This endpoint creates a Expenses for Self Employments
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/self-employment-expenses-request.json
-                  example: !include examples/self-employments-expenses-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-self-employments-expenses-example-1.json
             get:
               displayName: Get all self employment expenses
               description: This endpoint retrieves all Expenses for Self Employments
@@ -285,14 +260,31 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-self-employments-expenses-example-1.json
-            /{expensesId}:
+            post:
+              displayName: Create self employment expense
+              description: This endpoint creates a Expenses for Self Employments
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/self-employment-expenses-request.json
+                  example: !include examples/self-employments-expenses-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-self-employments-expenses-example-1.json
+            /{expenseId}:
               uriParameters:
-                expensesId:
-                  description: The expenses id
+                expenseId:
+                  description: The expense ID
                   type: string
                   example: ""
               get:
-                displayName: Retrieve self employments expenses
+                displayName: Get self employment expense
                 description: This endpoint retrieves a Expenses for Self Employments
                 is: [headers.acceptHeader]
                 (scope): "read:self-assessment"
@@ -307,7 +299,7 @@ traits:
               put:
                 displayName: Update self employment expense
                 description: This endpoint updates a Expenses for Self Employments
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -330,23 +322,6 @@ traits:
                 responses:
                   204:
           /goods-and-services-own-uses:
-            post:
-              displayName: Create self employment goods and services own use
-              description: This endpoint creates a Goods and Services Own Uses for Self Employments
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/self-employment-own-uses-request.json
-                  example: !include examples/self-employments-own-uses-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-self-employments-goods-and-services-own-uses-example-1.json
             get:
               displayName: Get all self employment goods and services own uses
               description: This endpoint retrieves all Goods and Services Own Uses for Self Employments
@@ -360,10 +335,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-self-employments-goods-and-services-own-uses-example-1.json
-            /{goodsAndServicesOwnUsesId}:
+            post:
+              displayName: Create self employment goods and services own use
+              description: This endpoint creates a Goods and Services Own Uses for Self Employments
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/self-employment-own-uses-request.json
+                  example: !include examples/self-employments-own-uses-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-self-employments-goods-and-services-own-uses-example-1.json
+            /{goodsAndServicesOwnUseId}:
               uriParameters:
-                goodsAndServicesOwnUsesId:
-                  description: The goods-and-services-own-uses id
+                goodsAndServicesOwnUseId:
+                  description: The goods and services own use ID
                   type: string
                   example: ""
               get:
@@ -382,7 +374,7 @@ traits:
               put:
                 displayName: Update self employment goods and services own use
                 description: This endpoint updates a Goods and Services Own Uses for Self Employments
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -405,23 +397,6 @@ traits:
                 responses:
                   204:
           /balancing-charges:
-            post:
-              displayName: Create self employment balancing charge
-              description: This endpoint creates a Balancing Charges for Self Employments
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/self-employments-balancing-charges-request.json
-                  example: !include examples/self-employments-balancing-charges-request.xml
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-self-employments-balancing-charges-example-1.json
             get:
               displayName: Get all self employment balancing charges
               description: This endpoint retrieves all Balancing Charges for Self Employments
@@ -435,14 +410,31 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-self-employments-balancing-charges-example-1.json
-            /{balancingChargesId}:
+            post:
+              displayName: Create self employment balancing charge
+              description: This endpoint creates a Balancing Charges for Self Employments
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/self-employments-balancing-charges-request.json
+                  example: !include examples/self-employments-balancing-charges-request.xml
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-self-employments-balancing-charges-example-1.json
+            /{balancingChargeId}:
               uriParameters:
-                balancingChargesId:
-                  description: The balancing-charges id
+                balancingChargeId:
+                  description: The balancing charge ID
                   type: string
                   example: ""
               get:
-                displayName: Get self employment balancing charges
+                displayName: Get self employment balancing charge
                 description: This endpoint retrieves a Balancing Charges for Self Employments
                 is: [headers.acceptHeader]
                 (scope): "read:self-assessment"
@@ -457,7 +449,7 @@ traits:
               put:
                 displayName: Update self employment balancing charge
                 description: This endpoint updates a Balancing Charges for Self Employments
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -486,11 +478,24 @@ traits:
       /uk-properties:
         (group):
           name: UK property
-          description: UK property group
+          description: !include docs/uk-property.md
+          get:
+            displayName: Get all UK properties
+            description: This endpoint retrieves all the UK Properties sources of income
+            is: [headers.acceptHeader]
+            (scope): "read:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+            responses:
+              200:
+                body:
+                  application/json:
+                    examples:
+                      example-1:
+                        value: !include examples/retrieve-all-uk-properties-example-1.json
         post:
           displayName: Create UK property
           description: This endpoint creates a UK Properties source of income
-          is: [headers.acceptHeader, contentTypeHeader]
+          is: [headers.acceptHeader, headers.contentHeader]
           (scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
           body:
@@ -504,23 +509,10 @@ traits:
                   examples:
                     example-1:
                       value: !include examples/create-uk-properties-example-1.json
-        get:
-          displayName: Get all UK properties
-          description: This endpoint retrieves all the UK Properties sources of income
-          is: [headers.acceptHeader]
-          (scope): "read:self-assessment"
-          securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
-          responses:
-            200:
-              body:
-                application/json:
-                  examples:
-                    example-1:
-                      value: !include examples/retrieve-all-uk-properties-example-1.json
-        /{ukPropertiesId}:
+        /{ukPropertyId}:
           uriParameters:
-            ukPropertiesId:
-              description: The uk-properties id
+            ukPropertyId:
+              description: The UK property ID
               type: string
               example: ""
           get:
@@ -536,18 +528,10 @@ traits:
                     examples:
                       example-1:
                         value: !include examples/retrieve-uk-properties-example-1.json
-          delete:
-            displayName: Delete UK property
-            description: This endpoint deletes a UK Properties source of income
-            is: [headers.acceptHeader]
-            (scope): "write:self-assessment"
-            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-            responses:
-              204:
           put:
             displayName: Update UK property
             description: This endpoint updates a UK Properties source of income
-            is: [headers.acceptHeader, contentTypeHeader]
+            is: [headers.acceptHeader, headers.contentHeader]
             (scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             body:
@@ -561,11 +545,32 @@ traits:
                     examples:
                       example-1:
                         value: !include examples/update-uk-properties-example-1.json
+          delete:
+            displayName: Delete UK property
+            description: This endpoint deletes a UK Properties source of income
+            is: [headers.acceptHeader]
+            (scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            responses:
+              204:
           /taxes-paid:
+            get:
+              displayName: Get all UK properties taxes paid
+              description: This endpoint retrieves all Taxes Paid for UK Properties
+              is: [headers.acceptHeader]
+              (scope): "read:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+              responses:
+                200:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/retrieve-all-uk-properties-taxes-paid-example-1.json
             post:
               displayName: Create UK property taxes paid
               description: This endpoint creates a Taxes Paid for UK Properties
-              is: [headers.acceptHeader, contentTypeHeader]
+              is: [headers.acceptHeader, headers.contentHeader]
               (scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               body:
@@ -579,27 +584,14 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/create-uk-properties-taxes-paid-example-1.json
-            get:
-              displayName: Retrieve all UK properties taxes paid
-              description: This endpoint retrieves all Taxes Paid for UK Properties
-              is: [headers.acceptHeader]
-              (scope): "read:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
-              responses:
-                200:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/retrieve-all-uk-properties-taxes-paid-example-1.json
             /{taxesPaidId}:
               uriParameters:
                 taxesPaidId:
-                  description: The taxes-paid id
+                  description: The taxes paid ID
                   type: string
                   example: ""
               get:
-                displayName: Retrieve UK property taxes paid
+                displayName: Get UK property taxes paid
                 description: This endpoint retrieves a Taxes Paid for UK Properties
                 is: [headers.acceptHeader]
                 (scope): "read:self-assessment"
@@ -614,7 +606,7 @@ traits:
               put:
                 displayName: Update UK property taxes paid
                 description: This endpoint updates a Taxes Paid for UK Properties
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -636,99 +628,7 @@ traits:
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 responses:
                   204:
-          /expenses:
-            post:
-              displayName: Create UK property expense
-              description: This endpoint creates a Expenses for UK Properties
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/uk-properties-expenses-request.json
-                  example: !include examples/uk-properties-expenses-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-uk-properties-expenses-example-1.json
-            get:
-              displayName: Get all UK property expenses
-              description: This endpoint retrieves all Expenses for UK Properties
-              is: [headers.acceptHeader]
-              (scope): "read:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
-              responses:
-                200:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/retrieve-all-uk-properties-expenses-example-1.json
-            /{expensesId}:
-              uriParameters:
-                expensesId:
-                  description: The expenses id
-                  type: string
-                  example: ""
-              get:
-                displayName: Get UK property expense
-                description: This endpoint retrieves a Expenses for UK Properties
-                is: [headers.acceptHeader]
-                (scope): "read:self-assessment"
-                securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
-                responses:
-                  200:
-                    body:
-                      application/json:
-                        examples:
-                          example-1:
-                            value: !include examples/retrieve-uk-properties-expenses-example-1.json
-              put:
-                displayName: Update UK property expense
-                description: This endpoint updates a Expenses for UK Properties
-                is: [headers.acceptHeader, contentTypeHeader]
-                (scope): "write:self-assessment"
-                securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-                body:
-                  application/json:
-                    type: !include schemas/uk-properties-expenses-request.json
-                    example: !include examples/uk-properties-expenses-request.json
-                responses:
-                  200:
-                    body:
-                      application/json:
-                        examples:
-                          example-1:
-                            value: !include examples/update-uk-properties-expenses-example-1.json
-              delete:
-                displayName: Delete UK property expense
-                description: This endpoint deletes a Expenses for UK Properties
-                is: [headers.acceptHeader]
-                (scope): "write:self-assessment"
-                securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-                responses:
-                  204:
           /incomes:
-            post:
-              displayName: Create UK property income
-              description: This endpoint creates a Incomes for UK Properties
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/uk-properties-incomes-request.json
-                  example: !include examples/uk-properties-incomes-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-uk-properties-incomes-example-1.json
             get:
               displayName: Get all UK property incomes
               description: This endpoint retrieves all Incomes for UK Properties
@@ -742,10 +642,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-uk-properties-incomes-example-1.json
-            /{incomesId}:
+            post:
+              displayName: Create UK property income
+              description: This endpoint creates a Incomes for UK Properties
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/uk-properties-incomes-request.json
+                  example: !include examples/uk-properties-incomes-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-uk-properties-incomes-example-1.json
+            /{incomeId}:
               uriParameters:
-                incomesId:
-                  description: The incomes id
+                incomeId:
+                  description: The income ID
                   type: string
                   example: ""
               get:
@@ -764,7 +681,7 @@ traits:
               put:
                 displayName: Update UK property income
                 description: This endpoint updates a Incomes for UK Properties
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -786,24 +703,82 @@ traits:
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 responses:
                   204:
-          /private-use-adjustments:
+          /expenses:
+            get:
+              displayName: Get all UK property expenses
+              description: This endpoint retrieves all Expenses for UK Properties
+              is: [headers.acceptHeader]
+              (scope): "read:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+              responses:
+                200:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/retrieve-all-uk-properties-expenses-example-1.json
             post:
-              displayName: Create UK property private use adjustment
-              description: This endpoint creates a Private Use Adjustments for UK Properties
-              is: [headers.acceptHeader, contentTypeHeader]
+              displayName: Create UK property expense
+              description: This endpoint creates a Expenses for UK Properties
+              is: [headers.acceptHeader, headers.contentHeader]
               (scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               body:
                 application/json:
-                  type: !include schemas/uk-properties-private-use-request.json
-                  example: !include examples/uk-properties-private-use-request.json
+                  type: !include schemas/uk-properties-expenses-request.json
+                  example: !include examples/uk-properties-expenses-request.json
               responses:
                 201:
                   body:
                     application/json:
                       examples:
                         example-1:
-                          value: !include examples/create-uk-properties-private-use-adjustments-example-1.json
+                          value: !include examples/create-uk-properties-expenses-example-1.json
+            /{expenseId}:
+              uriParameters:
+                expenseId:
+                  description: The expense ID
+                  type: string
+                  example: ""
+              get:
+                displayName: Get UK property expense
+                description: This endpoint retrieves a Expenses for UK Properties
+                is: [headers.acceptHeader]
+                (scope): "read:self-assessment"
+                securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        examples:
+                          example-1:
+                            value: !include examples/retrieve-uk-properties-expenses-example-1.json
+              put:
+                displayName: Update UK property expense
+                description: This endpoint updates a Expenses for UK Properties
+                is: [headers.acceptHeader, headers.contentHeader]
+                (scope): "write:self-assessment"
+                securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+                body:
+                  application/json:
+                    type: !include schemas/uk-properties-expenses-request.json
+                    example: !include examples/uk-properties-expenses-request.json
+                responses:
+                  200:
+                    body:
+                      application/json:
+                        examples:
+                          example-1:
+                            value: !include examples/update-uk-properties-expenses-example-1.json
+              delete:
+                displayName: Delete UK property expense
+                description: This endpoint deletes a Expenses for UK Properties
+                is: [headers.acceptHeader]
+                (scope): "write:self-assessment"
+                securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+                responses:
+                  204:
+          /private-use-adjustments:
             get:
               displayName: Get all UK property private use adjustments
               description: This endpoint retrieves all Private Use Adjustments for UK Properties
@@ -817,10 +792,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-uk-properties-private-use-adjustments-example-1.json
-            /{privateUseAdjustmentsId}:
+            post:
+              displayName: Create UK property private use adjustment
+              description: This endpoint creates a Private Use Adjustments for UK Properties
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/uk-properties-private-use-request.json
+                  example: !include examples/uk-properties-private-use-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-uk-properties-private-use-adjustments-example-1.json
+            /{privateUseAdjustmentId}:
               uriParameters:
-                privateUseAdjustmentsId:
-                  description: The private-use-adjustments id
+                privateUseAdjustmentId:
+                  description: The private use adjustment ID
                   type: string
                   example: ""
               get:
@@ -839,7 +831,7 @@ traits:
               put:
                 displayName: Update UK property private use adjustment
                 description: This endpoint updates a Private Use Adjustments for UK Properties
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -862,23 +854,6 @@ traits:
                 responses:
                   204:
           /balancing-charges:
-            post:
-              displayName: Create UK property balancing charge
-              description: This endpoint creates a Balancing Charges for UK Properties
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/uk-properties-balancing-charges-request.json
-                  example: !include examples/uk-properties-balancing-charges-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-uk-properties-balancing-charges-example-1.json
             get:
               displayName: Get all UK property balancing charges
               description: This endpoint retrieves all Balancing Charges for UK Properties
@@ -892,10 +867,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-uk-properties-balancing-charges-example-1.json
-            /{balancingChargesId}:
+            post:
+              displayName: Create UK property balancing charge
+              description: This endpoint creates a Balancing Charges for UK Properties
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/uk-properties-balancing-charges-request.json
+                  example: !include examples/uk-properties-balancing-charges-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-uk-properties-balancing-charges-example-1.json
+            /{balancingChargeId}:
               uriParameters:
-                balancingChargesId:
-                  description: The balancing-charges id
+                balancingChargeId:
+                  description: The balancing charge ID
                   type: string
                   example: ""
               get:
@@ -914,7 +906,7 @@ traits:
               put:
                 displayName: Update UK property balancing charge
                 description: This endpoint updates a Balancing Charges for UK Properties
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -944,20 +936,7 @@ traits:
       /furnished-holiday-lettings:
         (group):
           name: Furnished holiday lettings
-          description: Furnished holiday lettings group
-        post:
-          displayName: Create furnished holiday letting
-          description: This endpoint creates a Furnished Holiday Lettings source of income
-          is: [headers.acceptHeader, contentTypeHeader]
-          (scope): "write:self-assessment"
-          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-          responses:
-            201:
-              body:
-                application/json:
-                  examples:
-                    example-1:
-                      value: !include examples/create-furnished-holiday-lettings-example-1.json
+          description: !include docs/furnished-holiday-lettings.md
         get:
           displayName: Get all furnished holiday lettings
           description: This endpoint retrieves all the Furnished Holiday Lettings sources of income
@@ -971,10 +950,23 @@ traits:
                   examples:
                     example-1:
                       value: !include examples/retrieve-all-furnished-holiday-lettings-example-1.json
-        /{furnishedHolidayLettingsId}:
+        post:
+          displayName: Create furnished holiday letting
+          description: This endpoint creates a Furnished Holiday Lettings source of income
+          is: [headers.acceptHeader, headers.contentHeader]
+          (scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          responses:
+            201:
+              body:
+                application/json:
+                  examples:
+                    example-1:
+                      value: !include examples/create-furnished-holiday-lettings-example-1.json
+        /{furnishedHolidayLettingId}:
           uriParameters:
-            furnishedHolidayLettingsId:
-              description: The furnished-holiday-lettings id
+            furnishedHolidayLettingId:
+              description: The furnished holiday letting ID
               type: string
               example: ""
           get:
@@ -990,16 +982,10 @@ traits:
                     examples:
                       example-1:
                         value: !include examples/retrieve-furnished-holiday-lettings-example-1.json
-          delete:
-            displayName: Delete furnished holiday letting
-            description: This endpoint deletes a Furnished Holiday Lettings source of income
-            is: [headers.acceptHeader]
-            (scope): "write:self-assessment"
-            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
           put:
-            displayName: Update furnished holiday lettings
+            displayName: Update furnished holiday letting
             description: This endpoint updates a Furnished Holiday Lettings source of income
-            is: [headers.acceptHeader, contentTypeHeader]
+            is: [headers.acceptHeader, headers.contentHeader]
             (scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             body:
@@ -1013,24 +999,13 @@ traits:
                     examples:
                       example-1:
                         value: !include examples/update-furnished-holiday-lettings-example-1.json
+          delete:
+            displayName: Delete furnished holiday letting
+            description: This endpoint deletes a Furnished Holiday Lettings source of income
+            is: [headers.acceptHeader]
+            (scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
           /incomes:
-            post:
-              displayName: Create furnished holiday letting income
-              description: This endpoint creates a Incomes for Furnished Holiday Lettings
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/furnished-holiday-lettings-incomes-request.json
-                  example: !include examples/furnished-holiday-lettings-incomes-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-furnished-holiday-lettings-incomes-example-1.json
             get:
               displayName: Get all furnished holiday letting incomes
               description: This endpoint retrieves all Incomes for Furnished Holiday Lettings
@@ -1044,10 +1019,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-furnished-holiday-lettings-incomes-example-1.json
-            /{incomesId}:
+            post:
+              displayName: Create furnished holiday letting income
+              description: This endpoint creates a Incomes for Furnished Holiday Lettings
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/furnished-holiday-lettings-incomes-request.json
+                  example: !include examples/furnished-holiday-lettings-incomes-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-furnished-holiday-lettings-incomes-example-1.json
+            /{incomeId}:
               uriParameters:
-                incomesId:
-                  description: The incomes id
+                incomeId:
+                  description: The income ID
                   type: string
                   example: ""
               get:
@@ -1066,7 +1058,7 @@ traits:
               put:
                 displayName: Update furnished holiday letting income
                 description: This endpoint updates a Incomes for Furnished Holiday Lettings
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -1089,23 +1081,6 @@ traits:
                 responses:
                   204:
           /expenses:
-            post:
-              displayName: Create furnished holiday letting expense
-              description: This endpoint creates a Expenses for Furnished Holiday Lettings
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/furnished-holiday-lettings-expenses-request.json
-                  example: !include examples/furnished-holiday-lettings-expenses-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-furnished-holiday-lettings-expenses-example-1.json
             get:
               displayName: Get all furnished holiday letting expenses
               description: This endpoint retrieves all Expenses for Furnished Holiday Lettings
@@ -1119,10 +1094,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-furnished-holiday-lettings-expenses-example-1.json
-            /{expensesId}:
+            post:
+              displayName: Create furnished holiday letting expense
+              description: This endpoint creates a Expenses for Furnished Holiday Lettings
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/furnished-holiday-lettings-expenses-request.json
+                  example: !include examples/furnished-holiday-lettings-expenses-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-furnished-holiday-lettings-expenses-example-1.json
+            /{expenseId}:
               uriParameters:
-                expensesId:
-                  description: The expenses id
+                expenseId:
+                  description: The expense ID
                   type: string
                   example: ""
               get:
@@ -1141,7 +1133,7 @@ traits:
               put:
                 displayName: Update furnished holiday letting expense
                 description: This endpoint updates a Expenses for Furnished Holiday Lettings
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -1164,23 +1156,6 @@ traits:
                 responses:
                   204:
           /private-use-adjustments:
-            post:
-              displayName: Create furnished holiday letting private use adjustment
-              description: This endpoint creates a Private Use Adjustments for Furnished Holiday Lettings
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/furnished-holiday-lettings-private-use-request.json
-                  example: !include examples/furnished-holiday-lettings-private-use-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-furnished-holiday-lettings-private-use-adjustments-example-1.json
             get:
               displayName: Get all furnished holiday letting private use adjustments
               description: This endpoint retrieves all Private Use Adjustments for Furnished Holiday Lettings
@@ -1194,10 +1169,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-furnished-holiday-lettings-private-use-adjustments-example-1.json
-            /{privateUseAdjustmentsId}:
+            post:
+              displayName: Create furnished holiday letting private use adjustment
+              description: This endpoint creates a Private Use Adjustments for Furnished Holiday Lettings
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/furnished-holiday-lettings-private-use-request.json
+                  example: !include examples/furnished-holiday-lettings-private-use-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-furnished-holiday-lettings-private-use-adjustments-example-1.json
+            /{privateUseAdjustmentId}:
               uriParameters:
-                privateUseAdjustmentsId:
-                  description: The private-use-adjustments id
+                privateUseAdjustmentId:
+                  description: The private use adjustment ID
                   type: string
                   example: ""
               get:
@@ -1216,7 +1208,7 @@ traits:
               put:
                 displayName: Update furnished holiday letting private use adjustment
                 description: This endpoint updates a Private Use Adjustments for Furnished Holiday Lettings
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -1239,23 +1231,6 @@ traits:
                 responses:
                   204:
           /balancing-charges:
-            post:
-              displayName: Create furnished holiday letting balancing charge
-              description: This endpoint creates a Balancing Charges for Furnished Holiday Lettings
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/furnished-holiday-lettings-balancing-charges-request.json
-                  example: !include examples/furnished-holiday-lettings-balancing-charges-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-furnished-holiday-lettings-balancing-charges-example-1.json
             get:
               displayName: Get all furnished holiday letting balancing charges
               description: This endpoint retrieves all Balancing Charges for Furnished Holiday Lettings
@@ -1269,10 +1244,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-furnished-holiday-lettings-balancing-charges-example-1.json
-            /{balancingChargesId}:
+            post:
+              displayName: Create furnished holiday letting balancing charge
+              description: This endpoint creates a Balancing Charges for Furnished Holiday Lettings
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/furnished-holiday-lettings-balancing-charges-request.json
+                  example: !include examples/furnished-holiday-lettings-balancing-charges-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-furnished-holiday-lettings-balancing-charges-example-1.json
+            /{balancingChargeId}:
               uriParameters:
-                balancingChargesId:
-                  description: The balancing-charges id
+                balancingChargeId:
+                  description: The balancing charge ID
                   type: string
                   example: ""
               get:
@@ -1289,9 +1281,9 @@ traits:
                           example-1:
                             value: !include examples/retrieve-furnished-holiday-lettings-balancing-charges-example-1.json
               put:
-                displayName: Update furnished holiday lettings balancing charges
+                displayName: Update furnished holiday lettings balancing charge
                 description: This endpoint updates a Balancing Charges for Furnished Holiday Lettings
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -1320,20 +1312,7 @@ traits:
       /unearned-incomes:
         (group):
           name: Unearned income
-          description: Unearned income group
-        post:
-          displayName: Create unearned income
-          description: This endpoint creates a Unearned Incomes source of income
-          is: [headers.acceptHeader, contentTypeHeader]
-          (scope): "write:self-assessment"
-          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-          responses:
-            201:
-              body:
-                application/json:
-                  examples:
-                    example-1:
-                      value: !include examples/create-unearned-incomes-example-1.json
+          description: !include docs/unearned-income.md
         get:
           displayName: Get all unearned incomes
           description: This endpoint retrieves all the Unearned Incomes sources of income
@@ -1347,10 +1326,23 @@ traits:
                   examples:
                     example-1:
                       value: !include examples/retrieve-all-unearned-incomes-example-1.json
-        /{unearnedIncomesId}:
+        post:
+          displayName: Create unearned income
+          description: This endpoint creates a Unearned Incomes source of income
+          is: [headers.acceptHeader, headers.contentHeader]
+          (scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          responses:
+            201:
+              body:
+                application/json:
+                  examples:
+                    example-1:
+                      value: !include examples/create-unearned-incomes-example-1.json
+        /{unearnedIncomeId}:
           uriParameters:
-            unearnedIncomesId:
-              description: The unearned-incomes id
+            unearnedIncomeId:
+              description: The unearned income ID
               type: string
               example: ""
           get:
@@ -1375,23 +1367,6 @@ traits:
             responses:
               204:
           /savings:
-            post:
-              displayName: Create unearned income savings
-              description: This endpoint creates a Savings for Unearned Incomes
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/unearned-incomes-savings-request.json
-                  example: !include examples/unearned-incomes-savings-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-unearned-incomes-savings-example-1.json
             get:
               displayName: Get all unearned income savings
               description: This endpoint retrieves all Savings for Unearned Incomes
@@ -1405,14 +1380,31 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-unearned-incomes-savings-example-1.json
-            /{savingsId}:
+            post:
+              displayName: Create unearned income saving
+              description: This endpoint creates a Savings for Unearned Incomes
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/unearned-incomes-savings-request.json
+                  example: !include examples/unearned-incomes-savings-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-unearned-incomes-savings-example-1.json
+            /{savingId}:
               uriParameters:
-                savingsId:
-                  description: The savings id
+                savingId:
+                  description: The saving ID
                   type: string
                   example: ""
               get:
-                displayName: Get unearned income savings
+                displayName: Get unearned income saving
                 description: This endpoint retrieves a Savings for Unearned Incomes
                 is: [headers.acceptHeader]
                 (scope): "read:self-assessment"
@@ -1425,9 +1417,9 @@ traits:
                           example-1:
                             value: !include examples/retrieve-unearned-incomes-savings-example-1.json
               put:
-                displayName: Update unearned income savings
+                displayName: Update unearned income saving
                 description: This endpoint updates a Savings for Unearned Incomes
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -1442,7 +1434,7 @@ traits:
                           example-1:
                             value: !include examples/update-unearned-incomes-savings-example-1.json
               delete:
-                displayName: Delete unearned income savings
+                displayName: Delete unearned income saving
                 description: This endpoint deletes a Savings for Unearned Incomes
                 is: [headers.acceptHeader]
                 (scope): "write:self-assessment"
@@ -1450,23 +1442,6 @@ traits:
                 responses:
                   204:
           /dividends:
-            post:
-              displayName: Create unearned income dividend
-              description: This endpoint creates a Dividends for Unearned Incomes
-              is: [headers.acceptHeader, contentTypeHeader]
-              (scope): "write:self-assessment"
-              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              body:
-                application/json:
-                  type: !include schemas/unearned-incomes-dividends-request.json
-                  example: !include examples/unearned-incomes-dividends-request.json
-              responses:
-                201:
-                  body:
-                    application/json:
-                      examples:
-                        example-1:
-                          value: !include examples/create-unearned-incomes-dividends-example-1.json
             get:
               displayName: Get all unearned income dividends
               description: This endpoint retrieves all Dividends for Unearned Incomes
@@ -1480,10 +1455,27 @@ traits:
                       examples:
                         example-1:
                           value: !include examples/retrieve-all-unearned-incomes-dividends-example-1.json
-            /{dividendsId}:
+            post:
+              displayName: Create unearned income dividend
+              description: This endpoint creates a Dividends for Unearned Incomes
+              is: [headers.acceptHeader, headers.contentHeader]
+              (scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/unearned-incomes-dividends-request.json
+                  example: !include examples/unearned-incomes-dividends-request.json
+              responses:
+                201:
+                  body:
+                    application/json:
+                      examples:
+                        example-1:
+                          value: !include examples/create-unearned-incomes-dividends-example-1.json
+            /{dividendId}:
               uriParameters:
-                dividendsId:
-                  description: The dividends id
+                dividendId:
+                  description: The dividend ID
                   type: string
                   example: ""
               get:
@@ -1502,7 +1494,7 @@ traits:
               put:
                 displayName: Update unearned income dividend
                 description: This endpoint updates a Dividends for Unearned Incomes
-                is: [headers.acceptHeader, contentTypeHeader]
+                is: [headers.acceptHeader, headers.contentHeader]
                 (scope): "write:self-assessment"
                 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
                 body:
@@ -1531,7 +1523,7 @@ traits:
       /liability:
         (group):
           name: Liability
-          description: Liability group
+          description: !include docs/liability.md
         post:
           displayName: Request liability
           description: This endpoint requests a liability estimate
@@ -1546,7 +1538,7 @@ traits:
                     example-1:
                       value: !include examples/request-liability-example-1.json
         get:
-          displayName: Retrieve liability
+          displayName: Get liability
           description: This endpoint retrieves a liability estimate
           is: [headers.acceptHeader]
           (scope): "read:self-assessment"

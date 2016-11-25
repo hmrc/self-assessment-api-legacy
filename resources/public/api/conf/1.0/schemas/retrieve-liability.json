@@ -34,16 +34,24 @@
                       "sourceId": {
                         "type": "string"
                       },
-                      "taxableProfit": {
-                        "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
+                      "pay": {
+                        "description": "",
                         "type": "number"
                       },
-                      "profit": {
-                        "description": "taxableProfit plus losses brought forward.",
+                      "benefitsAndExpenses": {
+                        "description": "",
+                        "type": "number"
+                      },
+                      "allowableExpenses": {
+                        "description": "",
+                        "type": "number"
+                      },
+                      "total": {
+                        "description": "",
                         "type": "number"
                       }
                     },
-                    "required": [ "sourceId" ]
+                    "required": [ "sourceId", "benefitsAndExpenses", "allowableExpenses", "total" ]
                   }
                 },
                 "selfEmployment": {
@@ -63,7 +71,7 @@
                         "type": "number"
                       }
                     },
-                    "required": [ "sourceId" ]
+                    "required": [ "sourceId", "taxableProfit", "profit" ]
                   }
                 },
                 "ukProperties": {
@@ -74,16 +82,12 @@
                       "sourceId": {
                         "type": "string"
                       },
-                      "taxableProfit": {
-                        "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
-                        "type": "number"
-                      },
                       "profit": {
                         "description": "taxableProfit plus losses brought forward.",
                         "type": "number"
                       }
                     },
-                    "required": [ "sourceId" ]
+                    "required": [ "sourceId", "profit" ]
                   }
                 },
                 "furnishedHolidayLettings": {
@@ -94,16 +98,12 @@
                       "sourceId": {
                         "type": "string"
                       },
-                      "taxableProfit": {
-                        "description": "Total taxable profit for the current year which is total earnings + balancing charges + disallowable expenses + goods used for own use minus (allowable expenses + capital allowances)",
-                        "type": "number"
-                      },
                       "profit": {
                         "description": "taxableProfit plus losses brought forward.",
                         "type": "number"
                       }
                     },
-                    "required": [ "sourceId" ]
+                    "required": [ "sourceId", "profit" ]
                   }
                 }
               },
@@ -130,7 +130,7 @@
                         "type": "number"
                       }
                     },
-                    "required": [ "sourceId" ]
+                    "required": [ "sourceId", "totalInterest" ]
                   }
                 }
               },
@@ -363,11 +363,31 @@
         },
         "fromUkProperties": {
           "type": "array",
-          "items": { "type": "object" }
+          "items": {
+            "type": "object",
+            "properties": {
+              "sourceId": {
+                "type": "string"
+              },
+              "taxPaid": {
+                "type": "number"
+              }
+            }
+          }
         },
         "fromEmployments": {
           "type": "array",
-          "items": { "type": "object" }
+          "items": {
+            "type": "object",
+            "properties": {
+              "sourceId": {
+                "type": "string"
+              },
+              "taxPaid": {
+                "type": "number"
+              }
+            }
+          }
         },
         "total": {
           "type": "number"

@@ -1,0 +1,12 @@
+{
+  "allowances" : {
+    "annualInvestmentAllowance" : 1000.0,
+    "businessPremisesRenovationAllowance" : 600.0,
+    "otherCapitalAllowance" : 50.0,
+    "wearAndTearAllowance" : 3399.99
+  },
+  "adjustments" : {
+    "lossBroughtForward" : 250.0
+  },
+  "rentARoomRelief" : 7500.0
+}

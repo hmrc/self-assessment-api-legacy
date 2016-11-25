@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Type of expense (one of the following: PremisesRunningCosts, RepairsAndMaintenance, FinancialCosts, ProfessionalFees, CostOfServices, Other)",
+      "type": "string"
+    },
+    "amount": {
+      "description": "For non-resident landlords - amount of tax taken off any property rental income.",
+      "type": "number"
+    }
+  },
+  "required": [ "type", "amount" ]
+}

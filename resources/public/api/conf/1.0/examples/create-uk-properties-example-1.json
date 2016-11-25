@@ -1,0 +1,22 @@
+{
+  "_links" : {
+    "expenses" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/expenses"
+    },
+    "balancing-charges" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/balancing-charges"
+    },
+    "incomes" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/incomes"
+    },
+    "private-use-adjustments" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/private-use-adjustments"
+    },
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d"
+    },
+    "taxes-paid" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/taxes-paid"
+    }
+  }
+}

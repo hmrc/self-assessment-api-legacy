@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Furnished holiday lettings incomes request",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "description": "The total amount of income from all your Furnished Holiday Lettings (including income from services you provide to tenants) for the given location (UK / EEA).",
+      "type": "number"
+    }
+  },
+  "required": ["amount"]
+}

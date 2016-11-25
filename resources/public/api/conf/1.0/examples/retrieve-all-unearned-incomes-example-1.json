@@ -1,0 +1,31 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/unearned-incomes"
+    }
+  },
+  "_embedded" : {
+    "unearned-incomes" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d"
+        }
+      },
+      "id" : "00d2d32d"
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d"
+        }
+      },
+      "id" : "00d2d32d"
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d"
+        }
+      },
+      "id" : "00d2d32d"
+    } ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/benefits"
+    }
+  },
+  "_embedded" : {
+    "benefits" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/benefits/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "StatePension",
+      "amount" : 1000.0,
+      "taxDeduction" : 400.0
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/benefits/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "StatePension",
+      "amount" : 1000.0,
+      "taxDeduction" : 400.0
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/benefits/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "StatePension",
+      "amount" : 1000.0,
+      "taxDeduction" : 400.0
+    } ]
+  }
+}

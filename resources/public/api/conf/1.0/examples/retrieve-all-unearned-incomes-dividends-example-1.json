@@ -1,0 +1,37 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/dividends"
+    }
+  },
+  "_embedded" : {
+    "dividends" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/dividends/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "FromUKCompanies",
+      "amount" : 1000.0
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/dividends/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "FromUKCompanies",
+      "amount" : 1000.0
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/unearned-incomes/00d2d32d/dividends/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "FromUKCompanies",
+      "amount" : 1000.0
+    } ]
+  }
+}

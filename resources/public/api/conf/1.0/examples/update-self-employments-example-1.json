@@ -1,0 +1,19 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d"
+    },
+    "expenses" : {
+      "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d/expenses"
+    },
+    "balancing-charges" : {
+      "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d/balancing-charges"
+    },
+    "incomes" : {
+      "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d/incomes"
+    },
+    "goods-and-services-own-uses" : {
+      "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d/goods-and-services-own-uses"
+    }
+  }
+}

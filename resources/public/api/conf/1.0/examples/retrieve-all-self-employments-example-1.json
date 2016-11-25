@@ -1,0 +1,85 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/self-employments"
+    }
+  },
+  "_embedded" : {
+    "self-employments" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d"
+        }
+      },
+      "id" : "00d2d32d",
+      "commencementDate" : "2016-01-01",
+      "allowances" : {
+        "annualInvestmentAllowance" : 1000.0,
+        "capitalAllowanceMainPool" : 150.0,
+        "capitalAllowanceSpecialRatePool" : 5000.5,
+        "businessPremisesRenovationAllowance" : 600.0,
+        "enhancedCapitalAllowance" : 50.0,
+        "allowancesOnSales" : 3399.99
+      },
+      "adjustments" : {
+        "includedNonTaxableProfits" : 50.0,
+        "basisAdjustment" : 20.1,
+        "overlapReliefUsed" : 500.0,
+        "accountingAdjustment" : 10.5,
+        "averagingAdjustment" : -400.99,
+        "lossBroughtForward" : 10000.0,
+        "outstandingBusinessIncome" : 50.0
+      }
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d"
+        }
+      },
+      "id" : "00d2d32d",
+      "commencementDate" : "2016-01-01",
+      "allowances" : {
+        "annualInvestmentAllowance" : 1000.0,
+        "capitalAllowanceMainPool" : 150.0,
+        "capitalAllowanceSpecialRatePool" : 5000.5,
+        "businessPremisesRenovationAllowance" : 600.0,
+        "enhancedCapitalAllowance" : 50.0,
+        "allowancesOnSales" : 3399.99
+      },
+      "adjustments" : {
+        "includedNonTaxableProfits" : 50.0,
+        "basisAdjustment" : 20.1,
+        "overlapReliefUsed" : 500.0,
+        "accountingAdjustment" : 10.5,
+        "averagingAdjustment" : -400.99,
+        "lossBroughtForward" : 10000.0,
+        "outstandingBusinessIncome" : 50.0
+      }
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/self-employments/00d2d32d"
+        }
+      },
+      "id" : "00d2d32d",
+      "commencementDate" : "2016-01-01",
+      "allowances" : {
+        "annualInvestmentAllowance" : 1000.0,
+        "capitalAllowanceMainPool" : 150.0,
+        "capitalAllowanceSpecialRatePool" : 5000.5,
+        "businessPremisesRenovationAllowance" : 600.0,
+        "enhancedCapitalAllowance" : 50.0,
+        "allowancesOnSales" : 3399.99
+      },
+      "adjustments" : {
+        "includedNonTaxableProfits" : 50.0,
+        "basisAdjustment" : 20.1,
+        "overlapReliefUsed" : 500.0,
+        "accountingAdjustment" : 10.5,
+        "averagingAdjustment" : -400.99,
+        "lossBroughtForward" : 10000.0,
+        "outstandingBusinessIncome" : 50.0
+      }
+    } ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Furnished holiday lettings balancing charges request",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "description": "For items where capital allowances were claimed that have been sold, given away or stopped being used, a balancing charge may be needed.",
+      "type": "number"
+    }
+  },
+  "required": ["amount"]
+}

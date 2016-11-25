@@ -1,0 +1,37 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/incomes"
+    }
+  },
+  "_embedded" : {
+    "incomes" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/incomes/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "RentIncome",
+      "amount" : 1000
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/incomes/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "RentIncome",
+      "amount" : 1000
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "/self-assessment/2234567890/2016-17/uk-properties/00d2d32d/incomes/00d2d98a"
+        }
+      },
+      "id" : "00d2d98a",
+      "type" : "RentIncome",
+      "amount" : 1000
+    } ]
+  }
+}

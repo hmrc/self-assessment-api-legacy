@@ -1,0 +1,25 @@
+{
+  "_links" : {
+    "furnished-holiday-lettings" : {
+      "href" : "/self-assessment/2234567890/2016-17/furnished-holiday-lettings"
+    },
+    "self-employments" : {
+      "href" : "/self-assessment/2234567890/2016-17/self-employments"
+    },
+    "self" : {
+      "href" : "/self-assessment/2234567890/2016-17"
+    },
+    "employments" : {
+      "href" : "/self-assessment/2234567890/2016-17/employments"
+    },
+    "unearned-incomes" : {
+      "href" : "/self-assessment/2234567890/2016-17/unearned-incomes"
+    },
+    "liability" : {
+      "href" : "/self-assessment/2234567890/2016-17/liability"
+    },
+    "uk-properties" : {
+      "href" : "/self-assessment/2234567890/2016-17/uk-properties"
+    }
+  }
+}

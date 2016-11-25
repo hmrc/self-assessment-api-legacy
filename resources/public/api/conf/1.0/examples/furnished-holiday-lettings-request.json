@@ -1,0 +1,9 @@
+{
+  "propertyLocation" : "UK",
+  "allowances" : {
+    "capitalAllowance" : 1000.0
+  },
+  "adjustments" : {
+    "lossBroughtForward" : 500.0
+  }
+}

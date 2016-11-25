@@ -479,19 +479,19 @@ annotationTypes:
         (group):
           name: UK property
           description: !include docs/uk-property.md
-          get:
-            displayName: Get all UK properties
-            description: This endpoint retrieves all the UK Properties sources of income
-            is: [headers.acceptHeader]
-            (scope): "read:self-assessment"
-            securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
-            responses:
-              200:
-                body:
-                  application/json:
-                    examples:
-                      example-1:
-                        value: !include examples/retrieve-all-uk-properties-example-1.json
+        get:
+          displayName: Get all UK properties
+          description: This endpoint retrieves all the UK Properties sources of income
+          is: [headers.acceptHeader]
+          (scope): "read:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+          responses:
+            200:
+              body:
+                application/json:
+                  examples:
+                    example-1:
+                      value: !include examples/retrieve-all-uk-properties-example-1.json
         post:
           displayName: Create UK property
           description: This endpoint creates a UK Properties source of income

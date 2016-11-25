@@ -54,7 +54,6 @@ annotationTypes:
       utr:
         description: The Self Assessment UTR of the customer
         type: string
-        example: ""
     get:
       displayName: Discover tax years
       description: This endpoint provides links to the self assessment entry points for each tax year
@@ -1005,6 +1004,8 @@ annotationTypes:
             is: [headers.acceptHeader]
             (scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            responses:
+              204:
           /incomes:
             get:
               displayName: Get all furnished holiday letting incomes

@@ -60,25 +60,25 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, nino: Nino, taxYear: String) = {
       sourceType.summaryTypes.foreach { summaryType =>
-        bodyHasLink(summaryType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
+        bodyHasLink(summaryType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
       }
       this
     }
 
     def bodyHasSummaryLinks(sourceType: SourceType, nino: Nino, taxYear: String) = {
       sourceType.summaryTypes.foreach { summaryType =>
-        bodyHasLink(summaryType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
+        bodyHasLink(summaryType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
       }
       this
     }
 
     def bodyHasSummaryLink(sourceType: SourceType, summaryType: SummaryType, nino: Nino, taxYear: String) = {
-      bodyHasLink(summaryType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
+      bodyHasLink(summaryType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
       this
     }
 
     def bodyDoesNotHaveSummaryLink(sourceType: SourceType, summaryType: SummaryType, nino: Nino, taxYear: String) = {
-      val hrefPattern = s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r
+      val hrefPattern = s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r
       getLinkFromBody(summaryType.name) match {
         case Some(href) =>
           hrefPattern findFirstIn href match {
@@ -92,18 +92,18 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def bodyHasLinksForAllSourceTypes(nino: Nino, taxYear: String) = {
       SourceTypes.types.foreach { sourceType =>
-        bodyHasLink(sourceType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}")
+        bodyHasLink(sourceType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}")
       }
       this
     }
 
     def bodyHasLinksForSourceType(sourceType: SourceType, nino: Nino, taxYear: String) = {
-      bodyHasLink(sourceType.name, s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}")
+      bodyHasLink(sourceType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}")
       this
     }
 
     def bodyDoesNotHaveLinksForSourceType(sourceType: SourceType, nino: Nino, taxYear: String) = {
-      val hrefPattern = s"/self-assessment/nino/$nino/$taxYear/${sourceType.name}".r
+      val hrefPattern = s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}".r
       getLinkFromBody(sourceType.name) match {
         case Some(href) =>
           hrefPattern findFirstIn href match {

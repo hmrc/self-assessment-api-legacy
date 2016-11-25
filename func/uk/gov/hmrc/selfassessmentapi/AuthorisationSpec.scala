@@ -12,7 +12,7 @@ class AuthorisationSpec extends BaseFunctionalSpec {
       given()
         .userIsNotAuthorisedForTheResource(nino)
         .when()
-        .get(s"/nino/$nino/self-employments")
+        .get(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(401)
         .contentTypeIsJson()

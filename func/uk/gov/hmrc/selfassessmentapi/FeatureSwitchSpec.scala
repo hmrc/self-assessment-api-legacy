@@ -22,7 +22,7 @@ class FeatureSwitchSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/nino/$nino/${SelfEmployments.name}")
+        .get(s"/ni/$nino/${SelfEmployments.name}")
         .thenAssertThat()
         .isNotImplemented
     }

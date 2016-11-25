@@ -49,7 +49,7 @@ object SelfEmploymentsResource extends BaseController {
           }
         }
       case Right(idOption) => idOption.map {
-        case Some(id) => Created.withHeaders(LOCATION -> s"/nino/$nino/self-employments/$id")
+        case Some(id) => Created.withHeaders(LOCATION -> s"/ni/$nino/self-employments/$id")
         case None => InternalServerError
       }
     }
@@ -124,7 +124,7 @@ object SelfEmploymentsResource extends BaseController {
           }
         }
       case Right(result) => result.map {
-        case Right(periodId) => Created.withHeaders(LOCATION -> s"/nino/$nino/self-employments/$id/periods/$periodId")
+        case Right(periodId) => Created.withHeaders(LOCATION -> s"/ni/$nino/self-employments/$id/periods/$periodId")
         case Left(error) => if (error == ErrorCode.DUPLICATE_PERIOD) Conflict else InternalServerError
       }
     }

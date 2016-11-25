@@ -20,7 +20,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
       .when()
-        .post(s"/nino/$nino/liability/$taxYear")
+        .post(s"/ni/$nino/liability/$taxYear")
       .thenAssertThat()
         .statusIs(202)
     }
@@ -32,7 +32,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/nino/$nino/liability/$taxYear")
+        .get(s"/ni/$nino/liability/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -42,11 +42,11 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(s"/nino/$nino/liability/$taxYear")
+        .post(s"/ni/$nino/liability/$taxYear")
         .thenAssertThat()
         .statusIs(202)
         .when()
-        .get(s"/nino/$nino/liability/$taxYear")
+        .get(s"/ni/$nino/liability/$taxYear")
         .thenAssertThat()
         .statusIs(200)
     }

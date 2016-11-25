@@ -11,7 +11,7 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/nino/$nino/self-employments").withAcceptHeader()
+        .get(s"/ni/$nino/self-employments").withAcceptHeader()
         .thenAssertThat().statusIs(204)
     }
   }
@@ -21,7 +21,7 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/nino/$nino/self-employments").withoutAcceptHeader()
+        .get(s"/ni/$nino/self-employments").withoutAcceptHeader()
         .thenAssertThat()
         .statusIs(406)
         .bodyIsError("ACCEPT_HEADER_INVALID")

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
-import com.github.nscala_time.time.OrderingImplicits
-import org.joda.time.LocalDate
-import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
+import play.api.libs.json.Format
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
 
-case class PeriodSummary(periodId: PeriodId, from: LocalDate, to: LocalDate) extends Period
+object AccountingType extends Enumeration {
+  type AccountingType = Value
 
-object PeriodSummary {
-  private implicit val localDateOrdering = OrderingImplicits.LocalDateOrdering
+  val CASH, ACCRUAL = Value
 
-  implicit val ordering: Ordering[PeriodSummary] = Ordering.by(_.from)
-  implicit val writes = Json.writes[PeriodSummary]
+  implicit val format: Format[AccountingType] =
+    EnumJson.enumFormat(AccountingType, Some("AccountingType should be either CASH or ACCRUAL"))
 }

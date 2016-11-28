@@ -20,12 +20,12 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, GenericErrorResult, ValidationErrorResult}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
 import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmployment, SelfEmploymentAnnualSummary}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
+import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
@@ -81,9 +81,8 @@ object SelfEmploymentsResource extends BaseController {
   }
 
   def retrieveAll(nino: Nino) = featureSwitch.asyncFeatureSwitch {
-    service.retrieveAll(nino) map {
-      case seq if seq.isEmpty => NoContent
-      case seq => Ok(Json.toJson(seq))
+    service.retrieveAll(nino) map { seq =>
+      Ok(Json.toJson(seq))
     }
   }
 
@@ -113,8 +112,8 @@ object SelfEmploymentsResource extends BaseController {
   }
 
   def createPeriod(nino: Nino, id: SourceId) = featureSwitch.asyncFeatureSwitch { request =>
-    validate[SelfEmploymentPeriod, Either[ErrorCode, PeriodId]](request.body) {
-      service.createPeriod(nino, id, _)
+    validate[SelfEmploymentPeriod, Either[Error, PeriodId]](request.body) { x =>
+      service.createPeriod(nino, id, x)
     } match {
       case Left(errorResult) =>
         Future.successful {
@@ -125,7 +124,9 @@ object SelfEmploymentsResource extends BaseController {
         }
       case Right(result) => result.map {
         case Right(periodId) => Created.withHeaders(LOCATION -> s"/ni/$nino/self-employments/$id/periods/$periodId")
-        case Left(error) => if (error == ErrorCode.DUPLICATE_PERIOD) Conflict else InternalServerError
+        case Left(error) =>
+          if (error.code == ErrorCode.NOT_FOUND.toString) NotFound
+          else Forbidden(Json.toJson(Errors.businessError(error)))
       }
     }
   }
@@ -156,9 +157,8 @@ object SelfEmploymentsResource extends BaseController {
   }
 
   def retrievePeriods(nino: Nino, id: SourceId) = featureSwitch.asyncFeatureSwitch {
-    service.retrieveAllPeriods(nino: Nino, id: SourceId).map {
-      case seq if seq.isEmpty=> NoContent
-      case seq => Ok(Json.toJson(seq))
+    service.retrieveAllPeriods(nino: Nino, id: SourceId).map { periods =>
+      Ok(Json.toJson(periods))
     }
   }
 }

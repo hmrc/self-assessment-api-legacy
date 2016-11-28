@@ -22,32 +22,25 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{Adjustments, Allowances}
+import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
 
 case class SelfEmployment(id: Option[SourceId] = None,
+                          accountingPeriod: AccountingPeriod,
+                          accountingType: AccountingType,
                           commencementDate: LocalDate)
 
 object SelfEmployment {
 
-  def commencementDateValidator = Reads.of[LocalDate].filter(
-    ValidationError("commencement date should be in the past", COMMENCEMENT_DATE_NOT_IN_THE_PAST)
-  )(_.isBefore(LocalDate.now()))
+  val commencementDateValidator: Reads[LocalDate] = Reads.of[LocalDate].filter(
+    ValidationError("commencement date should be today or in the past", DATE_NOT_IN_THE_PAST)
+  )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
 
-  implicit val writes = Json.writes[SelfEmployment]
+  implicit val writes: Writes[SelfEmployment] = Json.writes[SelfEmployment]
 
   implicit val reads: Reads[SelfEmployment] = (
     Reads.pure(None) and
+      (__ \ "accountingPeriod").read[AccountingPeriod] and
+      (__ \ "accountingType").read[AccountingType] and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator)
     ) (SelfEmployment.apply _)
-}
-
-case class SelfEmploymentAnnualSummary(allowances: Option[Allowances], adjustments: Option[Adjustments])
-
-object SelfEmploymentAnnualSummary {
-  implicit val writer = Json.writes[SelfEmploymentAnnualSummary]
-
-  implicit val reader: Reads[SelfEmploymentAnnualSummary] = (
-      (__ \ "allowances").readNullable[Allowances] and
-      (__ \ "adjustments").readNullable[Adjustments]
-    ) (SelfEmploymentAnnualSummary.apply _)
 }

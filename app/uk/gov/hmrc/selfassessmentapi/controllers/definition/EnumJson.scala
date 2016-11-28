@@ -18,8 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
-import ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode.{ INVALID_TYPE, INVALID_VALUE }
 
 object EnumJson {
 
@@ -28,14 +27,13 @@ object EnumJson {
     def defaultValueMissingMessage(s: String)= s"Enumeration expected of type: '${enum.getClass}', but it does not contain '$s'"
 
     def reads(json: JsValue): JsResult[E#Value] = json match {
-      case JsString(s) => {
+      case JsString(s) =>
         try {
           JsSuccess(enum.withName(s))
         } catch {
           case _: NoSuchElementException =>
-            JsError(JsPath(), ValidationError(valueMissingMessage.getOrElse(defaultValueMissingMessage(s)), NO_VALUE_FOUND))
+            JsError(JsPath, ValidationError(valueMissingMessage.getOrElse(defaultValueMissingMessage(s)), INVALID_VALUE))
         }
-      }
       case _ => JsError(JsPath(), ValidationError("String value expected", INVALID_TYPE))
     }
   }

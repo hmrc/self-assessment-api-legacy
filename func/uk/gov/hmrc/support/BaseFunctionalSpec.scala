@@ -24,6 +24,8 @@ trait BaseFunctionalSpec extends TestApplication {
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
       extends UrlInterpolation {
+    def jsonBodyIsEmptyArray = response.json shouldBe JsArray()
+
 
     def responseContainsHeader(name: String, pattern: Regex) = {
       response.header(name).get should fullyMatch regex pattern
@@ -329,6 +331,11 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     class BodyListAssertions(content: Seq[JsValue], assertions: Assertions) {
+      def isLength(n: Int) = {
+        content.size shouldBe n
+        this
+      }
+
       def matches(matcher: Regex) = {
         content.map(_.as[String]).forall {
           case matcher(_*) => true
@@ -403,8 +410,8 @@ trait BaseFunctionalSpec extends TestApplication {
       new HttpPostBodyWrapper("POST", Some(body))
     }
 
-    def put(body: Some[JsValue]) = {
-      new HttpPutBodyWrapper("PUT", body)
+    def put(body: JsValue) = {
+      new HttpPutBodyWrapper("PUT", Some(body))
     }
 
     def get(path: String) = {

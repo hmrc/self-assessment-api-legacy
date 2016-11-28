@@ -12,7 +12,7 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments").withAcceptHeader()
-        .thenAssertThat().statusIs(204)
+        .thenAssertThat().statusIs(200).jsonBodyIsEmptyArray
     }
   }
 

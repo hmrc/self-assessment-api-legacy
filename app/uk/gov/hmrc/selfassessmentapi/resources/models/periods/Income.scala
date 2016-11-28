@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.periods
 
-import play.api.libs.json.Json
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 
-case class Expense(amount: Amount, disallowableAmount: Amount)
+case class Income(amount: Amount)
 
-object Expense {
-  implicit val reads = Json.reads[Expense]
-  implicit val writes = Json.writes[Expense]
+object Income {
+  implicit val reads: Reads[Income] = (__ \ "amount").read[Amount](positiveAmountValidator).map(Income.apply)
+
+  implicit val writes: Writes[Income] = Json.writes[Income]
 }

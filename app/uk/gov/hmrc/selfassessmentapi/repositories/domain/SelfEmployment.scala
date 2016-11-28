@@ -28,6 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.BalancingCha
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAllowances, SelfEmploymentAdjustments}
 
 case class SelfEmploymentIncomeSummary(summaryId: SummaryId,
                                        `type`: IncomeType,
@@ -186,8 +187,8 @@ case class SelfEmployment(id: BSONObjectID,
                           lastModifiedDateTime: DateTime,
                           createdDateTime: DateTime,
                           commencementDate: LocalDate,
-                          allowances: Option[Allowances] = None,
-                          adjustments: Option[Adjustments] = None,
+                          allowances: Option[SelfEmploymentAllowances] = None,
+                          adjustments: Option[SelfEmploymentAdjustments] = None,
                           incomes: Seq[SelfEmploymentIncomeSummary] = Nil,
                           expenses: Seq[SelfEmploymentExpenseSummary] = Nil,
                           balancingCharges: Seq[SelfEmploymentBalancingChargeSummary] = Nil,

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
-import com.github.nscala_time.time.OrderingImplicits
-import org.joda.time.LocalDate
-import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-case class PeriodSummary(periodId: PeriodId, from: LocalDate, to: LocalDate) extends Period
+case class SelfEmploymentAnnualSummary(allowances: Option[SelfEmploymentAllowances], adjustments: Option[SelfEmploymentAdjustments])
 
-object PeriodSummary {
-  private implicit val localDateOrdering = OrderingImplicits.LocalDateOrdering
+object SelfEmploymentAnnualSummary {
+  implicit val writer = Json.writes[SelfEmploymentAnnualSummary]
 
-  implicit val ordering: Ordering[PeriodSummary] = Ordering.by(_.from)
-  implicit val writes = Json.writes[PeriodSummary]
+  implicit val reader: Reads[SelfEmploymentAnnualSummary] = (
+    (__ \ "allowances").readNullable[SelfEmploymentAllowances] and
+      (__ \ "adjustments").readNullable[SelfEmploymentAdjustments]
+    ) (SelfEmploymentAnnualSummary.apply _)
 }

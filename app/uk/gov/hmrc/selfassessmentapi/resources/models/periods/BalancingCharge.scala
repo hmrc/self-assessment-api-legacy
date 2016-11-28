@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.periods
 
-import com.github.nscala_time.time.OrderingImplicits
-import org.joda.time.LocalDate
-import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 
-case class PeriodSummary(periodId: PeriodId, from: LocalDate, to: LocalDate) extends Period
+case class BalancingCharge(amount: Amount)
 
-object PeriodSummary {
-  private implicit val localDateOrdering = OrderingImplicits.LocalDateOrdering
+object BalancingCharge {
+  implicit val reads: Reads[BalancingCharge] =
+    (__ \ "amount").read[Amount](positiveAmountValidator).map(BalancingCharge.apply)
 
-  implicit val ordering: Ordering[PeriodSummary] = Ordering.by(_.from)
-  implicit val writes = Json.writes[PeriodSummary]
+  implicit val writes: Writes[BalancingCharge] = Json.writes[BalancingCharge]
 }

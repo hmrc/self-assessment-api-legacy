@@ -20,9 +20,10 @@ import org.joda.time.{DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, PeriodId, SourceId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{PeriodId, SourceId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentsRepository
+import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods.{PeriodSummary, SelfEmploymentPeriod}
 import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmployment, SelfEmploymentAnnualSummary}
 
@@ -37,7 +38,7 @@ trait SelfEmploymentsService {
   def retrieveAll(nino: Nino): Future[Seq[SelfEmployment]]
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, summary: SelfEmploymentAnnualSummary): Future[Boolean]
   def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[SelfEmploymentAnnualSummary]]
-  def createPeriod(nino: Nino, id: SourceId, period: SelfEmploymentPeriod): Future[Either[ErrorCode, PeriodId]]
+  def createPeriod(nino: Nino, id: SourceId, period: SelfEmploymentPeriod): Future[Either[Error, PeriodId]]
   def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId, period: SelfEmploymentPeriod): Future[Boolean]
   def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Future[Option[SelfEmploymentPeriod]]
   def retrieveAllPeriods(nino: Nino, id: SourceId): Future[Seq[PeriodSummary]]
@@ -53,7 +54,10 @@ class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) ex
 
   override def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]] = {
     val id = BSONObjectID.generate
-    val newSelfEmployment = domain.SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC), selfEmployment.commencementDate)
+    val newSelfEmployment =
+      domain.SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC),
+        selfEmployment.accountingPeriod, selfEmployment.accountingType, selfEmployment.commencementDate)
+
     mongoRepository.create(newSelfEmployment).map {
       case true => Some(newSelfEmployment.sourceId)
       case false => None
@@ -89,17 +93,22 @@ class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) ex
     }
   }
 
-  override def createPeriod(nino: Nino, id: SourceId, period: SelfEmploymentPeriod): Future[Either[ErrorCode, PeriodId]] = {
+  override def createPeriod(nino: Nino, id: SourceId, period: SelfEmploymentPeriod): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
 
     mongoRepository.retrieve(id, nino).flatMap {
-      case Some(selfEmployment) if selfEmployment.containsPeriod(period) => Future.successful(Left(ErrorCode.DUPLICATE_PERIOD))
+      case Some(selfEmployment) if selfEmployment.containsOverlappingPeriod(period) =>
+        Future.successful(Left(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", "")))
+      case Some(selfEmployment) if selfEmployment.containsGap(period) =>
+        Future.successful(Left(Error(GAP_PERIOD.toString, "Periods should not contain gaps between each other", "")))
+      case Some(selfEmployment) if selfEmployment.containsMisalignedPeriod(period) =>
+        Future.successful(Left(Error(MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the self-employment accounting period", "")))
       case Some(selfEmployment) =>
         mongoRepository.update(id, nino, selfEmployment.copy(periods = selfEmployment.periods.updated(periodId, period))).flatMap {
           case true => Future.successful(Right(periodId))
-          case false => Future.successful(Left(ErrorCode.INTERNAL_ERROR))
+          case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
         }
-      case None => Future.successful(Left(ErrorCode.NOT_FOUND))
+      case None => Future.successful(Left(Error(NOT_FOUND.toString, s"Self-employment not found for id: $id", "")))
     }
   }
 

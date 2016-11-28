@@ -21,32 +21,33 @@ import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{JsonMarshaller, ErrorCode}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, JsonMarshaller}
 import ErrorCode.{apply => _, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAdjustments, SelfEmploymentAllowances}
 
 case class SelfEmployment(id: Option[SourceId] = None,
                           commencementDate: LocalDate,
-                          allowances: Option[Allowances] = None,
-                          adjustments: Option[Adjustments] = None)
+                          allowances: Option[SelfEmploymentAllowances] = None,
+                          adjustments: Option[SelfEmploymentAdjustments] = None)
 
 object SelfEmployment extends JsonMarshaller[SelfEmployment]{
 
   implicit val writes = Json.writes[SelfEmployment]
 
-  def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past", COMMENCEMENT_DATE_NOT_IN_THE_PAST))(_.isBefore(LocalDate.now()))
+  def commencementDateValidator = Reads.of[LocalDate].filter(ValidationError("commencement date should be in the past", DATE_NOT_IN_THE_PAST))(_.isBefore(LocalDate.now()))
 
   implicit val reads: Reads[SelfEmployment] = (
     Reads.pure(None) and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
-      (__ \ "allowances").readNullable[Allowances] and
-      (__ \ "adjustments").readNullable[Adjustments]
+      (__ \ "allowances").readNullable[SelfEmploymentAllowances] and
+      (__ \ "adjustments").readNullable[SelfEmploymentAdjustments]
     ) (SelfEmployment.apply _)
 
 
   override def example(id: Option[String]) = SelfEmployment(
     id,
     commencementDate = LocalDate.parse("2016-01-01"),
-    allowances = Some(Allowances.example),
-    adjustments = Some(Adjustments.example))
+    allowances = Some(SelfEmploymentAllowances.example),
+    adjustments = Some(SelfEmploymentAdjustments.example))
 }

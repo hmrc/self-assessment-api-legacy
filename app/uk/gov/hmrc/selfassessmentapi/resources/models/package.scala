@@ -16,6 +16,23 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.data.validation.ValidationError
+import play.api.libs.json.Reads
+import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+
 package object models {
   type Amount = BigDecimal
+
+  /**
+    * Asserts that amounts must have a maximum of two decimal places
+    */
+  val amountValidator = Reads.of[Amount]
+    .filter(ValidationError("amount should be a number with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT))(_.scale < 3)
+
+  /**
+    * Asserts that amounts must be positive and have a maximum of two decimal places
+    */
+  val positiveAmountValidator = Reads.of[Amount]
+    .filter(ValidationError("amounts should be positive numbers with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT)
+    )(amount => amount >= 0 && amount.scale < 3)
 }

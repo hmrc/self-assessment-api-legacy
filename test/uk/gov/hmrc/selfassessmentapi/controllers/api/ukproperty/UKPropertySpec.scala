@@ -31,27 +31,27 @@ class UKPropertySpec extends JsonSpec {
     "reject annualInvestmentAllowance with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
         val value = UKProperty.example().copy(allowances = Some(Allowances(annualInvestmentAllowance = Some(amount))))
-        assertValidationError[UKProperty](
+        assertValidationErrorWithCode(
           value,
-          Map("/allowances/annualInvestmentAllowance" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk-property")
+          "/allowances/annualInvestmentAllowance", INVALID_MONETARY_AMOUNT)
       }
     }
 
     "reject businessPremisesRenovationAllowance with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
         val value = UKProperty.example().copy(allowances = Some(Allowances(businessPremisesRenovationAllowance = Some(amount))))
-        assertValidationError[UKProperty](
+        assertValidationErrorWithCode(
           value,
-          Map("/allowances/businessPremisesRenovationAllowance" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk-property")
+          "/allowances/businessPremisesRenovationAllowance", INVALID_MONETARY_AMOUNT)
       }
     }
 
     "reject otherCapitalAllowance with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
         val value = UKProperty.example().copy(allowances = Some(Allowances(otherCapitalAllowance = Some(amount))))
-        assertValidationError[UKProperty](
+        assertValidationErrorWithCode(
           value,
-          Map("/allowances/otherCapitalAllowance" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk-property")
+          "/allowances/otherCapitalAllowance", INVALID_MONETARY_AMOUNT)
       }
     }
 
@@ -59,25 +59,25 @@ class UKPropertySpec extends JsonSpec {
     "reject wearAndTearAllowance with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
         val value = UKProperty.example().copy(allowances = Some(Allowances(wearAndTearAllowance = Some(amount))))
-        assertValidationError[UKProperty](
+        assertValidationErrorWithCode(
           value,
-          Map("/allowances/wearAndTearAllowance" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk-property")
+          "/allowances/wearAndTearAllowance", INVALID_MONETARY_AMOUNT)
       }
     }
 
     "reject lossBroughtForward with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
-        assertValidationError[UKProperty](
+        assertValidationErrorWithCode(
           UKProperty.example().copy(adjustments = Some(Adjustments(Some(amount)))),
-          Map("/adjustments/lossBroughtForward" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk-property")
+          "/adjustments/lossBroughtForward", INVALID_MONETARY_AMOUNT)
       }
     }
 
     "reject rentARoomRelief with negative amounts" in {
       Seq(BigDecimal(-1213.00), BigDecimal(-2243434.00)).foreach { amount =>
-        assertValidationError[UKProperty](
+        assertValidationErrorWithCode(
           UKProperty.example().copy(rentARoomRelief = Some(amount)),
-          Map("/rentARoomRelief" -> INVALID_MONETARY_AMOUNT), "Expected invalid uk-property")
+          "/rentARoomRelief", INVALID_MONETARY_AMOUNT)
       }
     }
 

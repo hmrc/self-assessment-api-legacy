@@ -20,11 +20,11 @@ import org.joda.time.{DateTimeZone, LocalDate}
 import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{Adjustments, Allowances, BalancingChargeType, IncomeType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{BalancingChargeType, IncomeType}
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
-import uk.gov.hmrc.selfassessmentapi.resources.models.SelfEmploymentAnnualSummary
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
+import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.resources.models.periods.{BalancingCharge, Income, SelfEmploymentPeriod}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -33,7 +33,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
   private val nino = ninoGenerator.nextNino()
   private val repo = new SelfEmploymentsRepository
   private val id = BSONObjectID.generate
-  private val selfEmployment = SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC), LocalDate.now(DateTimeZone.UTC))
+  private val selfEmployment = SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC),
+    AccountingPeriod(LocalDate.now(DateTimeZone.UTC), LocalDate.now(DateTimeZone.UTC).plusDays(1)), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
 
   override def beforeEach(): Unit = {
     await(repo.drop)
@@ -63,11 +64,13 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       await(repo.update(id.stringify, nino, updatedSelfEmployment)) shouldBe true
 
       val result = await(repo.retrieve(id.stringify, nino)).get
+      result.accountingPeriod shouldBe selfEmployment.accountingPeriod
+      result.accountingType shouldBe selfEmployment.accountingType
       result.commencementDate shouldBe updatedSelfEmployment.commencementDate
     }
 
     "return true when updating an annual summaries" in {
-      val summary = SelfEmploymentAnnualSummary(Some(Allowances.example), Some(Adjustments.example))
+      val summary = SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example))
 
       await(repo.create(selfEmployment))
 
@@ -81,7 +84,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     "return true when updating periods" in {
       await(repo.create(selfEmployment))
       val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1),
-        Map(IncomeType.Turnover -> BigDecimal(500.00)), Map.empty, Map(BalancingChargeType.BPRA -> BigDecimal(20.00)), None)
+        Map(IncomeType.Turnover -> Income(500.00)), Map.empty, Map(BalancingChargeType.BPRA -> BalancingCharge(20.00)), None)
 
       await(repo.update(id.stringify, nino, selfEmployment.copy(periods = Map("1" -> period)))) shouldBe true
       val updatedSelfEmployment = await(repo.retrieve(id.stringify, nino)).get
@@ -103,7 +106,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
     "return a sequence of self employments" in {
       val id2 = BSONObjectID.generate
-      val selfEmploymentTwo = SelfEmployment(id2, id2.stringify, nino, LocalDate.now(DateTimeZone.UTC), LocalDate.now(DateTimeZone.UTC))
+      val selfEmploymentTwo = SelfEmployment(id2, id2.stringify, nino, LocalDate.now(DateTimeZone.UTC),
+        AccountingPeriod(LocalDate.now(DateTimeZone.UTC), LocalDate.now(DateTimeZone.UTC).plusDays(1)), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
 
       await(repo.create(selfEmployment))
       await(repo.create(selfEmploymentTwo))
@@ -115,10 +119,14 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
 
       first.sourceId shouldBe id.stringify
       first.nino shouldBe nino
+      first.accountingPeriod shouldBe selfEmployment.accountingPeriod
+      first.accountingType shouldBe selfEmployment.accountingType
       first.commencementDate shouldBe selfEmployment.commencementDate
 
       second.sourceId shouldBe id2.stringify
       second.nino shouldBe nino
+      second.accountingPeriod shouldBe selfEmploymentTwo.accountingPeriod
+      second.accountingType shouldBe selfEmploymentTwo.accountingType
       second.commencementDate shouldBe selfEmploymentTwo.commencementDate
     }
   }

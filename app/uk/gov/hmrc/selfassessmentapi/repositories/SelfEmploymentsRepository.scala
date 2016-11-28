@@ -28,17 +28,14 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
+import uk.gov.hmrc.selfassessmentapi.services.PeriodRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SelfEmploymentsRepository(implicit mongo: () => DB)
-  extends ReactiveRepository[SelfEmployment, BSONObjectID](
-    "selfEmployments",
-    mongo,
-    domainFormat = SelfEmployment.mongoFormats,
-    idFormat = ReactiveMongoFormats.objectIdFormats)
-    with AtomicUpdate[SelfEmployment] {
+  extends PeriodRepository[SourceId, SelfEmploymentPeriod, SelfEmployment]("selfEmployments", SelfEmployment.mongoFormats) {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("nino", Ascending)), name = Some("se_nino"), unique = false),
@@ -84,6 +81,7 @@ class SelfEmploymentsRepository(implicit mongo: () => DB)
       case _ => Future.successful(false)
     }
   }
+
 }
 
 object SelfEmploymentsRepository extends MongoDbConnection {

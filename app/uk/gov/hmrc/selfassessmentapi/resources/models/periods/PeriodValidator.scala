@@ -16,10 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.periods
 
-import org.joda.time.LocalDate
-
-trait Period {
-  val from: LocalDate
-  val to: LocalDate
-
+trait PeriodValidator {
+  protected def periodDateValidator(period: Period): Boolean = period.from.isBefore(period.to)
 }

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.periods
+package uk.gov.hmrc.selfassessmentapi.services.errors
 
-import org.joda.time.LocalDate
+import play.api.libs.json._
 
-trait Period {
-  val from: LocalDate
-  val to: LocalDate
+case class BusinessException(code: String, message: String) extends RuntimeException(code)
 
+case class BusinessError(code: String, message: String)
+
+object BusinessError {
+  implicit val writes = Json.writes[BusinessError]
 }

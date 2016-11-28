@@ -16,31 +16,32 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, GenericErrorResult, ValidationErrorResult}
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
+import uk.gov.hmrc.selfassessmentapi.controllers.{BaseController, GenericErrorResult, ValidationErrorResult}
 import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmployment, SelfEmploymentAnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.SelfEmploymentAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
-import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
-object SelfEmploymentsResource extends BaseController {
+object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] with BaseController {
 
-  override val context = AppContext.apiGatewayLinkContext
+  override val context: PeriodId = AppContext.apiGatewayLinkContext
 
-  private val service = SelfEmploymentsService()
+  override val service = SelfEmploymentsService()
+  override val sourceType: SourceType = SourceTypes.SelfEmployments
   private val seFeatureSwitch = FeatureSwitchAction(SourceTypes.SelfEmployments)
   private val seAnnualFeatureSwitch = FeatureSwitchAction(SourceTypes.SelfEmployments, "annual")
-  private val sePeriodFeatureSwitch = FeatureSwitchAction(SourceTypes.SelfEmployments, "periods")
 
-  def create(nino: Nino) = seFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
+  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
+    validate[models.SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
       service.create(nino, selfEmployment)
     } match {
       case Left(errorResult) =>
@@ -57,8 +58,8 @@ object SelfEmploymentsResource extends BaseController {
     }
   }
 
-  def update(nino: Nino, id: SourceId) = seFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[SelfEmployment, Boolean](request.body) { selfEmployment: SelfEmployment =>
+  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
+    validate[models.SelfEmployment, Boolean](request.body) { selfEmployment =>
       service.update(nino, selfEmployment, id)
     } match {
       case Left(errorResult) =>
@@ -75,7 +76,7 @@ object SelfEmploymentsResource extends BaseController {
     }
   }
 
-  def retrieve(nino: Nino, id: SourceId) = seFeatureSwitch.asyncFeatureSwitch {
+  def retrieve(nino: Nino, id: SourceId): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
     service.retrieve(nino, id) map {
       case Some(selfEmployment) => Ok(Json.toJson(selfEmployment))
       case None => NotFound
@@ -88,7 +89,7 @@ object SelfEmploymentsResource extends BaseController {
     }
   }
 
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear) = seAnnualFeatureSwitch.asyncFeatureSwitch { request =>
+  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = seAnnualFeatureSwitch.asyncFeatureSwitch { request =>
     validate[SelfEmploymentAnnualSummary, Boolean](request.body) {
       service.updateAnnualSummary(nino, id, taxYear, _)
     } match {
@@ -106,61 +107,10 @@ object SelfEmploymentsResource extends BaseController {
     }
   }
 
-  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear) = seAnnualFeatureSwitch.asyncFeatureSwitch {
+  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = seAnnualFeatureSwitch.asyncFeatureSwitch {
     service.retrieveAnnualSummary(id, taxYear, nino).map {
       case Some(summary) => Ok(Json.toJson(summary))
       case None => NotFound
-    }
-  }
-
-  def createPeriod(nino: Nino, id: SourceId) = sePeriodFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[SelfEmploymentPeriod, Either[Error, PeriodId]](request.body) { x =>
-      service.createPeriod(nino, id, x)
-    } match {
-      case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
-      case Right(result) => result.map {
-        case Right(periodId) => Created.withHeaders(LOCATION -> s"/ni/$nino/self-employments/$id/periods/$periodId")
-        case Left(error) =>
-          if (error.code == ErrorCode.NOT_FOUND.toString) NotFound
-          else Forbidden(Json.toJson(Errors.businessError(error)))
-      }
-    }
-  }
-
-  def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId) = sePeriodFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[SelfEmploymentPeriod, Boolean](request.body) {
-      service.updatePeriod(nino, id, periodId, _)
-    } match {
-      case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
-      case Right(result) => result.map {
-        case true => NoContent
-        case false => NotFound
-      }
-    }
-  }
-
-  def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId) = sePeriodFeatureSwitch.asyncFeatureSwitch {
-    service.retrievePeriod(nino, id, periodId) map {
-      case Some(period) => Ok(Json.toJson(period))
-      case None => NotFound
-    }
-  }
-
-  def retrievePeriods(nino: Nino, id: SourceId) = sePeriodFeatureSwitch.asyncFeatureSwitch {
-    service.retrieveAllPeriods(nino: Nino, id: SourceId).map { periods =>
-      Ok(Json.toJson(periods))
     }
   }
 }

@@ -35,11 +35,8 @@ case class SelfEmploymentPeriod(from: LocalDate,
                                 balancingCharges: Map[BalancingChargeType, BalancingCharge],
                                 goodsAndServicesOwnUse: Option[Amount]) extends Period
 
-object SelfEmploymentPeriod {
-  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.{ selfEmploymentExpenseTypeFormat,
-                                                                                        selfEmploymentIncomeTypeFormat,
-                                                                                        selfEmploymentBalancingChargeTypeFormat }
-
+object SelfEmploymentPeriod extends PeriodValidator {
+  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.{expenseTypeFormat, incomeTypeFormat, balancingChargeTypeFormat}
 
   implicit val writes: Writes[SelfEmploymentPeriod] = Json.writes[SelfEmploymentPeriod]
   implicit val reads: Reads[SelfEmploymentPeriod] = (

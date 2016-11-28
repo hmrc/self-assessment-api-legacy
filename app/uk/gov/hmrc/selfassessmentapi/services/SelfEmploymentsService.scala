@@ -20,17 +20,16 @@ import org.joda.time.{DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{PeriodId, SourceId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentsRepository
-import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.{PeriodSummary, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
 import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmployment, SelfEmploymentAnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.services.errors.BusinessException
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait SelfEmploymentsService {
+trait SelfEmploymentsService extends PeriodService[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] {
 
   def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]]
   def update(nino: Nino, selfEmployment: SelfEmployment, id: SourceId): Future[Boolean]
@@ -38,19 +37,15 @@ trait SelfEmploymentsService {
   def retrieveAll(nino: Nino): Future[Seq[SelfEmployment]]
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, summary: SelfEmploymentAnnualSummary): Future[Boolean]
   def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[SelfEmploymentAnnualSummary]]
-  def createPeriod(nino: Nino, id: SourceId, period: SelfEmploymentPeriod): Future[Either[Error, PeriodId]]
-  def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId, period: SelfEmploymentPeriod): Future[Boolean]
-  def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Future[Option[SelfEmploymentPeriod]]
-  def retrieveAllPeriods(nino: Nino, id: SourceId): Future[Seq[PeriodSummary]]
 }
 
 object SelfEmploymentsService {
-  def apply(): SelfEmploymentsService = new SelfEmploymentsMongoService(SelfEmploymentsRepository())
-  def apply(repository: SelfEmploymentsRepository): SelfEmploymentsService =
-    new SelfEmploymentsMongoService(repository)
+  def apply() = new SelfEmploymentsMongoService(SelfEmploymentsRepository())
 }
 
 class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) extends SelfEmploymentsService {
+
+  override val periodRepository: SelfEmploymentsRepository = mongoRepository
 
   override def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]] = {
     val id = BSONObjectID.generate
@@ -58,9 +53,15 @@ class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) ex
       domain.SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC),
         selfEmployment.accountingPeriod, selfEmployment.accountingType, selfEmployment.commencementDate)
 
-    mongoRepository.create(newSelfEmployment).map {
-      case true => Some(newSelfEmployment.sourceId)
-      case false => None
+    mongoRepository.retrieveAll(nino).flatMap { selfEmployments =>
+      selfEmployments.size match {
+        case count if count == 1 => throw BusinessException("TOO_MANY_SOURCES", "The maximum number of Self-Employment incomes sources is 1")
+        case _ =>
+          mongoRepository.create(newSelfEmployment).map {
+            case true => Some(newSelfEmployment.sourceId)
+            case false => None
+          }
+      }
     }
   }
 
@@ -93,46 +94,4 @@ class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) ex
     }
   }
 
-  override def createPeriod(nino: Nino, id: SourceId, period: SelfEmploymentPeriod): Future[Either[Error, PeriodId]] = {
-    val periodId = BSONObjectID.generate.stringify
-
-    mongoRepository.retrieve(id, nino).flatMap {
-      case Some(selfEmployment) if selfEmployment.containsOverlappingPeriod(period) =>
-        Future.successful(Left(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", "")))
-      case Some(selfEmployment) if selfEmployment.containsGap(period) =>
-        Future.successful(Left(Error(GAP_PERIOD.toString, "Periods should not contain gaps between each other", "")))
-      case Some(selfEmployment) if selfEmployment.containsMisalignedPeriod(period) =>
-        Future.successful(Left(Error(MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the self-employment accounting period", "")))
-      case Some(selfEmployment) =>
-        mongoRepository.update(id, nino, selfEmployment.copy(periods = selfEmployment.periods.updated(periodId, period))).flatMap {
-          case true => Future.successful(Right(periodId))
-          case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
-        }
-      case None => Future.successful(Left(Error(NOT_FOUND.toString, s"Self-employment not found for id: $id", "")))
-    }
-  }
-
-  override def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId, period: SelfEmploymentPeriod): Future[Boolean] = {
-    mongoRepository.retrieve(id, nino).flatMap {
-      case Some(selfEmployment) if selfEmployment.periodExists(periodId) =>
-        mongoRepository.update(id, nino, selfEmployment.copy(periods = selfEmployment.periods.updated(periodId, period)))
-      case _ => Future.successful(false)
-    }
-  }
-
-  override def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Future[Option[SelfEmploymentPeriod]] = {
-    mongoRepository.retrieve(id, nino).map {
-      case Some(selfEmployment) => selfEmployment.period(periodId)
-      case None => None
-    }
-  }
-
-  override def retrieveAllPeriods(nino: Nino, id: SourceId): Future[Seq[PeriodSummary]] = {
-    mongoRepository.retrieve(id, nino).map {
-      case Some(selfEmployment) => selfEmployment.periods.map {
-        case (k, v) => PeriodSummary(k, v.from, v.to)
-      }.toSeq.sorted
-      case _ => Seq.empty
-    }
-  }
 }

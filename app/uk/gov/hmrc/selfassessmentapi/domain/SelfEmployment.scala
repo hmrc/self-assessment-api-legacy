@@ -35,40 +35,20 @@ case class SelfEmployment(id: BSONObjectID,
                           accountingType: AccountingType,
                           commencementDate: LocalDate,
                           annualSummaries: Map[TaxYear, SelfEmploymentAnnualSummary] = Map.empty,
-                          periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty) extends LastModifiedDateTime {
+                          periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty) extends PeriodContainer[SelfEmploymentPeriod, SelfEmployment] with LastModifiedDateTime {
 
-  def containsGap(period: SelfEmploymentPeriod): Boolean = {
-    val newPeriod = new Interval(period.from.toDateTimeAtStartOfDay(DateTimeZone.UTC), period.to.toDateTimeAtStartOfDay(DateTimeZone.UTC))
 
-    val existingIntervals = periods.values.toSeq.sorted.reverse.map { period =>
-      new Interval(period.from.toDateTimeAtStartOfDay(DateTimeZone.UTC), period.to.toDateTimeAtStartOfDay(DateTimeZone.UTC))
-    }
-
-    existingIntervals match {
-      case Seq() => false
-      case head +: _ => !head.gap(newPeriod).toDuration.isEqual(Duration.standardDays(1))
-    }
-  }
-
-  def containsOverlappingPeriod(period: SelfEmploymentPeriod): Boolean = {
-    val newPeriod = new Interval(period.from.toDateTimeAtStartOfDay(DateTimeZone.UTC), period.from.toDateTimeAtStartOfDay(DateTimeZone.UTC))
-
-    periods.exists { case (_, p) =>
-      val existingPeriod = new Interval(p.from.toDateTimeAtStartOfDay(DateTimeZone.UTC), p.to.toDateTimeAtStartOfDay(DateTimeZone.UTC))
-      newPeriod.overlaps(existingPeriod) || newPeriod.abuts(existingPeriod)
-    }
-  }
-
-  def containsMisalignedPeriod(period: SelfEmploymentPeriod): Boolean = {
+  override def containsMisalignedPeriod(period: SelfEmploymentPeriod): Boolean = {
     if (periods.isEmpty) !period.from.isEqual(accountingPeriod.start)
     else !(period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end))
   }
 
-  def periodExists(periodId: PeriodId): Boolean = period(periodId).nonEmpty
   def annualSummary(taxYear: TaxYear): Option[SelfEmploymentAnnualSummary] = annualSummaries.get(taxYear)
-  def period(periodId: PeriodId): Option[SelfEmploymentPeriod] = periods.get(periodId)
   def toModel: models.SelfEmployment =
     models.SelfEmployment(Some(id.stringify), accountingPeriod, accountingType, commencementDate)
+
+  override def setPeriodsTo(periodId: PeriodId, period: SelfEmploymentPeriod) =
+    this.copy(periods = periods.updated(periodId, period))
 }
 
 object SelfEmployment {

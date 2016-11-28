@@ -7,8 +7,6 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentFeatureSwitchSpec extends BaseFunctionalSpec {
 
-  //val sourceId = UUID.randomUUID().toString
-
   private val conf: Map[String, Map[SourceId, Map[SourceId, Map[SourceId, Any]]]] =
     Map("Test" ->
       Map("feature-switch" ->

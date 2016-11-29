@@ -38,14 +38,14 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
       val period = SelfEmploymentPeriod(LocalDate.now.minusDays(1), LocalDate.now, Map(IncomeType.Turnover -> Income(-5000)), Map.empty, Map.empty, Some(200))
 
       assertValidationErrorWithCode(period,
-        "/income/Turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/incomes/Turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when income amount contains more than 2 decimal places" in {
       val period = SelfEmploymentPeriod(LocalDate.now.minusDays(1), LocalDate.now, Map(IncomeType.Turnover -> Income(10.123)), Map.empty, Map.empty, Some(200))
 
       assertValidationErrorWithCode(period,
-        "/income/Turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/incomes/Turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when expense contains a negative value" in {

@@ -30,7 +30,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models._
 
 case class SelfEmploymentPeriod(from: LocalDate,
                                 to: LocalDate,
-                                income: Map[IncomeType, Income],
+                                incomes: Map[IncomeType, Income],
                                 expenses: Map[ExpenseType, Expense],
                                 balancingCharges: Map[BalancingChargeType, BalancingCharge],
                                 goodsAndServicesOwnUse: Option[Amount]) extends Period
@@ -42,7 +42,7 @@ object SelfEmploymentPeriod extends PeriodValidator {
   implicit val reads: Reads[SelfEmploymentPeriod] = (
       (__ \ "from").read[LocalDate] and
       (__ \ "to").read[LocalDate] and
-      (__ \ "income").readNullable[Map[IncomeType, Income]] and
+      (__ \ "incomes").readNullable[Map[IncomeType, Income]] and
       (__ \ "expenses").readNullable[Map[ExpenseType, Expense]](depreciationValidator) and
       (__ \ "balancingCharges").readNullable[Map[BalancingChargeType, BalancingCharge]] and
       (__ \ "goodsAndServicesOwnUse").readNullable[Amount](positiveAmountValidator)

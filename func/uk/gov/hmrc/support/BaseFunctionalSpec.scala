@@ -35,8 +35,8 @@ trait BaseFunctionalSpec extends TestApplication {
     if (request.startsWith("POST")) {
       response.header("Location").map { location =>
         location.contains("/periods") match {
-          case true => urlPathVariables += ("periodLocation" -> location)
-          case false => urlPathVariables += ("sourceLocation" -> location)
+          case true => urlPathVariables += ("periodLocation" -> location.replaceFirst("/self-assessment", ""))
+          case false => urlPathVariables += ("sourceLocation" -> location.replaceFirst("/self-assessment", ""))
         }
       }
     }

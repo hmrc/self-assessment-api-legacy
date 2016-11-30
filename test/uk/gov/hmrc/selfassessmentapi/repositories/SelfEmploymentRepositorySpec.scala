@@ -64,8 +64,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
       await(repo.update(id.stringify, nino, updatedSelfEmployment)) shouldBe true
 
       val result = await(repo.retrieve(id.stringify, nino)).get
-      result.accountingPeriod shouldBe selfEmployment.accountingPeriod
-      result.accountingType shouldBe selfEmployment.accountingType
+      result.accountingPeriod shouldBe updatedSelfEmployment.accountingPeriod
+      result.accountingType shouldBe updatedSelfEmployment.accountingType
       result.commencementDate shouldBe updatedSelfEmployment.commencementDate
     }
 

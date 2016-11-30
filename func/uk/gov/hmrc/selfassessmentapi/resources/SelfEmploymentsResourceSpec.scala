@@ -25,10 +25,10 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .post(selfEmployment).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
-        .responseContainsHeader("Location", s"/ni/$nino/self-employments/\\w+".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+".r)
     }
 
-    "return code 400 (MANDATORY_FIELD) when attempting to create a self-employment with an invalid dates in the accountingPeriod" in {
+    "return code 400 (INVALID_REQUEST) when attempting to create a self-employment with an invalid dates in the accountingPeriod" in {
       val selfEmployment =
         s"""
            |{
@@ -124,6 +124,10 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .put(selfEmployment2).at("%sourceLocation%")
         .thenAssertThat()
         .statusIs(204)
+        .when()
+        .get("%sourceLocation%")
+        .thenAssertThat()
+        .bodyIsLike(Json.toJson(selfEmployment2).toString)
     }
 
     "return code 404 when attempting to update a non-existent self-employment resource" in {
@@ -225,7 +229,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(expectedBody)
     }
 
-    "return code 400 (MANDATORY_FIELD) when attempting to update a self-employment with an empty body" in {
+    "return code 400 (MANDATORY_FIELD_MISSING) when attempting to update a self-employment with an empty body" in {
       val expectedBody =
         s"""
            |{
@@ -233,17 +237,17 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
            |  "message": "Invalid request",
            |  "errors": [
            |    {
-           |      "code": "MANDATORY_FIELD",
+           |      "code": "MANDATORY_FIELD_MISSING",
            |      "path": "/accountingPeriod",
            |      "message": "a mandatory field is missing"
            |    },
            |    {
-           |      "code": "MANDATORY_FIELD",
+           |      "code": "MANDATORY_FIELD_MISSING",
            |      "path": "/accountingType",
            |      "message": "a mandatory field is missing"
            |    },
            |    {
-           |      "code": "MANDATORY_FIELD",
+           |      "code": "MANDATORY_FIELD_MISSING",
            |      "path": "/commencementDate",
            |      "message": "a mandatory field is missing"
            |    }
@@ -515,7 +519,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
-        .responseContainsHeader("Location", s"/ni/$nino/self-employments/\\w+/periods/\\w+".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+/periods/\\w+".r)
     }
 
     "return code 400 when attempting to create a period with the 'from' and 'to' dates are in the incorrect order" in {

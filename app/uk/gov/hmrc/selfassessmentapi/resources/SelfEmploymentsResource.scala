@@ -52,7 +52,7 @@ object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPe
           }
         }
       case Right(idOption) => idOption.map {
-        case Some(id) => Created.withHeaders(LOCATION -> s"/ni/$nino/self-employments/$id")
+        case Some(id) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/self-employments/$id")
         case None => InternalServerError
       }
     }

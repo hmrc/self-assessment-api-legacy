@@ -69,7 +69,7 @@ object Errors {
   private def convertErrorMessageToCode(playError: ValidationError, errorPath: String): Error = {
     playError.message match {
       case "error.expected.jodadate.format" => Error("INVALID_DATE", "please provide a date in ISO format (i.e. YYYY-MM-DD)", errorPath)
-      case "error.path.missing" => Error("MANDATORY_FIELD", "a mandatory field is missing", errorPath)
+      case "error.path.missing" => Error("MANDATORY_FIELD_MISSING", "a mandatory field is missing", errorPath)
       case _ => Error("UNMAPPED_PLAY_ERROR", playError.message, errorPath)
     }
   }

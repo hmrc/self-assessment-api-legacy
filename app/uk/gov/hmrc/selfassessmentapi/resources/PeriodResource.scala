@@ -50,7 +50,7 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
           }
         }
       case Right(result) => result.map {
-        case Right(periodId) => Created.withHeaders(LOCATION -> s"/ni/$nino/${sourceType.name}/$id/periods/$periodId")
+        case Right(periodId) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${sourceType.name}/$id/periods/$periodId")
         case Left(error) =>
           if (error.code == ErrorCode.NOT_FOUND.toString) NotFound
           else Forbidden(Json.toJson(Errors.businessError(error)))

@@ -126,6 +126,11 @@ class SelfEmploymentSpec extends JsonSpec {
         "/accountingPeriod", ErrorCode.INVALID_ACCOUNTING_PERIOD)
     }
 
+    "pass when the accounting period start date is equal to the end date" in {
+      val input = SelfEmployment(None, AccountingPeriod(LocalDate.now, LocalDate.now), AccountingType.CASH, LocalDate.now.minusDays(1))
+      assertValidationPasses(input)
+    }
+
     "return a DATE_NOT_IN_THE_PAST error when proving an accounting period with a start date that is not in the past" in {
       val input = SelfEmployment(None, AccountingPeriod(LocalDate.now.plusDays(1), LocalDate.now.plusDays(2)), AccountingType.CASH, LocalDate.now.minusDays(1))
       assertValidationErrorWithCode(input,

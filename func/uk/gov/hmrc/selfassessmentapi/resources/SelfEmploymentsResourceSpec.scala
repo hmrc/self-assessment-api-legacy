@@ -112,7 +112,13 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "update" should {
     "return code 204 when successfully updating a self-employment resource" in {
-      val selfEmployment2 = Json.toJson(selfEmployment.copy(commencementDate = LocalDate.now.minusDays(2)))
+      val selfEmployment2 = Json.toJson(SelfEmployment(
+        accountingPeriod = AccountingPeriod(
+          start = LocalDate.parse("2016-01-01"),
+          end = LocalDate.parse("2016-01-02")),
+        accountingType = AccountingType.ACCRUAL,
+        commencementDate = LocalDate.parse("2016-01-01")
+      ))
 
       given()
         .userIsAuthorisedForTheResource(nino)

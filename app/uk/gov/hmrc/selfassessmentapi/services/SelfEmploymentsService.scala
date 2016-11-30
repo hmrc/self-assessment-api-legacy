@@ -68,7 +68,10 @@ class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) ex
   override def update(nino: Nino, selfEmployment: SelfEmployment, id: SourceId): Future[Boolean] = {
     mongoRepository.retrieve(id, nino).flatMap {
       case Some(oldSelfEmployment) =>
-        mongoRepository.update(id, nino, oldSelfEmployment.copy(commencementDate = selfEmployment.commencementDate))
+        mongoRepository.update(id, nino, oldSelfEmployment.copy(
+          accountingPeriod = selfEmployment.accountingPeriod,
+          accountingType = selfEmployment.accountingType,
+          commencementDate = selfEmployment.commencementDate))
       case None => Future.successful(false)
     }
   }

@@ -22,7 +22,7 @@ class SelfEmploymentPeriodicSummaryFeatureSwitchSpec extends BaseFunctionalSpec 
   "self-employments" should {
     "not be visible if feature Switched Off" in {
       val selfEmployment = Json.toJson(SelfEmployment(
-        accountingPeriod = AccountingPeriod(LocalDate.now, LocalDate.now.plusDays(1)),
+        accountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")),
         accountingType = AccountingType.CASH,
         commencementDate = LocalDate.now.minusDays(1)))
 

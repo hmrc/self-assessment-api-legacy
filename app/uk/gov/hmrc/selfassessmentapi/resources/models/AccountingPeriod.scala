@@ -34,10 +34,14 @@ object AccountingPeriod {
     .filter(ValidationError("the accounting period 'start' date should come before the 'end' date", ErrorCode.INVALID_ACCOUNTING_PERIOD)
     )(accountingPeriodValidator)
 
-  private def accountingPeriodValidator(accountingPeriod: AccountingPeriod) =
-    accountingPeriod.start.isBefore(accountingPeriod.end) || accountingPeriod.start.isEqual(accountingPeriod.end)
+  private def accountingPeriodValidator(accountingPeriod: AccountingPeriod) = {
+    accountingPeriod.start.isBefore(accountingPeriod.end)
+  }
 
   private def startDateValidator = Reads.of[LocalDate].filter(
-    ValidationError("the 'start' date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
-  )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now))
+    ValidationError("the 'start' should be after or equal to 2017-04-01", ErrorCode.DATE_NOT_IN_THE_PAST)
+  )(date => {
+    val mvpStart = LocalDate.parse("2017-04-01")
+    date.isAfter(mvpStart) || date.isEqual(mvpStart)
+  })
 }

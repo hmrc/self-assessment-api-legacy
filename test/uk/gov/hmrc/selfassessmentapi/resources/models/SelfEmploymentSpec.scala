@@ -108,31 +108,26 @@ class SelfEmploymentSpec extends JsonSpec {
 
   "SelfEmployment JSON" should {
     "round ignore the id if it is provided by the user" in {
-      val input = SelfEmployment(Some("myid"), AccountingPeriod(LocalDate.now, LocalDate.now.plusDays(1)), AccountingType.CASH, LocalDate.now.minusDays(1))
+      val input = SelfEmployment(Some("myid"), AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")), AccountingType.CASH, LocalDate.now.minusDays(1))
       val expectedOutput = input.copy(id = None)
 
       assertJsonIs(input, expectedOutput)
     }
 
     "return a COMMENCEMENT_DATE_NOT_IN_THE_PAST error when using a commencement date in the future" in {
-      val input = SelfEmployment(None, AccountingPeriod(LocalDate.now, LocalDate.now.plusDays(1)), AccountingType.CASH, LocalDate.now.plusDays(1))
+      val input = SelfEmployment(None, AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")), AccountingType.CASH, LocalDate.now.plusDays(1))
       assertValidationErrorWithCode(input,
         "/commencementDate", ErrorCode.DATE_NOT_IN_THE_PAST)
     }
 
     "return a INVALID_ACCOUNTING_PERIOD error when startDate < endDate" in {
-      val input = SelfEmployment(None, AccountingPeriod(LocalDate.now, LocalDate.now.minusDays(1)), AccountingType.CASH, LocalDate.now.minusDays(1))
+      val input = SelfEmployment(None, AccountingPeriod(LocalDate.parse("2017-04-02"), LocalDate.parse("2017-04-01")), AccountingType.CASH, LocalDate.now.minusDays(1))
       assertValidationErrorWithCode(input,
         "/accountingPeriod", ErrorCode.INVALID_ACCOUNTING_PERIOD)
     }
 
-    "pass when the accounting period start date is equal to the end date" in {
-      val input = SelfEmployment(None, AccountingPeriod(LocalDate.now, LocalDate.now), AccountingType.CASH, LocalDate.now.minusDays(1))
-      assertValidationPasses(input)
-    }
-
-    "return a DATE_NOT_IN_THE_PAST error when proving an accounting period with a start date that is not in the past" in {
-      val input = SelfEmployment(None, AccountingPeriod(LocalDate.now.plusDays(1), LocalDate.now.plusDays(2)), AccountingType.CASH, LocalDate.now.minusDays(1))
+    "return a DATE_NOT_IN_THE_PAST error when proving an accounting period with a start date that is before 2017-04-01" in {
+      val input = SelfEmployment(None, AccountingPeriod(LocalDate.parse("2017-03-01"), LocalDate.parse("2017-03-03")), AccountingType.CASH, LocalDate.now.minusDays(1))
       assertValidationErrorWithCode(input,
         "/accountingPeriod/start", ErrorCode.DATE_NOT_IN_THE_PAST)
     }
@@ -142,8 +137,8 @@ class SelfEmploymentSpec extends JsonSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "2016-01-01",
-           |    "end": "2016-01-02"
+           |    "start": "2017-04-01",
+           |    "end": "2017-04-02"
            |  },
            |  "accountingType": "OHNO",
            |  "commencementDate": "2016-01-01"
@@ -158,8 +153,8 @@ class SelfEmploymentSpec extends JsonSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "2016-01-01",
-           |    "end": "2016-01-02"
+           |    "start": "2017-04-01",
+           |    "end": "2017-04-02"
            |  },
            |  "accountingType": "CASH",
            |  "commencementDate": ""
@@ -174,8 +169,8 @@ class SelfEmploymentSpec extends JsonSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "2016-01-01",
-           |    "end": "2016-01-02"
+           |    "start": "2017-04-01",
+           |    "end": "2017-04-02"
            |  },
            |  "accountingType": "CASH",
            |  "commencementDate": "01-01-2016"

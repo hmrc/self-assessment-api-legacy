@@ -11,7 +11,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   val selfEmployment = SelfEmployment(
-    accountingPeriod = AccountingPeriod(LocalDate.now, LocalDate.now.plusYears(1)),
+    accountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2018-04-01")),
     accountingType = AccountingType.CASH,
     commencementDate = LocalDate.now.minusDays(1))
 
@@ -33,8 +33,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "01-01-2016",
-           |    "end": "02-01-2016"
+           |    "start": "01-01-2017",
+           |    "end": "02-01-2017"
            |  },
            |  "accountingType": "CASH",
            |  "commencementDate": "${LocalDate.now.minusDays(1)}"
@@ -76,8 +76,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "2016-01-01",
-           |    "end": "2016-01-02"
+           |    "start": "2017-04-06",
+           |    "end": "2018-04-06"
            |  },
            |  "accountingType": "NOOOOO",
            |  "commencementDate": "2016-01-01"
@@ -114,8 +114,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 204 when successfully updating a self-employment resource" in {
       val selfEmployment2 = Json.toJson(SelfEmployment(
         accountingPeriod = AccountingPeriod(
-          start = LocalDate.parse("2016-01-01"),
-          end = LocalDate.parse("2016-01-02")),
+          start = LocalDate.parse("2017-04-01"),
+          end = LocalDate.parse("2017-04-02")),
         accountingType = AccountingType.ACCRUAL,
         commencementDate = LocalDate.parse("2016-01-01")
       ))
@@ -156,8 +156,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "${LocalDate.now}",
-           |    "end": "${LocalDate.now.plusYears(1)}"
+           |    "start": "2017-04-06",
+           |    "end": "2018-04-06"
            |  },
            |  "accountingType": "CASH",
            |  "commencementDate": "22-10-2016"
@@ -198,8 +198,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "${LocalDate.now}",
-           |    "end": "${LocalDate.now.plusYears(1)}"
+           |    "start": "2017-04-06",
+           |    "end": "2018-04-06"
            |  },
            |  "accountingType": "CASH",
            |  "commencementDate": ""
@@ -280,11 +280,11 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "2016-01-01",
-           |    "end": "2016-01-02"
+           |    "start": "2017-04-06",
+           |    "end": "2018-04-06"
            |  },
            |  "accountingType": "NOOOOO",
-           |  "commencementDate": "${LocalDate.now.minusDays(1)}"
+           |  "commencementDate": "2016-01-01"
            |}
          """.stripMargin
 
@@ -324,8 +324,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         s"""
            |{
            |  "accountingPeriod": {
-           |    "start": "${LocalDate.now}",
-           |    "end": "${LocalDate.now.plusYears(1)}"
+           |    "start": "2017-04-01",
+           |    "end": "2018-04-01"
            |  },
            |  "accountingType": "CASH",
            |  "commencementDate": "${LocalDate.now.minusDays(1)}"
@@ -364,8 +364,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
            |[
            |  {
            |    "accountingPeriod": {
-           |      "start": "${LocalDate.now}",
-           |      "end": "${LocalDate.now.plusYears(1)}"
+           |      "start": "2017-04-01",
+           |      "end": "2018-04-01"
            |    },
            |    "accountingType": "CASH",
            |    "commencementDate": "${LocalDate.now.minusDays(1)}"
@@ -513,7 +513,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       val incomes = Map(IncomeType.Turnover -> Income(50.55), IncomeType.Other -> Income(20.22))
       val expenses = Map(ExpenseType.BadDebt -> Expense(50.55, Some(10)), ExpenseType.CoGBought -> Expense(100.22, Some(10)))
       val balancingCharges = Map(BalancingChargeType.BPRA -> BalancingCharge(50.25))
-      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), incomes, expenses, balancingCharges, Some(20.00)))
+      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), incomes, expenses, balancingCharges, Some(20.00)))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -560,10 +560,10 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 403 when attempting to create a period whose date range overlaps or abuts with a period that already exists" in {
-      val periodOne = Json.toJson(SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(10), Map.empty, Map.empty, Map.empty, None))
-      val periodTwo = Json.toJson(SelfEmploymentPeriod(LocalDate.now.plusDays(11), LocalDate.now.plusDays(13), Map.empty, Map.empty, Map.empty, None))
+      val periodOne = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-11"), Map.empty, Map.empty, Map.empty, None))
+      val periodTwo = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-12"), LocalDate.parse("2017-04-13"), Map.empty, Map.empty, Map.empty, None))
 
-      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.now.plusDays(5), LocalDate.now.plusDays(15), Map.empty, Map.empty, Map.empty, None))
+      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2017-04-16"), Map.empty, Map.empty, Map.empty, None))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -591,8 +591,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 403 when attempting to create a period that would leave a gap between the latest period and the one provided" in {
-      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(10), Map.empty, Map.empty, Map.empty, None))
-      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.now.plusDays(12), LocalDate.now.plusDays(13), Map.empty, Map.empty, Map.empty, None))
+      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-11"), Map.empty, Map.empty, Map.empty, None))
+      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-13"), LocalDate.parse("2017-04-14"), Map.empty, Map.empty, Map.empty, None))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -613,7 +613,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "updatePeriod" should {
     "return code 204 when updating a period that exists" in {
-      val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty, Map.empty, None)
+      val period = SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), Map.empty, Map.empty, Map.empty, None)
       val updatedPeriod = period.copy(to = period.to.plusDays(5))
 
       given()
@@ -649,7 +649,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 400 when attempting to update a period with the 'from' and 'to' dates are in the incorrect order" in {
-      val validPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty, Map.empty, None)
+      val validPeriod = SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), Map.empty, Map.empty, Map.empty, None)
       val invalidPeriod = validPeriod.copy(from = validPeriod.to, to = validPeriod.from)
 
       val expectedBody =
@@ -687,8 +687,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrievePeriod" should {
     "return code 200 when retrieving a period that exists" in {
-      val fromDate = LocalDate.now(DateTimeZone.UTC)
-      val toDate = fromDate.plusDays(1)
+      val fromDate = LocalDate.parse("2017-04-01")
+      val toDate = LocalDate.parse("2017-04-02")
       val period = Json.toJson(SelfEmploymentPeriod(fromDate, toDate, Map.empty, Map.empty, Map.empty, None))
 
       val expectedBody =
@@ -736,9 +736,9 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
   "retrieveAllPeriods" should {
     "return code 200 when retrieving all periods where periods.size > 0, sorted by from date" in {
       val periodOne = SelfEmploymentPeriod(
-        LocalDate.now(DateTimeZone.UTC), LocalDate.now(DateTimeZone.UTC).plusDays(15), Map.empty, Map.empty, Map.empty, None)
+        LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-16"), Map.empty, Map.empty, Map.empty, None)
       val periodTwo = SelfEmploymentPeriod(
-        LocalDate.now(DateTimeZone.UTC).plusDays(16), LocalDate.now(DateTimeZone.UTC).plusDays(17), Map.empty, Map.empty, Map.empty, None)
+        LocalDate.parse("2017-04-17"), LocalDate.parse("2017-04-18"), Map.empty, Map.empty, Map.empty, None)
 
       val expectedBody =
         s"""

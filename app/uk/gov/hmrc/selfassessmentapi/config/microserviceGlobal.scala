@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.config
 
+import javax.inject.Inject
+
+import com.kenshoo.play.metrics.Metrics
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.{StringReader, ValueReader}
@@ -27,6 +30,7 @@ import play.routing.Router.Tags
 import uk.gov.hmrc.api.config.{ServiceLocatorConfig, ServiceLocatorRegistration}
 import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, ErrorNotFound, ErrorUnauthorized, HeaderValidator}
+import uk.gov.hmrc.kenshoo.monitoring.MonitoringFilter
 import uk.gov.hmrc.play.audit.filters.AuditFilter
 import uk.gov.hmrc.play.auth.controllers.{AuthConfig, AuthParamsControllerConfig}
 import uk.gov.hmrc.play.auth.microservice.connectors._
@@ -37,7 +41,7 @@ import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.http.{HeaderCarrier, NotImplementedException}
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.scheduling._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, SourceTypes}
 import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorBadRequest, ErrorNotImplemented}
 import uk.gov.hmrc.selfassessmentapi.jobs.{DeleteExpiredDataJob, DropMongoCollectionJob}
 import uk.gov.hmrc.selfassessmentapi.services.errors.{BusinessError, BusinessException}
@@ -81,6 +85,13 @@ object MicroserviceAuditFilter extends AuditFilter with AppName with Microservic
 
 object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSupport {
   override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.controllerParamsConfig(controllerName).needsLogging
+}
+
+
+
+class MicroserviceMonitoringFilter @Inject()(metrics: Metrics) extends MonitoringFilter with MicroserviceFilterSupport {
+  override lazy val urlPatternToNameMapping = SourceTypes.types.map(sourceType => s".*[/]${sourceType.name}[/]?.*" -> sourceType.documentationName.replaceAll("\\s", "")).toMap
+  override def kenshooRegistry = metrics.defaultRegistry
 }
 
 object MicroserviceAuthFilter extends AuthorisationFilter with MicroserviceFilterSupport {
@@ -133,9 +144,11 @@ trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLo
 
 object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceRegistration  with RunMode with RunningOfScheduledJobs {
 
+  private var application : Application = _
+
   override val auditConnector = MicroserviceAuditConnector
 
-  override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig(s"microservice.metrics")
+  override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig(s"$env.microservice.metrics")
 
   override val loggingFilter = MicroserviceLoggingFilter
 
@@ -143,7 +156,8 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
 
   override val authFilter = Some(MicroserviceAuthFilter)
 
-  override def microserviceFilters: Seq[EssentialFilter] = Seq(HeaderValidatorFilter) ++ defaultMicroserviceFilters
+  override def microserviceFilters: Seq[EssentialFilter] =
+    Seq(HeaderValidatorFilter, application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 
@@ -156,6 +170,11 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
       case (false, true) => Seq(DropMongoCollectionJob)
       case _ => Seq()
     }
+  }
+
+  override def onStart(app : Application): Unit = {
+    super.onStart(app)
+    application = app
   }
 
   override def onError(request : RequestHeader, ex: Throwable) = {

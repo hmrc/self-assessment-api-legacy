@@ -19,17 +19,17 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.INVALID_MONETARY_AMOUNT
 
-class SelfEmploymentAllowancesSpec extends JsonSpec {
+class AllowancesSpec extends JsonSpec {
 
   "format" should {
     "round trip valid Allowances json" in {
       roundTripJson(Allowances(
-        annualInvestmentAllowance = Some(BigDecimal(10.00)),
-        capitalAllowanceMainPool = Some(BigDecimal(10.00)),
-        capitalAllowanceSpecialRatePool = Some(BigDecimal(10.00)),
-        businessPremisesRenovationAllowance = Some(BigDecimal(10.00)),
-        enhancedCapitalAllowance = Some(BigDecimal(10.00)),
-        allowancesOnSales = Some(BigDecimal(10.00))))
+        annualInvestmentAllowance = Some(10.00),
+        capitalAllowanceMainPool = Some(10.00),
+        capitalAllowanceSpecialRatePool = Some(10.00),
+        businessPremisesRenovationAllowance = Some(10.00),
+        enhancedCapitalAllowance = Some(10.00),
+        allowancesOnSales = Some(10.00)))
     }
 
     "round trip Allowances with no fields" in {
@@ -45,64 +45,73 @@ class SelfEmploymentAllowancesSpec extends JsonSpec {
     }
 
     "reject negative annualInvestmentAllowance" in {
-      val se = Allowances(annualInvestmentAllowance = Some(BigDecimal(-10.00)))
+      val se = Allowances(annualInvestmentAllowance = Some(-10.00))
       validatePositiveAmount(se, "/annualInvestmentAllowance")
     }
 
     "reject annualInvestmentAllowance with more than 2 decimal places" in {
-      val se = Allowances(annualInvestmentAllowance = Some(BigDecimal(10.123)))
+      val se = Allowances(annualInvestmentAllowance = Some(10.123))
       validatePositiveAmount(se, "/annualInvestmentAllowance")
     }
 
     "reject negative capitalAllowanceMainPool" in {
-      val se = Allowances(capitalAllowanceMainPool = Some(BigDecimal(-10.00)))
+      val se = Allowances(capitalAllowanceMainPool = Some(-10.00))
       validatePositiveAmount(se, "/capitalAllowanceMainPool")
     }
 
     "reject capitalAllowanceMainPool with more than 2 decimal places" in {
-      val se = Allowances(capitalAllowanceMainPool = Some(BigDecimal(10.123)))
+      val se = Allowances(capitalAllowanceMainPool = Some(10.123))
       validatePositiveAmount(se, "/capitalAllowanceMainPool")
     }
 
     "reject negative capitalAllowanceSpecialRatePool" in {
-      val se = Allowances(capitalAllowanceSpecialRatePool = Some(BigDecimal(-10.00)))
+      val se = Allowances(capitalAllowanceSpecialRatePool = Some(-10.00))
       validatePositiveAmount(se, "/capitalAllowanceSpecialRatePool")
     }
 
     "reject capitalAllowanceSpecialRatePool with more than 2 decimal places" in {
-      val se = Allowances(capitalAllowanceSpecialRatePool = Some(BigDecimal(10.123)))
+      val se = Allowances(capitalAllowanceSpecialRatePool = Some(10.123))
       validatePositiveAmount(se, "/capitalAllowanceSpecialRatePool")
     }
 
     "reject negative businessPremisesRenovationAllowance" in {
-      val se = Allowances(businessPremisesRenovationAllowance = Some(BigDecimal(-10.00)))
+      val se = Allowances(businessPremisesRenovationAllowance = Some(-10.00))
       validatePositiveAmount(se, "/businessPremisesRenovationAllowance")
     }
 
     "reject businessPremisesRenovationAllowance with more than 2 decimal places" in {
-      val se = Allowances(businessPremisesRenovationAllowance = Some(BigDecimal(10.123)))
+      val se = Allowances(businessPremisesRenovationAllowance = Some(10.123))
       validatePositiveAmount(se, "/businessPremisesRenovationAllowance")
     }
 
     "reject negative enhancedCapitalAllowance" in {
-      val se = Allowances(enhancedCapitalAllowance = Some(BigDecimal(-10.00)))
+      val se = Allowances(enhancedCapitalAllowance = Some(-10.00))
       validatePositiveAmount(se, "/enhancedCapitalAllowance")
     }
 
     "reject enhancedCapitalAllowance with more than 2 decimal places" in {
-      val se = Allowances(enhancedCapitalAllowance = Some(BigDecimal(10.123)))
+      val se = Allowances(enhancedCapitalAllowance = Some(10.123))
       validatePositiveAmount(se, "/enhancedCapitalAllowance")
     }
 
     "reject negative allowancesOnSales" in {
-      val se = Allowances(allowancesOnSales = Some(BigDecimal(-10.00)))
+      val se = Allowances(allowancesOnSales = Some(-10.00))
       validatePositiveAmount(se, "/allowancesOnSales")
     }
 
     "reject allowancesOnSales with more than 2 decimal places" in {
-      val se = Allowances(allowancesOnSales = Some(BigDecimal(10.123)))
+      val se = Allowances(allowancesOnSales = Some(10.123))
       validatePositiveAmount(se, "/allowancesOnSales")
     }
 
+    "reject negative zeroEmissionGoodsVehicleAllowance" in {
+      val se = Allowances(zeroEmissionGoodsVehicleAllowance = Some(-10))
+      validatePositiveAmount(se, "/zeroEmissionGoodsVehicleAllowance")
+    }
+    
+    "reject zeroEmissionGoodsVehicleAllowance with more than 2 decimal places" in {
+      val se = Allowances(zeroEmissionGoodsVehicleAllowance = Some(10.123))
+      validatePositiveAmount(se, "/zeroEmissionGoodsVehicleAllowance")
+    }
   }
 }

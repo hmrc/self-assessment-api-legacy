@@ -27,7 +27,8 @@ case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
                       capitalAllowanceSpecialRatePool: Option[BigDecimal] = None,
                       businessPremisesRenovationAllowance: Option[BigDecimal] = None,
                       enhancedCapitalAllowance: Option[BigDecimal] = None,
-                      allowancesOnSales: Option[BigDecimal] = None) {
+                      allowancesOnSales: Option[BigDecimal] = None,
+                      zeroEmissionGoodsVehicleAllowance: Option[BigDecimal] = None) {
 
   private val maxAnnualInvestmentAllowance = 200000
 
@@ -40,12 +41,13 @@ case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
 object Allowances {
 
   lazy val example = Allowances(
-    annualInvestmentAllowance = Some(BigDecimal(1000.00)),
-    capitalAllowanceMainPool = Some(BigDecimal(150.00)),
-    capitalAllowanceSpecialRatePool = Some(BigDecimal(5000.50)),
-    businessPremisesRenovationAllowance = Some(BigDecimal(600.00)),
-    enhancedCapitalAllowance = Some(BigDecimal(50.00)),
-    allowancesOnSales = Some(BigDecimal(3399.99)))
+    annualInvestmentAllowance = Some(1000.00),
+    capitalAllowanceMainPool = Some(150.00),
+    capitalAllowanceSpecialRatePool = Some(5000.50),
+    businessPremisesRenovationAllowance = Some(600.00),
+    enhancedCapitalAllowance = Some(50.00),
+    allowancesOnSales = Some(3399.99),
+    zeroEmissionGoodsVehicleAllowance = Some(2020))
 
   implicit val writes = Json.writes[Allowances]
 
@@ -55,6 +57,7 @@ object Allowances {
       (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "allowancesOnSales").readNullable[BigDecimal](positiveAmountValidator)
+      (__ \ "allowancesOnSales").readNullable[BigDecimal](positiveAmountValidator) and
+      (__ \ "zeroEmissionGoodsVehicleAllowance").readNullable[BigDecimal](positiveAmountValidator)
     ) (Allowances.apply _)
 }

@@ -14,7 +14,7 @@ object MicroServiceBuild extends Build with MicroService {
 
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
   override lazy val playSettings : Seq[Setting[_]] = Seq(
-    routesImport += "uk.gov.hmrc.selfassessmentapi.controllers.Binders._"
+    routesImport += "uk.gov.hmrc.selfassessmentapi.resources.Binders._"
   )
 }
 

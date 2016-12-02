@@ -17,15 +17,14 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.{Format, JsValue, Json}
-import play.api.mvc.{Action, Result}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, PeriodId, SourceType}
-import uk.gov.hmrc.selfassessmentapi.controllers.{GenericErrorResult, ValidationErrorResult}
 import uk.gov.hmrc.selfassessmentapi.domain.PeriodContainer
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource._
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.Period
+import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.services.PeriodService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,9 +37,9 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
 
   private lazy val featureSwitch = FeatureSwitchAction(sourceType, "periods")
 
-  def createPeriod(nino: Nino, id: ID): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def createPeriod(nino: Nino, sourceId: ID): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[P, Either[Error, PeriodId]](request.body) { period =>
-      service.createPeriod(nino, id, period)
+      service.createPeriod(nino, sourceId, period)
     } match {
       case Left(errorResult) =>
         Future.successful {
@@ -50,7 +49,7 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
           }
         }
       case Right(result) => result.map {
-        case Right(periodId) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${sourceType.name}/$id/periods/$periodId")
+        case Right(periodId) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${sourceType.toString}/$sourceId/periods/$periodId")
         case Left(error) =>
           if (error.code == ErrorCode.NOT_FOUND.toString) NotFound
           else Forbidden(Json.toJson(Errors.businessError(error)))
@@ -58,7 +57,7 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
     }
   }
 
-  def updatePeriod(nino: Nino, id: ID, periodId: PeriodId) = featureSwitch.asyncFeatureSwitch { request =>
+  def updatePeriod(nino: Nino, id: ID, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[P, Boolean](request.body) {
       service.updatePeriod(nino, id, periodId, _)
     } match {
@@ -76,14 +75,14 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
     }
   }
 
-  def retrievePeriod(nino: Nino, id: ID, periodId: PeriodId) = featureSwitch.asyncFeatureSwitch {
+  def retrievePeriod(nino: Nino, id: ID, periodId: PeriodId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
     service.retrievePeriod(nino, id, periodId) map {
       case Some(period) => Ok(Json.toJson(period))
       case None => NotFound
     }
   }
 
-  def retrievePeriods(nino: Nino, id: ID) = featureSwitch.asyncFeatureSwitch {
+  def retrievePeriods(nino: Nino, id: ID): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
     service.retrieveAllPeriods(nino, id).map { periods => Ok(Json.toJson(periods)) }
   }
 }

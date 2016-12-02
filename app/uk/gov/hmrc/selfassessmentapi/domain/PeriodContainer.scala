@@ -20,7 +20,7 @@ import com.github.nscala_time.time.OrderingImplicits.LocalDateOrdering
 import org.joda.time.{DateTimeZone, Duration, Interval}
 import play.api.libs.json.Format
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.Period
+import uk.gov.hmrc.selfassessmentapi.resources.models.Period
 
 abstract class PeriodContainer[P <: Period : Format, PC] {
 

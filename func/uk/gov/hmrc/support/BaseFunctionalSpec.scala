@@ -24,7 +24,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
       extends UrlInterpolation {
-    def jsonBodyIsEmptyArray = response.json shouldBe JsArray()
+    def jsonBodyIsEmptyArray(): Unit = response.json shouldBe JsArray()
 
 
     def responseContainsHeader(name: String, pattern: Regex) = {
@@ -304,7 +304,7 @@ trait BaseFunctionalSpec extends TestApplication {
       new BodyAssertions(myQuery(response.json).toOption, this)
     }
 
-    def body1(myQuery: JsValue => Seq[JsValue]) = {
+    def selectFields(myQuery: JsValue => Seq[JsValue]) = {
       new BodyListAssertions(myQuery(response.json), this)
     }
 

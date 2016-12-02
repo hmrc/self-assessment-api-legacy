@@ -17,11 +17,18 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.data.validation.ValidationError
-import play.api.libs.json.Reads
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
+import play.api.libs.json.{JsPath, Reads}
 
 package object models {
+
   type Amount = BigDecimal
+  type SourceId = String
+  type PropertyLocation = String
+  type PeriodId = String
+  type SummaryId = String
+  type LiabilityId = String
+  type LiabilityCalculationErrorId = String
+  type ValidationErrors = Seq[(JsPath, Seq[ValidationError])]
 
   /**
     * Asserts that amounts must have a maximum of two decimal places

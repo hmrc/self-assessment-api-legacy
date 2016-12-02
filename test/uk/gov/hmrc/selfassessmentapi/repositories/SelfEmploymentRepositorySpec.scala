@@ -20,11 +20,10 @@ import org.joda.time.{DateTimeZone, LocalDate}
 import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{BalancingChargeType, IncomeType}
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.{BalancingCharge, Income, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -70,15 +69,15 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     }
 
     "return true when updating an annual summaries" in {
-      val summary = SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example))
+      val summary = AnnualSummary(Some(Allowances.example), Some(Adjustments.example))
 
       await(repo.create(selfEmployment))
 
-      await(repo.update(id.stringify, nino, selfEmployment.copy(annualSummaries = Map(taxYear -> summary)))) shouldBe true
+      await(repo.update(id.stringify, nino, selfEmployment.copy(annualSummaries = Map(TaxYear("2016-17") -> summary)))) shouldBe true
       val updatedSelfEmployment = await(repo.retrieve(id.stringify, nino)).get
 
       updatedSelfEmployment.annualSummaries.size shouldBe 1
-      updatedSelfEmployment.annualSummary(taxYear) shouldBe Some(summary)
+      updatedSelfEmployment.annualSummary(TaxYear("2016-17")) shouldBe Some(summary)
     }
 
     "return true when updating periods" in {

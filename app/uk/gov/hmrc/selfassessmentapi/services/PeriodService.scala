@@ -19,35 +19,35 @@ package uk.gov.hmrc.selfassessmentapi.services
 import play.api.libs.json.Format
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.resources.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.domain.PeriodContainer
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.{Period, PeriodSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodSummary}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]] {
 
-  val periodRepository : PeriodRepository[ID, P, PC]
+  val periodRepository: NewSourceRepository[ID, P, PC]
 
   def createPeriod(nino: Nino, id: ID, period: P): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
 
     periodRepository.retrieve(id, nino).flatMap {
-      case Some(selfEmployment) if selfEmployment.containsOverlappingPeriod(period) =>
+      case Some(resource) if resource.containsOverlappingPeriod(period) =>
         Future.successful(Left(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", "")))
-      case Some(selfEmployment) if selfEmployment.containsGap(period) =>
+      case Some(resource) if resource.containsGap(period) =>
         Future.successful(Left(Error(GAP_PERIOD.toString, "Periods should not contain gaps between each other", "")))
-      case Some(selfEmployment) if selfEmployment.containsMisalignedPeriod(period) =>
-        Future.successful(Left(Error(MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the self-employment accounting period", "")))
-      case Some(selfEmployment) =>
-        periodRepository.update(id, nino, selfEmployment.setPeriodsTo(periodId, period)).flatMap {
+      case Some(resource) if resource.containsMisalignedPeriod(period) =>
+        Future.successful(Left(Error(MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the resource accounting period", "")))
+      case Some(resource) =>
+        periodRepository.update(id, nino, resource.setPeriodsTo(periodId, period)).flatMap {
           case true => Future.successful(Right(periodId))
           case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
         }
-      case None => Future.successful(Left(Error(NOT_FOUND.toString, s"Self-employment not found for id: $id", "")))
+      case None => Future.successful(Left(Error(NOT_FOUND.toString, s"Resource not found for id: $id", "")))
     }
   }
 

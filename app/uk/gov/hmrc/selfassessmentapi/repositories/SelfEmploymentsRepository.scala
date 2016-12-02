@@ -22,26 +22,23 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
+import reactivemongo.bson.BSONDocument
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
-import uk.gov.hmrc.selfassessmentapi.services.PeriodRepository
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmploymentPeriod
+import uk.gov.hmrc.selfassessmentapi.services.NewSourceRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SelfEmploymentsRepository(implicit mongo: () => DB)
-  extends PeriodRepository[SourceId, SelfEmploymentPeriod, SelfEmployment]("selfEmployments", SelfEmployment.mongoFormats) {
+  extends NewSourceRepository[SourceId, SelfEmploymentPeriod, SelfEmployment]("selfEmployments", SelfEmployment.mongoFormats) {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("nino", Ascending)), name = Some("se_nino"), unique = false),
     Index(Seq(("nino", Ascending), ("sourceId", Ascending)), name = Some("se_nino_sourceId"), unique = true),
     Index(Seq(("lastModifiedDateTime", Ascending)), name = Some("se_lastmodified"), unique = false))
-
-  override def isInsertion(suppliedId: BSONObjectID, returned: SelfEmployment): Boolean =
-    suppliedId.equals(returned.id)
 
   def retrieve(id: SourceId, nino: Nino): Future[Option[SelfEmployment]] = {
     find("nino" -> nino.nino, "sourceId" -> id).map(_.headOption)

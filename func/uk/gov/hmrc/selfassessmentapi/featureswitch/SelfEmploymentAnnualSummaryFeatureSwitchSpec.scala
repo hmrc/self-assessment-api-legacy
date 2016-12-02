@@ -3,12 +3,13 @@ package uk.gov.hmrc.selfassessmentapi.featureswitch
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, AccountingType, SelfEmployment, SelfEmploymentAnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AccountingType, SelfEmployment, AnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingPeriod
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentAnnualSummaryFeatureSwitchSpec extends BaseFunctionalSpec {
 
-  private val conf =
+  private val conf: Map[String, _] =
     Map("Test.feature-switch.self-employments" ->
       Map("enabled" -> true, "annual" -> Map("enabled" -> false), "periods" -> Map("enabled" -> true))
     )
@@ -29,7 +30,7 @@ class SelfEmploymentAnnualSummaryFeatureSwitchSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Json.toJson(SelfEmploymentAnnualSummary(None, None))).at(s"%sourceLocation%/$taxYear")
+        .put(Json.toJson(AnnualSummary(None, None))).at(s"%sourceLocation%/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }

@@ -18,32 +18,26 @@ package uk.gov.hmrc.selfassessmentapi.config
 
 import play.api.Configuration
 import uk.gov.hmrc.selfassessmentapi.config.AppContext._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.furnishedholidaylettings.PropertyLocationType.PropertyLocationType
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, TaxYearPropertyType}
+import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearPropertyType
+import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
 
 case class FeatureSwitch(value: Option[Configuration]) {
   val DEFAULT_VALUE = true
 
   def isEnabled(sourceType: SourceType): Boolean = value match {
-    case Some(config) => FeatureConfig(config).isSourceEnabled(sourceType.name)
+    case Some(config) => FeatureConfig(config).isSourceEnabled(sourceType.toString)
     case None => DEFAULT_VALUE
   }
 
   def isEnabled(sourceType: SourceType, summary: String): Boolean = value match {
     case Some(config) =>
-      if(summary.isEmpty) FeatureConfig(config).isSourceEnabled(sourceType.name)
-      else FeatureConfig(config).isSummaryEnabled(sourceType.name, summary)
+      if(summary.isEmpty) FeatureConfig(config).isSourceEnabled(sourceType.toString)
+      else FeatureConfig(config).isSummaryEnabled(sourceType.toString, summary)
     case None => DEFAULT_VALUE
   }
 
   def isEnabled(source: TaxYearPropertyType): Boolean = value match {
     case Some(config) => FeatureConfig(config).isSourceEnabled(source.name)
-    case None => DEFAULT_VALUE
-  }
-
-  def isEnabled(propertyType: PropertyLocationType): Boolean = value match {
-    case Some(config) =>
-      FeatureConfig(config).isSourceEnabled(s"furnished-holiday-lettings.${propertyType.toString.toLowerCase}")
     case None => DEFAULT_VALUE
   }
 

@@ -17,10 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment
 
 import org.joda.time.LocalDate
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
-import ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SelfEmploymentAllowances, SelfEmploymentAdjustments}
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{Adjustments, Allowances}
 
 class SelfEmploymentSpec extends JsonSpec {
 
@@ -28,7 +27,7 @@ class SelfEmploymentSpec extends JsonSpec {
     "round trip valid SelfEmployment json" in {
       roundTripJson(SelfEmployment(
         commencementDate = new LocalDate(2016, 4, 22),
-        allowances = Some(SelfEmploymentAllowances(annualInvestmentAllowance = Some(BigDecimal(10))))))
+        allowances = Some(Allowances(annualInvestmentAllowance = Some(BigDecimal(10))))))
     }
   }
 
@@ -37,7 +36,7 @@ class SelfEmploymentSpec extends JsonSpec {
 
       val se = SelfEmployment(
         commencementDate = new LocalDate(2016, 4, 22),
-        allowances = Some(SelfEmploymentAllowances(annualInvestmentAllowance = Some(BigDecimal(-10)))))
+        allowances = Some(Allowances(annualInvestmentAllowance = Some(BigDecimal(-10)))))
 
       assertValidationErrorWithCode(
         se,
@@ -47,7 +46,7 @@ class SelfEmploymentSpec extends JsonSpec {
     "reject invalid adjustments" in {
       val se = SelfEmployment(
         commencementDate = new LocalDate(2016, 4, 22),
-        adjustments = Some(SelfEmploymentAdjustments(lossBroughtForward = Some(BigDecimal(-10)))))
+        adjustments = Some(Adjustments(lossBroughtForward = Some(BigDecimal(-10)))))
 
       assertValidationErrorWithCode(
         se,

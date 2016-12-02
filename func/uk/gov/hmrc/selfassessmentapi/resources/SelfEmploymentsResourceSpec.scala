@@ -1,11 +1,9 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.{DateTimeZone, LocalDate}
-import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.{BalancingCharge => _, Expense => _, Income => _, SelfEmployment => _, _}
-import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods._
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
@@ -15,7 +13,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     accountingType = AccountingType.CASH,
     commencementDate = LocalDate.now.minusDays(1))
 
-  implicit def selfEmployment2Json(selfEmployment: SelfEmployment) = Json.toJson(selfEmployment)
+  implicit def selfEmployment2Json(selfEmployment: SelfEmployment): JsValue = Json.toJson(selfEmployment)
 
   "create" should {
     "return code 201 when creating a valid a self-employment source of income" in {
@@ -394,13 +392,13 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(200)
-        .jsonBodyIsEmptyArray
+        .jsonBodyIsEmptyArray()
     }
   }
 
   "updateAnnualSummary" should {
     "return code 204 when updating an annual summary for a valid self-employment source" in {
-      val annualSummaries = Json.toJson(models.SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example)))
+      val annualSummaries = Json.toJson(AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -415,7 +413,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 404 when updating an annual summary for an invalid self-employment source" in {
-      val annualSummaries = Json.toJson(models.SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example)))
+      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -426,9 +424,9 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 400 when updating an annual summary providing an invalid adjustment & allowance" in {
-      val invalidAdjustment = SelfEmploymentAdjustments.example.copy(includedNonTaxableProfits = Some(-100), overlapReliefUsed = Some(-100))
-      val invalidAllowances = SelfEmploymentAllowances.example.copy(capitalAllowanceMainPool = Some(-100))
-      val annualSummaries = Json.toJson(models.SelfEmploymentAnnualSummary(Some(invalidAllowances), Some(invalidAdjustment)))
+      val invalidAdjustment = Adjustments.example.copy(includedNonTaxableProfits = Some(-100), overlapReliefUsed = Some(-100))
+      val invalidAllowances = Allowances.example.copy(capitalAllowanceMainPool = Some(-100))
+      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(invalidAllowances), Some(invalidAdjustment)))
 
       val expectedBody =
         s"""
@@ -472,7 +470,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrieveAnnualSummary" should {
     "return code 200 when retrieving an annual summary that exists" in {
-      val annualSummaries = Json.toJson(models.SelfEmploymentAnnualSummary(Some(SelfEmploymentAllowances.example), Some(SelfEmploymentAdjustments.example)))
+      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
       val expectedJson = Json.toJson(annualSummaries).toString()
 
       given()
@@ -774,7 +772,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
-        .body1(_ \\ "periodId").matches("\\w+".r)
+        .selectFields(_ \\ "periodId").matches("\\w+".r)
     }
 
     "return code 200 containing an empty json body when retrieving all periods where periods.size == 0" in {

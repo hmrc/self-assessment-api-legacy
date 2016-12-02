@@ -20,7 +20,6 @@ import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode
 
 case class AccountingPeriod(start: LocalDate, end: LocalDate)
 

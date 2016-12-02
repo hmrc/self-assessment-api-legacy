@@ -21,11 +21,10 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{PeriodId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.resources._
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
-import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.periods.SelfEmploymentPeriod
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.AccountingType._
+import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AnnualSummary, SelfEmploymentPeriod}
 
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: String,
@@ -34,18 +33,17 @@ case class SelfEmployment(id: BSONObjectID,
                           accountingPeriod: AccountingPeriod,
                           accountingType: AccountingType,
                           commencementDate: LocalDate,
-                          annualSummaries: Map[TaxYear, SelfEmploymentAnnualSummary] = Map.empty,
+                          annualSummaries: Map[TaxYear, AnnualSummary] = Map.empty,
                           periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty) extends PeriodContainer[SelfEmploymentPeriod, SelfEmployment] with LastModifiedDateTime {
-
 
   override def containsMisalignedPeriod(period: SelfEmploymentPeriod): Boolean = {
     if (periods.isEmpty) !period.from.isEqual(accountingPeriod.start)
     else !(period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end))
   }
 
-  def annualSummary(taxYear: TaxYear): Option[SelfEmploymentAnnualSummary] = annualSummaries.get(taxYear)
-  def toModel: models.SelfEmployment =
-    models.SelfEmployment(Some(id.stringify), accountingPeriod, accountingType, commencementDate)
+  def annualSummary(taxYear: TaxYear): Option[AnnualSummary] = annualSummaries.get(taxYear)
+  def toModel: selfemployment.SelfEmployment =
+    selfemployment.SelfEmployment(Some(id.stringify), accountingPeriod, accountingType, commencementDate)
 
   override def setPeriodsTo(periodId: PeriodId, period: SelfEmploymentPeriod) =
     this.copy(periods = periods.updated(periodId, period))

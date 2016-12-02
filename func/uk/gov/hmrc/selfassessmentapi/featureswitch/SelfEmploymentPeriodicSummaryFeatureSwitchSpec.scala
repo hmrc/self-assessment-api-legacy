@@ -3,12 +3,13 @@ package uk.gov.hmrc.selfassessmentapi.featureswitch
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, AccountingType, SelfEmployment, SelfEmploymentAnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AccountingType, SelfEmployment}
+import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingPeriod
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentPeriodicSummaryFeatureSwitchSpec extends BaseFunctionalSpec {
 
-  private val conf =
+  private val conf: Map[String, _] =
     Map("Test" ->
       Map("feature-switch" ->
         Map("self-employments" ->

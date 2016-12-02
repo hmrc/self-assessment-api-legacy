@@ -21,7 +21,7 @@ import play.api.libs.streams.Accumulator
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceType
+import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
 
 import scala.concurrent.Future
 

@@ -24,7 +24,9 @@ trait BaseFunctionalSpec extends TestApplication {
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
       extends UrlInterpolation {
-    def jsonBodyIsEmptyArray(): Unit = response.json shouldBe JsArray()
+    def jsonBodyIsEmptyObject = response.json shouldBe Json.obj()
+
+    def jsonBodyIsEmptyArray = response.json shouldBe JsArray()
 
 
     def responseContainsHeader(name: String, pattern: Regex) = {

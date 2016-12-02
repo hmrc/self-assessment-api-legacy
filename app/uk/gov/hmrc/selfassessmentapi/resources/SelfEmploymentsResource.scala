@@ -109,7 +109,7 @@ object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPe
   def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = seAnnualFeatureSwitch.asyncFeatureSwitch {
     service.retrieveAnnualSummary(id, taxYear, nino).map {
       case Some(summary) => Ok(Json.toJson(summary))
-      case None => NotFound
+      case None => Ok(Json.obj())
     }
   }
 }

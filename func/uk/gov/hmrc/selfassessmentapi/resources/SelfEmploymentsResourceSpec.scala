@@ -392,7 +392,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(200)
-        .jsonBodyIsEmptyArray()
+        .jsonBodyIsEmptyArray
     }
   }
 
@@ -424,7 +424,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 400 when updating an annual summary providing an invalid adjustment & allowance" in {
-      val invalidAdjustment = Adjustments.example.copy(includedNonTaxableProfits = Some(-100), overlapReliefUsed = Some(-100))
+      val invalidAdjustment = Adjustments.example.copy(includedNonTaxableProfits = Some(-100), overlapReliefUsed = Some(-100), goodsAndServicesOwnUse = Some(-50))
       val invalidAllowances = Allowances.example.copy(capitalAllowanceMainPool = Some(-100))
       val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(invalidAllowances), Some(invalidAdjustment)))
 
@@ -442,6 +442,11 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
            |    {
            |      "code": "INVALID_MONETARY_AMOUNT",
            |      "path": "/adjustments/overlapReliefUsed",
+           |      "message": "amounts should be positive numbers with up to 2 decimal places"
+           |    },
+           |    {
+           |      "code": "INVALID_MONETARY_AMOUNT",
+           |      "path": "/adjustments/goodsAndServicesOwnUse",
            |      "message": "amounts should be positive numbers with up to 2 decimal places"
            |    },
            |    {
@@ -512,8 +517,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 201 containing a location header when creating a period" in {
       val incomes = Map(IncomeType.Turnover -> Income(50.55), IncomeType.Other -> Income(20.22))
       val expenses = Map(ExpenseType.BadDebt -> Expense(50.55, Some(10)), ExpenseType.CoGBought -> Expense(100.22, Some(10)))
-      val balancingCharges = Map(BalancingChargeType.BPRA -> BalancingCharge(50.25))
-      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), incomes, expenses, balancingCharges, Some(20.00)))
+      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), incomes, expenses))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -529,7 +533,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 400 when attempting to create a period with the 'from' and 'to' dates are in the incorrect order" in {
-      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.now.plusDays(1), LocalDate.now, Map.empty, Map.empty, Map.empty, None))
+      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.now.plusDays(1), LocalDate.now, Map.empty, Map.empty))
 
       val expectedBody =
         s"""
@@ -560,10 +564,10 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 403 when attempting to create a period whose date range overlaps or abuts with a period that already exists" in {
-      val periodOne = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-11"), Map.empty, Map.empty, Map.empty, None))
-      val periodTwo = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-12"), LocalDate.parse("2017-04-13"), Map.empty, Map.empty, Map.empty, None))
+      val periodOne = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-11"), Map.empty, Map.empty))
+      val periodTwo = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-12"), LocalDate.parse("2017-04-13"), Map.empty, Map.empty))
 
-      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2017-04-16"), Map.empty, Map.empty, Map.empty, None))
+      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2017-04-16"), Map.empty, Map.empty))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -591,8 +595,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 403 when attempting to create a period that would leave a gap between the latest period and the one provided" in {
-      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-11"), Map.empty, Map.empty, Map.empty, None))
-      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-13"), LocalDate.parse("2017-04-14"), Map.empty, Map.empty, Map.empty, None))
+      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-11"), Map.empty, Map.empty))
+      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-13"), LocalDate.parse("2017-04-14"), Map.empty, Map.empty))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -613,7 +617,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "updatePeriod" should {
     "return code 204 when updating a period that exists" in {
-      val period = SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), Map.empty, Map.empty, Map.empty, None)
+      val period = SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), Map.empty, Map.empty)
       val updatedPeriod = period.copy(to = period.to.plusDays(5))
 
       given()
@@ -633,7 +637,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 404 when attempting to update a non-existent period" in {
-      val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty, Map.empty, None)
+      val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty)
       val updatedPeriod = period.copy(to = period.to.plusDays(5))
 
       given()
@@ -649,7 +653,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 400 when attempting to update a period with the 'from' and 'to' dates are in the incorrect order" in {
-      val validPeriod = SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), Map.empty, Map.empty, Map.empty, None)
+      val validPeriod = SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), Map.empty, Map.empty)
       val invalidPeriod = validPeriod.copy(from = validPeriod.to, to = validPeriod.from)
 
       val expectedBody =
@@ -689,7 +693,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 200 when retrieving a period that exists" in {
       val fromDate = LocalDate.parse("2017-04-01")
       val toDate = LocalDate.parse("2017-04-02")
-      val period = Json.toJson(SelfEmploymentPeriod(fromDate, toDate, Map.empty, Map.empty, Map.empty, None))
+      val period = Json.toJson(SelfEmploymentPeriod(fromDate, toDate, Map.empty, Map.empty))
 
       val expectedBody =
         s"""
@@ -736,9 +740,9 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
   "retrieveAllPeriods" should {
     "return code 200 when retrieving all periods where periods.size > 0, sorted by from date" in {
       val periodOne = SelfEmploymentPeriod(
-        LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-16"), Map.empty, Map.empty, Map.empty, None)
+        LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-16"), Map.empty, Map.empty)
       val periodTwo = SelfEmploymentPeriod(
-        LocalDate.parse("2017-04-17"), LocalDate.parse("2017-04-18"), Map.empty, Map.empty, Map.empty, None)
+        LocalDate.parse("2017-04-17"), LocalDate.parse("2017-04-18"), Map.empty, Map.empty)
 
       val expectedBody =
         s"""

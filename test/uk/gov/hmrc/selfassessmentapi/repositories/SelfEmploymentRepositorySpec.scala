@@ -83,7 +83,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     "return true when updating periods" in {
       await(repo.create(selfEmployment))
       val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1),
-        Map(IncomeType.Turnover -> Income(500.00)), Map.empty, Map(BalancingChargeType.BPRA -> BalancingCharge(20.00)), None)
+        Map(IncomeType.Turnover -> Income(500.00)), Map.empty)
 
       await(repo.update(id.stringify, nino, selfEmployment.copy(periods = Map("1" -> period)))) shouldBe true
       val updatedSelfEmployment = await(repo.retrieve(id.stringify, nino)).get

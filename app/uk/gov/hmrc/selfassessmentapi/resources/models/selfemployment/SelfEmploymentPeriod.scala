@@ -29,24 +29,20 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.IncomeType.
 case class SelfEmploymentPeriod(from: LocalDate,
                                 to: LocalDate,
                                 incomes: Map[IncomeType, Income],
-                                expenses: Map[ExpenseType, Expense],
-                                balancingCharges: Map[BalancingChargeType, BalancingCharge],
-                                goodsAndServicesOwnUse: Option[Amount]) extends Period
+                                expenses: Map[ExpenseType, Expense]) extends Period
 
 object SelfEmploymentPeriod extends PeriodValidator {
-  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.{expenseTypeFormat, incomeTypeFormat, balancingChargeTypeFormat}
+  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.{expenseTypeFormat, incomeTypeFormat}
 
   implicit val writes: Writes[SelfEmploymentPeriod] = Json.writes[SelfEmploymentPeriod]
   implicit val reads: Reads[SelfEmploymentPeriod] = (
       (__ \ "from").read[LocalDate] and
       (__ \ "to").read[LocalDate] and
       (__ \ "incomes").readNullable[Map[IncomeType, Income]] and
-      (__ \ "expenses").readNullable[Map[ExpenseType, Expense]](depreciationValidator) and
-      (__ \ "balancingCharges").readNullable[Map[BalancingChargeType, BalancingCharge]] and
-      (__ \ "goodsAndServicesOwnUse").readNullable[Amount](positiveAmountValidator)
+      (__ \ "expenses").readNullable[Map[ExpenseType, Expense]](depreciationValidator)
     ) (
-    (from, to, income, expense, balancing, goods) => {
-      SelfEmploymentPeriod(from, to, income.getOrElse(Map.empty), expense.getOrElse(Map.empty), balancing.getOrElse(Map.empty), goods)})
+    (from, to, income, expense) => {
+      SelfEmploymentPeriod(from, to, income.getOrElse(Map.empty), expense.getOrElse(Map.empty))})
     .filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(periodDateValidator)
 
   private implicit val dateTimeOrder: Ordering[LocalDate] = OrderingImplicits.LocalDateOrdering

@@ -38,37 +38,37 @@ class SelfEmploymentSpec extends JsonSpec {
 
   "containsGap" should {
     "return false if there are no gaps in the date ranges between the existing periods and the provided period" in {
-      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty, Map.empty, None)
+      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty)
       val selfEmployment = selfEmploymentWithPeriods(existingPeriod)
 
-      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(2), LocalDate.now.plusDays(3), Map.empty, Map.empty, Map.empty, None)
+      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(2), LocalDate.now.plusDays(3), Map.empty, Map.empty)
       selfEmployment.containsGap(newPeriod) shouldBe false
     }
 
     "return true if there is a gap in the date range between the existing periods and the provided period" in {
-      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty, Map.empty, None)
+      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty)
       val selfEmployment = selfEmploymentWithPeriods(existingPeriod)
 
-      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(3), LocalDate.now.plusDays(4), Map.empty, Map.empty, Map.empty, None)
+      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(3), LocalDate.now.plusDays(4), Map.empty, Map.empty)
       selfEmployment.containsGap(newPeriod) shouldBe true
     }
   }
 
   "containsOverlappingPeriod" should {
     "return false if the date range of the provided period does not overlap with the date range of an existing period" in {
-      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(5), Map.empty, Map.empty, Map.empty, None)
+      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(5), Map.empty, Map.empty)
       val selfEmployment = selfEmploymentWithPeriods(existingPeriod)
 
-      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(6), LocalDate.now.plusDays(7), Map.empty, Map.empty, Map.empty, None)
+      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(6), LocalDate.now.plusDays(7), Map.empty, Map.empty)
       selfEmployment.containsOverlappingPeriod(newPeriod) shouldBe false
     }
 
     "return true if the date range of the provided period does overlap with the date range of an existing period" in {
-      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(5), Map.empty, Map.empty, Map.empty, None)
+      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(5), Map.empty, Map.empty)
       val selfEmployment = selfEmploymentWithPeriods(existingPeriod)
 
-      val abuttingPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(5), LocalDate.now.plusDays(7), Map.empty, Map.empty, Map.empty, None)
-      val overlappingPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(3), LocalDate.now.plusDays(4), Map.empty, Map.empty, Map.empty, None)
+      val abuttingPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(5), LocalDate.now.plusDays(7), Map.empty, Map.empty)
+      val overlappingPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(3), LocalDate.now.plusDays(4), Map.empty, Map.empty)
       selfEmployment.containsOverlappingPeriod(abuttingPeriod) shouldBe true
       selfEmployment.containsOverlappingPeriod(overlappingPeriod) shouldBe true
     }
@@ -77,31 +77,31 @@ class SelfEmploymentSpec extends JsonSpec {
   "containsMisalignedPeriod" should {
     "return true if the start date of the provided period is not equal to the start of the accounting period, when no other periods currently exist" in {
       val selfEmployment = selfEmploymentWithPeriods()
-      val newPeriod = SelfEmploymentPeriod(selfEmployment.accountingPeriod.end.plusDays(1), LocalDate.now.plusDays(7), Map.empty, Map.empty, Map.empty, None)
+      val newPeriod = SelfEmploymentPeriod(selfEmployment.accountingPeriod.end.plusDays(1), LocalDate.now.plusDays(7), Map.empty, Map.empty)
 
       selfEmployment.containsMisalignedPeriod(newPeriod) shouldBe true
     }
 
     "return true if the date of the provided period is not before or equal to the end of the accounting period, when other periods already exist" in {
-      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(5), Map.empty, Map.empty, Map.empty, None)
+      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(5), Map.empty, Map.empty)
       val selfEmployment = selfEmploymentWithPeriods(existingPeriod)
 
-      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(6), selfEmployment.accountingPeriod.end.plusDays(1), Map.empty, Map.empty, Map.empty, None)
+      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(6), selfEmployment.accountingPeriod.end.plusDays(1), Map.empty, Map.empty)
       selfEmployment.containsMisalignedPeriod(newPeriod) shouldBe true
     }
 
     "return false if the date of the provided period is aligned with the accounting period start date when no other periods exist" in {
       val selfEmployment = selfEmploymentWithPeriods()
 
-      val newPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty, Map.empty, None)
+      val newPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty)
       selfEmployment.containsMisalignedPeriod(newPeriod) shouldBe false
     }
 
     "return false if the date of the provided period is aligned with the most recently added period" in {
-      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(5), Map.empty, Map.empty, Map.empty, None)
+      val existingPeriod = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(5), Map.empty, Map.empty)
       val selfEmployment = selfEmploymentWithPeriods(existingPeriod)
 
-      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(6), selfEmployment.accountingPeriod.end, Map.empty, Map.empty, Map.empty, None)
+      val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(6), selfEmployment.accountingPeriod.end, Map.empty, Map.empty)
       selfEmployment.containsMisalignedPeriod(newPeriod) shouldBe false
     }
   }

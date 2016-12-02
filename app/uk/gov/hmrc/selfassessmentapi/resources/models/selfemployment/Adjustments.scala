@@ -19,7 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{amountValidator, positiveAmountValidator}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.BalancingChargeType.BalancingChargeType
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Amount, amountValidator, positiveAmountValidator}
 
 case class Adjustments(includedNonTaxableProfits: Option[BigDecimal] = None,
                        basisAdjustment: Option[BigDecimal] = None,
@@ -27,9 +28,13 @@ case class Adjustments(includedNonTaxableProfits: Option[BigDecimal] = None,
                        accountingAdjustment: Option[BigDecimal] = None,
                        averagingAdjustment: Option[BigDecimal] = None,
                        lossBroughtForward: Option[BigDecimal] = None,
-                       outstandingBusinessIncome: Option[BigDecimal] = None)
+                       outstandingBusinessIncome: Option[BigDecimal] = None,
+                       balancingCharges: Map[BalancingChargeType, BalancingCharge] = Map.empty,
+                       goodsAndServicesOwnUse: Option[Amount] = None)
 
 object Adjustments {
+  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.balancingChargeTypeFormat
+
   implicit val writes: Writes[Adjustments] = Json.writes[Adjustments]
 
   implicit val reads: Reads[Adjustments] = (
@@ -39,8 +44,12 @@ object Adjustments {
       (__ \ "accountingAdjustment").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "averagingAdjustment").readNullable[BigDecimal](amountValidator) and
       (__ \ "lossBroughtForward").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "outstandingBusinessIncome").readNullable[BigDecimal](positiveAmountValidator)
-    ) (Adjustments.apply _)
+      (__ \ "outstandingBusinessIncome").readNullable[BigDecimal](positiveAmountValidator) and
+      (__ \ "balancingCharges").readNullable[Map[BalancingChargeType, BalancingCharge]] and
+      (__ \ "goodsAndServicesOwnUse").readNullable[Amount](positiveAmountValidator)
+    ) (
+    (nonTaxableProfits, basisAdj, overlapRelief, accountingAdj, averagingAdj, lossBroughtFwd, outstandingIncome, balancingCharges, goodsAndServices) =>
+      Adjustments(nonTaxableProfits, basisAdj, overlapRelief, accountingAdj, averagingAdj, lossBroughtFwd, outstandingIncome, balancingCharges.getOrElse(Map.empty), goodsAndServices))
 
   lazy val example = Adjustments(
     includedNonTaxableProfits = Some(BigDecimal(50.00)),
@@ -49,5 +58,7 @@ object Adjustments {
     accountingAdjustment = Some(BigDecimal(10.50)),
     averagingAdjustment = Some(BigDecimal(-400.99)),
     lossBroughtForward = Some(BigDecimal(10000.00)),
-    outstandingBusinessIncome = Some(BigDecimal(50.00)))
+    outstandingBusinessIncome = Some(BigDecimal(50.00)),
+    balancingCharges = Map(BalancingChargeType.BPRA -> BalancingCharge(50)),
+    goodsAndServicesOwnUse = Some(50.55))
 }

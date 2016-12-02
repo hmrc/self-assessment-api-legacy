@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
+import org.joda.time.LocalDate
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.INVALID_MONETARY_AMOUNT
 
-class SelfEmploymentAdjustmentsSpec extends JsonSpec {
+class AdjustmentsSpec extends JsonSpec {
 
   "format" should {
     "round trip valid Adjustments json" in {
@@ -107,6 +109,38 @@ class SelfEmploymentAdjustmentsSpec extends JsonSpec {
     "reject outstandingBusinessIncome with more than two decimal places" in {
       val se = Adjustments(outstandingBusinessIncome = Some(BigDecimal(10.123)))
       validatePositiveAmount(se, "/outstandingBusinessIncome")
+    }
+
+    "return a INVALID_MONETARY_AMOUNT error when balancingCharge amount is negative" in {
+      val period = Adjustments(
+        balancingCharges = Map(BalancingChargeType.BPRA -> BalancingCharge(-100)))
+
+      assertValidationErrorWithCode(period,
+        "/balancingCharges/BPRA/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
+
+    "return a INVALID_MONETARY_AMOUNT error when balancingCharge amount contains more than 2 decimal places" in {
+      val period = Adjustments(
+        balancingCharges = Map(BalancingChargeType.BPRA -> BalancingCharge(100.123)))
+
+      assertValidationErrorWithCode(period,
+        "/balancingCharges/BPRA/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
+
+    "return a INVALID_MONETARY_AMOUNT error when goodsAndServicesOwnUse is negative" in {
+      val period = Adjustments(
+        goodsAndServicesOwnUse = Some(-200))
+
+      assertValidationErrorWithCode(period,
+        "/goodsAndServicesOwnUse", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
+
+    "return a INVALID_MONETARY_AMOUNT error when goodsAndServicesOwnUse contains more than two decimal places" in {
+      val period = Adjustments(
+        goodsAndServicesOwnUse = Some(200.123))
+
+      assertValidationErrorWithCode(period,
+        "/goodsAndServicesOwnUse", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
   }
 }

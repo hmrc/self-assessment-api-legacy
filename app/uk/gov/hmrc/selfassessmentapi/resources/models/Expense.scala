@@ -20,8 +20,6 @@ import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-
-
 case class Expense(amount: Amount, disallowableAmount: Option[Amount])
 
 object Expense {
@@ -35,5 +33,5 @@ object Expense {
   implicit val writes = Json.writes[Expense]
 
   private def disallowableAmountValidator(expense: Expense) =
-    expense.disallowableAmount.forall(disallowable => expense.amount >= disallowable)
+    expense.disallowableAmount.forall(expense.amount >= _)
 }

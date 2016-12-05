@@ -38,14 +38,14 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
       val period = SelfEmploymentPeriod(LocalDate.now.minusDays(1), LocalDate.now, Map(IncomeType.Turnover -> Income(-5000)), Map.empty)
 
       assertValidationErrorWithCode(period,
-        "/incomes/Turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/incomes/turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when income amount contains more than 2 decimal places" in {
       val period = SelfEmploymentPeriod(LocalDate.now.minusDays(1), LocalDate.now, Map(IncomeType.Turnover -> Income(10.123)), Map.empty)
 
       assertValidationErrorWithCode(period,
-        "/incomes/Turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/incomes/turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when expense contains a negative value" in {
@@ -53,7 +53,7 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
         LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CoGBought -> Expense(-500, None), ExpenseType.BadDebt -> Expense(200, Some(100))))
 
       assertValidationErrorWithCode(period,
-        "/expenses/CoGBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/expenses/coGBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when expense contains more than 2 decimal places" in {
@@ -61,7 +61,7 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
         LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CoGBought -> Expense(500.123, None), ExpenseType.BadDebt -> Expense(200, None)))
 
       assertValidationErrorWithCode(period,
-        "/expenses/CoGBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/expenses/coGBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_DISALLOWABLE_AMOUNT error when expense disallowableAmount > amount" in {
@@ -69,7 +69,7 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
         LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CoGBought -> Expense(500, Some(600)), ExpenseType.BadDebt -> Expense(200, Some(100))))
 
       assertValidationErrorWithCode(period,
-        "/expenses/CoGBought", ErrorCode.INVALID_DISALLOWABLE_AMOUNT)
+        "/expenses/coGBought", ErrorCode.INVALID_DISALLOWABLE_AMOUNT)
     }
 
     "return a DEPRECIATION_DISALLOWABLE_AMOUNT error when expense 'amount' and 'disallowableAmount' fields are not equal for depreciations" in {

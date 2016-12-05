@@ -50,17 +50,6 @@ trait JsonSpec extends UnitSpec {
   def assertValidationErrorWithMessage[T : Format](obj: T, path: String, message: String): Unit =
     assertValidationErrorsWithMessage[T](Json.toJson(obj), Map(path -> message))
 
-  /*def assertValidationErrorForJsValue[T : Format](value: JsValue, path: String, error: ErrorCode): Unit = {
-    val expectedError = path -> Seq(ValidationError("", Seq(error)))
-
-    value.validate[T].asEither match {
-      case Left(errs) => errs.map {
-        case (p, e) => p.toString -> e.map(x => ValidationError("", x.args))
-      } should contain (expectedError)
-      case Right(_) => fail(s"Provided object passed json validation. Was expected to fail for the path: $path")
-    }
-  }*/
-
   def assertValidationErrorsWithCode[T : Format](value: JsValue, pathAndCode: Map[String, ErrorCode]): Unit = {
     val expectedError = pathAndCode.map { case (path, code) => path -> Seq(ValidationError("", Seq(code))) }.toSeq
 

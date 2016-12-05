@@ -20,8 +20,21 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
 
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
-  val CoGBought, CISPaymentsToSubcontractors, StaffCosts, TravelCosts, PremisesRunningCosts, MaintenanceCosts,
-  AdminCosts, AdvertisingCosts, Interest, FinancialCharges, BadDebt, ProfessionalFees, Depreciation, Other =
-    Value
+
+  val CoGBought = Value("coGBought")
+  val CISPaymentsToSubcontractors = Value("cisPaymentsToSubcontractors")
+  val StaffCosts = Value("staffCosts")
+  val TravelCosts = Value("travelCosts")
+  val PremisesRunningCosts = Value("premisesRunningCosts")
+  val MaintenanceCosts = Value("maintenanceCosts")
+  val AdminCosts = Value("adminCosts")
+  val AdvertisingCosts = Value("advertisingCosts")
+  val Interest = Value("interest")
+  val FinancialCharges = Value("financialCharges")
+  val BadDebt = Value("badDebt")
+  val ProfessionalFees = Value("professionalFees")
+  val Depreciation = Value("depreciation")
+  val Other = Value("other")
+
   implicit val seExpenseTypes = EnumJson.enumFormat(ExpenseType, Some("Self Employment Expense type is invalid"))
 }

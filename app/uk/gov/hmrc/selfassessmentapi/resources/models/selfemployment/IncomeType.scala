@@ -20,6 +20,9 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
 
 object IncomeType extends Enumeration {
   type IncomeType = Value
-  val Turnover, Other = Value
+
+  val Turnover = Value("turnover")
+  val Other = Value("other")
+
   implicit val seIncomeTypes = EnumJson.enumFormat(IncomeType, Some("Self Employment Income type is invalid"))
 }

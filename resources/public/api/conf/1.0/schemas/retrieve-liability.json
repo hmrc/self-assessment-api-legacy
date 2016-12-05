@@ -51,7 +51,7 @@
                         "type": "number"
                       }
                     },
-                    "required": [ "sourceId", "benefitsAndExpenses", "allowableExpenses", "total" ]
+                    "required": [ "sourceId", "pay", "benefitsAndExpenses", "allowableExpenses", "total" ]
                   }
                 },
                 "selfEmployment": {
@@ -372,7 +372,8 @@
               "taxPaid": {
                 "type": "number"
               }
-            }
+            },
+            "required": [ "sourceId", "taxPaid" ]
           }
         },
         "fromEmployments": {
@@ -386,7 +387,8 @@
               "taxPaid": {
                 "type": "number"
               }
-            }
+            },
+            "required": [ "sourceId", "taxPaid" ]
           }
         },
         "total": {

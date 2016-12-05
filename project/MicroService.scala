@@ -52,6 +52,7 @@ trait MicroService {
               unmanagedSourceDirectories in FuncTest := Seq((baseDirectory in FuncTest).value / "func"),
               unmanagedClasspath in FuncTest += baseDirectory.value / "resources",
               unmanagedClasspath in Runtime += baseDirectory.value / "resources",
+              unmanagedResourceDirectories in FuncTest += baseDirectory.value,
               unmanagedResourceDirectories in Compile += baseDirectory.value / "resources",
               addTestReportOption(FuncTest, "int-test-reports"),
               testGrouping in FuncTest := oneForkedJvmPerTest((definedTests in FuncTest).value),

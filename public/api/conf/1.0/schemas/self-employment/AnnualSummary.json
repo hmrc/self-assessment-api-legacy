@@ -8,15 +8,11 @@
     },
     "adjustments": {
       "$ref": "http://localhost:9001/api/conf/1.0/schemas/self-employment/Adjustments.json"
-    },
-    "nonFinancials": {
-      "$ref": "http://localhost:9001/api/conf/1.0/schemas/self-employment/NonFinancials.json"
     }
   },
   "required": [
     "allowances",
-    "adjustments",
-    "nonFinancials"
+    "adjustments"
   ],
   "additionalProperties": false
 }

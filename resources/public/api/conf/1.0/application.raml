@@ -947,6 +947,10 @@ uses:
           is: [headers.acceptHeader, headers.contentHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          body:
+            application/json:
+              type: !include schemas/furnished-holiday-lettings-request.json
+              example: !include examples/furnished-holiday-lettings-request.json
           responses:
             201:
               body:

@@ -27,14 +27,14 @@ case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
                       capitalAllowanceSpecialRatePool: Option[BigDecimal] = None,
                       businessPremisesRenovationAllowance: Option[BigDecimal] = None,
                       enhancedCapitalAllowance: Option[BigDecimal] = None,
-                      allowancesOnSales: Option[BigDecimal] = None,
+                      allowanceOnSales: Option[BigDecimal] = None,
                       zeroEmissionGoodsVehicleAllowance: Option[BigDecimal] = None) {
 
   private val maxAnnualInvestmentAllowance = 200000
 
   def total = {
     Sum(CapAt(annualInvestmentAllowance, maxAnnualInvestmentAllowance), capitalAllowanceMainPool, capitalAllowanceSpecialRatePool,
-      businessPremisesRenovationAllowance, enhancedCapitalAllowance, allowancesOnSales)
+      businessPremisesRenovationAllowance, enhancedCapitalAllowance, allowanceOnSales)
   }
 }
 
@@ -46,7 +46,7 @@ object Allowances {
     capitalAllowanceSpecialRatePool = Some(5000.50),
     businessPremisesRenovationAllowance = Some(600.00),
     enhancedCapitalAllowance = Some(50.00),
-    allowancesOnSales = Some(3399.99),
+    allowanceOnSales = Some(3399.99),
     zeroEmissionGoodsVehicleAllowance = Some(2020))
 
   implicit val writes = Json.writes[Allowances]
@@ -57,7 +57,7 @@ object Allowances {
       (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "allowancesOnSales").readNullable[BigDecimal](positiveAmountValidator) and
+      (__ \ "allowanceOnSales").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "zeroEmissionGoodsVehicleAllowance").readNullable[BigDecimal](positiveAmountValidator)
     ) (Allowances.apply _)
 }

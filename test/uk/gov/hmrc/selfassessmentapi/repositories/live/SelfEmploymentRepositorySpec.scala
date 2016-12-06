@@ -147,7 +147,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
                                   capitalAllowanceSpecialRatePool = Some(BigDecimal(30.00)),
                                   businessPremisesRenovationAllowance = Some(BigDecimal(50.00)),
                                   enhancedCapitalAllowance = Some(BigDecimal(60.00)),
-                                  allowancesOnSales = Some(BigDecimal(70.00)))
+                                  allowanceOnSales = Some(BigDecimal(70.00)))
 
       val adjustments = Adjustments(includedNonTaxableProfits = Some(BigDecimal(10.00)),
                                     basisAdjustment = Some(BigDecimal(20.00)),

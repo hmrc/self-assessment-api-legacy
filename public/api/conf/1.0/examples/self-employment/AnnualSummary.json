@@ -18,6 +18,6 @@
     "zeroEmissionGoodsVehicleAllowance": 500.25,
     "businessPremisesRenovationAllowance": 500.25,
     "enhancedCapitalAllowance": 500.25,
-    "allowancesOnSales": 500.25
+    "allowanceOnSales": 500.25
   }
 }

@@ -50,26 +50,26 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
 
     "return a INVALID_MONETARY_AMOUNT error when expense contains a negative value" in {
       val period = SelfEmploymentPeriod(
-        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CoGBought -> Expense(-500, None), ExpenseType.BadDebt -> Expense(200, Some(100))))
+        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(-500, None), ExpenseType.BadDebt -> Expense(200, Some(100))))
 
       assertValidationErrorWithCode(period,
-        "/expenses/coGBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/expenses/costOfGoodsBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when expense contains more than 2 decimal places" in {
       val period = SelfEmploymentPeriod(
-        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CoGBought -> Expense(500.123, None), ExpenseType.BadDebt -> Expense(200, None)))
+        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(500.123, None), ExpenseType.BadDebt -> Expense(200, None)))
 
       assertValidationErrorWithCode(period,
-        "/expenses/coGBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/expenses/costOfGoodsBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_DISALLOWABLE_AMOUNT error when expense disallowableAmount > amount" in {
       val period = SelfEmploymentPeriod(
-        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CoGBought -> Expense(500, Some(600)), ExpenseType.BadDebt -> Expense(200, Some(100))))
+        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(500, Some(600)), ExpenseType.BadDebt -> Expense(200, Some(100))))
 
       assertValidationErrorWithCode(period,
-        "/expenses/coGBought", ErrorCode.INVALID_DISALLOWABLE_AMOUNT)
+        "/expenses/costOfGoodsBought", ErrorCode.INVALID_DISALLOWABLE_AMOUNT)
     }
 
     "return a DEPRECIATION_DISALLOWABLE_AMOUNT error when expense 'amount' and 'disallowableAmount' fields are not equal for depreciations" in {

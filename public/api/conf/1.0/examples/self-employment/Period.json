@@ -6,7 +6,7 @@
     "other": { "amount": 100.25 }
   },
   "expenses": {
-    "coGBought": {
+    "costOfGoodsBought": {
       "amount": 100.25,
       "disallowableAmount": 50.25
     },

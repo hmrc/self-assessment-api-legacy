@@ -102,7 +102,7 @@ class SelfEmploymentMongoRepository(implicit mongo: () => DB)
           "capitalAllowanceSpecialRatePool" -> allowances.capitalAllowanceSpecialRatePool.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
           "businessPremisesRenovationAllowance" -> allowances.businessPremisesRenovationAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
           "enhancedCapitalAllowance" -> allowances.enhancedCapitalAllowance.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull),
-          "allowancesOnSales" -> allowances.allowancesOnSales.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
+          "allowanceOnSales" -> allowances.allowanceOnSales.map(x => BSONDouble(x.doubleValue())).getOrElse(BSONNull)
         )))
       )
     ).getOrElse(Seq("$set" -> BSONDocument("allowances" -> BSONNull)))

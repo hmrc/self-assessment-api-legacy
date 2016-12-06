@@ -516,7 +516,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
   "createPeriod" should {
     "return code 201 containing a location header when creating a period" in {
       val incomes = Map(IncomeType.Turnover -> Income(50.55), IncomeType.Other -> Income(20.22))
-      val expenses = Map(ExpenseType.BadDebt -> Expense(50.55, Some(10)), ExpenseType.CoGBought -> Expense(100.22, Some(10)))
+      val expenses = Map(ExpenseType.BadDebt -> Expense(50.55, Some(10)), ExpenseType.CostOfGoodsBought -> Expense(100.22, Some(10)))
       val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), incomes, expenses))
 
       given()

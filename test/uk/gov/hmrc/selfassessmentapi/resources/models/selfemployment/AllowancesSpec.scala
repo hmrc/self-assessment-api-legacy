@@ -29,7 +29,7 @@ class AllowancesSpec extends JsonSpec {
         capitalAllowanceSpecialRatePool = Some(10.00),
         businessPremisesRenovationAllowance = Some(10.00),
         enhancedCapitalAllowance = Some(10.00),
-        allowancesOnSales = Some(10.00)))
+        allowanceOnSales = Some(10.00)))
     }
 
     "round trip Allowances with no fields" in {
@@ -95,13 +95,13 @@ class AllowancesSpec extends JsonSpec {
     }
 
     "reject negative allowancesOnSales" in {
-      val se = Allowances(allowancesOnSales = Some(-10.00))
-      validatePositiveAmount(se, "/allowancesOnSales")
+      val se = Allowances(allowanceOnSales = Some(-10.00))
+      validatePositiveAmount(se, "/allowanceOnSales")
     }
 
     "reject allowancesOnSales with more than 2 decimal places" in {
-      val se = Allowances(allowancesOnSales = Some(10.123))
-      validatePositiveAmount(se, "/allowancesOnSales")
+      val se = Allowances(allowanceOnSales = Some(10.123))
+      validatePositiveAmount(se, "/allowanceOnSales")
     }
 
     "reject negative zeroEmissionGoodsVehicleAllowance" in {

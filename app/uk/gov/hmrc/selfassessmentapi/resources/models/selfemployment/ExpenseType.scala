@@ -21,7 +21,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
 object ExpenseType extends Enumeration {
   type ExpenseType = Value
 
-  val CoGBought = Value("coGBought")
+  val CostOfGoodsBought = Value("costOfGoodsBought")
   val CISPaymentsToSubcontractors = Value("cisPaymentsToSubcontractors")
   val StaffCosts = Value("staffCosts")
   val TravelCosts = Value("travelCosts")

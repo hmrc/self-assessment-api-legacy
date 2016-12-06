@@ -1329,6 +1329,10 @@ uses:
           is: [headers.acceptHeader, headers.contentHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          body:
+            application/json:
+              example: !include examples/create-unearned-income.json
+
           responses:
             201:
               body:

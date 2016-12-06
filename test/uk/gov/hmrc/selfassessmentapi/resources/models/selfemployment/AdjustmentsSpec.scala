@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-import org.joda.time.LocalDate
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode.INVALID_MONETARY_AMOUNT
@@ -112,35 +111,27 @@ class AdjustmentsSpec extends JsonSpec {
     }
 
     "return a INVALID_MONETARY_AMOUNT error when balancingCharge amount is negative" in {
-      val period = Adjustments(
-        balancingCharges = Map(BalancingChargeType.BPRA -> BalancingCharge(-100)))
+      val period = Adjustments(balancingChargeBPRA = Some(BigDecimal(-100)))
 
-      assertValidationErrorWithCode(period,
-        "/balancingCharges/BPRA/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+      assertValidationErrorWithCode(period, "/balancingChargeBPRA", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when balancingCharge amount contains more than 2 decimal places" in {
-      val period = Adjustments(
-        balancingCharges = Map(BalancingChargeType.BPRA -> BalancingCharge(100.123)))
+      val period = Adjustments(balancingChargeOther = Some(BigDecimal(100.555)))
 
-      assertValidationErrorWithCode(period,
-        "/balancingCharges/BPRA/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+      assertValidationErrorWithCode(period, "/balancingChargeOther", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when goodsAndServicesOwnUse is negative" in {
-      val period = Adjustments(
-        goodsAndServicesOwnUse = Some(-200))
+      val period = Adjustments(goodsAndServicesOwnUse = Some(-200))
 
-      assertValidationErrorWithCode(period,
-        "/goodsAndServicesOwnUse", ErrorCode.INVALID_MONETARY_AMOUNT)
+      assertValidationErrorWithCode(period, "/goodsAndServicesOwnUse", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when goodsAndServicesOwnUse contains more than two decimal places" in {
-      val period = Adjustments(
-        goodsAndServicesOwnUse = Some(200.123))
+      val period = Adjustments(goodsAndServicesOwnUse = Some(200.123))
 
-      assertValidationErrorWithCode(period,
-        "/goodsAndServicesOwnUse", ErrorCode.INVALID_MONETARY_AMOUNT)
+      assertValidationErrorWithCode(period, "/goodsAndServicesOwnUse", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
   }
 }

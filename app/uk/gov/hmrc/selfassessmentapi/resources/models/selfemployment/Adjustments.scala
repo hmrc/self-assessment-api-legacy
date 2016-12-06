@@ -29,7 +29,8 @@ case class Adjustments(includedNonTaxableProfits: Option[BigDecimal] = None,
                        averagingAdjustment: Option[BigDecimal] = None,
                        lossBroughtForward: Option[BigDecimal] = None,
                        outstandingBusinessIncome: Option[BigDecimal] = None,
-                       balancingCharges: Map[BalancingChargeType, BalancingCharge] = Map.empty,
+                       balancingChargeBPRA: Option[BigDecimal] = None,
+                       balancingChargeOther: Option[BigDecimal] = None,
                        goodsAndServicesOwnUse: Option[Amount] = None)
 
 object Adjustments {
@@ -45,11 +46,14 @@ object Adjustments {
       (__ \ "averagingAdjustment").readNullable[BigDecimal](amountValidator) and
       (__ \ "lossBroughtForward").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "outstandingBusinessIncome").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "balancingCharges").readNullable[Map[BalancingChargeType, BalancingCharge]] and
+      (__ \ "balancingChargeBPRA").readNullable[BigDecimal](positiveAmountValidator) and
+      (__ \ "balancingChargeOther").readNullable[BigDecimal](positiveAmountValidator) and
       (__ \ "goodsAndServicesOwnUse").readNullable[Amount](positiveAmountValidator)
     ) (
-    (nonTaxableProfits, basisAdj, overlapRelief, accountingAdj, averagingAdj, lossBroughtFwd, outstandingIncome, balancingCharges, goodsAndServices) =>
-      Adjustments(nonTaxableProfits, basisAdj, overlapRelief, accountingAdj, averagingAdj, lossBroughtFwd, outstandingIncome, balancingCharges.getOrElse(Map.empty), goodsAndServices))
+    (nonTaxableProfits, basisAdj, overlapRelief, accountingAdj, averagingAdj, lossBroughtFwd, outstandingIncome, balancingChargeBPRA,
+     balancingChargeOther, goodsAndServices) =>
+      Adjustments(nonTaxableProfits, basisAdj, overlapRelief, accountingAdj, averagingAdj, lossBroughtFwd, outstandingIncome,
+        balancingChargeBPRA, balancingChargeOther, goodsAndServices))
 
   lazy val example = Adjustments(
     includedNonTaxableProfits = Some(BigDecimal(50.00)),
@@ -59,6 +63,7 @@ object Adjustments {
     averagingAdjustment = Some(BigDecimal(-400.99)),
     lossBroughtForward = Some(BigDecimal(10000.00)),
     outstandingBusinessIncome = Some(BigDecimal(50.00)),
-    balancingCharges = Map(BalancingChargeType.BPRA -> BalancingCharge(50)),
+    balancingChargeBPRA = Some(BigDecimal(50.55)),
+    balancingChargeOther = Some(BigDecimal(50.55)),
     goodsAndServicesOwnUse = Some(50.55))
 }

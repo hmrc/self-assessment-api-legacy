@@ -1,9 +1,9 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.LocalDate
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
+import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {

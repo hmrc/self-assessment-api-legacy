@@ -36,7 +36,7 @@
       "type": "number",
       "minimum": 0
     },
-    "allowancesOnSales": {
+    "allowanceOnSales": {
       "title": "Allowances on sales",
       "description": "Allowances on sale or cessation of business use (where you have disposed of assets for less than their tax value)",
       "type": "number",

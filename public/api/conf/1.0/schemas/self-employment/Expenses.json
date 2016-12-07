@@ -3,7 +3,7 @@
   "type": "object",
   "title": "Expenses",
   "properties": {
-    "coGBought": {
+    "costOfGoodsBought": {
       "title": "Cost of goods bought",
       "description": "Cost of goods bought for resale or goods used",
       "$ref": "http://localhost:9001/api/conf/1.0/schemas/Expense.json"

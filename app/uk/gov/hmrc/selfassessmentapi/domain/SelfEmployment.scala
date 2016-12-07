@@ -21,10 +21,11 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.resources._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.AccountingType._
 import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AnnualSummary, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
 
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: String,
@@ -34,7 +35,9 @@ case class SelfEmployment(id: BSONObjectID,
                           accountingType: AccountingType,
                           commencementDate: LocalDate,
                           annualSummaries: Map[TaxYear, AnnualSummary] = Map.empty,
-                          periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty) extends PeriodContainer[SelfEmploymentPeriod, SelfEmployment] with LastModifiedDateTime {
+                          periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty)
+  extends PeriodContainer[SelfEmploymentPeriod, SelfEmployment, SelfEmploymentPeriodicData]
+  with LastModifiedDateTime {
 
   override def containsMisalignedPeriod(period: SelfEmploymentPeriod): Boolean = {
     if (periods.isEmpty) !period.from.isEqual(accountingPeriod.start)
@@ -45,8 +48,14 @@ case class SelfEmployment(id: BSONObjectID,
   def toModel: selfemployment.SelfEmployment =
     selfemployment.SelfEmployment(Some(id.stringify), accountingPeriod, accountingType, commencementDate)
 
-  override def setPeriodsTo(periodId: PeriodId, period: SelfEmploymentPeriod) =
+  override def setPeriodsTo(periodId: PeriodId, period: SelfEmploymentPeriod): SelfEmployment =
     this.copy(periods = periods.updated(periodId, period))
+
+  override def update(periodId: PeriodId, periodicData: SelfEmploymentPeriodicData): SelfEmployment = {
+    this.periods.find(period => period._1.equals(periodId)).map { period =>
+      setPeriodsTo(periodId, period._2.copy(data = periodicData))
+    }.get
+  }
 }
 
 object SelfEmployment {

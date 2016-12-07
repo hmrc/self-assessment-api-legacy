@@ -24,13 +24,13 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, AnnualSummary, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AnnualSummary, SelfEmployment, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
-object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] with BaseResource {
+object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment, SelfEmploymentPeriodicData] with BaseResource {
 
   override val context: PeriodId = AppContext.apiGatewayLinkContext
 

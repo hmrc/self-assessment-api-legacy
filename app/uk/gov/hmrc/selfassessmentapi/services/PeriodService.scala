@@ -23,14 +23,14 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.domain.PeriodContainer
-import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodSummary, PeriodicData}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]] {
+abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC, PD], PD <: PeriodicData : Format] {
 
-  val periodRepository: NewSourceRepository[ID, P, PC]
+  val periodRepository: NewSourceRepository[ID, P, PC, PD]
 
   def createPeriod(nino: Nino, id: ID, period: P): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
@@ -51,10 +51,10 @@ abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodCon
     }
   }
 
-  def updatePeriod(nino: Nino, id: ID, periodId: PeriodId, period: P): Future[Boolean] = {
+  def updatePeriod(nino: Nino, id: ID, periodId: PeriodId, periodicData: PD): Future[Boolean] = {
     periodRepository.retrieve(id, nino).flatMap {
       case Some(selfEmployment) if selfEmployment.periodExists(periodId) =>
-        periodRepository.update(id, nino, selfEmployment.setPeriodsTo(periodId, period))
+        periodRepository.update(id, nino, selfEmployment.update(periodId, periodicData))
       case _ => Future.successful(false)
     }
   }

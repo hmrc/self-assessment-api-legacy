@@ -30,9 +30,9 @@ import uk.gov.hmrc.selfassessmentapi.services.PeriodService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]] {
+abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC, PD], PD <: PeriodicData : Format] {
 
-  val service: PeriodService[ID, P, PC]
+  val service: PeriodService[ID, P, PC, PD]
   val sourceType: SourceType
 
   private lazy val featureSwitch = FeatureSwitchAction(sourceType, "periods")
@@ -58,7 +58,7 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
   }
 
   def updatePeriod(nino: Nino, id: ID, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
-    validate[P, Boolean](request.body) {
+    validate[PD, Boolean](request.body) {
       service.updatePeriod(nino, id, periodId, _)
     } match {
       case Left(errorResult) =>

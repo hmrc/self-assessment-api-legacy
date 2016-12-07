@@ -23,11 +23,11 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.PeriodContainer
-import uk.gov.hmrc.selfassessmentapi.resources.models.Period
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodicData}
 
 import scala.concurrent.Future
 
-abstract class NewSourceRepository[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC]]
+abstract class NewSourceRepository[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC, PD], PD <: PeriodicData : Format]
   (repoName: String, domainFormat: Format[PC])(implicit mongo: () => DB, manifest: Manifest[PC])
   extends ReactiveRepository[PC, BSONObjectID](
   repoName,

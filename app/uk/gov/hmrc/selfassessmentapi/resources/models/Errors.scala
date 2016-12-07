@@ -45,8 +45,8 @@ object Errors {
   def badRequest(validationErrors: ValidationErrors) = BadRequest(flattenValidationErrors(validationErrors), "Invalid request")
   def badRequest(message: String) = BadRequest(Seq.empty, message)
 
-  def businessError(error: Error): BadRequest = businessError(Seq(error))
-  def businessError(errors: Seq[Error]): BadRequest = BadRequest(errors, "Business Validation Error")
+  def businessError(error: Error): BusinessError = businessError(Seq(error))
+  def businessError(errors: Seq[Error]): BusinessError = BusinessError(errors, "Business validation error")
 
   private def flattenValidationErrors(validationErrors: ValidationErrors): Seq[Error] = {
     validationErrors.flatMap { validationError =>

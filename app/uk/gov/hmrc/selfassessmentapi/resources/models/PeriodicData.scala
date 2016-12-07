@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.properties
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
-import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
-
-object IncomeType extends Enumeration {
-  type IncomeType = Value
-  val RentIncome = Value("rentIncome")
-  val PremiumsOfLeaseGrant = Value("premiumsOfLeaseGrant")
-  val ReversePremiums = Value("reversePremiums")
-  implicit val types = EnumJson.enumFormat(IncomeType, Some("UK Property Income type is invalid"))
-}
+trait PeriodicData

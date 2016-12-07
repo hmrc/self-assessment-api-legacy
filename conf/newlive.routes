@@ -16,14 +16,6 @@ GET /ni/:nino/self-employments/:id/periods/:periodId    uk.gov.hmrc.selfassessme
 PUT /ni/:nino/self-employments/:id/:taxYear    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 GET /ni/:nino/self-employments/:id/:taxYear    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 
-####################
-# Property Periods #
-####################
-POST /ni/:nino/properties/:id/periods   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.createPeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation)
-GET  /ni/:nino/properties/:id/periods   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrievePeriods(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation)
-GET  /ni/:nino/properties/:id/periods/:periodId   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrievePeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation, periodId: uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId)
-PUT  /ni/:nino/properties/:id/periods/:periodId   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.updatePeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation, periodId: uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId)
-
 #########################
 # Liability Calculation #
 #########################

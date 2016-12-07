@@ -515,9 +515,73 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "createPeriod" should {
     "return code 201 containing a location header when creating a period" in {
-      val incomes = Map(IncomeType.Turnover -> Income(50.55), IncomeType.Other -> Income(20.22))
-      val expenses = Map(ExpenseType.BadDebt -> Expense(50.55, Some(10)), ExpenseType.CostOfGoodsBought -> Expense(100.22, Some(10)))
-      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), incomes, expenses))
+
+      val period = s"""{
+        |  "from": "2017-04-01",
+        |  "to": "2017-07-04",
+        |  "incomes": {
+        |    "turnover": { "amount": 100.25 },
+        |    "other": { "amount": 100.25 }
+        |  },
+        |  "expenses": {
+        |    "costOfGoodsBought": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "cisPaymentsToSubcontractors": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "staffCosts": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "travelCosts": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "premisesRunningCosts": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "maintenanceCosts": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "adminCosts": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "advertisingCosts": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "interest": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "financialCharges": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "badDebt": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "professionalFees": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    },
+        |    "depreciation": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 100.25
+        |    },
+        |    "other": {
+        |      "amount": 100.25,
+        |      "disallowableAmount": 50.25
+        |    }
+        |  }
+        |}""".stripMargin
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -526,14 +590,17 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period).to(s"%sourceLocation%/periods")
+        .post(Json.parse(period)).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+/periods/\\w+".r)
     }
 
     "return code 400 when attempting to create a period with the 'from' and 'to' dates are in the incorrect order" in {
-      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.now.plusDays(1), LocalDate.now, Map.empty, Map.empty))
+      val periodOne = s"""{
+                      |  "from": "2017-04-01",
+                      |  "to": "2017-03-31"
+                      |}""".stripMargin
 
       val expectedBody =
         s"""
@@ -556,18 +623,42 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period).to(s"%sourceLocation%/periods")
+        .post(Json.parse(periodOne)).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
     }
 
-    "return code 403 when attempting to create a period whose date range overlaps or abuts with a period that already exists" in {
-      val periodOne = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-11"), Map.empty, Map.empty))
-      val periodTwo = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-12"), LocalDate.parse("2017-04-13"), Map.empty, Map.empty))
+    "return code 403 when attempting to create a period whose date range overlaps" in {
+      val periodOne = Json.parse(s"""{
+                      |  "from": "2017-04-01",
+                      |  "to": "2017-07-04"
+                      |}""".stripMargin)
 
-      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2017-04-16"), Map.empty, Map.empty))
+      val periodTwo = Json.parse(s"""{
+                         |  "from": "2017-07-05",
+                         |  "to": "2017-08-04"
+                         |}""".stripMargin)
+
+      val overlappingPeriod = Json.parse(s"""{
+                         |  "from": "2017-08-04",
+                         |  "to": "2017-09-04"
+                         |}""".stripMargin)
+
+      val expectedBody =
+        s"""
+           |{
+           |  "code": "BUSINESS_ERROR",
+           |  "message": "Business validation error",
+           |  "errors": [
+           |    {
+           |      "code": "OVERLAPPING_PERIOD",
+           |      "message": "Periods should not overlap"
+           |    }
+           |  ]
+           |}
+         """.stripMargin
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -584,87 +675,33 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(periodOne).to(s"%sourceLocation%/periods")
+        .post(overlappingPeriod).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(403)
-        .when()
-        .post(badPeriod).to(s"%sourceLocation%/periods")
-        .thenAssertThat()
-        .statusIs(403)
+        .bodyIsLike(expectedBody)
 
     }
 
     "return code 403 when attempting to create a period that would leave a gap between the latest period and the one provided" in {
-      val period = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-11"), Map.empty, Map.empty))
-      val badPeriod = Json.toJson(SelfEmploymentPeriod(LocalDate.parse("2017-04-13"), LocalDate.parse("2017-04-14"), Map.empty, Map.empty))
+      val periodOne = Json.parse(s"""{
+                                    |  "from": "2017-04-01",
+                                    |  "to": "2017-07-04"
+                                    |}""".stripMargin)
 
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .post(period).to(s"%sourceLocation%/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .post(badPeriod).to(s"%sourceLocation%/periods")
-        .thenAssertThat()
-        .statusIs(403)
-    }
-  }
-
-  "updatePeriod" should {
-    "return code 204 when updating a period that exists" in {
-      val period = SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), Map.empty, Map.empty)
-      val updatedPeriod = period.copy(to = period.to.plusDays(5))
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .post(Json.toJson(period)).to(s"%sourceLocation%/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Json.toJson(updatedPeriod)).at(s"%periodLocation%")
-        .thenAssertThat()
-        .statusIs(204)
-    }
-
-    "return code 404 when attempting to update a non-existent period" in {
-      val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty)
-      val updatedPeriod = period.copy(to = period.to.plusDays(5))
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Json.toJson(updatedPeriod)).at(s"%sourceLocation%/periods/thereisnoperiodhere")
-        .thenAssertThat()
-        .statusIs(404)
-    }
-
-    "return code 400 when attempting to update a period with the 'from' and 'to' dates are in the incorrect order" in {
-      val validPeriod = SelfEmploymentPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"), Map.empty, Map.empty)
-      val invalidPeriod = validPeriod.copy(from = validPeriod.to, to = validPeriod.from)
+      val periodTwoWithGap = Json.parse(s"""{
+                                    |  "from": "2017-07-06",
+                                    |  "to": "2017-08-04"
+                                    |}""".stripMargin)
 
       val expectedBody =
         s"""
            |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
+           |  "code": "BUSINESS_ERROR",
+           |  "message": "Business validation error",
            |  "errors": [
            |    {
-           |      "code": "INVALID_PERIOD",
-           |      "message": "the period 'from' date should come before the 'to' date"
+           |      "code": "GAP_PERIOD",
+           |      "message": "Periods should not contain gaps between each other"
            |    }
            |  ]
            |}
@@ -677,31 +714,73 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.toJson(validPeriod)).to(s"%sourceLocation%/periods")
+        .post(periodOne).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Json.toJson(invalidPeriod)).at(s"%periodLocation%")
+        .post(periodTwoWithGap).to(s"%sourceLocation%/periods")
         .thenAssertThat()
-        .statusIs(400)
-        .contentTypeIsJson()
+        .statusIs(403)
         .bodyIsLike(expectedBody)
     }
   }
 
-  "retrievePeriod" should {
-    "return code 200 when retrieving a period that exists" in {
-      val fromDate = LocalDate.parse("2017-04-01")
-      val toDate = LocalDate.parse("2017-04-02")
-      val period = Json.toJson(SelfEmploymentPeriod(fromDate, toDate, Map.empty, Map.empty))
+  "updatePeriod" should {
+    "return code 204 when updating a period that exists" in {
+      val period = s"""{
+                      |  "from": "2017-04-01",
+                      |  "to": "2017-07-04",
+                      |  "incomes": {
+                      |    "turnover": { "amount": 100.25 },
+                      |    "other": { "amount": 100.25 }
+                      |  },
+                      |  "expenses": {
+                      |    "costOfGoodsBought": {
+                      |      "amount": 100.25,
+                      |      "disallowableAmount": 50.25
+                      |    },
+                      |    "cisPaymentsToSubcontractors": {
+                      |      "amount": 100.25,
+                      |      "disallowableAmount": 50.25
+                      |    }
+                      |  }
+                      |}""".stripMargin
 
-      val expectedBody =
-        s"""
-           |{
-           |  "from": "$fromDate",
-           |  "to": "$toDate"
-           |}
-         """.stripMargin
+      val updatePeriod = s"""{
+                      |  "incomes": {
+                      |    "turnover": { "amount": 200.25 },
+                      |    "other": { "amount": 100.25 }
+                      |  },
+                      |  "expenses": {
+                      |    "costOfGoodsBought": {
+                      |      "amount": 200.25,
+                      |      "disallowableAmount": 50.25
+                      |    },
+                      |    "cisPaymentsToSubcontractors": {
+                      |      "amount": 100.25,
+                      |      "disallowableAmount": 50.25
+                      |    }
+                      |  }
+                      |}""".stripMargin
+
+      val updatedPeriod = s"""{
+                            |  "from": "2017-04-01",
+                            |  "to": "2017-07-04",
+                            |  "incomes": {
+                            |    "turnover": { "amount": 200.25 },
+                            |    "other": { "amount": 100.25 }
+                            |  },
+                            |  "expenses": {
+                            |    "costOfGoodsBought": {
+                            |      "amount": 200.25,
+                            |      "disallowableAmount": 50.25
+                            |    },
+                            |    "cisPaymentsToSubcontractors": {
+                            |      "amount": 100.25,
+                            |      "disallowableAmount": 50.25
+                            |    }
+                            |  }
+                            |}""".stripMargin
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -710,7 +789,79 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period).to(s"%sourceLocation%/periods")
+        .post(Json.parse(period)).to(s"%sourceLocation%/periods")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .put(Json.parse(updatePeriod)).at(s"%periodLocation%")
+        .thenAssertThat()
+        .statusIs(204)
+        .when()
+        .get(s"%periodLocation%")
+        .thenAssertThat()
+        .bodyIsLike(updatedPeriod)
+    }
+
+    "return code 404 when attempting to update a non-existent period" in {
+      val period = s"""{
+                      |  "incomes": {
+                      |    "turnover": { "amount": 100.25 },
+                      |    "other": { "amount": 100.25 }
+                      |  },
+                      |  "expenses": {
+                      |    "costOfGoodsBought": {
+                      |      "amount": 100.25,
+                      |      "disallowableAmount": 50.25
+                      |    },
+                      |    "cisPaymentsToSubcontractors": {
+                      |      "amount": 100.25,
+                      |      "disallowableAmount": 50.25
+                      |    }
+                      |  }
+                      |}""".stripMargin
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .put(Json.toJson(period)).at(s"%sourceLocation%/periods/thereisnoperiodhere")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+  }
+
+  "retrievePeriod" should {
+    "return code 200 when retrieving a period that exists" in {
+      val period = s"""{
+                      |  "from": "2017-04-01",
+                      |  "to": "2017-07-04",
+                      |  "incomes": {
+                      |    "turnover": { "amount": 100.25 },
+                      |    "other": { "amount": 100.25 }
+                      |  },
+                      |  "expenses": {
+                      |    "costOfGoodsBought": {
+                      |      "amount": 100.25,
+                      |      "disallowableAmount": 50.25
+                      |    },
+                      |    "cisPaymentsToSubcontractors": {
+                      |      "amount": 100.25,
+                      |      "disallowableAmount": 50.25
+                      |    }
+                      |  }
+                      |}""".stripMargin
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(Json.parse(period)).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -718,7 +869,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
+        .bodyIsLike(period)
         .bodyDoesNotHavePath[PeriodId]("periodId")
     }
 
@@ -739,22 +890,21 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrieveAllPeriods" should {
     "return code 200 when retrieving all periods where periods.size > 0, sorted by from date" in {
-      val periodOne = SelfEmploymentPeriod(
-        LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-16"), Map.empty, Map.empty)
-      val periodTwo = SelfEmploymentPeriod(
-        LocalDate.parse("2017-04-17"), LocalDate.parse("2017-04-18"), Map.empty, Map.empty)
+      val periodOne = s"""{
+                      |  "from": "2017-04-01",
+                      |  "to": "2017-07-04"
+                      |}""".stripMargin
+
+      val periodTwo = s"""{
+                         |  "from": "2017-07-05",
+                         |  "to": "2017-08-04"
+                         |}""".stripMargin
 
       val expectedBody =
         s"""
            |[
-           |  {
-           |    "from": "${periodOne.from}",
-           |    "to": "${periodOne.to}"
-           |  },
-           |  {
-           |    "from": "${periodTwo.from}",
-           |    "to": "${periodTwo.to}"
-           |  }
+           |  $periodOne,
+           |  $periodTwo
            |]
          """.stripMargin
 
@@ -765,11 +915,11 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.toJson(periodOne)).to(s"%sourceLocation%/periods")
+        .post(Json.parse(periodOne)).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.toJson(periodTwo)).to(s"%sourceLocation%/periods")
+        .post(Json.parse(periodTwo)).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()

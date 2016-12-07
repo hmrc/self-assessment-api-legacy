@@ -24,66 +24,62 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, Expense, Incom
 class SelfEmploymentPeriodSpec extends JsonSpec {
   "SelfEmploymentPeriod" should {
     "round trip" in {
-      val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), Map.empty, Map.empty)
+      val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1), SelfEmploymentPeriodicData(Map.empty, Map.empty))
       roundTripJson(period)
     }
 
     "return a INVALID_PERIOD error when using a period with a 'from' date that becomes before the 'to' date" in {
-      val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.minusDays(1), Map.empty, Map.empty)
-      assertValidationErrorWithCode(period,
-        "", ErrorCode.INVALID_PERIOD)
+      val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.minusDays(1), SelfEmploymentPeriodicData(Map.empty, Map.empty))
+      assertValidationErrorWithCode(period, "", ErrorCode.INVALID_PERIOD)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when income contains a negative value" in {
-      val period = SelfEmploymentPeriod(LocalDate.now.minusDays(1), LocalDate.now, Map(IncomeType.Turnover -> Income(-5000)), Map.empty)
+      val period = SelfEmploymentPeriod(LocalDate.now.minusDays(1), LocalDate.now, SelfEmploymentPeriodicData(Map(IncomeType.Turnover -> Income(-5000)), Map.empty))
 
-      assertValidationErrorWithCode(period,
-        "/incomes/turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+      assertValidationErrorWithCode(period, "/incomes/turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when income amount contains more than 2 decimal places" in {
-      val period = SelfEmploymentPeriod(LocalDate.now.minusDays(1), LocalDate.now, Map(IncomeType.Turnover -> Income(10.123)), Map.empty)
+      val period = SelfEmploymentPeriod(LocalDate.now.minusDays(1), LocalDate.now, SelfEmploymentPeriodicData(Map(IncomeType.Turnover -> Income(10.123)), Map.empty))
 
-      assertValidationErrorWithCode(period,
-        "/incomes/turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+      assertValidationErrorWithCode(period, "/incomes/turnover/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when expense contains a negative value" in {
       val period = SelfEmploymentPeriod(
-        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(-500, None), ExpenseType.BadDebt -> Expense(200, Some(100))))
+        LocalDate.now.minusDays(1), LocalDate.now, SelfEmploymentPeriodicData(Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(-500, None),
+          ExpenseType.BadDebt -> Expense(200, Some(100)))))
 
-      assertValidationErrorWithCode(period,
-        "/expenses/costOfGoodsBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+      assertValidationErrorWithCode(period, "/expenses/costOfGoodsBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_MONETARY_AMOUNT error when expense contains more than 2 decimal places" in {
       val period = SelfEmploymentPeriod(
-        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(500.123, None), ExpenseType.BadDebt -> Expense(200, None)))
+        LocalDate.now.minusDays(1), LocalDate.now, SelfEmploymentPeriodicData(Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(500.123, None),
+          ExpenseType.BadDebt -> Expense(200, None))))
 
-      assertValidationErrorWithCode(period,
-        "/expenses/costOfGoodsBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
+      assertValidationErrorWithCode(period, "/expenses/costOfGoodsBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "return a INVALID_DISALLOWABLE_AMOUNT error when expense disallowableAmount > amount" in {
       val period = SelfEmploymentPeriod(
-        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(500, Some(600)), ExpenseType.BadDebt -> Expense(200, Some(100))))
+        LocalDate.now.minusDays(1), LocalDate.now, SelfEmploymentPeriodicData(Map.empty, Map(ExpenseType.CostOfGoodsBought -> Expense(500, Some(600)),
+          ExpenseType.BadDebt -> Expense(200, Some(100)))))
 
-      assertValidationErrorWithCode(period,
-        "/expenses/costOfGoodsBought", ErrorCode.INVALID_DISALLOWABLE_AMOUNT)
+      assertValidationErrorWithCode(period, "/expenses/costOfGoodsBought", ErrorCode.INVALID_DISALLOWABLE_AMOUNT)
     }
 
     "return a DEPRECIATION_DISALLOWABLE_AMOUNT error when expense 'amount' and 'disallowableAmount' fields are not equal for depreciations" in {
       val period = SelfEmploymentPeriod(
-        LocalDate.now.minusDays(1), LocalDate.now, Map.empty, Map(ExpenseType.Depreciation -> Expense(200, Some(100)), ExpenseType.BadDebt -> Expense(200, Some(100))))
+        LocalDate.now.minusDays(1), LocalDate.now, SelfEmploymentPeriodicData(Map.empty, Map(ExpenseType.Depreciation -> Expense(200, Some(100)),
+          ExpenseType.BadDebt -> Expense(200, Some(100)))))
 
-      assertValidationErrorWithCode(period,
-        "/expenses", ErrorCode.DEPRECIATION_DISALLOWABLE_AMOUNT)
+      assertValidationErrorWithCode(period, "/expenses", ErrorCode.DEPRECIATION_DISALLOWABLE_AMOUNT)
     }
 
     "return an error when provided with an empty json body" in {
       assertValidationErrorsWithMessage[SelfEmploymentPeriod](Json.parse("{}"),
-        Map("/from" -> "error.path.missing",
-            "/to" -> "error.path.missing"))
+        Map("/from" -> "error.path.missing", "/to" -> "error.path.missing"))
     }
   }
 }

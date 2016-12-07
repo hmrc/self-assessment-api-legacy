@@ -21,14 +21,14 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentsRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, AnnualSummary, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AnnualSummary, SelfEmployment, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
 import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.errors.BusinessException
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait SelfEmploymentsService extends PeriodService[SourceId, SelfEmploymentPeriod, domain.SelfEmployment] {
+trait SelfEmploymentsService extends PeriodService[SourceId, SelfEmploymentPeriod, domain.SelfEmployment, SelfEmploymentPeriodicData] {
 
   def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]]
   def update(nino: Nino, selfEmployment: SelfEmployment, id: SourceId): Future[Boolean]

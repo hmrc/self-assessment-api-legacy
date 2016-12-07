@@ -20,9 +20,9 @@ import com.github.nscala_time.time.OrderingImplicits.LocalDateOrdering
 import org.joda.time.{DateTimeZone, Duration, Interval}
 import play.api.libs.json.Format
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
-import uk.gov.hmrc.selfassessmentapi.resources.models.Period
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodicData}
 
-abstract class PeriodContainer[P <: Period : Format, PC] {
+abstract class PeriodContainer[P <: Period : Format, PC, PD <: PeriodicData] {
 
   implicit val ordering: Ordering[P] = Ordering.by(_.from)
 
@@ -34,6 +34,7 @@ abstract class PeriodContainer[P <: Period : Format, PC] {
   def period(periodId: PeriodId): Option[P] = periods.get(periodId)
 
   def setPeriodsTo(periodId: PeriodId, period: P): PC
+  def update(periodId: PeriodId, periodicData: PD): PC
 
   def containsGap(period: P): Boolean = {
     val newPeriod = new Interval(period.from.toDateTimeAtStartOfDay(DateTimeZone.UTC), period.to.toDateTimeAtStartOfDay(DateTimeZone.UTC))

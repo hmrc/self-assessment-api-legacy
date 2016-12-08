@@ -20,249 +20,104 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+".r)
     }
 
     "return code 400 (INVALID_REQUEST) when attempting to create a self-employment with an invalid dates in the accountingPeriod" in {
-      val selfEmployment =
-        s"""
-           |{
-           |  "accountingPeriod": {
-           |    "start": "01-01-2017",
-           |    "end": "02-01-2017"
-           |  },
-           |  "accountingType": "CASH",
-           |  "commencementDate": "${LocalDate.now.minusDays(1)}"
-           |}
-         """.stripMargin
-
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
-           |  "errors": [
-           |    {
-           |      "code": "INVALID_DATE",
-           |      "path": "/accountingPeriod/start",
-           |      "message": "please provide a date in ISO format (i.e. YYYY-MM-DD)"
-           |    },
-           |    {
-           |      "code": "INVALID_DATE",
-           |      "path": "/accountingPeriod/end",
-           |      "message": "please provide a date in ISO format (i.e. YYYY-MM-DD)"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(Json.parse(selfEmployment)).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment(accPeriodStart = "01-01-2017", accPeriodEnd = "02-01-2017")).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
+        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_DATE", "/accountingPeriod/start"), ("INVALID_DATE", "/accountingPeriod/end")))
     }
 
     "return code 400 (INVALID_VALUE) when attempting to create a self-employment with an invalid accounting type" in {
-      val selfEmployment =
-        s"""
-           |{
-           |  "accountingPeriod": {
-           |    "start": "2017-04-06",
-           |    "end": "2018-04-06"
-           |  },
-           |  "accountingType": "NOOOOO",
-           |  "commencementDate": "2016-01-01"
-           |}
-         """.stripMargin
-
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
-           |  "errors": [
-           |    {
-           |      "code": "INVALID_VALUE",
-           |      "path": "/accountingType",
-           |      "message": "AccountingType should be either CASH or ACCRUAL"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(Json.parse(selfEmployment)).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment(accountingType = "INVALID_ACC_TYPE")).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
+        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_VALUE", "/accountingType")))
     }
   }
 
   "update" should {
     "return code 204 when successfully updating a self-employment resource" in {
-      val selfEmployment2 = Json.toJson(SelfEmployment(
-        accountingPeriod = AccountingPeriod(
-          start = LocalDate.parse("2017-04-01"),
-          end = LocalDate.parse("2017-04-02")),
-        accountingType = AccountingType.ACCRUAL,
-        commencementDate = LocalDate.parse("2016-01-01")
-      ))
+      val updatedSelfEmployment = Jsons.selfEmployment(accPeriodStart = "2017-04-01", accPeriodEnd = "2017-06-01",
+        accountingType = "ACCRUAL", commencementDate = "2016-01-01")
 
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(selfEmployment2).at("%sourceLocation%")
+        .put(updatedSelfEmployment).at("%sourceLocation%")
         .thenAssertThat()
         .statusIs(204)
         .when()
         .get("%sourceLocation%")
         .thenAssertThat()
-        .bodyIsLike(Json.toJson(selfEmployment2).toString)
+        .bodyIsLike(updatedSelfEmployment.toString)
     }
 
     "return code 404 when attempting to update a non-existent self-employment resource" in {
-      val selfEmployment2 = Json.toJson(selfEmployment.copy(commencementDate = LocalDate.now.minusDays(2)))
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(selfEmployment2).at(s"/ni/$nino/self-employments/invalidSourceId")
+        .put(Jsons.selfEmployment()).at(s"/ni/$nino/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
     }
 
     "return code 400 (INVALID_DATE) when attempting to update a self-employment with a non-ISO (i.e. YYYY-MM-DD) date" in {
-      val invalidDateJson =
-        s"""
-           |{
-           |  "accountingPeriod": {
-           |    "start": "2017-04-06",
-           |    "end": "2018-04-06"
-           |  },
-           |  "accountingType": "CASH",
-           |  "commencementDate": "22-10-2016"
-           |}
-         """.stripMargin
-
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
-           |  "errors": [
-           |    {
-           |      "code": "INVALID_DATE",
-           |      "path": "/commencementDate",
-           |      "message": "please provide a date in ISO format (i.e. YYYY-MM-DD)"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Json.parse(invalidDateJson)).at(s"%sourceLocation%")
+        .put(Jsons.selfEmployment(commencementDate = "22-10-2016")).at(s"%sourceLocation%")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
+        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_DATE", "/commencementDate")))
     }
 
-    "return code 400 (INVALID_DATE) when attempting to create a self-employment with an empty date" in {
-      val invalidDateJson =
-        s"""
-           |{
-           |  "accountingPeriod": {
-           |    "start": "2017-04-06",
-           |    "end": "2018-04-06"
-           |  },
-           |  "accountingType": "CASH",
-           |  "commencementDate": ""
-           |}
-         """.stripMargin
-
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
-           |  "errors": [
-           |    {
-           |      "code": "INVALID_DATE",
-           |      "path": "/commencementDate",
-           |      "message": "please provide a date in ISO format (i.e. YYYY-MM-DD)"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
-
+    "return code 400 (INVALID_DATE) when attempting to update a self-employment with an empty date" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Json.parse(invalidDateJson)).at(s"%sourceLocation%")
+        .put(Jsons.selfEmployment(commencementDate = "")).at(s"%sourceLocation%")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
+        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_DATE", "/commencementDate")))
     }
 
     "return code 400 (MANDATORY_FIELD_MISSING) when attempting to update a self-employment with an empty body" in {
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
-           |  "errors": [
-           |    {
-           |      "code": "MANDATORY_FIELD_MISSING",
-           |      "path": "/accountingPeriod",
-           |      "message": "a mandatory field is missing"
-           |    },
-           |    {
-           |      "code": "MANDATORY_FIELD_MISSING",
-           |      "path": "/accountingType",
-           |      "message": "a mandatory field is missing"
-           |    },
-           |    {
-           |      "code": "MANDATORY_FIELD_MISSING",
-           |      "path": "/commencementDate",
-           |      "message": "a mandatory field is missing"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -270,70 +125,32 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
+        .bodyIsLike(Jsons.Errors.invalidRequest(("MANDATORY_FIELD_MISSING", "/accountingPeriod"),
+          ("MANDATORY_FIELD_MISSING", "/accountingType"), ("MANDATORY_FIELD_MISSING", "/commencementDate")))
     }
 
     "return code 400 (INVALID_VALUE) when attempting to update a self-employment with an invalid accounting type" in {
-      val updatedSelfEmployment =
-        s"""
-           |{
-           |  "accountingPeriod": {
-           |    "start": "2017-04-06",
-           |    "end": "2018-04-06"
-           |  },
-           |  "accountingType": "NOOOOO",
-           |  "commencementDate": "2016-01-01"
-           |}
-         """.stripMargin
-
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
-           |  "errors": [
-           |    {
-           |      "code": "INVALID_VALUE",
-           |      "path": "/accountingType",
-           |      "message": "AccountingType should be either CASH or ACCRUAL"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Json.parse(updatedSelfEmployment)).at(s"%sourceLocation%")
+        .put(Jsons.selfEmployment(accountingType = "INVALID")).at(s"%sourceLocation%")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
+        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_VALUE", "/accountingType")))
     }
   }
 
   "retrieve" should {
     "return code 200 when retrieving a self-employment resource that exists" in {
-      val expectedBody =
-        s"""
-           |{
-           |  "accountingPeriod": {
-           |    "start": "2017-04-01",
-           |    "end": "2018-04-01"
-           |  },
-           |  "accountingType": "CASH",
-           |  "commencementDate": "${LocalDate.now.minusDays(1)}"
-           |}
-       """.stripMargin
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -341,7 +158,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
+        .bodyIsLike(Jsons.selfEmployment().toString())
     }
 
     "return code 404 when retrieving a self-employment resource that does not exist" in {
@@ -360,21 +177,14 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       val expectedBody =
         s"""
            |[
-           |  {
-           |    "accountingPeriod": {
-           |      "start": "2017-04-01",
-           |      "end": "2018-04-01"
-           |    },
-           |    "accountingType": "CASH",
-           |    "commencementDate": "${LocalDate.now.minusDays(1)}"
-           |  }
+           |  ${Jsons.selfEmployment().toString()}
            |]
          """.stripMargin
 
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -403,7 +213,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()

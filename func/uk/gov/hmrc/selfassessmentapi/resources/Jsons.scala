@@ -15,11 +15,24 @@ object Jsons {
          |    }
          """.stripMargin
     }
+
     def invalidRequest(errors: (String, String)*): String = {
       s"""
          |{
          |  "code": "INVALID_REQUEST",
          |  "message": "Invalid request",
+         |  "errors": [
+         |    ${errors.map { error }.mkString(",")}
+         |  ]
+         |}
+         """.stripMargin
+    }
+
+    def businessError(errors: (String, String)*): String = {
+      s"""
+         |{
+         |  "code": "BUSINESS_ERROR",
+         |  "message": "Business validation error",
          |  "errors": [
          |    ${errors.map { error }.mkString(",")}
          |  ]
@@ -38,9 +51,45 @@ object Jsons {
          |    "end": "$accPeriodEnd"
          |  },
          |  "accountingType": "$accountingType",
-         |  "commencementDate": "${LocalDate.now.minusDays(1)}"
+         |  "commencementDate": "$commencementDate"
          |}
          """.stripMargin)
   }
 
+  def selfEmploymentAnnualSummary(annualInvestmentAllowance: BigDecimal = 500.25, capitalAllowanceMainPool: BigDecimal = 500.25,
+                                  capitalAllowanceSpecialRatePool: BigDecimal = 500.25, businessPremisesRenovationAllowance: BigDecimal = 500.25,
+                                  enhancedCapitalAllowance: BigDecimal = 500.25, allowanceOnSales: BigDecimal = 500.25,
+                                  zeroEmissionGoodsVehicleAllowance: BigDecimal = 500.25,
+                                  includedNonTaxableProfits: BigDecimal = 500.25, basisAdjustment: BigDecimal = -500.25,
+                                  overlapReliefUsed: BigDecimal = 500.25, accountingAdjustment: BigDecimal = 500.25,
+                                  averagingAdjustment: BigDecimal = -500.25, lossBroughtForward: BigDecimal = 500.25,
+                                  outstandingBusinessIncome: BigDecimal = 500.25, balancingChargeBPRA: BigDecimal = 500.25,
+                                  balancingChargeOther: BigDecimal = 500.25, goodsAndServicesOwnUse: BigDecimal = 500.25): JsValue = {
+    Json.parse(
+      s"""
+         |{
+         |  "allowances": {
+         |    "annualInvestmentAllowance": $annualInvestmentAllowance,
+         |    "capitalAllowanceMainPool": $capitalAllowanceMainPool,
+         |    "capitalAllowanceSpecialRatePool": $capitalAllowanceSpecialRatePool,
+         |    "businessPremisesRenovationAllowance": $businessPremisesRenovationAllowance,
+         |    "enhancedCapitalAllowance": $enhancedCapitalAllowance,
+         |    "allowanceOnSales": $allowanceOnSales,
+         |    "zeroEmissionGoodsVehicleAllowance": $zeroEmissionGoodsVehicleAllowance
+         |  },
+         |  "adjustments": {
+         |    "includedNonTaxableProfits": $includedNonTaxableProfits,
+         |    "basisAdjustment": $basisAdjustment,
+         |    "overlapReliefUsed": $overlapReliefUsed,
+         |    "accountingAdjustment": $accountingAdjustment,
+         |    "averagingAdjustment": $averagingAdjustment,
+         |    "lossBroughtForward": $lossBroughtForward,
+         |    "outstandingBusinessIncome": $outstandingBusinessIncome,
+         |    "balancingChargeBPRA": $balancingChargeBPRA,
+         |    "balancingChargeOther": $balancingChargeOther,
+         |    "goodsAndServicesOwnUse": $goodsAndServicesOwnUse
+         |  }
+         |}
+       """.stripMargin)
+  }
 }

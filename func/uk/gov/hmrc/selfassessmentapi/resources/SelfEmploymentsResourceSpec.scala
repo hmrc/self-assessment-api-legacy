@@ -1,19 +1,10 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import org.joda.time.LocalDate
-import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
+import play.api.libs.json.Json
+import uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
-
-  val selfEmployment = SelfEmployment(
-    accountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2018-04-01")),
-    accountingType = AccountingType.CASH,
-    commencementDate = LocalDate.now.minusDays(1))
-
-  implicit def selfEmployment2Json(selfEmployment: SelfEmployment): JsValue = Json.toJson(selfEmployment)
 
   "create" should {
     "return code 201 when creating a valid a self-employment source of income" in {
@@ -208,8 +199,6 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "updateAnnualSummary" should {
     "return code 204 when updating an annual summary for a valid self-employment source" in {
-      val annualSummaries = Json.toJson(AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -217,61 +206,35 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(annualSummaries).at(s"%sourceLocation%/$taxYear")
+        .put(Jsons.selfEmploymentAnnualSummary()).at(s"%sourceLocation%/$taxYear")
         .thenAssertThat()
         .statusIs(204)
     }
 
     "return code 404 when updating an annual summary for an invalid self-employment source" in {
-      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(annualSummaries).at(s"/ni/$nino/self-employments/sillysource/$taxYear")
+        .put(Jsons.selfEmploymentAnnualSummary()).at(s"/ni/$nino/self-employments/sillysource/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }
 
     "return code 400 when updating an annual summary providing an invalid adjustment & allowance" in {
-      val invalidAdjustment = Adjustments.example.copy(includedNonTaxableProfits = Some(-100), overlapReliefUsed = Some(-100), goodsAndServicesOwnUse = Some(-50))
-      val invalidAllowances = Allowances.example.copy(capitalAllowanceMainPool = Some(-100))
-      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(invalidAllowances), Some(invalidAdjustment)))
+      val annualSummaries = Jsons.selfEmploymentAnnualSummary(
+        includedNonTaxableProfits = -100, overlapReliefUsed = -100,
+        goodsAndServicesOwnUse = -100, capitalAllowanceMainPool = -100)
 
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
-           |  "errors": [
-           |    {
-           |      "code": "INVALID_MONETARY_AMOUNT",
-           |      "path": "/adjustments/includedNonTaxableProfits",
-           |      "message": "amounts should be positive numbers with up to 2 decimal places"
-           |    },
-           |    {
-           |      "code": "INVALID_MONETARY_AMOUNT",
-           |      "path": "/adjustments/overlapReliefUsed",
-           |      "message": "amounts should be positive numbers with up to 2 decimal places"
-           |    },
-           |    {
-           |      "code": "INVALID_MONETARY_AMOUNT",
-           |      "path": "/adjustments/goodsAndServicesOwnUse",
-           |      "message": "amounts should be positive numbers with up to 2 decimal places"
-           |    },
-           |    {
-           |      "code": "INVALID_MONETARY_AMOUNT",
-           |      "path": "/allowances/capitalAllowanceMainPool",
-           |      "message": "amounts should be positive numbers with up to 2 decimal places"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
+      val expectedBody = Jsons.Errors.invalidRequest(
+         ("INVALID_MONETARY_AMOUNT", "/adjustments/includedNonTaxableProfits"),
+        ("INVALID_MONETARY_AMOUNT", "/adjustments/overlapReliefUsed"),
+        ("INVALID_MONETARY_AMOUNT", "/adjustments/goodsAndServicesOwnUse"),
+        ("INVALID_MONETARY_AMOUNT", "/allowances/capitalAllowanceMainPool"))
 
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -285,13 +248,13 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrieveAnnualSummary" should {
     "return code 200 when retrieving an annual summary that exists" in {
-      val annualSummaries = Json.toJson(selfemployment.AnnualSummary(Some(Allowances.example), Some(Adjustments.example)))
-      val expectedJson = Json.toJson(annualSummaries).toString()
+      val annualSummaries = Jsons.selfEmploymentAnnualSummary()
+      val expectedJson = annualSummaries.toString()
 
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -311,7 +274,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -327,7 +290,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 201 containing a location header when creating a period" in {
 
       val period = s"""{
-        |  "from": "2017-04-01",
+        |  "from": "2017-04-06",
         |  "to": "2017-07-04",
         |  "incomes": {
         |    "turnover": { "amount": 100.25 },
@@ -396,7 +359,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -412,24 +375,12 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
                       |  "to": "2017-03-31"
                       |}""".stripMargin
 
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "INVALID_REQUEST",
-           |  "message": "Invalid request",
-           |  "errors": [
-           |    {
-           |      "code": "INVALID_PERIOD",
-           |      "message": "the period 'from' date should come before the 'to' date"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
+      val expectedBody = Jsons.Errors.invalidRequest(("INVALID_PERIOD", ""))
 
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -442,7 +393,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
     "return code 403 when attempting to create a period whose date range overlaps" in {
       val periodOne = Json.parse(s"""{
-                      |  "from": "2017-04-01",
+                      |  "from": "2017-04-06",
                       |  "to": "2017-07-04"
                       |}""".stripMargin)
 
@@ -456,24 +407,12 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
                          |  "to": "2017-09-04"
                          |}""".stripMargin)
 
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "BUSINESS_ERROR",
-           |  "message": "Business validation error",
-           |  "errors": [
-           |    {
-           |      "code": "OVERLAPPING_PERIOD",
-           |      "message": "Periods should not overlap"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
+      val expectedBody = Jsons.Errors.businessError(("OVERLAPPING_PERIOD", ""))
 
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -494,7 +433,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
     "return code 403 when attempting to create a period that would leave a gap between the latest period and the one provided" in {
       val periodOne = Json.parse(s"""{
-                                    |  "from": "2017-04-01",
+                                    |  "from": "2017-04-06",
                                     |  "to": "2017-07-04"
                                     |}""".stripMargin)
 
@@ -503,24 +442,12 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
                                     |  "to": "2017-08-04"
                                     |}""".stripMargin)
 
-      val expectedBody =
-        s"""
-           |{
-           |  "code": "BUSINESS_ERROR",
-           |  "message": "Business validation error",
-           |  "errors": [
-           |    {
-           |      "code": "GAP_PERIOD",
-           |      "message": "Periods should not contain gaps between each other"
-           |    }
-           |  ]
-           |}
-         """.stripMargin
+      val expectedBody = Jsons.Errors.businessError(("GAP_PERIOD", ""))
 
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -538,7 +465,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
   "updatePeriod" should {
     "return code 204 when updating a period that exists" in {
       val period = s"""{
-                      |  "from": "2017-04-01",
+                      |  "from": "2017-04-06",
                       |  "to": "2017-07-04",
                       |  "incomes": {
                       |    "turnover": { "amount": 100.25 },
@@ -574,7 +501,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
                       |}""".stripMargin
 
       val updatedPeriod = s"""{
-                            |  "from": "2017-04-01",
+                            |  "from": "2017-04-06",
                             |  "to": "2017-07-04",
                             |  "incomes": {
                             |    "turnover": { "amount": 200.25 },
@@ -595,7 +522,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -633,7 +560,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -646,7 +573,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
   "retrievePeriod" should {
     "return code 200 when retrieving a period that exists" in {
       val period = s"""{
-                      |  "from": "2017-04-01",
+                      |  "from": "2017-04-06",
                       |  "to": "2017-07-04",
                       |  "incomes": {
                       |    "turnover": { "amount": 100.25 },
@@ -667,7 +594,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -688,7 +615,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -701,7 +628,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
   "retrieveAllPeriods" should {
     "return code 200 when retrieving all periods where periods.size > 0, sorted by from date" in {
       val periodOne = s"""{
-                      |  "from": "2017-04-01",
+                      |  "from": "2017-04-06",
                       |  "to": "2017-07-04"
                       |}""".stripMargin
 
@@ -721,7 +648,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -745,7 +672,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(selfEmployment).to(s"/ni/$nino/self-employments")
+        .post(Jsons.selfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()

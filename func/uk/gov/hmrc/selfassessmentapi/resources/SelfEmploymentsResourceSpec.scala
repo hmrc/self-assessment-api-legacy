@@ -289,72 +289,9 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
   "createPeriod" should {
     "return code 201 containing a location header when creating a period" in {
 
-      val period = s"""{
-        |  "from": "2017-04-06",
-        |  "to": "2017-07-04",
-        |  "incomes": {
-        |    "turnover": { "amount": 100.25 },
-        |    "other": { "amount": 100.25 }
-        |  },
-        |  "expenses": {
-        |    "costOfGoodsBought": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "cisPaymentsToSubcontractors": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "staffCosts": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "travelCosts": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "premisesRunningCosts": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "maintenanceCosts": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "adminCosts": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "advertisingCosts": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "interest": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "financialCharges": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "badDebt": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "professionalFees": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    },
-        |    "depreciation": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 100.25
-        |    },
-        |    "other": {
-        |      "amount": 100.25,
-        |      "disallowableAmount": 50.25
-        |    }
-        |  }
-        |}""".stripMargin
+      val period = Jsons.selfEmploymentPeriod(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -363,7 +300,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.parse(period)).to(s"%sourceLocation%/periods")
+        .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+/periods/\\w+".r)
@@ -392,20 +329,9 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 403 when attempting to create a period whose date range overlaps" in {
-      val periodOne = Json.parse(s"""{
-                      |  "from": "2017-04-06",
-                      |  "to": "2017-07-04"
-                      |}""".stripMargin)
-
-      val periodTwo = Json.parse(s"""{
-                         |  "from": "2017-07-05",
-                         |  "to": "2017-08-04"
-                         |}""".stripMargin)
-
-      val overlappingPeriod = Json.parse(s"""{
-                         |  "from": "2017-08-04",
-                         |  "to": "2017-09-04"
-                         |}""".stripMargin)
+      val periodOne = Jsons.selfEmploymentPeriod(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
+      val periodTwo = Jsons.selfEmploymentPeriod(fromDate = Some("2017-07-05"), toDate = Some("2017-08-04"))
+      val overlappingPeriod = Jsons.selfEmploymentPeriod(fromDate = Some("2017-08-04"), toDate = Some("2017-09-04"))
 
       val expectedBody = Jsons.Errors.businessError(("OVERLAPPING_PERIOD", ""))
 
@@ -432,15 +358,8 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 403 when attempting to create a period that would leave a gap between the latest period and the one provided" in {
-      val periodOne = Json.parse(s"""{
-                                    |  "from": "2017-04-06",
-                                    |  "to": "2017-07-04"
-                                    |}""".stripMargin)
-
-      val periodTwoWithGap = Json.parse(s"""{
-                                    |  "from": "2017-07-06",
-                                    |  "to": "2017-08-04"
-                                    |}""".stripMargin)
+      val periodOne = Jsons.selfEmploymentPeriod(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
+      val periodTwoWithGap = Jsons.selfEmploymentPeriod(fromDate = Some("2017-07-06"), toDate = Some("2017-08-04"))
 
       val expectedBody = Jsons.Errors.businessError(("GAP_PERIOD", ""))
 
@@ -464,60 +383,19 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "updatePeriod" should {
     "return code 204 when updating a period that exists" in {
-      val period = s"""{
-                      |  "from": "2017-04-06",
-                      |  "to": "2017-07-04",
-                      |  "incomes": {
-                      |    "turnover": { "amount": 100.25 },
-                      |    "other": { "amount": 100.25 }
-                      |  },
-                      |  "expenses": {
-                      |    "costOfGoodsBought": {
-                      |      "amount": 100.25,
-                      |      "disallowableAmount": 50.25
-                      |    },
-                      |    "cisPaymentsToSubcontractors": {
-                      |      "amount": 100.25,
-                      |      "disallowableAmount": 50.25
-                      |    }
-                      |  }
-                      |}""".stripMargin
+      val period = Jsons.selfEmploymentPeriod(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"),
+        turnover = 100.25,
+        otherIncome = 100.25,
+        costOfGoodsBought = (100.25, 50.25),
+        cisPaymentsToSubcontractors = (100.25, 50.25))
 
-      val updatePeriod = s"""{
-                      |  "incomes": {
-                      |    "turnover": { "amount": 200.25 },
-                      |    "other": { "amount": 100.25 }
-                      |  },
-                      |  "expenses": {
-                      |    "costOfGoodsBought": {
-                      |      "amount": 200.25,
-                      |      "disallowableAmount": 50.25
-                      |    },
-                      |    "cisPaymentsToSubcontractors": {
-                      |      "amount": 100.25,
-                      |      "disallowableAmount": 50.25
-                      |    }
-                      |  }
-                      |}""".stripMargin
-
-      val updatedPeriod = s"""{
-                            |  "from": "2017-04-06",
-                            |  "to": "2017-07-04",
-                            |  "incomes": {
-                            |    "turnover": { "amount": 200.25 },
-                            |    "other": { "amount": 100.25 }
-                            |  },
-                            |  "expenses": {
-                            |    "costOfGoodsBought": {
-                            |      "amount": 200.25,
-                            |      "disallowableAmount": 50.25
-                            |    },
-                            |    "cisPaymentsToSubcontractors": {
-                            |      "amount": 100.25,
-                            |      "disallowableAmount": 50.25
-                            |    }
-                            |  }
-                            |}""".stripMargin
+      val updatePeriod = Jsons.selfEmploymentPeriod(
+        turnover = 200.25,
+        otherIncome = 100.25,
+        costOfGoodsBought = (200.25, 50.25),
+        cisPaymentsToSubcontractors = (100.25, 55.25))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -526,36 +404,27 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.parse(period)).to(s"%sourceLocation%/periods")
+        .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Json.parse(updatePeriod)).at(s"%periodLocation%")
+        .put(updatePeriod).at(s"%periodLocation%")
         .thenAssertThat()
         .statusIs(204)
         .when()
         .get(s"%periodLocation%")
         .thenAssertThat()
-        .bodyIsLike(updatedPeriod)
+        .bodyIsLike(updatePeriod.toString)
     }
 
     "return code 404 when attempting to update a non-existent period" in {
-      val period = s"""{
-                      |  "incomes": {
-                      |    "turnover": { "amount": 100.25 },
-                      |    "other": { "amount": 100.25 }
-                      |  },
-                      |  "expenses": {
-                      |    "costOfGoodsBought": {
-                      |      "amount": 100.25,
-                      |      "disallowableAmount": 50.25
-                      |    },
-                      |    "cisPaymentsToSubcontractors": {
-                      |      "amount": 100.25,
-                      |      "disallowableAmount": 50.25
-                      |    }
-                      |  }
-                      |}""".stripMargin
+      val period = Jsons.selfEmploymentPeriod(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"),
+        turnover = 100.25,
+        otherIncome = 100.25,
+        costOfGoodsBought = (100.25, 50.25),
+        cisPaymentsToSubcontractors = (100.25, 50.25))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -572,24 +441,13 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrievePeriod" should {
     "return code 200 when retrieving a period that exists" in {
-      val period = s"""{
-                      |  "from": "2017-04-06",
-                      |  "to": "2017-07-04",
-                      |  "incomes": {
-                      |    "turnover": { "amount": 100.25 },
-                      |    "other": { "amount": 100.25 }
-                      |  },
-                      |  "expenses": {
-                      |    "costOfGoodsBought": {
-                      |      "amount": 100.25,
-                      |      "disallowableAmount": 50.25
-                      |    },
-                      |    "cisPaymentsToSubcontractors": {
-                      |      "amount": 100.25,
-                      |      "disallowableAmount": 50.25
-                      |    }
-                      |  }
-                      |}""".stripMargin
+      val period = Jsons.selfEmploymentPeriod(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"),
+        turnover = 100.25,
+        otherIncome = 100.25,
+        costOfGoodsBought = (100.25, 50.25),
+        cisPaymentsToSubcontractors = (100.25, 50.25))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -598,7 +456,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.parse(period)).to(s"%sourceLocation%/periods")
+        .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -606,7 +464,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
-        .bodyIsLike(period)
+        .bodyIsLike(period.toString)
         .bodyDoesNotHavePath[PeriodId]("periodId")
     }
 
@@ -627,21 +485,20 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrieveAllPeriods" should {
     "return code 200 when retrieving all periods where periods.size > 0, sorted by from date" in {
-      val periodOne = s"""{
-                      |  "from": "2017-04-06",
-                      |  "to": "2017-07-04"
-                      |}""".stripMargin
-
-      val periodTwo = s"""{
-                         |  "from": "2017-07-05",
-                         |  "to": "2017-08-04"
-                         |}""".stripMargin
+      val periodOne = Jsons.selfEmploymentPeriod(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
+      val periodTwo = Jsons.selfEmploymentPeriod(fromDate = Some("2017-07-05"), toDate = Some("2017-08-04"))
 
       val expectedBody =
         s"""
            |[
-           |  $periodOne,
-           |  $periodTwo
+           |  {
+           |    "from": "2017-04-06",
+           |    "to": "2017-07-04"
+           |  },
+           |  {
+           |    "from": "2017-07-05",
+           |    "to": "2017-08-04"
+           |  }
            |]
          """.stripMargin
 
@@ -652,11 +509,11 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.parse(periodOne)).to(s"%sourceLocation%/periods")
+        .post(periodOne).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.parse(periodTwo)).to(s"%sourceLocation%/periods")
+        .post(periodTwo).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -665,7 +522,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
-        .selectFields(_ \\ "periodId").matches("\\w+".r)
+        .selectFields(_ \\ "periodId").isLength(2).matches("\\w+".r)
     }
 
     "return code 200 containing an empty json body when retrieving all periods where periods.size == 0" in {

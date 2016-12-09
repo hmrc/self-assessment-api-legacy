@@ -92,4 +92,57 @@ object Jsons {
          |}
        """.stripMargin)
   }
+
+  def selfEmploymentPeriod(fromDate: Option[String] = None, toDate: Option[String] = None,
+                           turnover: BigDecimal = 0, otherIncome: BigDecimal = 0,
+                           costOfGoodsBought: (BigDecimal, BigDecimal) = (0, 0), cisPaymentsToSubcontractors: (BigDecimal, BigDecimal) = (0, 0),
+                           staffCosts: (BigDecimal, BigDecimal) = (0, 0), travelCosts: (BigDecimal, BigDecimal) = (0, 0),
+                           premisesRunningCosts: (BigDecimal, BigDecimal) = (0, 0), maintenanceCosts: (BigDecimal, BigDecimal) = (0, 0),
+                           adminCosts: (BigDecimal, BigDecimal) = (0, 0), advertisingCosts: (BigDecimal, BigDecimal) = (0, 0),
+                           interest: (BigDecimal, BigDecimal) = (0, 0), financialCharges: (BigDecimal, BigDecimal) = (0, 0),
+                           badDebt: (BigDecimal, BigDecimal) = (0, 0), professionalFees: (BigDecimal, BigDecimal) = (0, 0),
+                           depreciation: (BigDecimal, BigDecimal) = (0, 0), otherExpenses: (BigDecimal, BigDecimal) = (0, 0)): JsValue = {
+
+    val from =
+      fromDate.map { date =>
+        s"""
+           | "from": "$date",
+         """.stripMargin
+      }.getOrElse("")
+
+    val to =
+      toDate.map { date =>
+        s"""
+           | "to": "$date",
+         """.stripMargin
+      }.getOrElse("")
+
+    Json.parse(
+      s"""
+         |{
+         |  $from
+         |  $to
+         |  "incomes": {
+         |    "turnover": { "amount": $turnover },
+         |    "other": { "amount": $otherIncome }
+         |  },
+         |  "expenses": {
+         |    "costOfGoodsBought": { "amount": ${costOfGoodsBought._1}, "disallowableAmount": ${costOfGoodsBought._2} },
+         |    "cisPaymentsToSubcontractors": { "amount": ${cisPaymentsToSubcontractors._1}, "disallowableAmount": ${cisPaymentsToSubcontractors._2} },
+         |    "staffCosts": { "amount": ${staffCosts._1}, "disallowableAmount": ${staffCosts._2} },
+         |    "travelCosts": { "amount": ${travelCosts._1}, "disallowableAmount": ${travelCosts._2} },
+         |    "premisesRunningCosts": { "amount": ${premisesRunningCosts._1}, "disallowableAmount": ${premisesRunningCosts._2} },
+         |    "maintenanceCosts": { "amount": ${maintenanceCosts._1}, "disallowableAmount": ${maintenanceCosts._2} },
+         |    "adminCosts": { "amount": ${adminCosts._1}, "disallowableAmount": ${adminCosts._2} },
+         |    "advertisingCosts": { "amount": ${advertisingCosts._1}, "disallowableAmount": ${advertisingCosts._2} },
+         |    "interest": { "amount": ${interest._1}, "disallowableAmount": ${interest._2} },
+         |    "financialCharges": { "amount": ${financialCharges._1}, "disallowableAmount": ${financialCharges._2} },
+         |    "badDebt": { "amount": ${badDebt._1}, "disallowableAmount": ${badDebt._2} },
+         |    "professionalFees": { "amount": ${professionalFees._1}, "disallowableAmount": ${professionalFees._2} },
+         |    "depreciation": { "amount": ${depreciation._1}, "disallowableAmount": ${depreciation._2} },
+         |    "other": { "amount": ${otherExpenses._1}, "disallowableAmount": ${otherExpenses._2} }
+         |  }
+         |}
+       """.stripMargin)
+  }
 }

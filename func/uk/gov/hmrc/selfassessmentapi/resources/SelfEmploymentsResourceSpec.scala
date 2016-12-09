@@ -185,6 +185,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
+        .selectFields(_ \\ "id").isLength(1).matches("\\w+".r)
     }
 
     "return code 200 with an empty body when the user has no self-employment sources" in {

@@ -44,8 +44,10 @@ case class SelfEmployment(id: BSONObjectID,
     else !(period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end))
   }
 
-  def toModel: selfemployment.SelfEmployment =
-    selfemployment.SelfEmployment(None, accountingPeriod, accountingType, commencementDate)
+  def toModel(elideID: Boolean = false): selfemployment.SelfEmployment = {
+    val id = if (elideID) None else Some(sourceId)
+    selfemployment.SelfEmployment(id, accountingPeriod, accountingType, commencementDate)
+  }
 
   override def setPeriodsTo(periodId: PeriodId, period: SelfEmploymentPeriod): SelfEmployment =
     this.copy(periods = periods.updated(periodId, period))

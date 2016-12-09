@@ -1,6 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Adjustments, _}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -96,6 +97,7 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(period.toString())
+        .bodyDoesNotHavePath[PeriodId]("id")
     }
 
     "return code 404 when retrieving a non-existent period with a bad identifier" in {

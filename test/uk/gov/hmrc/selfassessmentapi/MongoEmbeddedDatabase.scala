@@ -37,7 +37,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
   private val diskPort = 27017
   private val embeddedPort = 12345
   private val localhost = "127.0.0.1"
-  private val mongoUri = sys.env.getOrElse("MONGO_TEST_URI", s"mongodb://$localhost:$diskPort/self-assessment-api")
+  private val mongoUri = sys.env.getOrElse("MONGO_TEST_URI", s"mongodb://$localhost:$embeddedPort/self-assessment-api")
   private lazy val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
   lazy val runtimeConfig = new RuntimeConfigBuilder()
     .defaults(Command.MongoD)

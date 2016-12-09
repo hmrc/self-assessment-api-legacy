@@ -145,4 +145,57 @@ object Jsons {
          |}
        """.stripMargin)
   }
+
+  def propertiesPeriod(fromDate: Option[String] = None, toDate: Option[String] = None,
+                       rentIncome: BigDecimal = 0,
+                       premiumsOfLeaseGrant: BigDecimal = 0,
+                       reversePremiums: BigDecimal = 0,
+                       premisesRunningCosts: (BigDecimal, BigDecimal) = (0, 0),
+                       repairsAndMaintenance: (BigDecimal, BigDecimal) = (0, 0),
+                       financialCosts: (BigDecimal, BigDecimal) = (0, 0),
+                       professionalFees: (BigDecimal, BigDecimal) = (0, 0),
+                       costOfServices: (BigDecimal, BigDecimal) = (0, 0),
+                       otherCost: (BigDecimal, BigDecimal) = (0, 0),
+                       privateUseAdjustment : BigDecimal = 0,
+                       balancingCharge : BigDecimal = 0
+                      ): JsValue = {
+
+    val from =
+      fromDate.map { date =>
+        s"""
+           | "from": "$date",
+         """.stripMargin
+      }.getOrElse("")
+
+    val to =
+      toDate.map { date =>
+        s"""
+           | "to": "$date",
+         """.stripMargin
+      }.getOrElse("")
+
+    Json.parse(
+      s"""
+         |{
+         |  $from
+         |  $to
+         |  "incomes": {
+         |    "rentIncome": { "amount": $rentIncome },
+         |    "premiumsOfLeaseGrant": { "amount": $premiumsOfLeaseGrant },
+         |    "reversePremiums": { "amount": $reversePremiums }
+         |  },
+         |  "expenses": {
+         |    "premisesRunningCosts": { "amount": ${premisesRunningCosts._1}, "disallowableAmount": ${premisesRunningCosts._2} },
+         |    "repairsAndMaintenance": { "amount": ${repairsAndMaintenance._1}, "disallowableAmount": ${repairsAndMaintenance._2} },
+         |    "financialCosts": { "amount": ${financialCosts._1}, "disallowableAmount": ${financialCosts._2} },
+         |    "professionalFees": { "amount": ${professionalFees._1}, "disallowableAmount": ${professionalFees._2} },
+         |    "costOfServices": { "amount": ${costOfServices._1}, "disallowableAmount": ${costOfServices._2} },
+         |    "other": { "amount": ${otherCost._1}, "disallowableAmount": ${otherCost._2} }
+         |  },
+         |  "privateUseAdjustment": $privateUseAdjustment,
+         |  "balancingCharge": $balancingCharge
+         |}
+       """.stripMargin)
+  }
+
 }

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
-import com.github.nscala_time.time.OrderingImplicits
-import org.joda.time.LocalDate
+import play.api.libs.json._
 
-trait PeriodValidator[P <: Period] {
-  protected def periodDateValidator(period: Period): Boolean = period.from.isBefore(period.to)
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 
-  implicit val dateTimeOrder: Ordering[LocalDate] = OrderingImplicits.LocalDateOrdering
-  implicit val order: Ordering[P] = Ordering.by(_.from)
+case class Adjustments(lossBroughtForward: Option[Amount] = None)
+
+object Adjustments {
+  implicit val writes: Writes[Adjustments] = Json.writes[Adjustments]
+
+  implicit val reads: Reads[Adjustments] =
+    (__ \ "lossBroughtForward").readNullable[Amount](positiveAmountValidator).map(Adjustments.apply)
 }

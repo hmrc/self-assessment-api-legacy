@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC, PD], PD <: PeriodicData : Format] {
 
-  val periodRepository: NewSourceRepository[ID, P, PC, PD]
+  val periodRepository: NewSourceRepository[ID, PC]
 
   def createPeriod(nino: Nino, id: ID, period: P): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
@@ -53,8 +53,8 @@ abstract class PeriodService[ID <: String, P <: Period : Format, PC <: PeriodCon
 
   def updatePeriod(nino: Nino, id: ID, periodId: PeriodId, periodicData: PD): Future[Boolean] = {
     periodRepository.retrieve(id, nino).flatMap {
-      case Some(selfEmployment) if selfEmployment.periodExists(periodId) =>
-        periodRepository.update(id, nino, selfEmployment.update(periodId, periodicData))
+      case Some(incomeSource) if incomeSource.periodExists(periodId) =>
+        periodRepository.update(id, nino, incomeSource.update(periodId, periodicData))
       case _ => Future.successful(false)
     }
   }

@@ -22,10 +22,9 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
-import uk.gov.hmrc.selfassessmentapi.resources._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.AccountingType._
 import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
 
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: String,
@@ -34,17 +33,16 @@ case class SelfEmployment(id: BSONObjectID,
                           accountingPeriod: AccountingPeriod,
                           accountingType: AccountingType,
                           commencementDate: LocalDate,
-                          annualSummaries: Map[TaxYear, AnnualSummary] = Map.empty,
+                          annualSummaries: Map[TaxYear, SelfEmploymentAnnualSummary] = Map.empty,
                           periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty)
   extends PeriodContainer[SelfEmploymentPeriod, SelfEmployment, SelfEmploymentPeriodicData]
-  with LastModifiedDateTime {
+    with AnnualSummaryContainer[SelfEmploymentAnnualSummary]
+    with LastModifiedDateTime {
 
   override def containsMisalignedPeriod(period: SelfEmploymentPeriod): Boolean = {
     if (periods.isEmpty) !period.from.isEqual(accountingPeriod.start)
     else !(period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end))
   }
-
-  def annualSummary(taxYear: TaxYear): Option[AnnualSummary] = annualSummaries.get(taxYear)
 
   def toModel: selfemployment.SelfEmployment =
     selfemployment.SelfEmployment(None, accountingPeriod, accountingType, commencementDate)

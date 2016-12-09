@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
@@ -24,20 +24,28 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AnnualSummary, SelfEmployment, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
-import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, SelfEmploymentAnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
+import uk.gov.hmrc.selfassessmentapi.services.{SelfEmploymentsMongoService, SelfEmploymentsService}
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
-object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment, SelfEmploymentPeriodicData] with BaseResource {
+object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment, SelfEmploymentPeriodicData]
+  with AnnualSummaryResource[SelfEmploymentAnnualSummary, domain.SelfEmployment] with BaseResource {
+
+  override implicit val annualSummaryFormat: Format[SelfEmploymentAnnualSummary] = Format(SelfEmploymentAnnualSummary.reader, SelfEmploymentAnnualSummary.writer)
+  override implicit val periodFormat: Format[SelfEmploymentPeriod] = Format(SelfEmploymentPeriod.reads, SelfEmploymentPeriod.writes)
+  override implicit val periodicDataFormat: Format[SelfEmploymentPeriodicData] = Format(SelfEmploymentPeriodicData.reads, SelfEmploymentPeriodicData.writes)
 
   override val context: PeriodId = AppContext.apiGatewayLinkContext
-
-  override val service = SelfEmploymentsService()
   override val sourceType: SourceType = SourceType.SelfEmployments
+  override val annualSummaryFeatureSwitch: FeatureSwitchAction = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
+
+  private val service = SelfEmploymentsService()
+  override val annualSummaryService: SelfEmploymentsMongoService = service
+  override val periodService: SelfEmploymentsMongoService = service
+
   private val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
-  private val seAnnualFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
 
   def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
     validate[SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
@@ -82,34 +90,10 @@ object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPe
     }
   }
 
-  def retrieveAll(nino: Nino) = seFeatureSwitch.asyncFeatureSwitch {
+  def retrieveAll(nino: Nino): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
     service.retrieveAll(nino) map { seq =>
       Ok(Json.toJson(seq))
     }
   }
 
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = seAnnualFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[AnnualSummary, Boolean](request.body) {
-      service.updateAnnualSummary(nino, id, taxYear, _)
-    } match {
-      case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
-      case Right(result) => result.map {
-        case true => NoContent
-        case false => NotFound
-      }
-    }
-  }
-
-  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = seAnnualFeatureSwitch.asyncFeatureSwitch {
-    service.retrieveAnnualSummary(id, taxYear, nino).map {
-      case Some(summary) => Ok(Json.toJson(summary))
-      case None => Ok(Json.obj())
-    }
-  }
 }

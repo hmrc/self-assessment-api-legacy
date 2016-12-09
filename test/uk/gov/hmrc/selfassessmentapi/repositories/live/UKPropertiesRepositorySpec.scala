@@ -27,6 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{UKProperty, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{UKProperties, UKPropertiesIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Adjustments, Allowances}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

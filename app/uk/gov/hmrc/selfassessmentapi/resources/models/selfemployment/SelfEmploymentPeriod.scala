@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-import com.github.nscala_time.time.OrderingImplicits
 import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
@@ -27,7 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.IncomeType.
 
 case class SelfEmploymentPeriod(from: LocalDate, to: LocalDate, data: SelfEmploymentPeriodicData) extends Period
 
-object SelfEmploymentPeriod extends PeriodValidator {
+object SelfEmploymentPeriod extends PeriodValidator[SelfEmploymentPeriod] {
   import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.{expenseTypeFormat, incomeTypeFormat}
 
   implicit val writes: Writes[SelfEmploymentPeriod] = new Writes[SelfEmploymentPeriod] {
@@ -50,11 +49,6 @@ object SelfEmploymentPeriod extends PeriodValidator {
     (from, to, income, expense) => {
       SelfEmploymentPeriod(from, to, SelfEmploymentPeriodicData(income.getOrElse(Map.empty), expense.getOrElse(Map.empty)))})
     .filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(periodDateValidator)
-
-  private implicit val dateTimeOrder: Ordering[LocalDate] = OrderingImplicits.LocalDateOrdering
-  implicit val order: Ordering[SelfEmploymentPeriod] = Ordering.by(_.from)
-
-  private def periodDateValidator(period: SelfEmploymentPeriod) = period.from.isBefore(period.to)
 
   private def depreciationValidator = Reads.of[Map[ExpenseType, Expense]].filter(
     ValidationError("the disallowableAmount for depreciation expenses must be the same as the amount", ErrorCode.DEPRECIATION_DISALLOWABLE_AMOUNT)

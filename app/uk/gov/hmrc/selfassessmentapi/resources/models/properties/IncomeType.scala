@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
-import com.github.nscala_time.time.OrderingImplicits
-import org.joda.time.LocalDate
+import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
 
-trait PeriodValidator[P <: Period] {
-  protected def periodDateValidator(period: Period): Boolean = period.from.isBefore(period.to)
-
-  implicit val dateTimeOrder: Ordering[LocalDate] = OrderingImplicits.LocalDateOrdering
-  implicit val order: Ordering[P] = Ordering.by(_.from)
+object IncomeType extends Enumeration {
+  type IncomeType = Value
+  val RentIncome = Value("rentIncome")
+  val PremiumsOfLeaseGrant = Value("premiumsOfLeaseGrant")
+  val ReversePremiums = Value("reversePremiums")
+  implicit val types = EnumJson.enumFormat(IncomeType, Some("UK Property Income type is invalid"))
 }

@@ -30,16 +30,18 @@ import uk.gov.hmrc.selfassessmentapi.services.PeriodService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodContainer[P, PC, PD], PD <: PeriodicData : Format] {
+trait PeriodResource[ID <: String, P <: Period, PC <: PeriodContainer[P, PC, PD], PD <: PeriodicData] {
+  implicit val periodFormat: Format[P]
+  implicit val periodicDataFormat: Format[PD]
 
-  val service: PeriodService[ID, P, PC, PD]
+  val periodService: PeriodService[ID, P, PC, PD]
   val sourceType: SourceType
 
   private lazy val featureSwitch = FeatureSwitchAction(sourceType, "periods")
 
   def createPeriod(nino: Nino, sourceId: ID): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[P, Either[Error, PeriodId]](request.body) { period =>
-      service.createPeriod(nino, sourceId, period)
+      periodService.createPeriod(nino, sourceId, period)
     } match {
       case Left(errorResult) =>
         Future.successful {
@@ -59,7 +61,7 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
 
   def updatePeriod(nino: Nino, id: ID, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[PD, Boolean](request.body) {
-      service.updatePeriod(nino, id, periodId, _)
+      periodService.updatePeriod(nino, id, periodId, _)
     } match {
       case Left(errorResult) =>
         Future.successful {
@@ -76,13 +78,13 @@ abstract class PeriodResource[ID <: String, P <: Period : Format, PC <: PeriodCo
   }
 
   def retrievePeriod(nino: Nino, id: ID, periodId: PeriodId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    service.retrievePeriod(nino, id, periodId) map {
+    periodService.retrievePeriod(nino, id, periodId) map {
       case Some(period) => Ok(Json.toJson(period))
       case None => NotFound
     }
   }
 
   def retrievePeriods(nino: Nino, id: ID): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    service.retrieveAllPeriods(nino, id).map { periods => Ok(Json.toJson(periods)) }
+    periodService.retrieveAllPeriods(nino, id).map { periods => Ok(Json.toJson(periods)) }
   }
 }

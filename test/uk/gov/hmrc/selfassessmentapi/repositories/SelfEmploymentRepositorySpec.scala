@@ -69,7 +69,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     }
 
     "return true when updating an annual summaries" in {
-      val summary = AnnualSummary(Some(Allowances.example), Some(Adjustments.example))
+      val summary = SelfEmploymentAnnualSummary(Some(Allowances.example), Some(Adjustments.example))
 
       await(repo.create(selfEmployment))
 

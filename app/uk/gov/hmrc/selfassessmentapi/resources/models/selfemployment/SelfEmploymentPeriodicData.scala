@@ -33,7 +33,7 @@ object SelfEmploymentPeriodicData {
   implicit val reads: Reads[SelfEmploymentPeriodicData] = (
       (__ \ "incomes").readNullable[Map[IncomeType, Income]] and
       (__ \ "expenses").readNullable[Map[ExpenseType, Expense]](depreciationValidator)
-    ) ((income, expense) => {SelfEmploymentPeriodicData(income.getOrElse(Map.empty), expense.getOrElse(Map.empty))})
+    ) ((incomes, expenses) => {SelfEmploymentPeriodicData(incomes.getOrElse(Map.empty), expenses.getOrElse(Map.empty))})
 
   private def depreciationValidator = Reads.of[Map[ExpenseType, Expense]].filter(
     ValidationError("the disallowableAmount for depreciation expenses must be the same as the amount", ErrorCode.DEPRECIATION_DISALLOWABLE_AMOUNT)

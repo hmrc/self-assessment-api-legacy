@@ -20,7 +20,7 @@ import com.github.nscala_time.time.OrderingImplicits
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 
-case class PeriodSummary(periodId: PeriodId, from: LocalDate, to: LocalDate) extends Period
+case class PeriodSummary(id: PeriodId, from: LocalDate, to: LocalDate) extends Period
 
 object PeriodSummary {
   private implicit val localDateOrdering = OrderingImplicits.LocalDateOrdering

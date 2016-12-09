@@ -1,7 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId
+import uk.gov.hmrc.selfassessmentapi.resources.models.{PeriodId, SourceId}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
@@ -150,6 +150,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(Jsons.selfEmployment().toString())
+        .bodyDoesNotHavePath[SourceId]("id")
     }
 
     "return code 404 when retrieving a self-employment resource that does not exist" in {
@@ -465,7 +466,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(period.toString)
-        .bodyDoesNotHavePath[PeriodId]("periodId")
+        .bodyDoesNotHavePath[PeriodId]("id")
     }
 
     "return code 404 when retrieving a period that does not exist" in {
@@ -522,7 +523,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
-        .selectFields(_ \\ "periodId").isLength(2).matches("\\w+".r)
+        .selectFields(_ \\ "id").isLength(2).matches("\\w+".r)
     }
 
     "return code 200 containing an empty json body when retrieving all periods where periods.size == 0" in {

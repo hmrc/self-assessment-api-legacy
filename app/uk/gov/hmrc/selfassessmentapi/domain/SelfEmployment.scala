@@ -45,8 +45,9 @@ case class SelfEmployment(id: BSONObjectID,
   }
 
   def annualSummary(taxYear: TaxYear): Option[AnnualSummary] = annualSummaries.get(taxYear)
+
   def toModel: selfemployment.SelfEmployment =
-    selfemployment.SelfEmployment(Some(id.stringify), accountingPeriod, accountingType, commencementDate)
+    selfemployment.SelfEmployment(None, accountingPeriod, accountingType, commencementDate)
 
   override def setPeriodsTo(periodId: PeriodId, period: SelfEmploymentPeriod): SelfEmployment =
     this.copy(periods = periods.updated(periodId, period))

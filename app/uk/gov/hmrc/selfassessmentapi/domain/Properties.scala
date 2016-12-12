@@ -21,13 +21,14 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType.AccountingType
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesAnnualSummary, PropertiesPeriod, PropertiesPeriodicData}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, PeriodId, PropertyLocation, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, PeriodId, TaxYear}
 
 case class Properties(id: BSONObjectID,
                       lastModifiedDateTime: LocalDate,
                       nino: Nino,
-                      location: PropertyLocation,
+                      accountingType: AccountingType,
                       periods: Map[PeriodId, PropertiesPeriod],
                       annualSummaries: Map[TaxYear, PropertiesAnnualSummary])
   extends PeriodContainer[PropertiesPeriod, Properties, PropertiesPeriodicData]

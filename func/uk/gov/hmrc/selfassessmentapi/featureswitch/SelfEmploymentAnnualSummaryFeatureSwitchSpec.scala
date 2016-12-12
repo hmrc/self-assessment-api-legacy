@@ -3,8 +3,8 @@ package uk.gov.hmrc.selfassessmentapi.featureswitch
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{AccountingType, SelfEmployment, SelfEmploymentAnnualSummary}
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingPeriod
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, SelfEmploymentAnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, AccountingType}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentAnnualSummaryFeatureSwitchSpec extends BaseFunctionalSpec {

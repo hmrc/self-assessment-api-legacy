@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
-object SourceType extends Enumeration {
-  type SourceType = Value
+import play.api.libs.json.{Json, Reads, Writes}
+import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType.AccountingType
 
-  val SelfEmployments = Value("self-employments")
-  val Properties = Value("uk-properties")
+case class Properties(accountingType: AccountingType)
+
+object Properties {
+  implicit val reads: Reads[Properties] = Json.reads[Properties]
+  implicit val writes: Writes[Properties] = Json.writes[Properties]
 }

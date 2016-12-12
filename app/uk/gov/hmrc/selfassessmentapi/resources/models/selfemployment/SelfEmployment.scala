@@ -21,7 +21,7 @@ import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, ErrorCode, SourceId}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.AccountingType._
+import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
 
 case class SelfEmployment(id: Option[SourceId] = None,
                           accountingPeriod: AccountingPeriod,

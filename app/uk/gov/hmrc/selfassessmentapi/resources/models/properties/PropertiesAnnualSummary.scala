@@ -25,7 +25,7 @@ case class PropertiesAnnualSummary(allowances: Option[Allowances], adjustments: 
 object PropertiesAnnualSummary {
   implicit val writes: Writes[PropertiesAnnualSummary] = Json.writes[PropertiesAnnualSummary]
 
-  implicit val reader: Reads[PropertiesAnnualSummary] = (
+  implicit val reads: Reads[PropertiesAnnualSummary] = (
     (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments] and
       (__ \ "rentARoomRelief").readNullable[Amount](positiveAmountValidator)

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
+package uk.gov.hmrc.selfassessmentapi.resources.models
 
 import play.api.libs.json.Format
-import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
 
 object AccountingType extends Enumeration {
   type AccountingType = Value

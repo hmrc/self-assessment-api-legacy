@@ -20,6 +20,8 @@ import play.api.mvc.PathBindable
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceType, TaxYear}
 
 object Binders {
@@ -59,7 +61,6 @@ object Binders {
       }
     }
   }
-
 
   implicit def sourceTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SourceType] {
 

@@ -7,7 +7,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "create" should {
-    "return code 201 when creating a valid a self-employment source of income" in {
+    "return code 201 containing a location header when creating a valid a self-employment source of income" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()

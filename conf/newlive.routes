@@ -17,21 +17,23 @@ PUT /ni/:nino/self-employments/:id/:taxYear    uk.gov.hmrc.selfassessmentapi.res
 GET /ni/:nino/self-employments/:id/:taxYear    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 
 ####################
-# Property Periods #
+#    Properties    #
 ####################
+POST /ni/:nino/uk-properties   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.create(nino: uk.gov.hmrc.domain.Nino)
+# GET  /ni/:nino/uk-properties
 
 # Properties Periodic Summaries
-POST /ni/:nino/properties/:id/periods   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.createPeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation)
-GET  /ni/:nino/properties/:id/periods   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrievePeriods(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation)
-GET  /ni/:nino/properties/:id/periods/:periodId   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrievePeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation, periodId: uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId)
-PUT  /ni/:nino/properties/:id/periods/:periodId   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.updatePeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation, periodId: uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId)
+POST /ni/:nino/uk-properties/:id/periods   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.createPeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId)
+GET  /ni/:nino/uk-properties/:id/periods   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrievePeriods(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId)
+GET  /ni/:nino/uk-properties/:id/periods/:periodId   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrievePeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId, periodId: uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId)
+PUT  /ni/:nino/uk-properties/:id/periods/:periodId   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.updatePeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId, periodId: uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId)
 
 # Properties Annual Summaries
-PUT  /ni/:nino/properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
-GET  /ni/:nino/properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyLocation, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
+PUT  /ni/:nino/uk-properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
+GET  /ni/:nino/uk-properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 
-#########################
-# Liability Calculation #
-#########################
+####################
+#    Liabilities   #
+####################
 POST    /ni/:nino/liability/:taxYear   uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.requestLiability(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)
 GET     /ni/:nino/liability/:taxYear   uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.retrieveLiability(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)

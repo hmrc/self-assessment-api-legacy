@@ -146,6 +146,16 @@ object Jsons {
        """.stripMargin)
   }
 
+  def property(accountingType: String): JsValue = {
+    Json.parse(
+      s"""
+         |{
+         |  "accountingType": "$accountingType"
+         |}
+       """.stripMargin
+    )
+  }
+
   def propertiesPeriod(fromDate: Option[String] = None, toDate: Option[String] = None,
                        rentIncome: BigDecimal = 0,
                        premiumsOfLeaseGrant: BigDecimal = 0,

@@ -23,7 +23,7 @@ package object models {
 
   type Amount = BigDecimal
   type SourceId = String
-  type PropertyLocation = String
+  type PropertyId = String
   type PeriodId = String
   type SummaryId = String
   type LiabilityId = String

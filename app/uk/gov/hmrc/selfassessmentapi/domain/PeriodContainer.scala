@@ -22,7 +22,7 @@ import play.api.libs.json.Format
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodicData}
 
-abstract class PeriodContainer[P <: Period : Format, PC, PD <: PeriodicData] {
+trait PeriodContainer[P <: Period, PC, PD <: PeriodicData] {
 
   implicit val ordering: Ordering[P] = Ordering.by(_.from)
 

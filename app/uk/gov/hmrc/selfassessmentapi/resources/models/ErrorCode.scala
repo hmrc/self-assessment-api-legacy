@@ -19,7 +19,6 @@ package uk.gov.hmrc.selfassessmentapi.resources.models
 object ErrorCode extends Enumeration {
   type ErrorCode = Value
   val
-    // TODO check name is OK
   INVALID_REQUEST,
   INVALID_FIELD,
   MAX_FIELD_LENGTH_EXCEEDED,
@@ -46,6 +45,7 @@ object ErrorCode extends Enumeration {
   GAP_PERIOD,
   MISALIGNED_PERIOD,
   INVALID_ACCOUNTING_PERIOD,
+  ALREADY_EXISTS,
   NOT_FOUND,
   INTERNAL_ERROR = Value
 

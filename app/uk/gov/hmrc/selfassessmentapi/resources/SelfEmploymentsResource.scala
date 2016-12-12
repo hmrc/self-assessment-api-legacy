@@ -38,7 +38,7 @@ object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPe
   override implicit val periodicDataFormat: Format[SelfEmploymentPeriodicData] = Format(SelfEmploymentPeriodicData.reads, SelfEmploymentPeriodicData.writes)
 
   override val context: PeriodId = AppContext.apiGatewayLinkContext
-  override val sourceType: SourceType = SourceType.SelfEmployments
+  override val sourceType = SourceType.SelfEmployments
   override val annualSummaryFeatureSwitch: FeatureSwitchAction = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
 
   private val service = SelfEmploymentsService()

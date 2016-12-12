@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
-object SourceType extends Enumeration {
-  type SourceType = Value
+import play.api.libs.json.Format
+import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
 
-  val SelfEmployments = Value("self-employments")
-  val Properties = Value("uk-properties")
+object PropertyType extends Enumeration {
+  type PropertyType = Value
+
+  val FHL = Value("furnished-holiday-lettings")
+  val OTHER = Value("other")
+
+  implicit val format: Format[PropertyType] =
+    EnumJson.enumFormat(PropertyType, Some("Property business type is invalid"))
 }

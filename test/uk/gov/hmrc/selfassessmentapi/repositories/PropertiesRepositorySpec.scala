@@ -22,8 +22,8 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Allowances, PropertiesAnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Allowances, PropertiesAnnualSummary, PropertyType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -31,7 +31,8 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
 
   private val repo = new PropertiesRepository
   private val nino = NinoGenerator().nextNino()
-  private val location = "uk"
+  private val propertyType = PropertyType.OTHER
+  private val propertyId = PropertyType.toIdString(propertyType)
 
   override def beforeEach() = {
     await(repo.drop)
@@ -40,27 +41,27 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
 
   "create" should {
     "persist a properties object" in {
-      val properties = Properties(BSONObjectID.generate, LocalDate.now, nino, location, Map.empty, Map.empty)
+      val properties = Properties(BSONObjectID.generate, propertyId, LocalDate.now, nino, propertyType, AccountingType.CASH, Map.empty, Map.empty)
       await(repo.create(properties))
 
-      val result = await(repo.retrieve(location, nino)).get
+      val result = await(repo.retrieve(propertyId, nino)).get
       result.nino shouldBe nino
-      result.location shouldBe location
+      result.propertyType shouldBe propertyType
       result.periods shouldBe empty
     }
   }
 
   "update" should {
     "update a properties object" in {
-      val properties = Properties(BSONObjectID.generate, LocalDate.now, nino, location, Map.empty, Map.empty)
+      val properties = Properties(BSONObjectID.generate, propertyId, LocalDate.now, nino, propertyType, AccountingType.CASH, Map.empty, Map.empty)
       await(repo.create(properties))
 
-      await(repo.retrieve(location, nino)) shouldBe Some(properties)
+      await(repo.retrieve(propertyId, nino)) shouldBe Some(properties)
 
       val updatedProperties = properties.copy(annualSummaries =
         Map(TaxYear("2016-17") -> PropertiesAnnualSummary(Some(Allowances(annualInvestmentAllowance = Some(50.25))), None, None)))
-      await(repo.update(location, nino, updatedProperties))
-      await(repo.retrieve(location, nino)) shouldBe Some(updatedProperties)
+      await(repo.update(propertyId, nino, updatedProperties))
+      await(repo.retrieve(propertyId, nino)) shouldBe Some(updatedProperties)
     }
   }
 }

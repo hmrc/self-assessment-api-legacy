@@ -22,7 +22,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, ErrorCode}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, AccountingType, ErrorCode}
 
 class SelfEmploymentSpec extends JsonSpec {
   private def selfEmploymentWithPeriods(periods: SelfEmploymentPeriod*) = {

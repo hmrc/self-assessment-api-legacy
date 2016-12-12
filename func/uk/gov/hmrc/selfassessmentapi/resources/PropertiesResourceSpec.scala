@@ -49,7 +49,7 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
         .when()
         .post(property).to(s"/ni/$nino/uk-properties")
         .thenAssertThat()
-        .statusIs(403)
+        .statusIs(409)
         .bodyIsLike(expectedJson)
     }
   }

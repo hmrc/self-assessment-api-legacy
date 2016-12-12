@@ -31,8 +31,7 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
 
   private val repo = new PropertiesRepository
   private val nino = NinoGenerator().nextNino()
-  private val propertyType = PropertyType.OTHER
-  private val propertyId = PropertyType.toIdString(propertyType)
+  private val propertyId = ""
 
   override def beforeEach() = {
     await(repo.drop)
@@ -41,19 +40,18 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
 
   "create" should {
     "persist a properties object" in {
-      val properties = Properties(BSONObjectID.generate, propertyId, LocalDate.now, nino, propertyType, AccountingType.CASH, Map.empty, Map.empty)
+      val properties = Properties(BSONObjectID.generate, LocalDate.now, nino, AccountingType.CASH, Map.empty, Map.empty)
       await(repo.create(properties))
 
       val result = await(repo.retrieve(propertyId, nino)).get
       result.nino shouldBe nino
-      result.propertyType shouldBe propertyType
       result.periods shouldBe empty
     }
   }
 
   "update" should {
     "update a properties object" in {
-      val properties = Properties(BSONObjectID.generate, propertyId, LocalDate.now, nino, propertyType, AccountingType.CASH, Map.empty, Map.empty)
+      val properties = Properties(BSONObjectID.generate, LocalDate.now, nino, AccountingType.CASH, Map.empty, Map.empty)
       await(repo.create(properties))
 
       await(repo.retrieve(propertyId, nino)) shouldBe Some(properties)

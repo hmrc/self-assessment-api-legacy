@@ -42,13 +42,13 @@ class PropertiesRepository(implicit mongo: () => DB)
   def create(properties: Properties): Future[Boolean] = insert(properties).map(_.ok)
 
   override def retrieve(propType: PropertyId, nino: Nino): Future[Option[Properties]] =
-    find("nino" -> nino.nino, "propertyId" -> propType).map(_.headOption)
+    find("nino" -> nino.nino).map(_.headOption)
 
   override def update(propertyId: PropertyId, nino: Nino, periodContainer: Properties): Future[Boolean] = {
     domainFormatImplicit.writes(periodContainer.copy(lastModifiedDateTime = LocalDate.now(DateTimeZone.UTC))) match {
       case d @ JsObject(_) =>
         collection.update(
-          BSONDocument("nino" -> nino.nino, "propertyId" -> propertyId),
+          BSONDocument("nino" -> nino.nino),
           d
         ).map { res =>
           if (res.hasErrors) logger.error(s"Database error occurred. Error: ${res.errmsg} Code: ${res.code}")

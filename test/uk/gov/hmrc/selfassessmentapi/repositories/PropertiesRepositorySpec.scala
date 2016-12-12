@@ -57,7 +57,7 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfter
       await(repo.retrieve(propertyId, nino)) shouldBe Some(properties)
 
       val updatedProperties = properties.copy(annualSummaries =
-        Map(TaxYear("2016-17") -> PropertiesAnnualSummary(Some(Allowances(annualInvestmentAllowance = Some(50.25))), None, None)))
+        Map(TaxYear("2016-17") -> PropertiesAnnualSummary(Some(Allowances(annualInvestmentAllowance = Some(50.25))), None, None, None, None)))
       await(repo.update(propertyId, nino, updatedProperties))
       await(repo.retrieve(propertyId, nino)) shouldBe Some(updatedProperties)
     }

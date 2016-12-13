@@ -34,7 +34,7 @@ object AccountingPeriod {
     )(accountingPeriodValidator)
 
   private def accountingPeriodValidator(accountingPeriod: AccountingPeriod) = {
-    accountingPeriod.start.isBefore(accountingPeriod.end)
+    accountingPeriod.start.isBefore(accountingPeriod.end) || accountingPeriod.start.isEqual(accountingPeriod.end)
   }
 
   private def startDateValidator = Reads.of[LocalDate].filter(

@@ -20,7 +20,8 @@ import com.github.nscala_time.time.OrderingImplicits
 import org.joda.time.LocalDate
 
 trait PeriodValidator[P <: Period] {
-  protected def periodDateValidator(period: Period): Boolean = period.from.isBefore(period.to)
+  protected def periodDateValidator(period: Period): Boolean =
+    period.from.isBefore(period.to) || period.from.isEqual(period.to)
 
   implicit val dateTimeOrder: Ordering[LocalDate] = OrderingImplicits.LocalDateOrdering
   implicit val order: Ordering[P] = Ordering.by(_.from)

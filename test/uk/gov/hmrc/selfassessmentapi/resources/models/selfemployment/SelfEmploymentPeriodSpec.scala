@@ -81,5 +81,14 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
       assertValidationErrorsWithMessage[SelfEmploymentPeriod](Json.parse("{}"),
         Map("/from" -> "error.path.missing", "/to" -> "error.path.missing"))
     }
+
+    "pass if the from date is equal to the end date" in {
+      val period = SelfEmploymentPeriod(
+        from = LocalDate.parse("2017-04-01"),
+        to = LocalDate.parse("2017-04-01"),
+        data = SelfEmploymentPeriodicData(Map.empty, Map.empty))
+
+      assertValidationPasses(period)
+    }
   }
 }

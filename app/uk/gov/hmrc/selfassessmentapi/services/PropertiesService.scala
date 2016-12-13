@@ -47,7 +47,14 @@ class PropertiesService extends PeriodService[PropertyId, PropertiesPeriod, Prop
     }
   }
 
-  def updateAnnualSummary(nino: Nino, propType: PropertyId, taxYear: TaxYear, summary: PropertiesAnnualSummary) = {
+  override def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[PropertiesAnnualSummary]] = {
+    annualSummaryRepository.retrieve(id, nino).map {
+      case Some(resource) => resource.annualSummary(taxYear).orElse(Some(PropertiesAnnualSummary(None, None, None)))
+      case None => None
+    }
+  }
+
+  def updateAnnualSummary(nino: Nino, propType: PropertyId, taxYear: TaxYear, summary: PropertiesAnnualSummary): Future[Boolean] = {
     periodRepository.retrieve(propType, nino).flatMap {
       case Some(properties) => periodRepository.update(propType, nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
       case None => throw new RuntimeException("Could not persist Properties to the database. Is the database available?")

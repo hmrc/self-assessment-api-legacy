@@ -29,10 +29,5 @@ trait AnnualSummaryService[A <: AnnualSummary, C <: AnnualSummaryContainer[A]] {
 
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, a: A): Future[Boolean]
 
-  def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[A]] = {
-    annualSummaryRepository.retrieve(id, nino).map {
-      case Some(resource) => resource.annualSummary(taxYear)
-      case None => None
-    }
-  }
+  def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[A]]
 }

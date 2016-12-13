@@ -286,6 +286,15 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .contentTypeIsJson()
         .jsonBodyIsEmptyObject
     }
+
+    "return code 404 when attempting to retrieve an annual summary for a non-existent self-employment" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/oops/$taxYear")
+        .thenAssertThat()
+        .statusIs(404)
+    }
   }
 
   "createPeriod" should {

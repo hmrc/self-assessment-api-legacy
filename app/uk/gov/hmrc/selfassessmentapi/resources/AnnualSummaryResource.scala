@@ -54,7 +54,7 @@ trait AnnualSummaryResource[A <: AnnualSummary, C <: AnnualSummaryContainer[A]] 
   def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch {
     annualSummaryService.retrieveAnnualSummary(id, taxYear, nino).map {
       case Some(summary) => Ok(Json.toJson(summary))
-      case None => Ok(Json.parse("{}"))
+      case None => NotFound
     }
   }
 }

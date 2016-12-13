@@ -83,6 +83,14 @@ class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) ex
   override def retrieveAll(nino: Nino): Future[Seq[SelfEmployment]] =
     mongoRepository.retrieveAll(nino).map(_.map(_.toModel()))
 
+
+  override def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[SelfEmploymentAnnualSummary]] = {
+    annualSummaryRepository.retrieve(id, nino).map {
+      case Some(resource) => resource.annualSummary(taxYear).orElse(Some(SelfEmploymentAnnualSummary(None, None)))
+      case None => None
+    }
+  }
+
   override def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear, summary: SelfEmploymentAnnualSummary): Future[Boolean] = {
     mongoRepository.retrieve(id, nino).flatMap {
       case Some(selfEmployment) =>

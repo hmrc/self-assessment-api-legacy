@@ -49,7 +49,7 @@ class PropertiesService extends PeriodService[PropertyId, PropertiesPeriod, Prop
 
   override def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[PropertiesAnnualSummary]] = {
     annualSummaryRepository.retrieve(id, nino).map {
-      case Some(resource) => resource.annualSummary(taxYear).orElse(Some(PropertiesAnnualSummary(None, None, None)))
+      case Some(resource) => resource.annualSummary(taxYear).orElse(Some(PropertiesAnnualSummary(None, None, None, None, None)))
       case None => None
     }
   }

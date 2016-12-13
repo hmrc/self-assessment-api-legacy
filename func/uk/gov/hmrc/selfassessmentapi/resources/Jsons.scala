@@ -47,7 +47,7 @@ object Jsons {
       Json.parse(
         s"""
            |{
-           |  "propertiesType": "$propertiesType"
+           |  "propertiesType": "$propertiesType",
            |  "accountingPeriod": {
            |    "start": "$accPeriodStart",
            |    "end": "$accPeriodEnd"

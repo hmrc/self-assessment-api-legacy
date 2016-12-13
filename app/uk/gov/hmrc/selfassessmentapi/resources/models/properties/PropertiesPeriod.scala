@@ -36,7 +36,9 @@ object PropertiesPeriod extends PeriodValidator[PropertiesPeriod] {
         "from" -> period.from.toString,
         "to" -> period.to.toString,
         "incomes" -> period.data.incomes,
-        "expenses" -> period.data.expenses
+        "expenses" -> period.data.expenses,
+        "privateUseAdjustment" -> period.data.privateUseAdjustment,
+        "balancingCharge" -> period.data.balancingCharge
       )
     }
   }
@@ -45,10 +47,12 @@ object PropertiesPeriod extends PeriodValidator[PropertiesPeriod] {
     (__ \ "from").read[LocalDate] and
       (__ \ "to").read[LocalDate] and
       (__ \ "incomes").readNullable[Map[IncomeType, Income]] and
-      (__ \ "expenses").readNullable[Map[ExpenseType, Expense]]
+      (__ \ "expenses").readNullable[Map[ExpenseType, Expense]] and
+      (__ \ "privateUseAdjustment").readNullable[Amount](positiveAmountValidator) and
+      (__ \ "balancingCharge").readNullable[Amount](positiveAmountValidator)
     ) (
-    (from, to, incomes, expenses) => {
-      PropertiesPeriod(from, to, PropertiesPeriodicData(incomes.getOrElse(Map.empty), expenses.getOrElse(Map.empty)))})
+    (from, to, incomes, expenses, privateUseAdjustment, balancingCharge) => {
+      PropertiesPeriod(from, to, PropertiesPeriodicData(incomes.getOrElse(Map.empty), expenses.getOrElse(Map.empty), privateUseAdjustment, balancingCharge))})
     .filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(periodDateValidator)
 
 }

@@ -6,7 +6,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
 
   "createPeriod" should {
-    "return code 201 containing a location header when creating a uk property period" in {
+    "return code 201 containing a location header when creating a uk property period" ignore {
       val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2017-04-05"),
         rentIncome = 50.55, premiumsOfLeaseGrant = 20.22, reversePremiums = 100.25,
         premisesRunningCosts = (50.55, 10.12), otherCost = (10.22, 10.12))
@@ -20,7 +20,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .responseContainsHeader("Location", s"/self-assessment/ni/$nino/properties/uk/periods/\\w+".r)
     }
 
-    "return code 400 when provided with an invalid uk property period" in {
+    "return code 400 when provided with an invalid uk property period" ignore {
 
       val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2017-04-05"),
         rentIncome = -50.55, premiumsOfLeaseGrant = 20.22, reversePremiums = 100.25,
@@ -38,7 +38,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
   }
 
   "retrievePeriods" should {
-    "return code 200 when retrieving all periods associated with a properties business" in {
+    "return code 200 when retrieving all periods associated with a properties business" ignore {
       val periodOne = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-05"))
       val periodTwo = Jsons.Properties.period(fromDate = Some("2016-05-06"), toDate = Some("2016-06-05"))
 
@@ -77,7 +77,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
   }
 
   "retrievePeriod" should {
-    "return code 200 when retrieving a period associated with a specific identifier" in {
+    "return code 200 when retrieving a period associated with a specific identifier" ignore {
       val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-06"))
 
       given()
@@ -106,7 +106,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
   }
 
   "updatePeriod" should {
-    "return code 204 when updating a period associated with a specific identifier" in {
+    "return code 204 when updating a period associated with a specific identifier" ignore {
       val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-06"))
 
       val periodicUpdate = Jsons.Properties.period(fromDate = None, toDate = None,
@@ -133,7 +133,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .bodyIsLike(updatedPeriod.toString())
     }
 
-    "return code 400 when provided with an invalid period" in {
+    "return code 400 when provided with an invalid period" ignore {
       val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-06"))
 
       val periodicUpdate = Jsons.Properties.period(fromDate = None, toDate = None,

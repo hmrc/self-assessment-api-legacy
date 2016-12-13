@@ -6,7 +6,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
 
   "create or update annual summary" should {
-    "return code 204 if the create/update is successful" in {
+    "return code 204 if the create/update is successful" ignore {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -31,7 +31,7 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
         .bodyIsLike(Jsons.Properties.annualSummary(annualInvestmentAllowance = 100.12, balancingCharge = 100.12).toString())
     }
 
-    "return code 400 when provided with an invalid annual summary" in {
+    "return code 400 when provided with an invalid annual summary" ignore {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -43,7 +43,7 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
           ("INVALID_MONETARY_AMOUNT", "/rentARoomRelief")))
     }
 
-    "can be set to an empty object" in {
+    "can be set to an empty object" ignore {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()

@@ -23,7 +23,9 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.properties.ExpenseType.Exp
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.IncomeType.IncomeType
 
 case class PropertiesPeriodicData(incomes: Map[IncomeType, Income],
-                                  expenses: Map[ExpenseType, Expense]) extends PeriodicData
+                                  expenses: Map[ExpenseType, Expense],
+                                  privateUseAdjustment: Option[Amount],
+                                  balancingCharge: Option[Amount]) extends PeriodicData
 
 object PropertiesPeriodicData {
 
@@ -33,9 +35,11 @@ object PropertiesPeriodicData {
 
   implicit val reads: Reads[PropertiesPeriodicData] = (
       (__ \ "incomes").readNullable[Map[IncomeType, Income]] and
-      (__ \ "expenses").readNullable[Map[ExpenseType, Expense]]
-    ) ((incomes, expenses) => {
-        PropertiesPeriodicData(incomes.getOrElse(Map.empty), expenses.getOrElse(Map.empty))
+      (__ \ "expenses").readNullable[Map[ExpenseType, Expense]] and
+      (__ \ "privateUseAdjustment").readNullable[Amount](positiveAmountValidator) and
+      (__ \ "balancingCharge").readNullable[Amount](positiveAmountValidator)
+    ) ((incomes, expenses, privateUseAdjustment, balancingCharge) => {
+        PropertiesPeriodicData(incomes.getOrElse(Map.empty), expenses.getOrElse(Map.empty), privateUseAdjustment, balancingCharge)
     }
   )
 

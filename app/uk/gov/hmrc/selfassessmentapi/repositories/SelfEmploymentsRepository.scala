@@ -22,17 +22,22 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.BSONDocument
+import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.mongo.ReactiveRepository
+import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
-import uk.gov.hmrc.selfassessmentapi.services.NewSourceRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SelfEmploymentsRepository(implicit mongo: () => DB)
-  extends NewSourceRepository[SourceId, SelfEmployment]("selfEmployments", SelfEmployment.mongoFormats) {
+  extends ReactiveRepository[SelfEmployment, BSONObjectID](
+  "selfEmployments",
+  mongo,
+  SelfEmployment.mongoFormats,
+  idFormat = ReactiveMongoFormats.objectIdFormats) {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("nino", Ascending)), name = Some("se_nino"), unique = false),

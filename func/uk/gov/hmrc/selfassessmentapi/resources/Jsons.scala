@@ -42,31 +42,26 @@ object Jsons {
   }
 
   object Properties {
-    def apply(propertiesType: String = "FHL", accPeriodStart: String = "2017-04-06",
-              accPeriodEnd: String = "2018-04-05", accountingType: String = "CASH"): JsValue = {
+    def apply(accountingType: String = "CASH"): JsValue = {
       Json.parse(
         s"""
            |{
-           |  "propertiesType": "$propertiesType",
-           |  "accountingPeriod": {
-           |    "start": "$accPeriodStart",
-           |    "end": "$accPeriodEnd"
-           |  },
            |  "accountingType": "$accountingType"
            |}
          """.stripMargin)
     }
 
     def period(fromDate: Option[String] = None, toDate: Option[String] = None,
-                         rentIncome: BigDecimal = 0,
-                         premiumsOfLeaseGrant: BigDecimal = 0,
-                         reversePremiums: BigDecimal = 0,
-                         premisesRunningCosts: (BigDecimal, BigDecimal) = (0, 0),
-                         repairsAndMaintenance: (BigDecimal, BigDecimal) = (0, 0),
-                         financialCosts: (BigDecimal, BigDecimal) = (0, 0),
-                         professionalFees: (BigDecimal, BigDecimal) = (0, 0),
-                         costOfServices: (BigDecimal, BigDecimal) = (0, 0),
-                         otherCost: (BigDecimal, BigDecimal) = (0, 0)): JsValue = {
+               rentIncome: BigDecimal = 0,
+               rentIncomeTaxDeducted: BigDecimal = 0,
+               premiumsOfLeaseGrant: BigDecimal = 0,
+               reversePremiums: BigDecimal = 0,
+               premisesRunningCosts: (BigDecimal, BigDecimal) = (0, 0),
+               repairsAndMaintenance: (BigDecimal, BigDecimal) = (0, 0),
+               financialCosts: (BigDecimal, BigDecimal) = (0, 0),
+               professionalFees: (BigDecimal, BigDecimal) = (0, 0),
+               costOfServices: (BigDecimal, BigDecimal) = (0, 0),
+               otherCost: (BigDecimal, BigDecimal) = (0, 0)): JsValue = {
 
       val from =
         fromDate.map { date =>
@@ -88,7 +83,7 @@ object Jsons {
            |  $from
            |  $to
            |  "incomes": {
-           |    "rentIncome": { "amount": $rentIncome },
+           |    "rentIncome": { "amount": $rentIncome, "taxDeducted": $rentIncomeTaxDeducted },
            |    "premiumsOfLeaseGrant": { "amount": $premiumsOfLeaseGrant },
            |    "reversePremiums": { "amount": $reversePremiums }
            |  },
@@ -104,14 +99,27 @@ object Jsons {
        """.stripMargin)
     }
 
+    def periodSummary(dates: (String, String)*): JsValue = {
+      Json.parse(
+        dates.map { date =>
+          s"""
+           |{
+           |  "from": ${date._1},
+           |  "to": ${date._2}
+           |}
+           """.stripMargin
+        }.mkString(",")
+      )
+    }
+
     def annualSummary(annualInvestmentAllowance: BigDecimal = 0.0,
-                                businessPremisesRenovationAllowance : BigDecimal = 0.0,
-                                otherCapitalAllowance: BigDecimal = 0.0,
-                                wearAndTearAllowance: BigDecimal = 0.0,
-                                lossBroughtForward: BigDecimal = 0.0,
-                                rentARoomRelief : BigDecimal = 0.0,
-                                privateUseAdjustment: BigDecimal = 0.0,
-                                balancingCharge: BigDecimal = 0.0): JsValue = {
+                      businessPremisesRenovationAllowance : BigDecimal = 0.0,
+                      otherCapitalAllowance: BigDecimal = 0.0,
+                      wearAndTearAllowance: BigDecimal = 0.0,
+                      lossBroughtForward: BigDecimal = 0.0,
+                      rentARoomRelief : BigDecimal = 0.0,
+                      privateUseAdjustment: BigDecimal = 0.0,
+                      balancingCharge: BigDecimal = 0.0): JsValue = {
       Json.parse(s"""
                     |{
                     |  "allowances": {
@@ -149,14 +157,14 @@ object Jsons {
     }
 
     def annualSummary(annualInvestmentAllowance: BigDecimal = 500.25, capitalAllowanceMainPool: BigDecimal = 500.25,
-                                    capitalAllowanceSpecialRatePool: BigDecimal = 500.25, businessPremisesRenovationAllowance: BigDecimal = 500.25,
-                                    enhancedCapitalAllowance: BigDecimal = 500.25, allowanceOnSales: BigDecimal = 500.25,
-                                    zeroEmissionGoodsVehicleAllowance: BigDecimal = 500.25,
-                                    includedNonTaxableProfits: BigDecimal = 500.25, basisAdjustment: BigDecimal = -500.25,
-                                    overlapReliefUsed: BigDecimal = 500.25, accountingAdjustment: BigDecimal = 500.25,
-                                    averagingAdjustment: BigDecimal = -500.25, lossBroughtForward: BigDecimal = 500.25,
-                                    outstandingBusinessIncome: BigDecimal = 500.25, balancingChargeBPRA: BigDecimal = 500.25,
-                                    balancingChargeOther: BigDecimal = 500.25, goodsAndServicesOwnUse: BigDecimal = 500.25): JsValue = {
+                      capitalAllowanceSpecialRatePool: BigDecimal = 500.25, businessPremisesRenovationAllowance: BigDecimal = 500.25,
+                      enhancedCapitalAllowance: BigDecimal = 500.25, allowanceOnSales: BigDecimal = 500.25,
+                      zeroEmissionGoodsVehicleAllowance: BigDecimal = 500.25,
+                      includedNonTaxableProfits: BigDecimal = 500.25, basisAdjustment: BigDecimal = -500.25,
+                      overlapReliefUsed: BigDecimal = 500.25, accountingAdjustment: BigDecimal = 500.25,
+                      averagingAdjustment: BigDecimal = -500.25, lossBroughtForward: BigDecimal = 500.25,
+                      outstandingBusinessIncome: BigDecimal = 500.25, balancingChargeBPRA: BigDecimal = 500.25,
+                      balancingChargeOther: BigDecimal = 500.25, goodsAndServicesOwnUse: BigDecimal = 500.25): JsValue = {
       Json.parse(
         s"""
            |{
@@ -241,11 +249,4 @@ object Jsons {
     }
 
   }
-
-
-
-
-
-
-
 }

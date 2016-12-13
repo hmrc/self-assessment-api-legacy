@@ -40,8 +40,10 @@ case class SelfEmployment(id: BSONObjectID,
     with LastModifiedDateTime {
 
   override def containsMisalignedPeriod(period: SelfEmploymentPeriod): Boolean = {
-    if (periods.isEmpty) !period.from.isEqual(accountingPeriod.start)
-    else !(period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end))
+    val alignedWithEnd = period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end)
+
+    if (periods.isEmpty) !(period.from.isEqual(accountingPeriod.start) && alignedWithEnd)
+    else !alignedWithEnd
   }
 
   def toModel(elideID: Boolean = false): selfemployment.SelfEmployment = {

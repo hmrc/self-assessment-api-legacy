@@ -104,6 +104,14 @@ class SelfEmploymentSpec extends JsonSpec {
       val newPeriod = SelfEmploymentPeriod(LocalDate.now.plusDays(6), selfEmployment.accountingPeriod.end, SelfEmploymentPeriodicData(Map.empty, Map.empty))
       selfEmployment.containsMisalignedPeriod(newPeriod) shouldBe false
     }
+
+    "return true when the period `to` date comes after the accountingPeriod `end` date when inserting the first period" in {
+      val accountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2018-03-31"))
+      val period = SelfEmploymentPeriod(from = LocalDate.parse("2017-04-01"), to = LocalDate.parse("2017-04-01"), SelfEmploymentPeriodicData(Map.empty, Map.empty))
+      val se = domain.SelfEmployment(BSONObjectID.generate, "", NinoGenerator().nextNino(), LocalDate.now, accountingPeriod, AccountingType.CASH, LocalDate.now, Map.empty, Map.empty)
+
+      se.containsMisalignedPeriod(period)
+    }
   }
 
   "SelfEmployment JSON" should {

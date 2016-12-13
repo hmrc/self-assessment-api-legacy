@@ -30,44 +30,41 @@ import scala.concurrent.Future
 
 trait SelfEmploymentPeriodService {
 
-  val periodRepository: SelfEmploymentsRepository
+  val repository: SelfEmploymentsRepository
 
   def createPeriod(nino: Nino, id: SourceId, period: SelfEmploymentPeriod): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
 
-    periodRepository.retrieve(id, nino).flatMap {
-      case Some(resource) if resource.containsOverlappingPeriod(period) =>
-        Future.successful(Left(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", "")))
-      case Some(resource) if resource.containsGap(period) =>
-        Future.successful(Left(Error(GAP_PERIOD.toString, "Periods should not contain gaps between each other", "")))
-      case Some(resource) if resource.containsMisalignedPeriod(period) =>
-        Future.successful(Left(Error(MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the resource accounting period", "")))
-      case Some(resource) =>
-        periodRepository.update(id, nino, resource.setPeriodsTo(periodId, period)).flatMap {
-          case true => Future.successful(Right(periodId))
-          case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
+    repository.retrieve(id, nino).flatMap {
+      case Some(selfEmployment) =>
+        selfEmployment.validatePeriod(period) match {
+          case Left(error) => Future.successful(Left(error))
+          case Right(validResource) => repository.update(id, nino, validResource.setPeriodsTo(periodId, period)).flatMap {
+            case true => Future.successful(Right(periodId))
+            case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
+          }
         }
       case None => Future.successful(Left(Error(NOT_FOUND.toString, s"Resource not found for id: $id", "")))
     }
   }
 
   def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId, periodicData: SelfEmploymentPeriodicData): Future[Boolean] = {
-    periodRepository.retrieve(id, nino).flatMap {
-      case Some(incomeSource) if incomeSource.periodExists(periodId) =>
-        periodRepository.update(id, nino, incomeSource.update(periodId, periodicData))
+    repository.retrieve(id, nino).flatMap {
+      case Some(selfEmployment) if selfEmployment.periodExists(periodId) =>
+        repository.update(id, nino, selfEmployment.update(periodId, periodicData))
       case _ => Future.successful(false)
     }
   }
 
   def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Future[Option[SelfEmploymentPeriod]] = {
-    periodRepository.retrieve(id, nino).map {
+    repository.retrieve(id, nino).map {
       case Some(selfEmployment) => selfEmployment.period(periodId)
       case None => None
     }
   }
 
   def retrieveAllPeriods(nino: Nino, id: SourceId): Future[Seq[PeriodSummary]] = {
-    periodRepository.retrieve(id, nino).map {
+    repository.retrieve(id, nino).map {
       case Some(selfEmployment) => selfEmployment.periods.map {
         case (k, v) => PeriodSummary(k, v.from, v.to)
       }.toSeq.sorted
@@ -78,5 +75,5 @@ trait SelfEmploymentPeriodService {
 
 
 object SelfEmploymentPeriodService extends SelfEmploymentPeriodService {
-  override val periodRepository: SelfEmploymentsRepository = SelfEmploymentsRepository()
+  override val repository: SelfEmploymentsRepository = SelfEmploymentsRepository()
 }

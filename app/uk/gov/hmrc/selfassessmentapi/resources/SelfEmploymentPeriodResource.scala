@@ -19,8 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentPeriod, SelfEmploymentPeriodicData}
@@ -29,22 +29,16 @@ import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentPeriodService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object SelfEmploymentPeriodResource {
-  val periodService: SelfEmploymentPeriodService = SelfEmploymentPeriodService
+object SelfEmploymentPeriodResource extends BaseController {
 
   private lazy val featureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "periods")
+  val periodService: SelfEmploymentPeriodService = SelfEmploymentPeriodService
 
   def createPeriod(nino: Nino, sourceId: SourceId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[SelfEmploymentPeriod, Either[Error, PeriodId]](request.body) { period =>
       periodService.createPeriod(nino, sourceId, period)
     } match {
-      case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
+      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case Right(periodId) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${SourceType.SelfEmployments.toString}/$sourceId/periods/$periodId")
         case Left(error) =>
@@ -58,13 +52,7 @@ object SelfEmploymentPeriodResource {
     validate[SelfEmploymentPeriodicData, Boolean](request.body) {
       periodService.updatePeriod(nino, id, periodId, _)
     } match {
-      case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
+      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case true => NoContent
         case false => NotFound

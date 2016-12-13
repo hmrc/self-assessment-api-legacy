@@ -28,11 +28,9 @@ import uk.gov.hmrc.selfassessmentapi.services.errors.BusinessException
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object SelfEmploymentsService {
-  def apply() = new SelfEmploymentsMongoService(SelfEmploymentsRepository())
-}
+trait SelfEmploymentsMongoService {
 
-class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) {
+  val mongoRepository: SelfEmploymentsRepository
 
   def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]] = {
     val id = BSONObjectID.generate
@@ -69,4 +67,8 @@ class SelfEmploymentsMongoService(mongoRepository: SelfEmploymentsRepository) {
   def retrieveAll(nino: Nino): Future[Seq[SelfEmployment]] =
     mongoRepository.retrieveAll(nino).map(_.map(_.toModel()))
 
+}
+
+object SelfEmploymentsService extends SelfEmploymentsMongoService {
+  override val mongoRepository = SelfEmploymentsRepository()
 }

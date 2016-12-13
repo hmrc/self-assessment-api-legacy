@@ -16,33 +16,22 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.domain.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesAnnualSummary, PropertiesPeriod, PropertiesPeriodicData}
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object PropertiesResource extends PeriodResource[PropertyId, PropertiesPeriod, Properties, PropertiesPeriodicData]
-  with AnnualSummaryResource[PropertiesAnnualSummary, Properties] with BaseResource {
+object PropertiesResource extends BaseController {
 
-  override val context = AppContext.apiGatewayLinkContext
-  override val sourceType = SourceType.Properties
-
-  override implicit val periodFormat: Format[PropertiesPeriod] = Format(PropertiesPeriod.reads, PropertiesPeriod.writes)
-  override implicit val periodicDataFormat: Format[PropertiesPeriodicData] = Format(PropertiesPeriodicData.reads, PropertiesPeriodicData.writes)
-  override implicit val annualSummaryFormat: Format[PropertiesAnnualSummary] = Format(PropertiesAnnualSummary.reads, PropertiesAnnualSummary.writes)
-  override val annualSummaryFeatureSwitch: FeatureSwitchAction = FeatureSwitchAction(sourceType)
+  lazy val annualSummaryFeatureSwitch: FeatureSwitchAction = FeatureSwitchAction(SourceType.Properties)
 
   private val service = PropertiesService()
-  override val periodService = service
-  override val annualSummaryService = service
 
   def create(nino: Nino) = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
     validate[properties.Properties, Either[Error, Boolean]](request.body) {

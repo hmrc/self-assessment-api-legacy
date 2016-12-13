@@ -45,5 +45,5 @@ trait SelfEmploymentAnnualSummaryService {
 }
 
 object SelfEmploymentAnnualSummaryService extends SelfEmploymentAnnualSummaryService {
-  override val repository: SelfEmploymentsRepository = SelfEmploymentsRepository()
+  override val repository = SelfEmploymentsRepository()
 }

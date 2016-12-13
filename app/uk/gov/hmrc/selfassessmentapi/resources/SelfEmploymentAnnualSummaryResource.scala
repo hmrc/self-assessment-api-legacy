@@ -20,6 +20,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmploymentAnnualSummary
@@ -28,21 +29,16 @@ import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentAnnualSummaryService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object SelfEmploymentAnnualSummaryResource {
-  val annualSummaryFeatureSwitch: FeatureSwitchAction = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
-  val annualSummaryService = SelfEmploymentAnnualSummaryService
+object SelfEmploymentAnnualSummaryResource extends BaseController {
+
+  private lazy val annualSummaryFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
+  private val annualSummaryService = SelfEmploymentAnnualSummaryService
 
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
     validate[SelfEmploymentAnnualSummary, Boolean](request.body) {
       annualSummaryService.updateAnnualSummary(nino, id, taxYear, _)
     } match {
-      case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
+      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case true => NoContent
         case false => NotFound

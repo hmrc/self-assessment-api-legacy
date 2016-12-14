@@ -1,70 +1,123 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
 
-  "create or update annual summary" should {
-    "return code 204 if the create/update is successful" ignore {
+  "amending annual summaries" should {
+    "return code 204 when amending annual summaries for an arbitrary tax year" ignore {
+      val property = Jsons.Properties()
+
+      val annualSummaries = Jsons.Properties.annualSummary(
+        annualInvestmentAllowance = 10000.50,
+        businessPremisesRenovationAllowance = 500.50,
+        otherCapitalAllowance = 1000.20,
+        wearAndTearAllowance = 150.55,
+        lossBroughtForward = 20.22,
+        rentARoomRelief = 50.23,
+        privateUseAdjustment = 22.23,
+        balancingCharge = 350.34)
+
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(Jsons.Properties.annualSummary()).at(s"/ni/$nino/properties/uk/$taxYear")
+        .post(property).to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .put(annualSummaries).at(s"/ni/$nino/uk-properties/other/$taxYear")
         .thenAssertThat()
         .statusIs(204)
-        .when()
-        .get(s"/ni/$nino/properties/uk/$taxYear")
-        .thenAssertThat()
-        .statusIs(200)
-        .contentTypeIsJson()
-        .bodyIsLike(Jsons.Properties.annualSummary().toString())
-        .when()
-        .put(Jsons.Properties.annualSummary(annualInvestmentAllowance = 100.12, balancingCharge = 100.12)).at(s"/ni/$nino/properties/uk/$taxYear")
-        .thenAssertThat()
-        .statusIs(204)
-        .when()
-        .get(s"/ni/$nino/properties/uk/$taxYear")
-        .thenAssertThat()
-        .statusIs(200)
-        .contentTypeIsJson()
-        .bodyIsLike(Jsons.Properties.annualSummary(annualInvestmentAllowance = 100.12, balancingCharge = 100.12).toString())
     }
 
-    "return code 400 when provided with an invalid annual summary" ignore {
+    "return code 400 when amending annual summaries with invalid data" ignore {
+      val property = Jsons.Properties()
+
+      val annualSummaries = Jsons.Properties.annualSummary(
+        annualInvestmentAllowance = 10000.50,
+        businessPremisesRenovationAllowance = -500.50,
+        otherCapitalAllowance = 1000.20,
+        wearAndTearAllowance = 150.55,
+        lossBroughtForward = 20.22,
+        rentARoomRelief = 50.23,
+        privateUseAdjustment = -22.23,
+        balancingCharge = 350.34)
+
+      val expectedJson = Jsons.Errors.invalidRequest(
+        "INVALID_MONETARY_AMOUNT" -> "/allowances/businessPremisesRenovationAllowance",
+        "INVALID_MONETARY_AMOUNT" -> "/adjustments/privateUseAdjustment")
+
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(Jsons.Properties.annualSummary(annualInvestmentAllowance = -100.00, rentARoomRelief = -10.0)).at(s"/ni/$nino/properties/uk/$taxYear")
+        .post(property).to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .put(annualSummaries).at(s"/ni/$nino/uk-properties/other/$taxYear")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_MONETARY_AMOUNT", "/allowances/annualInvestmentAllowance"),
-          ("INVALID_MONETARY_AMOUNT", "/rentARoomRelief")))
+        .bodyIsLike(expectedJson.toString)
     }
 
-    "can be set to an empty object" ignore {
+    "return code 404 when amending annual summaries for a properties business that does not exist" ignore {
+      val annualSummaries = Jsons.Properties.annualSummary(
+        annualInvestmentAllowance = 10000.50,
+        businessPremisesRenovationAllowance = -500.50,
+        otherCapitalAllowance = 1000.20,
+        wearAndTearAllowance = 150.55,
+        lossBroughtForward = 20.22,
+        rentARoomRelief = 50.23,
+        privateUseAdjustment = -22.23,
+        balancingCharge = 350.34)
+
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(Json.parse("{}")).at(s"/ni/$nino/properties/uk/$taxYear")
+        .put(annualSummaries).at(s"/ni/$nino/uk-properties/other/$taxYear")
         .thenAssertThat()
-        .statusIs(204)
-        .when()
-        .get(s"/ni/$nino/properties/uk/$taxYear")
-        .thenAssertThat()
-        .statusIs(200)
-        .contentTypeIsJson()
-        .bodyIs("{}")
+        .statusIs(404)
     }
   }
 
-  "retrieveAnnualSummary" should {
-    "return code 404 when retrieving a non-existent annual summary" in {
+  "retrieving annual summaries" should {
+    "return code 200 containing annual summary information" ignore {
+      val property = Jsons.Properties()
+
+      val annualSummaries = Jsons.Properties.annualSummary(
+        annualInvestmentAllowance = 10000.50,
+        businessPremisesRenovationAllowance = 500.50,
+        otherCapitalAllowance = 1000.20,
+        wearAndTearAllowance = 150.55,
+        lossBroughtForward = 20.22,
+        rentARoomRelief = 50.23,
+        privateUseAdjustment = 22.23,
+        balancingCharge = 350.34)
+
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/ni/$nino/properties/uk/$taxYear")
+        .post(property).to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .put(annualSummaries).at(s"/ni/$nino/uk-properties/other/$taxYear")
+        .thenAssertThat()
+        .statusIs(204)
+        .when()
+        .get(s"/ni/$nino/uk-properties/other/$taxYear")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyIsLike(annualSummaries.toString)
+    }
+
+    "return code 404 when retrieving annual summaries for a properties business that does not exist" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .get(s"/ni/$nino/uk-properties/other/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }

@@ -22,17 +22,22 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.BSONDocument
+import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.mongo.ReactiveRepository
+import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
 import uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId
-import uk.gov.hmrc.selfassessmentapi.services.NewSourceRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PropertiesRepository(implicit mongo: () => DB)
-  extends NewSourceRepository[PropertyId, Properties]("properties", Properties.mongoFormats) {
+  extends ReactiveRepository[Properties, BSONObjectID](
+    "properties",
+    mongo,
+    Properties.mongoFormats,
+    idFormat = ReactiveMongoFormats.objectIdFormats) {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq(("nino", Ascending)), name = Some("properties_nino"), unique = true),
@@ -41,11 +46,10 @@ class PropertiesRepository(implicit mongo: () => DB)
 
   def create(properties: Properties): Future[Boolean] = insert(properties).map(_.ok)
 
-  override def retrieve(propType: PropertyId, nino: Nino): Future[Option[Properties]] =
-    find("nino" -> nino.nino).map(_.headOption)
+  def retrieve(nino: Nino): Future[Option[Properties]] = find("nino" -> nino.nino).map(_.headOption)
 
-  override def update(propertyId: PropertyId, nino: Nino, periodContainer: Properties): Future[Boolean] = {
-    domainFormatImplicit.writes(periodContainer.copy(lastModifiedDateTime = LocalDate.now(DateTimeZone.UTC))) match {
+  def update(nino: Nino, properties: Properties): Future[Boolean] = {
+    domainFormatImplicit.writes(properties.copy(lastModifiedDateTime = LocalDate.now(DateTimeZone.UTC))) match {
       case d @ JsObject(_) =>
         collection.update(
           BSONDocument("nino" -> nino.nino),

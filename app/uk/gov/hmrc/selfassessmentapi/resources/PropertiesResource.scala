@@ -16,12 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
+import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.{NoContent, NotFound}
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors._
 import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.Properties
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -33,22 +37,39 @@ object PropertiesResource extends BaseController {
 
   private val service = PropertiesService()
 
-  def create(nino: Nino) = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
+  def create(nino: Nino): Action[JsValue] = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
     validate[properties.Properties, Either[Error, Boolean]](request.body) {
       service.create(nino, _)
     } match {
       case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
+        Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case Right(successful) =>
-          if (successful) Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
-          else InternalServerError
+          successful match {
+            case true => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
+            case false => InternalServerError
+          }
+
         case Left(err) => Conflict(Json.toJson(Errors.businessError(err)))
+      }
+    }
+  }
+
+  def retrieve(nino: Nino): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch {
+    service.retrieve(nino).map {
+      case Some(properties) => Ok(Json.toJson(properties))
+      case None => NotFound
+    }
+  }
+
+  def update(nino: Nino): Action[JsValue] = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
+    validate[Properties, Boolean](request.body) { properties =>
+      service.update(nino, properties)
+    } match {
+      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
+      case Right(result) => result.map {
+        case true => NoContent
+        case false => NotFound
       }
     }
   }

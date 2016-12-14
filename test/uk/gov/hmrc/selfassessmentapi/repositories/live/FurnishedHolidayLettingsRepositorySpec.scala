@@ -31,19 +31,13 @@ import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepo
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class FurnishedHolidayLettingsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class FurnishedHolidayLettingsRepositorySpec extends MongoEmbeddedDatabase {
 
   private val mongoRepository = new FurnishedHolidayLettingsMongoRepository
   private val furnishedHolidayLettingsRepository: SourceRepository[FurnishedHolidayLetting] = mongoRepository
   private val summariesMap: Map[JsonMarshaller[_], SummaryRepository[_]] = Map(Income -> mongoRepository.IncomeRepository,
     Expense -> mongoRepository.ExpenseRepository, BalancingCharge -> mongoRepository.BalancingChargeRepository,
     PrivateUseAdjustment -> mongoRepository.PrivateUseAdjustmentRepository)
-
-
-  override def beforeEach() {
-    await(mongoRepository.drop)
-    await(mongoRepository.ensureIndexes)
-  }
 
   val nino = NinoGenerator().nextNino()
 

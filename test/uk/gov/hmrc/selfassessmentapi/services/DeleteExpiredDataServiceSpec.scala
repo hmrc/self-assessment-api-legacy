@@ -53,18 +53,6 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   private val nino3 = NinoGenerator().nextNino()
   private val lastModifiedDate = DateTime.now().minusWeeks(1)
 
-  override def beforeEach() {
-    dropCollection(saRepo, seRepo, uiRepo, fhlRepo, ukPropertyRepo, bankRepo, jobRepo)
-  }
-
-  private  def dropCollection(repos : ReactiveRepository[_, _]*) {
-    repos.foreach { repo =>
-      await(repo.drop)
-      await(repo.ensureIndexes)
-    }
-  }
-
-
   implicit override val patienceConfig = PatienceConfig(timeout = Span(15, Seconds), interval = Span(300, Millis))
 
   /*

@@ -27,18 +27,13 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
   private val ninoGenerator = NinoGenerator()
   private val nino = ninoGenerator.nextNino()
   private val repo = new SelfEmploymentsRepository
   private val id = BSONObjectID.generate
   private val selfEmployment = SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC),
     AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
-
-  override def beforeEach(): Unit = {
-    await(repo.drop)
-    await(repo.ensureIndexes)
-  }
 
   "create" should {
     "create a self employment with a non-null id" in {

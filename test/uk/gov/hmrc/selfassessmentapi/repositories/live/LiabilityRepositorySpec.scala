@@ -24,15 +24,10 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.Liability
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class LiabilityRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class LiabilityRepositorySpec extends MongoEmbeddedDatabase {
 
   private val repository = new LiabilityMongoRepository()
   private val nino = NinoGenerator().nextNino()
-
-  override def beforeEach() {
-    await(repository.drop)
-    await(repository.ensureIndexes)
-  }
 
   "save" should {
 

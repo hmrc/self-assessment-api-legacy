@@ -26,18 +26,13 @@ import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BanksRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class BanksRepositorySpec extends MongoEmbeddedDatabase {
 
   private val repo = new BanksMongoRepository()
   private val interestRepo = repo.InterestRepository
 
   private val nino = NinoGenerator().nextNino()
   private def saving = Bank.example()
-
-  override def beforeEach(): Unit = {
-    await(repo.drop)
-    await(repo.ensureIndexes)
-  }
 
   "deleteById" should {
     "return true when a bank is deleted" in {

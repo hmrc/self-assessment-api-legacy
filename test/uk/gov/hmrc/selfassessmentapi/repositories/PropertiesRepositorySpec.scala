@@ -27,16 +27,11 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Allowances, Pr
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
 
   private val repo = new PropertiesRepository
   private val nino = NinoGenerator().nextNino()
   private val propertyId = ""
-
-  override def beforeEach() = {
-    await(repo.drop)
-    await(repo.ensureIndexes)
-  }
 
   "create" should {
     "persist a properties object" in {

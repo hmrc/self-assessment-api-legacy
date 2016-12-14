@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 import org.scalacheck.Gen
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
+import play.api.Logger
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.controllers.api
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{
@@ -28,7 +29,9 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.{
 }
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders._
 
-class SavingsSpec extends UnitSpec {
+class BanksSpec extends UnitSpec {
+
+  val log = Logger(classOf[BanksSpec])
 
   "Interest from UK banks and building societies" should {
 
@@ -385,8 +388,8 @@ class SavingsSpec extends UnitSpec {
               TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(ukPensionContributions.toInt))
             .create())
 
-          println(bandAllocations)
-          println("====================================================================================")
+          log.debug(bandAllocations.toString)
+          log.debug("====================================================================================")
 
           bandAllocations.map(_.taxableAmount) should contain theSameElementsInOrderAs Seq(
             startingRateAmount.toInt,
@@ -445,8 +448,8 @@ class SavingsSpec extends UnitSpec {
                 TaxYearPropertiesBuilder().withPensionContributions().ukRegisteredPension(ukPensionContribs))
               .create())
 
-          println(savingsIncomeBandAllocation)
-          println("==============================")
+          log.debug(savingsIncomeBandAllocation.toString)
+          log.debug("==============================")
 
           Savings.IncomeTax(savingsIncomeBandAllocation) shouldBe BigDecimal(savingsIncomeTax.toDouble)
       }

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import org.joda.time.{DateTime, DateTimeZone}
+import play.api.Logger
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 
@@ -27,8 +28,10 @@ trait UnitSpec extends uk.gov.hmrc.play.test.UnitSpec with TestUtils {
   override implicit val defaultTimeout: FiniteDuration = 30 seconds
 
   case class Print(value: BigDecimal) {
+    val log = Logger(classOf[Print])
+
     def as(name: String) = {
-      println(s"$name => $value")
+      log.debug(s"$name => $value")
       value
     }
   }

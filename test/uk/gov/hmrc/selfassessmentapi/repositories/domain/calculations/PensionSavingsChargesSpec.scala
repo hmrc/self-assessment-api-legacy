@@ -18,11 +18,14 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
+import play.api.Logger
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxBandSummary
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders._
 
 class PensionSavingsChargesSpec extends UnitSpec {
+
+  val log = Logger(classOf[PensionSavingsChargesSpec])
 
   "PensionSavingsCharges.IncomeTaxBandSummary" should {
     "be calculated when TotalTaxableIncome present falls within HigherRate band" in {
@@ -129,7 +132,7 @@ class PensionSavingsChargesSpec extends UnitSpec {
 
           PensionSavingsCharges.IncomeTax(taxBands) shouldBe BigDecimal(incomeTaxCalculated)
 
-          println("=======================================")
+          log.debug("=======================================")
       }
     }
 

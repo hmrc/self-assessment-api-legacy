@@ -31,7 +31,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{Adjustment
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
 
   private val mongoRepository = new SelfEmploymentMongoRepository
   private val selfEmploymentRepository: SourceRepository[selfemployment.SelfEmployment] = mongoRepository
@@ -41,11 +41,6 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndA
     BalancingCharge -> mongoRepository.BalancingChargeRepository,
     GoodsAndServicesOwnUse -> mongoRepository.GoodsAndServicesOwnUseRepository
   )
-
-  override def beforeEach() {
-    await(mongoRepository.drop)
-    await(mongoRepository.ensureIndexes)
-  }
 
   val nino = NinoGenerator().nextNino()
 

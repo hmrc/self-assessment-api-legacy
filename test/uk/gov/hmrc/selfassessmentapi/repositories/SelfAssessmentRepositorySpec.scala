@@ -29,14 +29,9 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfAssessment
 import scala.concurrent.ExecutionContext.Implicits.global
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders.TaxYearPropertiesBuilder
 
-class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class SelfAssessmentRepositorySpec extends MongoEmbeddedDatabase {
 
   private val mongoRepository = new SelfAssessmentMongoRepository
-
-  override def beforeEach() {
-    await(mongoRepository.drop)
-    await(mongoRepository.ensureIndexes)
-  }
 
   val nino = NinoGenerator().nextNino()
 

@@ -16,22 +16,25 @@
 
 package uk.gov.hmrc.kenshoo.monitoring
 
+import play.api.Logger
+import scala.concurrent.Future
+
 import com.jayway.restassured.RestAssured
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers._
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future
-
 trait MonitoringSpec extends UnitSpec {
+
+  val log = Logger(classOf[MonitoringSpec])
 
   private class MetricBodyWrapper {
     var fieldName: String = ""
 
     def is[T](matcher: Matcher[T]) = {
-      if (debugMonitoring) {
-        printMetricsJson()
-      }
+      log.debug(s"Metrics URL: ${RestAssured.baseURI}:${RestAssured.port}")
+      log.debug(RestAssured.get("/admin/metrics").then().assertThat().extract().body().asString())
+
       try {
         metrics.body(fieldName, matcher)
       } catch {
@@ -49,11 +52,6 @@ trait MonitoringSpec extends UnitSpec {
   private def metricsBody() = {
     new MetricBodyWrapper()
   }
-
-  /**
-   * override this and set to true if you want to see kenshoo metrics json
-   */
-  val debugMonitoring = false
 
   def kenshooMetricPort: Int
 
@@ -75,11 +73,6 @@ trait MonitoringSpec extends UnitSpec {
     } catch {
       case ex: Throwable => assertErrorCountRecordedFor(serviceName, 400)
     }
-  }
-
-  private def printMetricsJson(): Unit = {
-    println(s"Metrics URL: ${RestAssured.baseURI}:${RestAssured.port}")
-    println(RestAssured.get("/admin/metrics").then().assertThat().extract().body().asString())
   }
 
   def verifyHttpErrorRecorded[T](service: String, statusCode: Int = 500)(fn: => Future[T]) = {

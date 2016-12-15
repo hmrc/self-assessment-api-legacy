@@ -50,6 +50,7 @@ object ErrorCode extends Enumeration {
   MISALIGNED_PERIOD,
   INVALID_ACCOUNTING_PERIOD,
   NOT_FOUND,
+  NINO_INVALID,
   INTERNAL_ERROR = Value
 
   implicit val format = EnumJson.enumFormat(ErrorCode, Some("ErrorCode is invalid"))

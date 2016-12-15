@@ -23,8 +23,10 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAnnualSummary, SelfEmploymentPeriod,
+SelfEmploymentPeriodicData}
 
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: String,
@@ -38,6 +40,20 @@ case class SelfEmployment(id: BSONObjectID,
   extends PeriodContainer[SelfEmploymentPeriod, SelfEmployment, SelfEmploymentPeriodicData]
     with AnnualSummaryContainer[SelfEmploymentAnnualSummary]
     with LastModifiedDateTime {
+
+  def validatePeriod(period: SelfEmploymentPeriod): Either[Error, SelfEmployment] = {
+    if (containsOverlappingPeriod(period)) {
+      return Left(Error(ErrorCode.OVERLAPPING_PERIOD.toString, "Periods should not overlap", ""))
+    }
+    if (containsGap(period)) {
+      return Left(Error(ErrorCode.GAP_PERIOD.toString, "Periods should not contain gaps between each other", ""))
+    }
+    if (containsMisalignedPeriod(period)) {
+      return Left(Error(ErrorCode.MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the resource " +
+        "accounting period", ""))
+    }
+    Right(this)
+  }
 
   override def containsMisalignedPeriod(period: SelfEmploymentPeriod): Boolean = {
     val alignedWithEnd = period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end)

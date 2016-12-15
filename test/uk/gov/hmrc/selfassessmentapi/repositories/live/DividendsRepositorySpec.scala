@@ -26,16 +26,11 @@ import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DividendsRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class DividendsRepositorySpec extends MongoEmbeddedDatabase {
 
   private val mongoRepository = new DividendMongoRepository
   private val benefitsMongoRepository = mongoRepository
   private val summariesMap = Map(DividendIncome -> mongoRepository.DividendIncomeRepository)
-
-  override def beforeEach() {
-    await(mongoRepository.drop)
-    await(mongoRepository.ensureIndexes)
-  }
 
   val nino = NinoGenerator().nextNino()
 

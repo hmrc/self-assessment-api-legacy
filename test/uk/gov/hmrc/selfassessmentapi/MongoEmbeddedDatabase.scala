@@ -30,63 +30,46 @@ import uk.gov.hmrc.mongo.MongoConnector
 import scala.util.Try
 
 trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeAndAfterEach {
+  import MongoEmbeddedDatabase._
 
-  private var mongodExe: MongodExecutable = _
-  private var mongod: MongodProcess = _
+  implicit val mongo = new MongoConnector(mongoUri).db
 
+  lazy private val mongoClient =
+    MongoClient("localhost", if (useEmbeddedMongo) embeddedPort else diskPort)("self-assessment-api")
+
+
+  override def beforeAll() = startEmbeddedMongo()
+  override def beforeEach() =
+    List("selfEmployments", "employments", "selfAssessments", "jobHistory", "liabilities",
+      "properties", "banks", "benefits", "ukProperties", "furnishedHolidayLettings", "dividends").foreach {
+    coll => mongoClient.getCollection(coll).remove(new BasicDBObject())
+  }
+}
+
+object MongoEmbeddedDatabase {
   private val diskPort = 27017
   private val embeddedPort = 12345
   private val localhost = "127.0.0.1"
   private val mongoUri = sys.env.getOrElse("MONGO_TEST_URI", s"mongodb://$localhost:$embeddedPort/self-assessment-api")
-  private lazy val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
-  lazy val runtimeConfig = new RuntimeConfigBuilder()
+  private val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
+  private val runtimeConfig = new RuntimeConfigBuilder()
     .defaults(Command.MongoD)
     .processOutput(ProcessOutput.getDefaultInstanceSilent())
     .build()
 
-  implicit val mongo = new MongoConnector(mongoUri).db
+  private var mongodExe: MongodExecutable = _
+  private var mongod: MongodProcess = _
 
-  lazy protected val mongoClient = MongoClient("localhost", if (useEmbeddedMongo) embeddedPort else diskPort)("self-assessment-api")
-
-
-  protected def startEmbeddedMongo() = {
-    if (useEmbeddedMongo) {
+  private def startEmbeddedMongo() = this.synchronized {
+    if (mongod == null && useEmbeddedMongo) {
       Logger.info("Starting embedded mongo")
-      mongodExe = MongodStarter.getInstance(runtimeConfig).prepare(new MongodConfigBuilder()
+      mongodExe = MongodStarter
+        .getInstance(runtimeConfig)
+        .prepare(new MongodConfigBuilder()
         .version(Version.Main.PRODUCTION)
         .net(new Net(localhost, embeddedPort, Network.localhostIsIPv6()))
         .build())
       mongod = mongodExe.start()
-    }
-  }
-
-  protected def stopEmbeddedMongo() = {
-    Try {
-      if (useEmbeddedMongo) {
-        mongod.stop()
-        mongodExe.stop()
-      }
-    } recover {
-      case ex: Throwable => Logger.info(s"MONGO_STOP_FAILED: Couldn't kill mongod process! : $ex")
-    }
-  }
-
-  override def beforeAll() = {
-    if (mongod != null && mongod.isProcessRunning) stopEmbeddedMongo()
-    startEmbeddedMongo()
-  }
-
-  override def afterAll() = {
-    stopEmbeddedMongo()
-  }
-
-  override def beforeEach() = {
-    clearMongoCollections()
-  }
-
-  protected def clearMongoCollections() = {
-    List("selfEmployments", "employments", "selfAssessments", "jobHistory", "liabilities", "properties").foreach {
-      coll => mongoClient.getCollection(coll).remove(new BasicDBObject())
     }
   }
 }

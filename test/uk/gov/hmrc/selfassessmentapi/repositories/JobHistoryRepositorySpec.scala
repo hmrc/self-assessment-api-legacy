@@ -25,14 +25,9 @@ import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class JobHistoryRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class JobHistoryRepositorySpec extends MongoEmbeddedDatabase {
 
   private val mongoRepository = new JobHistoryMongoRepository
-
-  override def beforeEach() = {
-    await(mongoRepository.drop)
-    await(mongoRepository.ensureIndexes)
-  }
 
   "insert" should {
 

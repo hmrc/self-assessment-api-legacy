@@ -16,48 +16,27 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.{Format, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.domain
-import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, SelfEmploymentAnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
-import uk.gov.hmrc.selfassessmentapi.services.{SelfEmploymentsMongoService, SelfEmploymentsService}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
-object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPeriod, domain.SelfEmployment, SelfEmploymentPeriodicData]
-  with AnnualSummaryResource[SelfEmploymentAnnualSummary, domain.SelfEmployment] with BaseResource {
-
-  override implicit val annualSummaryFormat: Format[SelfEmploymentAnnualSummary] = Format(SelfEmploymentAnnualSummary.reader, SelfEmploymentAnnualSummary.writer)
-  override implicit val periodFormat: Format[SelfEmploymentPeriod] = Format(SelfEmploymentPeriod.reads, SelfEmploymentPeriod.writes)
-  override implicit val periodicDataFormat: Format[SelfEmploymentPeriodicData] = Format(SelfEmploymentPeriodicData.reads, SelfEmploymentPeriodicData.writes)
-
-  override val context: PeriodId = AppContext.apiGatewayLinkContext
-  override val sourceType = SourceType.SelfEmployments
-  override val annualSummaryFeatureSwitch: FeatureSwitchAction = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
-
-  private val service = SelfEmploymentsService()
-  override val annualSummaryService: SelfEmploymentsMongoService = service
-  override val periodService: SelfEmploymentsMongoService = service
-
-  private val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
+object SelfEmploymentsResource extends BaseController {
+  private lazy val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
+  private val service = SelfEmploymentsService
 
   def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
     validate[SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
       service.create(nino, selfEmployment)
     } match {
-      case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
+      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(idOption) => idOption.map {
         case Some(id) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/self-employments/$id")
         case None => InternalServerError
@@ -69,13 +48,7 @@ object SelfEmploymentsResource extends PeriodResource[SourceId, SelfEmploymentPe
     validate[SelfEmployment, Boolean](request.body) { selfEmployment =>
       service.update(nino, selfEmployment, id)
     } match {
-      case Left(errorResult) =>
-        Future.successful {
-          errorResult match {
-            case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
-            case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
-          }
-        }
+      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case true => NoContent
         case false => NotFound

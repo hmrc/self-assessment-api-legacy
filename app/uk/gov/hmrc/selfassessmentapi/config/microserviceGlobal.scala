@@ -195,6 +195,7 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
       error match {
         case "ERROR_INVALID_SOURCE_TYPE" => NotFound(Json.toJson(ErrorNotFound))
         case "ERROR_TAX_YEAR_INVALID" => BadRequest(Json.toJson(ErrorBadRequest(ErrorCode.TAX_YEAR_INVALID, "Tax year invalid")))
+        case "ERROR_NINO_INVALID" => BadRequest(Json.toJson(ErrorBadRequest(ErrorCode.NINO_INVALID, "The provided Nino is invalid")))
         case _ => result
       }
     }

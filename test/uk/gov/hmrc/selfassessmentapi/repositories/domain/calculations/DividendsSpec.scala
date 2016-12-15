@@ -18,11 +18,14 @@ package uk.gov.hmrc.selfassessmentapi.repositories.domain.calculations
 
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.prop.Tables.Table
+import play.api.Logger
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.controllers.api.{DividendsFromUKSources, SelfAssessment, TaxBandSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.builders._
 
 class DividendsSpec extends UnitSpec {
+
+  val log = Logger(classOf[DividendsSpec])
 
   "Dividends FromUK" should {
 
@@ -310,8 +313,8 @@ class DividendsSpec extends UnitSpec {
             .create()
         )
 
-        println(dividendIncomeTax.map(_.taxableAmount))
-        println("==========================================")
+        log.debug(dividendIncomeTax.map(_.taxableAmount).toString)
+        log.debug("==========================================")
 
         dividendIncomeTax.map(_.taxableAmount) should contain theSameElementsInOrderAs
           Seq(BigDecimal(nilRateAmount.toInt), BigDecimal(basicRateTaxAmount.toInt), BigDecimal(higherRateTaxAmount.toInt), BigDecimal(additionalHigherRateAmount.toInt))
@@ -350,7 +353,7 @@ class DividendsSpec extends UnitSpec {
         val totalDeduction = Print(Deductions.Total(2000, Deductions.PersonalAllowance(totalIncome, 0, 0), 0)).as("totalDeduction")
         val taxableDividendIncome = Print(Dividends.TotalTaxableIncome(dividends, profits, savings, totalDeduction)).as("taxableDividendIncome")
 
-        println("=======================================")
+        log.debug("=======================================")
 
         Dividends.PersonalAllowance(taxableDividendIncome) shouldBe personalDividendAllowance.toInt
       }

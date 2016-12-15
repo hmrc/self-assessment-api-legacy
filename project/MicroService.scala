@@ -58,7 +58,7 @@ trait MicroService {
               testGrouping in FuncTest := oneForkedJvmPerTest((definedTests in FuncTest).value),
               parallelExecution in FuncTest := false,
               routesGenerator := StaticRoutesGenerator)
-    .settings(resolvers += Resolver.bintrayRepo("hmrc", "releases"), resolvers += Resolver.jcenterRepo)
+    .settings(resolvers += Resolver.bintrayRepo("hmrc", "releases"), resolvers += Resolver.jcenterRepo, resolvers += Resolver.sonatypeRepo("snapshots"))
 }
 
 private object TestPhases {

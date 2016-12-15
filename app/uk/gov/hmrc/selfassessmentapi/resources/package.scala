@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
+import play.api.mvc.Result
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.AmountHolder
-import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorResult, GenericErrorResult, ValidationErrorResult}
+import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.BadRequest
+import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorResult, Errors, GenericErrorResult, ValidationErrorResult}
 
 import scala.concurrent.Future
 import scala.math.BigDecimal.RoundingMode
@@ -27,7 +28,12 @@ import scala.util.{Failure, Success, Try}
 
 package object resources {
 
-
+  def handleValidationErrors(errorResult: ErrorResult): Result = {
+    errorResult match {
+      case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))
+      case ValidationErrorResult(errors) => BadRequest(Json.toJson(Errors.badRequest(errors)))
+    }
+  }
 
   def validate[T](id: String, jsValue: JsValue)(implicit reads: Reads[T]): Either[ErrorResult, String] = {
     Try(jsValue.validate[T]) match {

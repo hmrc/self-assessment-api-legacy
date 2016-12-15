@@ -16,50 +16,68 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.LocalDate
-import org.scalatest.BeforeAndAfterEach
+import org.joda.time.{DateTime, DateTimeUtils}
 import reactivemongo.bson.BSONObjectID
+import reactivemongo.core.errors.DatabaseException
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingType, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Allowances, PropertiesAnnualSummary, PropertyType}
+import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PropertiesRepositorySpec extends MongoEmbeddedDatabase with BeforeAndAfterEach {
+class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
 
   private val repo = new PropertiesRepository
   private val nino = NinoGenerator().nextNino()
-  private val propertyId = ""
-
-  override def beforeEach() = {
-    await(repo.drop)
-    await(repo.ensureIndexes)
-  }
+  private val properties = Properties(BSONObjectID.generate, nino, AccountingType.CASH)
 
   "create" should {
     "persist a properties object" in {
-      val properties = Properties(BSONObjectID.generate, LocalDate.now, nino, AccountingType.CASH, Map.empty, Map.empty)
       await(repo.create(properties))
 
-      val result = await(repo.retrieve(propertyId, nino)).get
+      val result = await(repo.retrieve(nino)).get
       result.nino shouldBe nino
-      result.periods shouldBe empty
+      result.lastModifiedDateTime should not be null
+
+    }
+
+    "fail if customer tries to create a second properties business" in {
+      await(repo.create(properties))
+
+      a [DatabaseException] shouldBe thrownBy (await(repo.create(properties)))
+
     }
   }
 
   "update" should {
-    "update a properties object" in {
-      val properties = Properties(BSONObjectID.generate, LocalDate.now, nino, AccountingType.CASH, Map.empty, Map.empty)
+    "update a persisted object" in {
       await(repo.create(properties))
 
-      await(repo.retrieve(propertyId, nino)) shouldBe Some(properties)
+      await(repo.update(nino, properties.copy(accountingType = AccountingType.ACCRUAL)))
 
-      val updatedProperties = properties.copy(annualSummaries =
-        Map(TaxYear("2016-17") -> PropertiesAnnualSummary(Some(Allowances(annualInvestmentAllowance = Some(50.25))), None, None, None, None)))
-      await(repo.update(propertyId, nino, updatedProperties))
-      await(repo.retrieve(propertyId, nino)) shouldBe Some(updatedProperties)
+      val updatedProperties = await(repo.retrieve(nino)).get
+
+      updatedProperties.accountingType shouldBe AccountingType.ACCRUAL
+
+    }
+
+    "update the lastModifiedDateTime on the persisted object" in {
+      await(repo.create(properties))
+
+      val creationDateTime = await(repo.retrieve(nino)).get.lastModifiedDateTime
+
+      DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusDays(1).getMillis)
+
+      await(repo.update(nino, properties.copy(accountingType = AccountingType.ACCRUAL)))
+
+      val lastModifiedDateTime = await(repo.retrieve(nino)).get.lastModifiedDateTime
+
+      lastModifiedDateTime.isAfter(creationDateTime) shouldBe true
+
+      DateTimeUtils.setCurrentMillisSystem()
+
     }
   }
+
 }

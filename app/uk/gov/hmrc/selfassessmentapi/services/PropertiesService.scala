@@ -24,42 +24,37 @@ import uk.gov.hmrc.selfassessmentapi.domain.Properties
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesAnnualSummary, PropertiesPeriod, PropertiesPeriodicData}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PropertiesService extends PeriodService[PropertyId, PropertiesPeriod, Properties, PropertiesPeriodicData]
-  with AnnualSummaryService[PropertiesAnnualSummary, Properties] {
-
+class PropertiesService {
   private val repository = PropertiesRepository()
-  override val periodRepository = repository
-  override val annualSummaryRepository = repository
+
+  def update(nino: Nino, prop: properties.Properties): Future[Boolean] =
+    repository.retrieve(nino).flatMap {
+      case Some(persistedProperties) =>
+        repository.update(nino, persistedProperties.copy(accountingType = prop.accountingType))
+      case None => Future.successful(false)
+    }
+
+  def retrieve(nino: Nino): Future[Option[properties.Properties]] = {
+    repository.retrieve(nino).map {
+      case Some(properties) => Some(properties.toModel)
+      case None => None
+    }
+  }
 
   def create(nino: Nino, props: properties.Properties): Future[Either[Error, Boolean]] = {
-    val properties = Properties(BSONObjectID.generate,
-      LocalDate.now(DateTimeZone.UTC), nino, props.accountingType, Map.empty, Map.empty)
+    val properties = Properties(BSONObjectID.generate, nino, props.accountingType)
 
-    periodRepository.create(properties).map(Right(_)) recover {
-      case e: DatabaseException if e.code.contains(11000) =>  // i.e. Duplicate key exception.
+    repository.create(properties).map(Right(_)) recover {
+      case e: DatabaseException if e.code.contains(11000) => // i.e. Duplicate key exception.
         Left(
           Error(ErrorCode.ALREADY_EXISTS.toString, s"A property business already exists", ""))
     }
   }
 
-  override def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[PropertiesAnnualSummary]] = {
-    annualSummaryRepository.retrieve(id, nino).map {
-      case Some(resource) => resource.annualSummary(taxYear).orElse(Some(PropertiesAnnualSummary(None, None, None, None, None)))
-      case None => None
-    }
-  }
-
-  def updateAnnualSummary(nino: Nino, propType: PropertyId, taxYear: TaxYear, summary: PropertiesAnnualSummary): Future[Boolean] = {
-    periodRepository.retrieve(propType, nino).flatMap {
-      case Some(properties) => periodRepository.update(propType, nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
-      case None => throw new RuntimeException("Could not persist Properties to the database. Is the database available?")
-    }
-  }
 }
 
 object PropertiesService {

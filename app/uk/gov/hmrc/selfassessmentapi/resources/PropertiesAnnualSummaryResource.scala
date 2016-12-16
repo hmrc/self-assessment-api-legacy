@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
@@ -32,6 +32,8 @@ import scala.concurrent.Future
 object PropertiesAnnualSummaryResource extends BaseController {
   private lazy val featureSwitch = FeatureSwitchAction(SourceType.Properties, "annual")
   private val service = PropertiesAnnualSummaryService
+
+  implicit val format: Format[AnnualSummary] = ???
 
   def updateAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validateProperty(propertyId, request.body, service.updateAnnualSummary(nino, propertyId, taxYear, _)) match {

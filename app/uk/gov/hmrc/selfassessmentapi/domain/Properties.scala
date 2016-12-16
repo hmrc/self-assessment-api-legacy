@@ -48,8 +48,8 @@ case class Properties(id: BSONObjectID,
   }
 
   def annualSummary(propertyType: PropertyType, key: TaxYear): AnnualSummary = propertyType match {
-    case PropertyType.OTHER => otherBucket.annualSummaries.getOrElse(key, OtherPropertiesAnnualSummary(None, None))
-    case PropertyType.FHL => fhlBucket.annualSummaries.getOrElse(key, FHLPropertiesAnnualSummary(None, None))
+    case PropertyType.OTHER => otherBucket.annualSummaries.getOrElse(key, new OtherPropertiesAnnualSummary(None, None))
+    case PropertyType.FHL => fhlBucket.annualSummaries.getOrElse(key, new FHLPropertiesAnnualSummary(None, None))
   }
 
   def periodExists(propertyType: PropertyType, periodId: PeriodId): Boolean = period(propertyType, periodId).nonEmpty

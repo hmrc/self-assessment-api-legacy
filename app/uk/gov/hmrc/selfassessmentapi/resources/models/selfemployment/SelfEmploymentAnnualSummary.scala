@@ -25,9 +25,9 @@ case class SelfEmploymentAnnualSummary(allowances: Option[Allowances], adjustmen
     extends AnnualSummary
 
 object SelfEmploymentAnnualSummary {
-  implicit val writer: OWrites[SelfEmploymentAnnualSummary] = Json.writes[SelfEmploymentAnnualSummary]
+  implicit val writes: OWrites[SelfEmploymentAnnualSummary] = Json.writes[SelfEmploymentAnnualSummary]
 
-  implicit val reader: Reads[SelfEmploymentAnnualSummary] = (
+  implicit val reads: Reads[SelfEmploymentAnnualSummary] = (
     (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments]
   )(SelfEmploymentAnnualSummary.apply _).filter(

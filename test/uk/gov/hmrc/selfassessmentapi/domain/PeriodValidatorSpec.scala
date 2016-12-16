@@ -22,9 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, Period,
 
 class PeriodValidatorSpec extends UnitSpec {
   case class TestPeriod(from: LocalDate, to: LocalDate) extends Period
-  case class TestPeriodValidator(periods: Map[PeriodId, TestPeriod]) extends PeriodValidator[TestPeriodValidator, TestPeriod] {
-    override val accountingPeriod: AccountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05"))
-  }
+  case class TestPeriodValidator(periods: Map[PeriodId, TestPeriod]) extends PeriodValidator[TestPeriod]
 
   "containsOverlappingPeriod" should {
     "return true when adding a period that overlaps with an existing period" in
@@ -51,34 +49,36 @@ class PeriodValidatorSpec extends UnitSpec {
   }
 
   "containsMisalignedPeriod" should {
+    val accountingPeriod: AccountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05"))
+
     "return true when adding a period whose end date is beyond the end of the accounting period" in
       new TestPeriodValidator(Map("" -> TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-01")))) {
-        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-06"))) shouldBe true
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-06")), accountingPeriod) shouldBe true
       }
 
     "return false when adding a period whose end date is equal to the end of the accounting period" in
       new TestPeriodValidator(Map("" -> TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-01")))) {
-        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-05"))) shouldBe false
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-05")), accountingPeriod) shouldBe false
       }
 
     "return false when adding a period whose end date is before to the end of the accounting period" in
       new TestPeriodValidator(Map("" -> TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-01")))) {
-        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-04"))) shouldBe false
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-04")), accountingPeriod) shouldBe false
       }
 
     "return true when adding a first period whose start date is before the start of the accounting period" in
       new TestPeriodValidator(Map.empty) {
-        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-05"), LocalDate.parse("2017-04-15"))) shouldBe true
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-05"), LocalDate.parse("2017-04-15")), accountingPeriod) shouldBe true
       }
 
     "return true when adding a first period whose start date is after the start of the accounting period" in
       new TestPeriodValidator(Map.empty) {
-        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-07"), LocalDate.parse("2017-04-08"))) shouldBe true
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-07"), LocalDate.parse("2017-04-08")), accountingPeriod) shouldBe true
     }
 
     "return false when adding a furst period whose start date is equal to the start of the accounting period" in
       new TestPeriodValidator(Map.empty) {
-        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2017-04-07"))) shouldBe false
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2017-04-07")), accountingPeriod) shouldBe false
       }
 
 

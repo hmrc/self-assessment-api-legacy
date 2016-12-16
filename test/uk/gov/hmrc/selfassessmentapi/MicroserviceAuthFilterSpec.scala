@@ -25,12 +25,12 @@ import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 
 class MicroserviceAuthFilterSpec extends UnitSpec with Matchers {
 
-  val underTest = MicroserviceAuthFilter
+  val filter = MicroserviceAuthFilter
 
   "MicroserviceAuthFilter" should {
     val nino = NinoGenerator().nextNino()
     "extract resource that builds valid auth url" in {
-      val resource = underTest.extractResource(s"/$nino/employments", HttpVerb("GET"), AuthConfig(pattern = "/(\\w+)/.*".r, confidenceLevel = L50))
+      val resource = filter.extractResource(s"/$nino/employments", HttpVerb("GET"), AuthConfig(pattern = "/(\\w+)/.*".r, confidenceLevel = L50))
       resource.get.buildUrl("http://authhost.com/auth", AuthRequestParameters(L50)) shouldBe s"http://authhost.com/auth/authorise/read/paye/$nino?confidenceLevel=50"
     }
   }

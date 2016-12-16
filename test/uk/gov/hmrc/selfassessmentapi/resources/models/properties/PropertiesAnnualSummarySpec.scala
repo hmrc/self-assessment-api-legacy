@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
-import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
 class PropertiesAnnualSummarySpec extends JsonSpec {
   "OtherPropertiesAnnualSummary" should {

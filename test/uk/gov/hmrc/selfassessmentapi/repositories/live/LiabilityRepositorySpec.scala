@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories.live
 
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.api.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator

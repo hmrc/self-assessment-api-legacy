@@ -18,10 +18,10 @@
     "versions":[
       {
         "version":"1.0",
-        "status":"PROTOTYPED",
+        "status":"PUBLISHED",
         "endpoints":[
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments",
+            "uriPattern": "/ni/{nino}/self-employments",
             "endpointName": "Get all self employments",
             "method": "GET",
             "authType": "USER",
@@ -30,7 +30,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments",
+            "uriPattern": "/ni/{nino}/self-employments",
             "endpointName": "Create self employment",
             "method": "POST",
             "authType": "USER",
@@ -39,7 +39,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}",
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}",
             "endpointName": "Get self employment",
             "method": "GET",
             "authType": "USER",
@@ -48,7 +48,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}",
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}",
             "endpointName": "Update self employment",
             "method": "PUT",
             "authType": "USER",
@@ -57,7 +57,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/periods",
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/periods",
             "endpointName": "Get all self employment periods",
             "method": "GET",
             "authType": "USER",
@@ -66,7 +66,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/periods",
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/periods",
             "endpointName": "Create self employment period",
             "method": "POST",
             "authType": "USER",
@@ -75,7 +75,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/periods/{periodId}",
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/periods/{periodId}",
             "endpointName": "Get self employment period",
             "method": "GET",
             "authType": "USER",
@@ -84,7 +84,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/periods/{periodId}",
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/periods/{periodId}",
             "endpointName": "Update self employment period",
             "method": "PUT",
             "authType": "USER",
@@ -93,7 +93,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/{taxYear}",
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/{taxYear}",
             "endpointName": "Get self employment annual summary",
             "method": "GET",
             "authType": "USER",
@@ -102,7 +102,7 @@
             "groupName": "Self Employments"
           },
           {
-            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/{taxYear}",
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/{taxYear}",
             "endpointName": "Update self employment annual summary",
             "method": "PUT",
             "authType": "USER",

@@ -51,15 +51,37 @@ class PeriodValidatorSpec extends UnitSpec {
   }
 
   "containsMisalignedPeriod" should {
-    "return true when adding a period that is not aligned to the accounting period" in
+    "return true when adding a period whose end date is beyond the end of the accounting period" in
       new TestPeriodValidator(Map("" -> TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-01")))) {
         containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-06"))) shouldBe true
       }
 
-    "return False when adding a period that is aligned to the accounting period" in
+    "return false when adding a period whose end date is equal to the end of the accounting period" in
       new TestPeriodValidator(Map("" -> TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-01")))) {
         containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-05"))) shouldBe false
       }
+
+    "return false when adding a period whose end date is before to the end of the accounting period" in
+      new TestPeriodValidator(Map("" -> TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-01")))) {
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2018-04-02"), LocalDate.parse("2018-04-04"))) shouldBe false
+      }
+
+    "return true when adding a first period whose start date is before the start of the accounting period" in
+      new TestPeriodValidator(Map.empty) {
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-05"), LocalDate.parse("2017-04-15"))) shouldBe true
+      }
+
+    "return true when adding a first period whose start date is after the start of the accounting period" in
+      new TestPeriodValidator(Map.empty) {
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-07"), LocalDate.parse("2017-04-08"))) shouldBe true
+    }
+
+    "return false when adding a furst period whose start date is equal to the start of the accounting period" in
+      new TestPeriodValidator(Map.empty) {
+        containsMisalignedPeriod(TestPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2017-04-07"))) shouldBe false
+      }
+
+
   }
 
   "containsPeriod" should {

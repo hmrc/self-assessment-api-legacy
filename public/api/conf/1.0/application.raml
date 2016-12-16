@@ -102,7 +102,7 @@ documentation:
               body:
                 application/json:
                   type: !include schemas/Error.json
-                  example: !include ./examples/errors/INVALID_ACCOUNTING_PERIOD.json
+                  example: !include examples/errors/INVALID_ACCOUNTING_PERIOD.json
         /periods:
           post:
             displayName: Create self employment period
@@ -195,7 +195,7 @@ documentation:
             body:
               application/json:
                 type: !include schemas/AnnualSummary.json
-                example: !include ./examples/self-employment/AnnualSummary.json
+                example: !include examples/self-employment/AnnualSummary.json
             responses:
               204:
               400:
@@ -214,4 +214,4 @@ documentation:
                 body:
                   application/json:
                     type: !include schemas/AnnualSummary.json
-                    example: !include ./examples/self-employment/AnnualSummary.json
+                    example: !include examples/self-employment/AnnualSummary.json

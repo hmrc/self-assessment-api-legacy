@@ -76,7 +76,7 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .bodyIsLike(expectedJson)
     }
 
-    "return code 200 containing and empty object when retrieving a non-existent annual summary" in {
+    "return code 200 containing an empty object when retrieving a non-existent annual summary" in {
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -90,6 +90,15 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .jsonBodyIsEmptyObject
+    }
+
+    "return code 404 when retrieving an annual summary for a non-existent self-employment" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/sillyid/$taxYear")
+        .thenAssertThat()
+        .statusIs(404)
     }
   }
 

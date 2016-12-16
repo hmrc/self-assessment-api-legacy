@@ -31,11 +31,14 @@ case class Properties(id: BSONObjectID,
                       accountingType: AccountingType,
                       lastModifiedDateTime: LocalDate = LocalDate.now(DateTimeZone.UTC),
                       accountingPeriod: AccountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
-                      periods: Map[PeriodId, PropertiesPeriod] = Map.empty)
+                      periods: Map[PeriodId, PropertiesPeriod] = Map.empty,
+                      annualSummaries: Map[TaxYear, PropertiesAnnualSummary] = Map.empty)
     extends PeriodValidator[Properties, PropertiesPeriod]
     with LastModifiedDateTime {
 
   def toModel = properties.Properties(accountingType = accountingType)
+
+  def annualSummary(key: TaxYear): Option[PropertiesAnnualSummary] = annualSummaries.get(key)
 
   def periodExists(periodId: PeriodId): Boolean = period(periodId).nonEmpty
 

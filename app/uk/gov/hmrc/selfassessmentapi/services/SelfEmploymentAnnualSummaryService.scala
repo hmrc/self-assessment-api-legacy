@@ -38,7 +38,8 @@ trait SelfEmploymentAnnualSummaryService {
 
   def retrieveAnnualSummary(id: SourceId, taxYear: TaxYear, nino: Nino): Future[Option[SelfEmploymentAnnualSummary]] = {
     repository.retrieve(id, nino).map {
-      case Some(resource) => resource.annualSummary(taxYear)
+      case Some(resource) =>
+        Some(resource.annualSummary(taxYear).getOrElse(SelfEmploymentAnnualSummary(None, None)))
       case None => None
     }
   }

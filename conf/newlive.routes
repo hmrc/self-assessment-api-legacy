@@ -30,8 +30,8 @@ GET  /ni/:nino/uk-properties/periods/:periodId   uk.gov.hmrc.selfassessmentapi.r
 PUT  /ni/:nino/uk-properties/periods/:periodId   uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodResource.updatePeriod(nino: uk.gov.hmrc.domain.Nino, periodId: uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId)
 
 # Properties Annual Summaries
-#PUT  /ni/:nino/uk-properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
-#GET  /ni/:nino/uk-properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
+PUT  /ni/:nino/uk-properties/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesAnnualSummaryResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
+GET  /ni/:nino/uk-properties/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesAnnualSummaryResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 
 ####################
 #    Liabilities   #

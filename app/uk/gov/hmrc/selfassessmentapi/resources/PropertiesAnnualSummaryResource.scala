@@ -17,26 +17,24 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.Results._
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmploymentAnnualSummary
-import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentAnnualSummaryService
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertiesAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.services.PropertiesAnnualSummaryService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object SelfEmploymentAnnualSummaryResource extends BaseController {
+object PropertiesAnnualSummaryResource extends BaseController {
+  private lazy val featureSwitch = FeatureSwitchAction(SourceType.Properties, "annual")
+  private val service = PropertiesAnnualSummaryService
 
-  private lazy val annualSummaryFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
-  private val annualSummaryService = SelfEmploymentAnnualSummaryService
-
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
-    validate[SelfEmploymentAnnualSummary, Boolean](request.body) {
-      annualSummaryService.updateAnnualSummary(nino, id, taxYear, _)
+  def updateAnnualSummary(nino: Nino, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+    validate[PropertiesAnnualSummary, Boolean](request.body) {
+      service.updateAnnualSummary(nino, taxYear, _)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
@@ -46,8 +44,8 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
     }
   }
 
-  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch {
-    annualSummaryService.retrieveAnnualSummary(id, taxYear, nino).map {
+  def retrieveAnnualSummary(nino: Nino, taxYear: TaxYear): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+    service.retrieveAnnualSummary(taxYear, nino).map {
       case Some(summary) => Ok(Json.toJson(summary))
       case None => NotFound
     }

@@ -358,7 +358,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(period).at("%sourceLocation%/periods")
+        .put(period).at("%sourceLocation%/periods/sillyid")
         .thenAssertThat()
         .statusIs(404)
     }

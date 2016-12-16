@@ -180,7 +180,7 @@ object TaxYearProperties {
   })
 }
 
-case class SelfEmployment(id: BSONObjectID,
+case class  SelfEmployment(id: BSONObjectID,
                           sourceId: SourceId,
                           nino: Nino,
                           taxYear: TaxYear,

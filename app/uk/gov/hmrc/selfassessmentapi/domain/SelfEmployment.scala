@@ -38,13 +38,14 @@ case class SelfEmployment(id: BSONObjectID,
                           annualSummaries: Map[TaxYear, SelfEmploymentAnnualSummary] = Map.empty,
                           periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty)
     extends PeriodValidator[SelfEmployment, SelfEmploymentPeriod]
-    with AnnualSummaryContainer[SelfEmploymentAnnualSummary]
     with LastModifiedDateTime {
 
   def toModel(elideID: Boolean = false): selfemployment.SelfEmployment = {
     val id = if (elideID) None else Some(sourceId)
     selfemployment.SelfEmployment(id, accountingPeriod, accountingType, commencementDate)
   }
+
+  def annualSummary(key: TaxYear): Option[SelfEmploymentAnnualSummary] = annualSummaries.get(key)
 
   def periodExists(periodId: PeriodId): Boolean = period(periodId).nonEmpty
 

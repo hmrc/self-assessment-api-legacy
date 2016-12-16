@@ -5,7 +5,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
 
   "amending annual summaries" should {
-    "return code 204 when amending annual summaries for an arbitrary tax year" ignore {
+    "return code 204 when amending annual summaries for an arbitrary tax year" in {
       val property = Jsons.Properties()
 
       val annualSummaries = Jsons.Properties.annualSummary(
@@ -25,12 +25,12 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(annualSummaries).at(s"/ni/$nino/uk-properties/other/$taxYear")
+        .put(annualSummaries).at(s"/ni/$nino/uk-properties/$taxYear")
         .thenAssertThat()
         .statusIs(204)
     }
 
-    "return code 400 when amending annual summaries with invalid data" ignore {
+    "return code 400 when amending annual summaries with invalid data" in {
       val property = Jsons.Properties()
 
       val annualSummaries = Jsons.Properties.annualSummary(
@@ -45,7 +45,7 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
 
       val expectedJson = Jsons.Errors.invalidRequest(
         "INVALID_MONETARY_AMOUNT" -> "/allowances/businessPremisesRenovationAllowance",
-        "INVALID_MONETARY_AMOUNT" -> "/adjustments/privateUseAdjustment")
+        "INVALID_MONETARY_AMOUNT" -> "/privateUseAdjustment")
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -54,35 +54,35 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(annualSummaries).at(s"/ni/$nino/uk-properties/other/$taxYear")
+        .put(annualSummaries).at(s"/ni/$nino/uk-properties/$taxYear")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
         .bodyIsLike(expectedJson.toString)
     }
 
-    "return code 404 when amending annual summaries for a properties business that does not exist" ignore {
+    "return code 404 when amending annual summaries for a properties business that does not exist" in {
       val annualSummaries = Jsons.Properties.annualSummary(
         annualInvestmentAllowance = 10000.50,
-        businessPremisesRenovationAllowance = -500.50,
+        businessPremisesRenovationAllowance = 500.50,
         otherCapitalAllowance = 1000.20,
         wearAndTearAllowance = 150.55,
         lossBroughtForward = 20.22,
         rentARoomRelief = 50.23,
-        privateUseAdjustment = -22.23,
+        privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .put(annualSummaries).at(s"/ni/$nino/uk-properties/other/$taxYear")
+        .put(annualSummaries).at(s"/ni/$nino/uk-properties/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }
   }
 
   "retrieving annual summaries" should {
-    "return code 200 containing annual summary information" ignore {
+    "return code 200 containing annual summary information" in {
       val property = Jsons.Properties()
 
       val annualSummaries = Jsons.Properties.annualSummary(
@@ -102,22 +102,39 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(annualSummaries).at(s"/ni/$nino/uk-properties/other/$taxYear")
+        .put(annualSummaries).at(s"/ni/$nino/uk-properties/$taxYear")
         .thenAssertThat()
         .statusIs(204)
         .when()
-        .get(s"/ni/$nino/uk-properties/other/$taxYear")
+        .get(s"/ni/$nino/uk-properties/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(annualSummaries.toString)
     }
 
+    "return code 200 containing an empty object for an annual summary that is empty" in {
+      val property = Jsons.Properties()
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(property).to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .get(s"/ni/$nino/uk-properties/$taxYear")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .jsonBodyIsEmptyObject
+    }
+
     "return code 404 when retrieving annual summaries for a properties business that does not exist" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/ni/$nino/uk-properties/other/$taxYear")
+        .get(s"/ni/$nino/uk-properties/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }

@@ -25,19 +25,20 @@ import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesPeriod, PropertiesPeriodicData}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesPeriod, PropertiesPeriodicData, PropertyType}
 
 
 trait PropertiesPeriodService {
   val repository: PropertiesRepository
 
-  def createPeriod(nino: Nino, period: PropertiesPeriod): Future[Either[Error, PeriodId]] = {
+  def createPeriod(nino: Nino, id: PropertyType, period: PropertiesPeriod): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
 
     repository.retrieve(nino).flatMap {
-      case Some(property) => property.validatePeriod(period) match {
+      case Some(property) => property.validatePeriod(id, period) match {
         case Left(error) => Future.successful(Left(error))
-        case Right(validResource) => repository.update(nino, validResource.setPeriodsTo(periodId, period)).flatMap {
+        case Right(validResource) => repository.update(nino, validResource.setPeriodsTo(id, periodId, period)).flatMap {
           case true => Future.successful(Right(periodId))
           case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
         }
@@ -46,26 +47,31 @@ trait PropertiesPeriodService {
     }
   }
 
-  def updatePeriod(nino: Nino, periodId: PeriodId, periodicData: PropertiesPeriodicData): Future[Boolean] = {
+  def updatePeriod(nino: Nino, id: PropertyType, periodId: PeriodId, periodicData: PropertiesPeriodicData): Future[Boolean] = {
     repository.retrieve(nino).flatMap {
-      case Some(selfEmployment) if selfEmployment.periodExists(periodId) =>
-        repository.update(nino, selfEmployment.update(periodId, periodicData))
+      case Some(selfEmployment) if selfEmployment.periodExists(id, periodId) =>
+        repository.update(nino, selfEmployment.update(id, periodId, periodicData))
       case _ => Future.successful(false)
     }
   }
 
-  def retrievePeriod(nino: Nino, id: PeriodId): Future[Option[PropertiesPeriod]] = {
+  def retrievePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Future[Option[PropertiesPeriod]] = {
     repository.retrieve(nino).map {
-      case Some(properties) => properties.period(id)
+      case Some(properties) => properties.period(id, periodId)
       case None => None
     }
   }
 
-  def retrieveAllPeriods(nino: Nino): Future[Seq[PeriodSummary]] = {
+  def retrieveAllPeriods(nino: Nino, id: PropertyType): Future[Seq[PeriodSummary]] = {
     repository.retrieve(nino).map {
-      case Some(properties) => properties.periods.map {
-        case (k, v) => PeriodSummary(k, v.from, v.to)
-      }.toSeq.sorted
+      case Some(properties) => {
+        val bucket = id match {
+          case PropertyType.OTHER => properties.otherBucket.periods
+          case PropertyType.FHL => properties.fhlBucket.periods
+        }
+
+        bucket.map { case (k, v) => PeriodSummary(k, v.from, v.to) }.toSeq.sorted
+      }
       case _ => Seq.empty
     }
   }

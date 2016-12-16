@@ -16,4 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models
 
-trait AnnualSummary
+import play.api.libs.json.{Reads, Writes}
+
+trait AnnualSummary {
+  implicit val reads: Reads[AnnualSummary]
+  implicit val writes: Writes[AnnualSummary]
+}

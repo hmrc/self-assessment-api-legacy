@@ -21,8 +21,9 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertiesAnnualSummary
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary, PropertyType}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AnnualSummary, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesAnnualSummaryService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,10 +33,8 @@ object PropertiesAnnualSummaryResource extends BaseController {
   private lazy val featureSwitch = FeatureSwitchAction(SourceType.Properties, "annual")
   private val service = PropertiesAnnualSummaryService
 
-  def updateAnnualSummary(nino: Nino, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
-    validate[PropertiesAnnualSummary, Boolean](request.body) {
-      service.updateAnnualSummary(nino, taxYear, _)
-    } match {
+  def updateAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+    validateProperty(propertyId, request.body, service.updateAnnualSummary(nino, propertyId, taxYear, _)) match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case true => NoContent
@@ -44,10 +43,19 @@ object PropertiesAnnualSummaryResource extends BaseController {
     }
   }
 
-  def retrieveAnnualSummary(nino: Nino, taxYear: TaxYear): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    service.retrieveAnnualSummary(taxYear, nino).map {
+  def retrieveAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+    service.retrieveAnnualSummary(nino, propertyId, taxYear).map {
       case Some(summary) => Ok(Json.toJson(summary))
       case None => NotFound
     }
+  }
+
+  private def validateProperty(propertyId: PropertyType, body: JsValue, f: AnnualSummary => Future[Boolean]) = {
+    val validationFunc = propertyId match {
+      case PropertyType.OTHER => validate[OtherPropertiesAnnualSummary, Boolean](body) _
+      case PropertyType.FHL => validate[FHLPropertiesAnnualSummary, Boolean](body) _
+    }
+
+    validationFunc(f(_))
   }
 }

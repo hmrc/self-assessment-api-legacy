@@ -18,32 +18,31 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import com.github.nscala_time.time.OrderingImplicits.LocalDateOrdering
 import org.joda.time.{DateTimeZone, Duration, Interval}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, Period, PeriodId}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, Errors, Period, PeriodId}
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 
-trait PeriodValidator[T, P <: Period] { self: T =>
+trait PeriodValidator[P <: Period] {
 
   val periods: Map[PeriodId, P]
-  val accountingPeriod: AccountingPeriod
 
   implicit private val ordering: Ordering[P] = Ordering.by(_.from)
 
-  def validatePeriod(period: P): Either[Error, T] = {
+  def validatePeriod(period: P, accountingPeriod: AccountingPeriod): Option[Errors.Error] = {
     if (containsPeriod(period).isDefined) {
-      Left(Error(ALREADY_EXISTS.toString, "Period already exists", containsPeriod(period).get))
+      Some(Error(ALREADY_EXISTS.toString, "Period already exists", containsPeriod(period).get))
     }
     else if (containsOverlappingPeriod(period)) {
-      Left(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", ""))
+      Some(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", ""))
     }
     else if (containsGap(period)) {
-      Left(Error(GAP_PERIOD.toString, "Periods should not contain gaps between each other", ""))
+      Some(Error(GAP_PERIOD.toString, "Periods should not contain gaps between each other", ""))
     }
-    else if (containsMisalignedPeriod(period)) {
-      Left(Error(MISALIGNED_PERIOD.toString,
+    else if (containsMisalignedPeriod(period, accountingPeriod)) {
+      Some(Error(MISALIGNED_PERIOD.toString,
                  "Periods must fall on or within the start and end dates of the resource accounting period",""))
     }
-    else Right(self)
+    else None
   }
 
   def containsPeriod(period: Period): Option[PeriodId] =
@@ -71,7 +70,7 @@ trait PeriodValidator[T, P <: Period] { self: T =>
     }
   }
 
-  def containsMisalignedPeriod(period: P): Boolean = {
+  def containsMisalignedPeriod(period: P, accountingPeriod: AccountingPeriod): Boolean = {
     val alignedWithEnd = period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end)
 
     if (periods.isEmpty) !(period.from.isEqual(accountingPeriod.start) && alignedWithEnd)

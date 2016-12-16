@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesPeriod, PropertiesPeriodicData}
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesPeriodService
 
@@ -35,9 +36,9 @@ object PropertiesPeriodResource extends BaseController {
 
   private val service = PropertiesPeriodService
 
-  def createPeriod(nino: Nino): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def createPeriod(nino: Nino, id: PropertyType): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[PropertiesPeriod, Either[Error, PeriodId]](request.body) { period =>
-      service.createPeriod(nino, period)
+      service.createPeriod(nino, id, period)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
@@ -51,9 +52,9 @@ object PropertiesPeriodResource extends BaseController {
     }
   }
 
-  def updatePeriod(nino: Nino, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def updatePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[PropertiesPeriodicData, Boolean](request.body) {
-      service.updatePeriod(nino, periodId, _)
+      service.updatePeriod(nino, id, periodId, _)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
@@ -63,14 +64,14 @@ object PropertiesPeriodResource extends BaseController {
     }
   }
 
-  def retrievePeriod(nino: Nino, periodId: PeriodId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    service.retrievePeriod(nino, periodId).map {
+  def retrievePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+    service.retrievePeriod(nino, id, periodId).map {
       case Some(period) => Ok(Json.toJson(period))
       case None => NotFound
     }
   }
 
-  def retrievePeriods(nino: Nino): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    service.retrieveAllPeriods(nino).map { periods => Ok(Json.toJson(periods)) }
+  def retrievePeriods(nino: Nino, id: PropertyType): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+    service.retrieveAllPeriods(nino, id).map { periods => Ok(Json.toJson(periods)) }
   }
 }

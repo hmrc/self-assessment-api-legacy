@@ -23,41 +23,61 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType.AccountingType
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesAnnualSummary, PropertiesPeriod, PropertiesPeriodicData}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, PeriodId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, TaxYear}
 
 case class Properties(id: BSONObjectID,
                       nino: Nino,
                       accountingType: AccountingType,
                       lastModifiedDateTime: LocalDate = LocalDate.now(DateTimeZone.UTC),
                       accountingPeriod: AccountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
-                      periods: Map[PeriodId, PropertiesPeriod] = Map.empty,
-                      annualSummaries: Map[TaxYear, PropertiesAnnualSummary] = Map.empty)
-    extends PeriodValidator[Properties, PropertiesPeriod]
-    with LastModifiedDateTime {
+                      fhlBucket: FHLPropertiesBucket = FHLPropertiesBucket(Map.empty, Map.empty),
+                      otherBucket: OtherPropertiesBucket = OtherPropertiesBucket(Map.empty, Map.empty))
+    extends LastModifiedDateTime {
 
   def toModel = properties.Properties(accountingType = accountingType)
 
-  def annualSummary(key: TaxYear): Option[PropertiesAnnualSummary] = annualSummaries.get(key)
+  def validatePeriod(propertyType: PropertyType, period: PropertiesPeriod): Either[Errors.Error, Properties] = {
+    val validationErrors = propertyType match {
+      case PropertyType.OTHER => otherBucket.validatePeriod(period, accountingPeriod)
+      case PropertyType.FHL => fhlBucket.validatePeriod(period, accountingPeriod)
+    }
 
-  def periodExists(periodId: PeriodId): Boolean = period(periodId).nonEmpty
+    validationErrors.map(Left(_)).getOrElse(Right(this))
+  }
 
-  def period(periodId: PeriodId): Option[PropertiesPeriod] = periods.get(periodId)
+  def annualSummary(propertyType: PropertyType, key: TaxYear): AnnualSummary = propertyType match {
+    case PropertyType.OTHER => otherBucket.annualSummaries.getOrElse(key, OtherPropertiesAnnualSummary(None, None))
+    case PropertyType.FHL => fhlBucket.annualSummaries.getOrElse(key, FHLPropertiesAnnualSummary(None, None))
+  }
 
-  def setPeriodsTo(periodId: PeriodId, period: PropertiesPeriod): Properties =
-    this.copy(periods = periods.updated(periodId, period))
+  def periodExists(propertyType: PropertyType, periodId: PeriodId): Boolean = period(propertyType, periodId).nonEmpty
 
-  def update(periodId: PeriodId, periodicData: PropertiesPeriodicData): Properties = {
-    periods.find(period => period._1.equals(periodId)).map { period =>
-      setPeriodsTo(periodId, period._2.copy(data = periodicData))
+  def period(propertyType: PropertyType, periodId: PeriodId): Option[PropertiesPeriod] = propertyType match {
+    case PropertyType.OTHER => otherBucket.periods.get(periodId)
+    case PropertyType.FHL => fhlBucket.periods.get(periodId)
+  }
+
+  def setPeriodsTo(propertyType: PropertyType, periodId: PeriodId, period: PropertiesPeriod): Properties = propertyType match {
+    case PropertyType.OTHER => this.copy(otherBucket = otherBucket.copy(periods = otherBucket.periods.updated(periodId, period)))
+    case PropertyType.FHL => this.copy(fhlBucket = fhlBucket.copy(periods = fhlBucket.periods.updated(periodId, period)))
+  }
+
+  def update(propertyType: PropertyType, periodId: PeriodId, periodicData: PropertiesPeriodicData): Properties = {
+    val periodOpt = propertyType match {
+      case PropertyType.OTHER => otherBucket.periods.find(period => period._1.equals(periodId))
+      case PropertyType.FHL => fhlBucket.periods.find(period => period._1.equals(periodId))
+    }
+
+    periodOpt.map { period =>
+      setPeriodsTo(propertyType, periodId, period._2.copy(data = periodicData))
     }.get
   }
 }
 
 object Properties {
-  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.PropertiesFormatters.annualSummaryMapFormat
-
-  implicit val mongoFormats = ReactiveMongoFormats.mongoEntity({
+  implicit val mongoFormats: Format[Properties] = ReactiveMongoFormats.mongoEntity({
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
     Format(Json.reads[Properties], Json.writes[Properties])

@@ -107,7 +107,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
       await(repo.create(selfEmploymentTwo))
 
       val result = await(repo.retrieveAll(nino))
-      
+
       result should contain theSameElementsAs Seq(selfEmployment, selfEmploymentTwo)
     }
   }

@@ -25,8 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAnnualSummary, SelfEmploymentPeriod,
-SelfEmploymentPeriodicData}
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
 
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: String,
@@ -37,7 +36,7 @@ case class SelfEmployment(id: BSONObjectID,
                           commencementDate: LocalDate,
                           annualSummaries: Map[TaxYear, SelfEmploymentAnnualSummary] = Map.empty,
                           periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty)
-    extends PeriodValidator[SelfEmployment, SelfEmploymentPeriod]
+    extends PeriodValidator[SelfEmploymentPeriod]
     with LastModifiedDateTime {
 
   def toModel(elideID: Boolean = false): selfemployment.SelfEmployment = {
@@ -45,7 +44,10 @@ case class SelfEmployment(id: BSONObjectID,
     selfemployment.SelfEmployment(id, accountingPeriod, accountingType, commencementDate)
   }
 
-  def annualSummary(key: TaxYear): Option[SelfEmploymentAnnualSummary] = annualSummaries.get(key)
+  def validatePeriod(period: SelfEmploymentPeriod): Option[Error] = validatePeriod(period, accountingPeriod)
+
+  def annualSummary(key: TaxYear): SelfEmploymentAnnualSummary =
+    annualSummaries.getOrElse(key, SelfEmploymentAnnualSummary(None, None))
 
   def periodExists(periodId: PeriodId): Boolean = period(periodId).nonEmpty
 

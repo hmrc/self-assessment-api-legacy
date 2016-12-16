@@ -20,14 +20,14 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 
-case class PropertiesAnnualSummary(allowances: Option[Allowances],
-                                   adjustments: Option[Adjustments]) extends AnnualSummary
+case class OtherPropertiesAnnualSummary(allowances: Option[Allowances],
+                                        adjustments: Option[Adjustments]) extends AnnualSummary
 
-object PropertiesAnnualSummary {
-  implicit val writes: Writes[PropertiesAnnualSummary] = Json.writes[PropertiesAnnualSummary]
+object OtherPropertiesAnnualSummary {
+  implicit val writes: Writes[OtherPropertiesAnnualSummary] = Json.writes[OtherPropertiesAnnualSummary]
 
-  implicit val reads: Reads[PropertiesAnnualSummary] = (
+  implicit val reads: Reads[OtherPropertiesAnnualSummary] = (
     (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments]
-    ) (PropertiesAnnualSummary.apply _)
+    ) (OtherPropertiesAnnualSummary.apply _)
 }

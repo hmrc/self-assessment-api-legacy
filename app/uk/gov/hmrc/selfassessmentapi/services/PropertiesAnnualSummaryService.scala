@@ -18,8 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.services
 
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertiesAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AnnualSummary, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -28,19 +29,21 @@ trait PropertiesAnnualSummaryService {
 
   val repository: PropertiesRepository
 
-  def updateAnnualSummary(nino: Nino, taxYear: TaxYear, summary: PropertiesAnnualSummary): Future[Boolean] = {
+  def updateAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear, summary: AnnualSummary): Future[Boolean] = {
     repository.retrieve(nino).flatMap {
-      case Some(properties) =>
-        repository.update(nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
+      case Some(properties) => propertyId match {
+        case PropertyType.OTHER => ??? // repository.update(nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
+        case PropertyType.FHL => ???
+      }
       case None => Future.successful(false)
     }
   }
 
 
-  def retrieveAnnualSummary(taxYear: TaxYear, nino: Nino): Future[Option[PropertiesAnnualSummary]] = {
+  def retrieveAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear): Future[Option[AnnualSummary]] = {
     repository.retrieve(nino).map {
       case Some(resource) =>
-        Some(resource.annualSummary(taxYear).getOrElse(PropertiesAnnualSummary(None, None)))
+        Some(resource.annualSummary(propertyId, taxYear))
       case None => None
     }
   }

@@ -73,4 +73,17 @@ object Binders {
       }
     }
   }
+
+  implicit def propertyTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[PropertyType] {
+
+    override def unbind(key: String, value: PropertyType): String = value.toString
+
+    override def bind(key: String, value: String): Either[String, PropertyType] = {
+      PropertyType.values.find(propType => value.equals(propType.toString)) match {
+        case Some(v) => Right(v)
+        case None => Left("ERROR_INVALID_PROPERTY_TYPE")
+      }
+    }
+
+  }
 }

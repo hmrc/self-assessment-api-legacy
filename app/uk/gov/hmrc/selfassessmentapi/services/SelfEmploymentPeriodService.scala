@@ -37,9 +37,8 @@ trait SelfEmploymentPeriodService {
 
     repository.retrieve(id, nino).flatMap {
       case Some(selfEmployment) =>
-        selfEmployment.validatePeriod(period) match {
-          case Left(error) => Future.successful(Left(error))
-          case Right(validResource) => repository.update(id, nino, validResource.setPeriodsTo(periodId, period)).flatMap {
+        selfEmployment.validatePeriod(period).map(err => Future.successful(Left(err))).getOrElse {
+          repository.update(id, nino, selfEmployment.setPeriodsTo(periodId, period)).flatMap {
             case true => Future.successful(Right(periodId))
             case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
           }

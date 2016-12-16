@@ -35,7 +35,7 @@ class LiabilityRepositorySpec extends MongoEmbeddedDatabase {
       val liability = Liability.create(nino, taxYear, SelfAssessment())
       await(repository.save(liability))
 
-      await(repository.findAll()) shouldBe List(liability)
+      await(repository.findAll()) should contain theSameElementsAs Seq(liability)
     }
 
     "replace current liability if there is liability for given utr and tax year" in {
@@ -45,7 +45,7 @@ class LiabilityRepositorySpec extends MongoEmbeddedDatabase {
       val updatedLiability = liability.copy(totalIncomeReceived = 100)
       await(repository.save(updatedLiability))
 
-      await(repository.findAll()) shouldBe List(updatedLiability)
+      await(repository.findAll()) should contain theSameElementsAs Seq(updatedLiability)
     }
 
     "not replace liability for a different utr and tax year" in {
@@ -55,7 +55,7 @@ class LiabilityRepositorySpec extends MongoEmbeddedDatabase {
       val anotherLiability = Liability.create(NinoGenerator().nextNino(), taxYear, SelfAssessment())
       await(repository.save(anotherLiability))
 
-      await(repository.findAll()) shouldBe List(liability, anotherLiability)
+      await(repository.findAll()) should contain theSameElementsAs Seq(liability, anotherLiability)
     }
   }
 

@@ -4,10 +4,10 @@
   "type": "object",
   "properties": {
     "allowances": {
-      "$ref": "http://localhost:9001/api/conf/1.0/schemas/self-employment/Allowances.json"
+      "$ref": "self-employment/Allowances.json"
     },
     "adjustments": {
-      "$ref": "http://localhost:9001/api/conf/1.0/schemas/self-employment/Adjustments.json"
+      "$ref": "self-employment/Adjustments.json"
     }
   },
   "required": [

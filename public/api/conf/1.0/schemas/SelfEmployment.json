@@ -15,7 +15,7 @@
       "format": "date"
     },
     "accountingPeriod": {
-      "$ref": "http://localhost:9001/api/conf/1.0/schemas/AccountingPeriod.json"
+      "$ref": "AccountingPeriod.json"
     },
     "accountingType": {
       "title": "Accounting type",

@@ -6,12 +6,12 @@
     "turnover": {
       "title": "Turnover",
       "description": "The takings, fees, sales or money earned by your business",
-      "$ref": "http://localhost:9001/api/conf/1.0/schemas/Income.json"
+      "$ref": "../Income.json"
     },
     "other": {
       "title": "Other",
       "description": "Any other business income not included in turnover",
-      "$ref": "http://localhost:9001/api/conf/1.0/schemas/Income.json"
+      "$ref": "../Income.json"
     }
   },
   "additionalProperties": false

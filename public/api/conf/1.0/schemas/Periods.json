@@ -3,7 +3,7 @@
   "title": "Periods",
   "type": "array",
   "items": {
-    "$ref": "http://localhost:9001/api/conf/1.0/schemas/self-employment/Period.json"
+    "$ref": "Period.json"
   },
   "additionalProperties": false
 }

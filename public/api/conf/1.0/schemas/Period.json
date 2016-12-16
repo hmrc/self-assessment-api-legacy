@@ -19,10 +19,10 @@
       "format": "date"
     },
     "incomes": {
-      "$ref": "http://localhost:9001/api/conf/1.0/schemas/self-employment/Incomes.json"
+      "$ref": "self-employment/Incomes.json"
     },
     "expenses": {
-      "$ref": "http://localhost:9001/api/conf/1.0/schemas/self-employment/Expenses.json"
+      "$ref": "self-employment/Expenses.json"
     }
   },
   "required": [

@@ -19,7 +19,98 @@
       {
         "version":"1.0",
         "status":"PROTOTYPED",
-        "endpoints":[]
+        "endpoints":[
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments",
+            "endpointName": "Get all self employments",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments",
+            "endpointName": "Create self employment",
+            "method": "POST",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}",
+            "endpointName": "Get self employment",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}",
+            "endpointName": "Update self employment",
+            "method": "PUT",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/periods",
+            "endpointName": "Get all self employment periods",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/periods",
+            "endpointName": "Create self employment period",
+            "method": "POST",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/periods/{periodId}",
+            "endpointName": "Get self employment period",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/periods/{periodId}",
+            "endpointName": "Update self employment period",
+            "method": "PUT",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/{taxYear}",
+            "endpointName": "Get self employment annual summary",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/self-assessment/ni/{nino}/self-employments/{selfEmploymentId}/{taxYear}",
+            "endpointName": "Update self employment annual summary",
+            "method": "PUT",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "Self Employments"
+          }
+        ]
       }
     ]
   }

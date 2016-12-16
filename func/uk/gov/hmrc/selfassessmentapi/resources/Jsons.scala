@@ -123,7 +123,7 @@ object Jsons {
                       otherCapitalAllowance: BigDecimal = 0.0,
                       wearAndTearAllowance: BigDecimal = 0.0,
                       lossBroughtForward: BigDecimal = 0.0,
-                      rentARoomRelief : BigDecimal = 0.0,
+                      rentARoomExempt : BigDecimal = 0.0,
                       privateUseAdjustment: BigDecimal = 0.0,
                       balancingCharge: BigDecimal = 0.0): JsValue = {
       Json.parse(s"""
@@ -135,11 +135,11 @@ object Jsons {
                     |    "wearAndTearAllowance": $wearAndTearAllowance
                     |  },
                     |  "adjustments": {
-                    |   "lossBroughtForward": $lossBroughtForward
-                    |  },
-                    |  "rentARoomRelief": $rentARoomRelief,
-                    |  "privateUseAdjustment": $privateUseAdjustment,
-                    |  "balancingCharge": $balancingCharge
+                    |   "lossBroughtForward": $lossBroughtForward,
+                    |   "rentARoomExempt": $rentARoomExempt,
+                    |   "privateUseAdjustment": $privateUseAdjustment,
+                    |   "balancingCharge": $balancingCharge
+                    |  }
                     |}
     """.stripMargin)
     }

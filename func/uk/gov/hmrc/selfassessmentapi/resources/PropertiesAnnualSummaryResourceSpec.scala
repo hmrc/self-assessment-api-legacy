@@ -2,7 +2,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
+class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
 
   "amending annual summaries" should {
     "return code 204 when amending annual summaries for an arbitrary tax year" in {
@@ -14,7 +14,7 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
         otherCapitalAllowance = 1000.20,
         wearAndTearAllowance = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomRelief = 50.23,
+        rentARoomExempt = 50.23,
         privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 
@@ -39,13 +39,13 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
         otherCapitalAllowance = 1000.20,
         wearAndTearAllowance = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomRelief = 50.23,
+        rentARoomExempt = 50.23,
         privateUseAdjustment = -22.23,
         balancingCharge = 350.34)
 
       val expectedJson = Jsons.Errors.invalidRequest(
         "INVALID_MONETARY_AMOUNT" -> "/allowances/businessPremisesRenovationAllowance",
-        "INVALID_MONETARY_AMOUNT" -> "/privateUseAdjustment")
+        "INVALID_MONETARY_AMOUNT" -> "/adjustments/privateUseAdjustment")
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -68,7 +68,7 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
         otherCapitalAllowance = 1000.20,
         wearAndTearAllowance = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomRelief = 50.23,
+        rentARoomExempt = 50.23,
         privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 
@@ -91,7 +91,7 @@ class PropertiesAnnualSummarySpec extends BaseFunctionalSpec {
         otherCapitalAllowance = 1000.20,
         wearAndTearAllowance = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomRelief = 50.23,
+        rentARoomExempt = 50.23,
         privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 

@@ -40,7 +40,7 @@ trait PropertiesAnnualSummaryService {
   def retrieveAnnualSummary(taxYear: TaxYear, nino: Nino): Future[Option[PropertiesAnnualSummary]] = {
     repository.retrieve(nino).map {
       case Some(resource) =>
-        Some(resource.annualSummary(taxYear).getOrElse(PropertiesAnnualSummary(None, None, None, None, None)))
+        Some(resource.annualSummary(taxYear).getOrElse(PropertiesAnnualSummary(None, None)))
       case None => None
     }
   }

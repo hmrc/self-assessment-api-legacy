@@ -16,15 +16,23 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 
-case class Adjustments(lossBroughtForward: Option[Amount] = None)
+case class Adjustments(lossBroughtForward: Option[Amount] = None,
+                       rentARoomExempt: Option[Amount] = None,
+                       privateUseAdjustment: Option[Amount] = None,
+                       balancingCharge: Option[Amount] = None)
 
 object Adjustments {
   implicit val writes: Writes[Adjustments] = Json.writes[Adjustments]
 
-  implicit val reads: Reads[Adjustments] =
-    (__ \ "lossBroughtForward").readNullable[Amount](positiveAmountValidator).map(Adjustments.apply)
+  implicit val reads: Reads[Adjustments] = (
+    (__ \ "lossBroughtForward").readNullable[Amount](positiveAmountValidator) and
+      (__ \ "rentARoomExempt").readNullable[Amount](positiveAmountValidator) and
+      (__ \ "privateUseAdjustment").readNullable[Amount](positiveAmountValidator) and
+      (__ \ "balancingCharge").readNullable[Amount](positiveAmountValidator)
+  ) (Adjustments.apply _)
 }

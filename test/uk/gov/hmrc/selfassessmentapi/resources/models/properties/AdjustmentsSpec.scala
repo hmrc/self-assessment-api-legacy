@@ -40,5 +40,35 @@ class AdjustmentsSpec extends JsonSpec {
       assertValidationErrorWithCode(Adjustments(lossBroughtForward = Some(50.123)),
         "/lossBroughtForward", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
+
+    "reject rentARoomExempt with a negative value" in {
+      assertValidationErrorWithCode(Adjustments(rentARoomExempt = Some(-50)),
+        "/rentARoomExempt", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
+
+    "reject rentARoomExempt with more than 2 decimal places" in {
+      assertValidationErrorWithCode(Adjustments(rentARoomExempt = Some(50.123)),
+        "/rentARoomExempt", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
+
+    "reject privateUseAdjustment with a negative value" in {
+      assertValidationErrorWithCode(Adjustments(privateUseAdjustment = Some(-50)),
+        "/privateUseAdjustment", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
+
+    "reject privateUseAdjustment with more than 2 decimal places" in {
+      assertValidationErrorWithCode(Adjustments(privateUseAdjustment = Some(50.123)),
+        "/privateUseAdjustment", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
+
+    "reject balancingCharge with a negative value" in {
+      assertValidationErrorWithCode(Adjustments(balancingCharge = Some(-50)),
+        "/balancingCharge", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
+
+    "reject balancingCharge with more than 2 decimal places" in {
+      assertValidationErrorWithCode(Adjustments(balancingCharge = Some(50.123)),
+        "/balancingCharge", ErrorCode.INVALID_MONETARY_AMOUNT)
+    }
   }
 }

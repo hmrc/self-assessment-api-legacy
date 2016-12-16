@@ -37,41 +37,24 @@ case class SelfEmployment(id: BSONObjectID,
                           commencementDate: LocalDate,
                           annualSummaries: Map[TaxYear, SelfEmploymentAnnualSummary] = Map.empty,
                           periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty)
-  extends PeriodContainer[SelfEmploymentPeriod, SelfEmployment, SelfEmploymentPeriodicData]
+    extends PeriodValidator[SelfEmployment, SelfEmploymentPeriod]
     with AnnualSummaryContainer[SelfEmploymentAnnualSummary]
     with LastModifiedDateTime {
-
-  def validatePeriod(period: SelfEmploymentPeriod): Either[Error, SelfEmployment] = {
-    if (containsOverlappingPeriod(period)) {
-      return Left(Error(ErrorCode.OVERLAPPING_PERIOD.toString, "Periods should not overlap", ""))
-    }
-    if (containsGap(period)) {
-      return Left(Error(ErrorCode.GAP_PERIOD.toString, "Periods should not contain gaps between each other", ""))
-    }
-    if (containsMisalignedPeriod(period)) {
-      return Left(Error(ErrorCode.MISALIGNED_PERIOD.toString, "Periods must fall on or within the start and end dates of the resource " +
-        "accounting period", ""))
-    }
-    Right(this)
-  }
-
-  override def containsMisalignedPeriod(period: SelfEmploymentPeriod): Boolean = {
-    val alignedWithEnd = period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end)
-
-    if (periods.isEmpty) !(period.from.isEqual(accountingPeriod.start) && alignedWithEnd)
-    else !alignedWithEnd
-  }
 
   def toModel(elideID: Boolean = false): selfemployment.SelfEmployment = {
     val id = if (elideID) None else Some(sourceId)
     selfemployment.SelfEmployment(id, accountingPeriod, accountingType, commencementDate)
   }
 
-  override def setPeriodsTo(periodId: PeriodId, period: SelfEmploymentPeriod): SelfEmployment =
+  def periodExists(periodId: PeriodId): Boolean = period(periodId).nonEmpty
+
+  def period(periodId: PeriodId): Option[SelfEmploymentPeriod] = periods.get(periodId)
+
+  def setPeriodsTo(periodId: PeriodId, period: SelfEmploymentPeriod): SelfEmployment =
     this.copy(periods = periods.updated(periodId, period))
 
-  override def update(periodId: PeriodId, periodicData: SelfEmploymentPeriodicData): SelfEmployment = {
-    this.periods.find(period => period._1.equals(periodId)).map { period =>
+  def update(periodId: PeriodId, periodicData: SelfEmploymentPeriodicData): SelfEmployment = {
+    periods.find(period => period._1.equals(periodId)).map { period =>
       setPeriodsTo(periodId, period._2.copy(data = periodicData))
     }.get
   }

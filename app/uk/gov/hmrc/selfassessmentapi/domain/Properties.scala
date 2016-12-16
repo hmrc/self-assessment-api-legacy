@@ -30,9 +30,25 @@ case class Properties(id: BSONObjectID,
                       nino: Nino,
                       accountingType: AccountingType,
                       lastModifiedDateTime: LocalDate = LocalDate.now(DateTimeZone.UTC),
-                      accountingPeriod: AccountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")))
-  extends LastModifiedDateTime {
+                      accountingPeriod: AccountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
+                      periods: Map[PeriodId, PropertiesPeriod] = Map.empty)
+    extends PeriodValidator[Properties, PropertiesPeriod]
+    with LastModifiedDateTime {
+
   def toModel = properties.Properties(accountingType = accountingType)
+
+  def periodExists(periodId: PeriodId): Boolean = period(periodId).nonEmpty
+
+  def period(periodId: PeriodId): Option[PropertiesPeriod] = periods.get(periodId)
+
+  def setPeriodsTo(periodId: PeriodId, period: PropertiesPeriod): Properties =
+    this.copy(periods = periods.updated(periodId, period))
+
+  def update(periodId: PeriodId, periodicData: PropertiesPeriodicData): Properties = {
+    periods.find(period => period._1.equals(periodId)).map { period =>
+      setPeriodsTo(periodId, period._2.copy(data = periodicData))
+    }.get
+  }
 }
 
 object Properties {

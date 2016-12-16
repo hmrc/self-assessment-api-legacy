@@ -18,10 +18,10 @@ package uk.gov.hmrc.selfassessmentapi.services
 
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentsRepository
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentPeriod, SelfEmploymentPeriodicData}
 import uk.gov.hmrc.selfassessmentapi.resources.models.{PeriodSummary, SourceId}
 

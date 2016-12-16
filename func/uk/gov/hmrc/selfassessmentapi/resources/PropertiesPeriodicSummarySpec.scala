@@ -1,175 +1,15 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import uk.gov.hmrc.selfassessmentapi.resources.models.PeriodId
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
 
-  "createPeriod" should {
-    "return code 201 containing a location header when creating a uk property period" ignore {
-      val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2017-04-05"),
-        rentIncome = 50.55, premiumsOfLeaseGrant = 20.22, reversePremiums = 100.25,
-        premisesRunningCosts = (50.55, 10.12), otherCost = (10.22, 10.12))
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(period).to(s"/ni/$nino/properties/uk/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/properties/uk/periods/\\w+".r)
-    }
-
-    "return code 400 when provided with an invalid uk property period" ignore {
-
-      val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2017-04-05"),
-        rentIncome = -50.55, premiumsOfLeaseGrant = 20.22, reversePremiums = 100.25,
-        premisesRunningCosts = (50.55, 10.12), otherCost = (10.22, 10.12))
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(period).to(s"/ni/$nino/properties/uk/periods")
-        .thenAssertThat()
-        .statusIs(400)
-        .contentTypeIsJson()
-        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_MONETARY_AMOUNT", "/incomes/rentIncome/amount")))
-    }
-  }
-
-  "retrievePeriods" should {
-    "return code 200 when retrieving all periods associated with a properties business" ignore {
-      val periodOne = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-05"))
-      val periodTwo = Jsons.Properties.period(fromDate = Some("2016-05-06"), toDate = Some("2016-06-05"))
-
-      val expectedBody =
-        s"""
-           |[
-           |  {
-           |    "from": "2016-04-06",
-           |    "to": "2016-05-05"
-           |  },
-           |  {
-           |    "from": "2016-05-06",
-           |    "to": "2016-06-05"
-           |  }
-           |]
-         """.stripMargin
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(periodOne).to(s"/ni/$nino/properties/uk/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .post(periodTwo).to(s"/ni/$nino/properties/uk/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .get(s"/ni/$nino/properties/uk/periods")
-        .thenAssertThat()
-        .statusIs(200)
-        .contentTypeIsJson()
-        .bodyIsLike(expectedBody)
-        .selectFields(_ \\ "id").isLength(2).matches("\\w+".r)
-    }
-  }
-
-  "retrievePeriod" should {
-    "return code 200 when retrieving a period associated with a specific identifier" ignore {
-      val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-06"))
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(period).to(s"/ni/$nino/properties/uk/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .get(s"%periodLocation%")
-        .thenAssertThat()
-        .statusIs(200)
-        .contentTypeIsJson()
-        .bodyIsLike(period.toString())
-        .bodyDoesNotHavePath[PeriodId]("id")
-    }
-
-    "return code 404 when retrieving a non-existent period with a bad identifier" in {
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .get(s"/ni/$nino/properties/uk/periods/ohno")
-        .thenAssertThat()
-        .statusIs(404)
-    }
-  }
-
-  "updatePeriod" should {
-    "return code 204 when updating a period associated with a specific identifier" ignore {
-      val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-06"))
-
-      val periodicUpdate = Jsons.Properties.period(fromDate = None, toDate = None,
-        rentIncome = 50.55, premisesRunningCosts = (50.55, 10.12))
-
-      val updatedPeriod = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-06"),
-        rentIncome = 50.55, premisesRunningCosts = (50.55, 10.12))
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(period).to(s"/ni/$nino/properties/uk/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(periodicUpdate).at(s"%periodLocation%")
-        .thenAssertThat()
-        .statusIs(204)
-        .when()
-        .get("%periodLocation%")
-        .thenAssertThat()
-        .statusIs(200)
-        .contentTypeIsJson()
-        .bodyIsLike(updatedPeriod.toString())
-    }
-
-    "return code 400 when provided with an invalid period" ignore {
-      val period = Jsons.Properties.period(fromDate = Some("2016-04-06"), toDate = Some("2016-05-06"))
-
-      val periodicUpdate = Jsons.Properties.period(fromDate = None, toDate = None,
-        rentIncome = -50.55, premisesRunningCosts = (50.55, 10.12))
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(period).to(s"/ni/$nino/properties/uk/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(periodicUpdate).at(s"%periodLocation%")
-        .thenAssertThat()
-        .statusIs(400)
-        .contentTypeIsJson()
-        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_MONETARY_AMOUNT", "/incomes/rentIncome/amount")))
-    }
-
-    "return code 404 when attempting to update a non-existent period" in {
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .put(Jsons.Properties.period(rentIncome = 50.55)).at(s"/ni/$nino/properties/uk/periods/ohno")
-        .thenAssertThat()
-        .statusIs(404)
-    }
-  }
-
   "creating a period" should {
-    "return code 201 containing a location header pointing to the newly created property period" ignore {
+    "return code 201 containing a location header pointing to the newly created property period" in {
       val property = Jsons.Properties()
       val period = Jsons.Properties.period(
-        fromDate = Some("2017-04-01"),
-        toDate = Some("2017-04-02"),
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2018-04-05"),
         rentIncome = 500,
         rentIncomeTaxDeducted = 250.55,
         premiumsOfLeaseGrant = 200.22,
@@ -188,13 +28,13 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period).to(s"%sourceLocation%/other/periods")
+        .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
-        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/uk-properties/other/periods/w+".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/uk-properties/periods/\\w+".r)
     }
 
-    "return code 400 when provided with an invalid property period" ignore {
+    "return code 400 when provided with an invalid property period" in {
       val property = Jsons.Properties()
       val period = Jsons.Properties.period(
         fromDate = Some("2017-04-01"),
@@ -210,7 +50,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         costOfServices = (500.25, 20.50),
         otherCost = (50.22, 27.89))
 
-      val expectedJson = Jsons.Errors.invalidRequest("INVALID_DATE" -> "/toDate",
+      val expectedJson = Jsons.Errors.invalidRequest("INVALID_DATE" -> "/to",
         "INVALID_MONETARY_AMOUNT" -> "/incomes/rentIncome/amount",
         "INVALID_MONETARY_AMOUNT" -> "/incomes/premiumsOfLeaseGrant/amount")
 
@@ -221,20 +61,65 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period).to(s"%sourceLocation%/other/periods")
+        .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
         .bodyIsLike(expectedJson)
     }
+
+    "return code 403 when creating a period that overlaps with another" in {
+      val property = Jsons.Properties()
+      val periodOne = Jsons.Properties.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-01"))
+      val periodTwo = Jsons.Properties.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-02"))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(property).to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(periodOne).to(s"/ni/$nino/uk-properties/periods")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(periodTwo).to(s"/ni/$nino/uk-properties/periods")
+        .thenAssertThat()
+        .statusIs(403)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.businessError(("OVERLAPPING_PERIOD", "")))
+    }
+
+    "return code 409 when creating a period with a from and to date that already exists" in {
+      val property = Jsons.Properties()
+      val periodOne = Jsons.Properties.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-01"))
+      val periodTwo = Jsons.Properties.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-01"))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(property).to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(periodOne).to(s"/ni/$nino/uk-properties/periods")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(periodTwo).to(s"/ni/$nino/uk-properties/periods")
+        .thenAssertThat()
+        .statusIs(409)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/uk-properties/periods/\\w+".r)
+    }
   }
 
   "retrieving all periods" should {
-    "return code 200 with a JSON list of all periods belonging to the property business" ignore {
+    "return code 200 with a JSON list of all periods belonging to the property business" in {
       val property = Jsons.Properties()
       val periodOne = Jsons.Properties.period(
-        fromDate = Some("2017-04-01"),
-        toDate = Some("2017-04-02"),
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-04-07"),
         rentIncome = 500,
         rentIncomeTaxDeducted = 250.55,
         premiumsOfLeaseGrant = 200.22,
@@ -247,8 +132,8 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         otherCost = (50.22, 27.89))
 
       val periodTwo = Jsons.Properties.period(
-        fromDate = Some("2017-04-03"),
-        toDate = Some("2017-04-04"),
+        fromDate = Some("2017-04-08"),
+        toDate = Some("2017-04-09"),
         rentIncome = 200000,
         rentIncomeTaxDeducted = 2550.55,
         premiumsOfLeaseGrant = 2000.22,
@@ -260,8 +145,8 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         costOfServices = (5000.25, 200.50),
         otherCost = (500.22, 270.89))
 
-      val expectedJson = Jsons.Properties.periodSummary(("2017-04-01", "2017-04-02"),
-        ("2017-04-03", "2017-04-04"))
+      val expectedJson = Jsons.Properties.periodSummary(("2017-04-06", "2017-04-07"),
+        ("2017-04-08", "2017-04-09"))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -270,29 +155,46 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(periodOne).to(s"%sourceLocation%/other/periods")
+        .post(periodOne).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(periodTwo).to(s"%sourceLocation%/other/periods")
+        .post(periodTwo).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .get(s"%sourceLocation%/other/periods")
+        .get(s"%sourceLocation%/periods")
         .thenAssertThat()
-        .statusIs(201)
+        .statusIs(200)
         .contentTypeIsJson()
         .bodyIsLike(expectedJson.toString)
         .selectFields(_ \\ "id").isLength(2).matches("\\w+".r)
     }
+
+    "return code 200 with an empty JSON array for a property business containing no periods" in {
+      val property = Jsons.Properties()
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(property).to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .get(s"%sourceLocation%/periods")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .jsonBodyIsEmptyArray
+    }
   }
 
   "retrieving a single period" should {
-    "return code 200 containing period information for a period that exists" ignore {
+    "return code 200 containing period information for a period that exists" in {
       val property = Jsons.Properties()
       val period = Jsons.Properties.period(
-        fromDate = Some("2017-04-01"),
-        toDate = Some("2017-04-02"),
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2018-04-05"),
         rentIncome = 500,
         rentIncomeTaxDeducted = 250.55,
         premiumsOfLeaseGrant = 200.22,
@@ -311,7 +213,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period).to(s"%sourceLocation%/other/periods")
+        .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -322,7 +224,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .bodyIsLike(period.toString)
     }
 
-    "return code 404 for a period that does not exist" ignore {
+    "return code 404 for a period that does not exist" in {
       val property = Jsons.Properties()
 
       given()
@@ -339,12 +241,12 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
   }
 
   "amending a single period" should {
-    "return code 204 when updating a period" ignore {
+    "return code 204 when updating a period" in {
       val property = Jsons.Properties()
 
       val period = Jsons.Properties.period(
-        fromDate = Some("2017-04-01"),
-        toDate = Some("2017-04-02"),
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2018-04-05"),
         rentIncome = 500,
         rentIncomeTaxDeducted = 250.55,
         premiumsOfLeaseGrant = 200.22,
@@ -377,21 +279,27 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period).to(s"%sourceLocation%/other/periods")
+        .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
         .put(updatedPeriod).at("%periodLocation%")
         .thenAssertThat()
         .statusIs(204)
+        .when()
+        .get(s"%periodLocation%")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyIsLike(updatedPeriod.toString)
     }
 
-    "return code 400 when updating a period with invalid data" ignore {
+    "return code 400 when updating a period with invalid data" in {
       val property = Jsons.Properties()
 
       val period = Jsons.Properties.period(
-        fromDate = Some("2017-04-01"),
-        toDate = Some("2017-04-02"),
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2018-04-05"),
         rentIncome = 500,
         rentIncomeTaxDeducted = 250.55,
         premiumsOfLeaseGrant = 200.22,
@@ -404,11 +312,9 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         otherCost = (50.22, 27.89))
 
       val invalidPeriod = Jsons.Properties.period(
-        fromDate = Some("2017-04-01"),
-        toDate = Some("2017-04-02"),
-        rentIncome = 500,
+        rentIncome = -500,
         rentIncomeTaxDeducted = 250.55,
-        premiumsOfLeaseGrant = 200.22,
+        premiumsOfLeaseGrant = -200.22,
         reversePremiums = 22.35,
         premisesRunningCosts = (20.20, 10),
         repairsAndMaintenance = (11.25, 5.50),
@@ -417,7 +323,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         costOfServices = (500.25, 20.50),
         otherCost = (50.22, 27.89))
 
-      val expectedJson = Jsons.Errors.invalidRequest("INVALID_DATE" -> "/toDate",
+      val expectedJson = Jsons.Errors.invalidRequest(
         "INVALID_MONETARY_AMOUNT" -> "/incomes/rentIncome/amount",
         "INVALID_MONETARY_AMOUNT" -> "/incomes/premiumsOfLeaseGrant/amount")
 
@@ -428,7 +334,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period).to(s"%sourceLocation%/other/periods")
+        .post(period).to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -439,11 +345,11 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .bodyIsLike(expectedJson.toString)
     }
 
-    "return code 404 when updating a period that does not exist" ignore {
+    "return code 404 when updating a period that does not exist" in {
       val property = Jsons.Properties()
       val period = Jsons.Properties.period(
-        fromDate = Some("2017-04-01"),
-        toDate = Some("2017-04-02"))
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2018-04-05"))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -452,7 +358,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(period).at("%sourceLocation%/other/periods")
+        .put(period).at("%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(404)
     }

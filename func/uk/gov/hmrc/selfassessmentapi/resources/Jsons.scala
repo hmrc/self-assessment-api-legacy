@@ -100,15 +100,21 @@ object Jsons {
     }
 
     def periodSummary(dates: (String, String)*): JsValue = {
-      Json.parse(
-        dates.map { date =>
-          s"""
+      val nestedDates = dates.map { date =>
+        s"""
            |{
-           |  "from": ${date._1},
-           |  "to": ${date._2}
+           |  "from": "${date._1}",
+           |  "to": "${date._2}"
            |}
            """.stripMargin
-        }.mkString(",")
+      }.mkString(",")
+
+      Json.parse(
+        s"""
+           |[
+           |  $nestedDates
+           |]
+         """.stripMargin
       )
     }
 

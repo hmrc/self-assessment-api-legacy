@@ -24,7 +24,7 @@ class PropertiesPeriodSpec extends JsonSpec {
 
   def propertiesPeriod(from: LocalDate = LocalDate.parse("2017-04-01"),
                        to: LocalDate = LocalDate.parse("2017-04-02"),
-                      incomes: Map[IncomeType.IncomeType, Income] = Map(IncomeType.PremiumsOfLeaseGrant -> Income(1000)),
+                      incomes: Map[IncomeType.IncomeType, Income] = Map(IncomeType.PremiumsOfLeaseGrant -> Income(1000, None)),
                       expenses: Map[ExpenseType.ExpenseType, Expense] = Map(ExpenseType.PremisesRunningCosts -> Expense(1000.50, Some(22.25))),
                       privateUseAdjustment: Option[BigDecimal] = Some(50.50),
                       balancingCharge: Option[BigDecimal] = Some(12.32)) = {

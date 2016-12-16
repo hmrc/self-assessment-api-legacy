@@ -16,12 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models
 
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class Income(amount: Amount)
+case class Income(amount: Amount, taxDeducted: Option[Amount])
 
 object Income {
-  implicit val reads: Reads[Income] = (__ \ "amount").read[Amount](positiveAmountValidator).map(Income.apply)
+  implicit val reads: Reads[Income] = (
+    (__ \ "amount").read[Amount](positiveAmountValidator) and
+      (__ \ "taxDeducted").readNullable[Amount](positiveAmountValidator)
+    ) (Income.apply _)
 
   implicit val writes: Writes[Income] = Json.writes[Income]
 }

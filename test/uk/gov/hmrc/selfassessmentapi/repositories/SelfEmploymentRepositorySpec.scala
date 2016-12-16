@@ -78,7 +78,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
     "return true when updating periods" in {
       await(repo.create(selfEmployment))
       val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1),
-        SelfEmploymentPeriodicData(Map(IncomeType.Turnover -> Income(500.00)), Map.empty))
+        SelfEmploymentPeriodicData(Map(IncomeType.Turnover -> Income(500.00, None)), Map.empty))
 
       await(repo.update(id.stringify, nino, selfEmployment.copy(periods = Map("1" -> period)))) shouldBe true
       val updatedSelfEmployment = await(repo.retrieve(id.stringify, nino)).get

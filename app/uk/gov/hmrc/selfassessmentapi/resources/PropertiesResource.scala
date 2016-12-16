@@ -33,11 +33,11 @@ import scala.concurrent.Future
 
 object PropertiesResource extends BaseController {
 
-  lazy val annualSummaryFeatureSwitch: FeatureSwitchAction = FeatureSwitchAction(SourceType.Properties)
+  lazy val featureSwitch: FeatureSwitchAction = FeatureSwitchAction(SourceType.Properties)
 
   private val service = PropertiesService()
 
-  def create(nino: Nino): Action[JsValue] = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
+  def create(nino: Nino): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[properties.Properties, Either[Error, Boolean]](request.body) {
       service.create(nino, _)
     } match {
@@ -55,14 +55,14 @@ object PropertiesResource extends BaseController {
     }
   }
 
-  def retrieve(nino: Nino): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch {
+  def retrieve(nino: Nino): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
     service.retrieve(nino).map {
       case Some(properties) => Ok(Json.toJson(properties))
       case None => NotFound
     }
   }
 
-  def update(nino: Nino): Action[JsValue] = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
+  def update(nino: Nino): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
     validate[Properties, Boolean](request.body) { properties =>
       service.update(nino, properties)
     } match {

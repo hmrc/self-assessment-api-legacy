@@ -107,21 +107,8 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
       await(repo.create(selfEmploymentTwo))
 
       val result = await(repo.retrieveAll(nino))
-      val (first :: second :: _) = result
-
-      result should have length 2
-
-      first.sourceId shouldBe id.stringify
-      first.nino shouldBe nino
-      first.accountingPeriod shouldBe selfEmployment.accountingPeriod
-      first.accountingType shouldBe selfEmployment.accountingType
-      first.commencementDate shouldBe selfEmployment.commencementDate
-
-      second.sourceId shouldBe id2.stringify
-      second.nino shouldBe nino
-      second.accountingPeriod shouldBe selfEmploymentTwo.accountingPeriod
-      second.accountingType shouldBe selfEmploymentTwo.accountingType
-      second.commencementDate shouldBe selfEmploymentTwo.commencementDate
+      
+      result should contain theSameElementsAs Seq(selfEmployment, selfEmploymentTwo)
     }
   }
 

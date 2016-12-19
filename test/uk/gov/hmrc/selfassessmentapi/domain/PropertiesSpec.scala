@@ -25,24 +25,23 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
 
 class PropertiesSpec extends UnitSpec {
 
-  val allowances: Allowances = Allowances(Some(50.12), Some(50.55), Some(12.34), Some(23.47))
-  val adjustments: Adjustments = Adjustments(Some(50.12), Some(38.77), Some(12.20), Some(88.97))
+  val otherAllowances = OtherPropertiesAllowances(Some(50.12), Some(50.55), Some(12.34), Some(23.47))
+  val otherAdjustments = OtherPropertiesAdjustments(Some(50.12), Some(38.77), Some(12.20))
+  val fhlAllowances = FHLPropertiesAllowances(Some(50.12), Some(50.55))
+  val fhlAdjustments = FHLPropertiesAdjustments(Some(50.12), Some(38.77), Some(12.20))
+
   val otherPeriod: PropertiesPeriod = PropertiesPeriod(
     LocalDate.parse("2017-04-06"),
     LocalDate.parse("2018-04-05"),
     PropertiesPeriodicData(
       Map(IncomeType.RentIncome -> Income(10000, None)),
-      Map(ExpenseType.PremisesRunningCosts -> Expense(50.55, None)),
-      Some(50.55),
-      Some(12.23)))
+      Map(ExpenseType.PremisesRunningCosts -> Expense(50.55, None))))
   val fhlPeriod: PropertiesPeriod = PropertiesPeriod(
     LocalDate.parse("2017-04-06"),
     LocalDate.parse("2018-04-05"),
     PropertiesPeriodicData(
       Map(IncomeType.PremiumsOfLeaseGrant -> Income(1234.56, None)),
-      Map(ExpenseType.FinancialCosts -> Expense(500.12, None)),
-      Some(20.55),
-      Some(14.23)))
+      Map(ExpenseType.FinancialCosts -> Expense(500.12, None))))
 
   val properties: Properties = Properties(
     BSONObjectID.generate,
@@ -50,8 +49,12 @@ class PropertiesSpec extends UnitSpec {
     AccountingType.CASH,
     LocalDate.now(),
     AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
-    FHLPropertiesBucket(Map("fhl" -> fhlPeriod), Map(TaxYear("2016-17") -> FHLPropertiesAnnualSummary(Some(allowances), Some(adjustments)))),
-    OtherPropertiesBucket(Map("other" -> otherPeriod), Map(TaxYear("2016-17") -> OtherPropertiesAnnualSummary(Some(allowances), Some(adjustments)))))
+    FHLPropertiesBucket(
+      Map("fhl" -> fhlPeriod),
+      Map(TaxYear("2016-17") -> FHLPropertiesAnnualSummary(Some(fhlAllowances), Some(fhlAdjustments)))),
+    OtherPropertiesBucket(
+      Map("other" -> otherPeriod),
+      Map(TaxYear("2016-17") -> OtherPropertiesAnnualSummary(Some(otherAllowances), Some(otherAdjustments)))))
 
   "annualSummary" should {
     "return an empty annual summary when no annual summary exists for the provided tax year" in {
@@ -66,9 +69,9 @@ class PropertiesSpec extends UnitSpec {
 
     "return an annual summary matching the tax year" in {
       properties.annualSummary(PropertyType.OTHER, TaxYear("2016-17")) shouldBe
-        OtherPropertiesAnnualSummary(Some(allowances), Some(adjustments))
+        OtherPropertiesAnnualSummary(Some(otherAllowances), Some(otherAdjustments))
       properties.annualSummary(PropertyType.FHL, TaxYear("2016-17")) shouldBe
-        FHLPropertiesAnnualSummary(Some(allowances), Some(adjustments))
+        FHLPropertiesAnnualSummary(Some(fhlAllowances), Some(fhlAdjustments))
     }
   }
 

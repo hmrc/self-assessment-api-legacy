@@ -18,7 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.repositories.live
 
 import java.util.UUID
 
-import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.api.JsonMarshaller
@@ -27,7 +26,6 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.{UKProperty, _}
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.{UKProperties, UKPropertiesIncomeSummary}
 import uk.gov.hmrc.selfassessmentapi.repositories.{SourceRepository, SummaryRepository}
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Adjustments, Allowances}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

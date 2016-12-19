@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models.properties
+package uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.Sum
-import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.controllers.api._
 
-case class Allowances(annualInvestmentAllowance: Option[Amount] = None,
-                      businessPremisesRenovationAllowance: Option[Amount] = None,
-                      otherCapitalAllowance: Option[Amount] = None,
-                      wearAndTearAllowance: Option[Amount] = None) {
+case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
+                      businessPremisesRenovationAllowance: Option[BigDecimal] = None,
+                      otherCapitalAllowance: Option[BigDecimal] = None,
+                      wearAndTearAllowance: Option[BigDecimal] = None
+                     ) {
 
   def total: BigDecimal = Sum(annualInvestmentAllowance, businessPremisesRenovationAllowance, otherCapitalAllowance, wearAndTearAllowance)
 }
@@ -34,9 +34,9 @@ object Allowances {
   implicit val writes = Json.writes[Allowances]
 
   implicit val reads: Reads[Allowances] = (
-    (__ \ "annualInvestmentAllowance").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "businessPremisesRenovationAllowance").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "otherCapitalAllowance").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "wearAndTearAllowance").readNullable[Amount](positiveAmountValidator)
+    (__ \ "annualInvestmentAllowance").readNullable[BigDecimal](positiveAmountValidator("annualInvestmentAllowance")) and
+      (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](positiveAmountValidator("businessPremisesRenovationAllowance")) and
+      (__ \ "otherCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator("otherCapitalAllowance")) and
+      (__ \ "wearAndTearAllowance").readNullable[BigDecimal](positiveAmountValidator("wearAndTearAllowance"))
     ) (Allowances.apply _)
 }

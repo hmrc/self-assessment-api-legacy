@@ -25,7 +25,6 @@ import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.ExpenseType.Expe
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty.IncomeType.IncomeType
 import uk.gov.hmrc.selfassessmentapi.controllers.api.ukproperty._
 import uk.gov.hmrc.selfassessmentapi.controllers.api._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{Adjustments, Allowances}
 
 case class UKPropertiesIncomeSummary(summaryId: SummaryId,
                                      `type`: IncomeType,

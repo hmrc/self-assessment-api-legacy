@@ -8,13 +8,13 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
     "return code 204 when amending annual summaries for an arbitrary tax year" in {
       val property = Jsons.Properties()
 
-      val annualSummaries = Jsons.Properties.annualSummary(
+      val annualSummaries = Jsons.Properties.otherAnnualSummary(
         annualInvestmentAllowance = 10000.50,
         businessPremisesRenovationAllowance = 500.50,
         otherCapitalAllowance = 1000.20,
-        wearAndTearAllowance = 150.55,
+        zeroEmissionsGoodsVehicleAllowance = 50.50,
+        costOfReplacingDomesticItems = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomExempt = 50.23,
         privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 
@@ -33,13 +33,13 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
     "return code 400 when amending annual summaries with invalid data" in {
       val property = Jsons.Properties()
 
-      val annualSummaries = Jsons.Properties.annualSummary(
+      val annualSummaries = Jsons.Properties.otherAnnualSummary(
         annualInvestmentAllowance = 10000.50,
         businessPremisesRenovationAllowance = -500.50,
         otherCapitalAllowance = 1000.20,
-        wearAndTearAllowance = 150.55,
+        zeroEmissionsGoodsVehicleAllowance = 50.50,
+        costOfReplacingDomesticItems = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomExempt = 50.23,
         privateUseAdjustment = -22.23,
         balancingCharge = 350.34)
 
@@ -62,13 +62,13 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
     }
 
     "return code 404 when amending annual summaries for a properties business that does not exist" in {
-      val annualSummaries = Jsons.Properties.annualSummary(
+      val annualSummaries = Jsons.Properties.otherAnnualSummary(
         annualInvestmentAllowance = 10000.50,
         businessPremisesRenovationAllowance = 500.50,
         otherCapitalAllowance = 1000.20,
-        wearAndTearAllowance = 150.55,
+        zeroEmissionsGoodsVehicleAllowance = 50.50,
+        costOfReplacingDomesticItems = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomExempt = 50.23,
         privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 
@@ -83,13 +83,13 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
     "return code 400 when attempting to update annual summaries for an invalid property type" in {
       val property = Jsons.Properties()
 
-      val annualSummaries = Jsons.Properties.annualSummary(
+      val annualSummaries = Jsons.Properties.otherAnnualSummary(
         annualInvestmentAllowance = 10000.50,
         businessPremisesRenovationAllowance = 500.50,
         otherCapitalAllowance = 1000.20,
-        wearAndTearAllowance = 150.55,
+        zeroEmissionsGoodsVehicleAllowance = 50.50,
+        costOfReplacingDomesticItems = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomExempt = 50.23,
         privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 
@@ -114,13 +114,13 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
     "return code 200 containing annual summary information" in {
       val property = Jsons.Properties()
 
-      val annualSummaries = Jsons.Properties.annualSummary(
+      val annualSummaries = Jsons.Properties.otherAnnualSummary(
         annualInvestmentAllowance = 10000.50,
         businessPremisesRenovationAllowance = 500.50,
         otherCapitalAllowance = 1000.20,
-        wearAndTearAllowance = 150.55,
+        zeroEmissionsGoodsVehicleAllowance = 50.50,
+        costOfReplacingDomesticItems = 150.55,
         lossBroughtForward = 20.22,
-        rentARoomExempt = 50.23,
         privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 

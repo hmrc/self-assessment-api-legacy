@@ -21,26 +21,26 @@ import play.api.libs.json._
 
 sealed trait PropertiesAnnualSummary
 
-case class OtherPropertiesAnnualSummary(allowances: Option[Allowances],
-                                        adjustments: Option[Adjustments]) extends PropertiesAnnualSummary
+case class OtherPropertiesAnnualSummary(allowances: Option[OtherPropertiesAllowances],
+                                        adjustments: Option[OtherPropertiesAdjustments]) extends PropertiesAnnualSummary
 
 object OtherPropertiesAnnualSummary {
   implicit val writes: Writes[OtherPropertiesAnnualSummary] = Json.writes[OtherPropertiesAnnualSummary]
 
   implicit val reads: Reads[OtherPropertiesAnnualSummary] = (
-    (__ \ "allowances").readNullable[Allowances] and
-      (__ \ "adjustments").readNullable[Adjustments]
+    (__ \ "allowances").readNullable[OtherPropertiesAllowances] and
+      (__ \ "adjustments").readNullable[OtherPropertiesAdjustments]
     ) (OtherPropertiesAnnualSummary.apply _)
 }
 
-case class FHLPropertiesAnnualSummary(allowances: Option[Allowances],
-                                      adjustments: Option[Adjustments]) extends PropertiesAnnualSummary
+case class FHLPropertiesAnnualSummary(allowances: Option[FHLPropertiesAllowances],
+                                      adjustments: Option[FHLPropertiesAdjustments]) extends PropertiesAnnualSummary
 
 object FHLPropertiesAnnualSummary {
   implicit val writes: Writes[FHLPropertiesAnnualSummary] = Json.writes[FHLPropertiesAnnualSummary]
 
   implicit val reads: Reads[FHLPropertiesAnnualSummary] = (
-    (__ \ "allowances").readNullable[Allowances] and
-      (__ \ "adjustments").readNullable[Adjustments]
+    (__ \ "allowances").readNullable[FHLPropertiesAllowances] and
+      (__ \ "adjustments").readNullable[FHLPropertiesAdjustments]
     ) (FHLPropertiesAnnualSummary.apply _)
 }

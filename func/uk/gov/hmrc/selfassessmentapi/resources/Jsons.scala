@@ -127,25 +127,45 @@ object Jsons {
       )
     }
 
-    def annualSummary(annualInvestmentAllowance: BigDecimal = 0.0,
-                      businessPremisesRenovationAllowance : BigDecimal = 0.0,
-                      otherCapitalAllowance: BigDecimal = 0.0,
-                      wearAndTearAllowance: BigDecimal = 0.0,
-                      lossBroughtForward: BigDecimal = 0.0,
-                      rentARoomExempt : BigDecimal = 0.0,
-                      privateUseAdjustment: BigDecimal = 0.0,
-                      balancingCharge: BigDecimal = 0.0): JsValue = {
+    def fhlAnnualSummary(annualInvestmentAllowance: BigDecimal = 0.0,
+                         otherCapitalAllowance: BigDecimal = 0.0,
+                         lossBroughtForward: BigDecimal = 0.0,
+                         privateUseAdjustment: BigDecimal = 0.0,
+                         balancingCharge: BigDecimal = 0.0): JsValue = {
+      Json.parse(s"""
+                    |{
+                    |  "allowances": {
+                    |    "annualInvestmentAllowance": $annualInvestmentAllowance,
+                    |    "otherCapitalAllowance": $otherCapitalAllowance
+                    |  },
+                    |  "adjustments": {
+                    |   "lossBroughtForward": $lossBroughtForward,
+                    |   "privateUseAdjustment": $privateUseAdjustment,
+                    |   "balancingCharge": $balancingCharge
+                    |  }
+                    |}
+    """.stripMargin)
+    }
+
+    def otherAnnualSummary(annualInvestmentAllowance: BigDecimal = 0.0,
+                          businessPremisesRenovationAllowance : BigDecimal = 0.0,
+                          otherCapitalAllowance: BigDecimal = 0.0,
+                           zeroEmissionsGoodsVehicleAllowance: BigDecimal = 0.0,
+                          costOfReplacingDomesticItems: BigDecimal = 0.0,
+                          lossBroughtForward: BigDecimal = 0.0,
+                          privateUseAdjustment: BigDecimal = 0.0,
+                          balancingCharge: BigDecimal = 0.0): JsValue = {
       Json.parse(s"""
                     |{
                     |  "allowances": {
                     |    "annualInvestmentAllowance": $annualInvestmentAllowance,
                     |    "businessPremisesRenovationAllowance": $businessPremisesRenovationAllowance,
                     |    "otherCapitalAllowance": $otherCapitalAllowance,
-                    |    "wearAndTearAllowance": $wearAndTearAllowance
+                    |    "costOfReplacingDomesticItems": $costOfReplacingDomesticItems,
+                    |    "zeroEmissionsGoodsVehicleAllowance": $zeroEmissionsGoodsVehicleAllowance
                     |  },
                     |  "adjustments": {
                     |   "lossBroughtForward": $lossBroughtForward,
-                    |   "rentARoomExempt": $rentARoomExempt,
                     |   "privateUseAdjustment": $privateUseAdjustment,
                     |   "balancingCharge": $balancingCharge
                     |  }

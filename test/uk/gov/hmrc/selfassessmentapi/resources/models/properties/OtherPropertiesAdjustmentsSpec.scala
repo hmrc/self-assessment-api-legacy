@@ -19,55 +19,45 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 
-class AdjustmentsSpec extends JsonSpec {
+class OtherPropertiesAdjustmentsSpec extends JsonSpec {
   "json" should {
     "round trip" in {
-      roundTripJson(Adjustments(Some(50)))
+      roundTripJson(OtherPropertiesAdjustments(Some(50.12), Some(12.34), Some(66.34)))
     }
 
     "round trip with empty object" in {
-      roundTripJson(Adjustments())
+      roundTripJson(OtherPropertiesAdjustments())
     }
   }
 
   "adjustments" should {
     "reject lossBroughtForward with a negative value" in {
-      assertValidationErrorWithCode(Adjustments(lossBroughtForward = Some(-50)),
+      assertValidationErrorWithCode(OtherPropertiesAdjustments(lossBroughtForward = Some(-50)),
         "/lossBroughtForward", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "reject lossBroughtForward with more than 2 decimal places" in {
-      assertValidationErrorWithCode(Adjustments(lossBroughtForward = Some(50.123)),
+      assertValidationErrorWithCode(OtherPropertiesAdjustments(lossBroughtForward = Some(50.123)),
         "/lossBroughtForward", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
-    "reject rentARoomExempt with a negative value" in {
-      assertValidationErrorWithCode(Adjustments(rentARoomExempt = Some(-50)),
-        "/rentARoomExempt", ErrorCode.INVALID_MONETARY_AMOUNT)
-    }
-
-    "reject rentARoomExempt with more than 2 decimal places" in {
-      assertValidationErrorWithCode(Adjustments(rentARoomExempt = Some(50.123)),
-        "/rentARoomExempt", ErrorCode.INVALID_MONETARY_AMOUNT)
-    }
-
     "reject privateUseAdjustment with a negative value" in {
-      assertValidationErrorWithCode(Adjustments(privateUseAdjustment = Some(-50)),
+      assertValidationErrorWithCode(OtherPropertiesAdjustments(privateUseAdjustment = Some(-50)),
         "/privateUseAdjustment", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "reject privateUseAdjustment with more than 2 decimal places" in {
-      assertValidationErrorWithCode(Adjustments(privateUseAdjustment = Some(50.123)),
+      assertValidationErrorWithCode(OtherPropertiesAdjustments(privateUseAdjustment = Some(50.123)),
         "/privateUseAdjustment", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "reject balancingCharge with a negative value" in {
-      assertValidationErrorWithCode(Adjustments(balancingCharge = Some(-50)),
+      assertValidationErrorWithCode(OtherPropertiesAdjustments(balancingCharge = Some(-50)),
         "/balancingCharge", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "reject balancingCharge with more than 2 decimal places" in {
-      assertValidationErrorWithCode(Adjustments(balancingCharge = Some(50.123)),
+      assertValidationErrorWithCode(OtherPropertiesAdjustments(balancingCharge = Some(50.123)),
         "/balancingCharge", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
   }

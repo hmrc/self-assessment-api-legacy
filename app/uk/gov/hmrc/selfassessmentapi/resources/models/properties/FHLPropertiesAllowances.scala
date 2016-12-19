@@ -18,21 +18,16 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 
-case class Adjustments(lossBroughtForward: Option[Amount] = None,
-                       rentARoomExempt: Option[Amount] = None,
-                       privateUseAdjustment: Option[Amount] = None,
-                       balancingCharge: Option[Amount] = None)
+case class FHLPropertiesAllowances(annualInvestmentAllowance: Option[Amount] = None,
+                                   otherCapitalAllowance: Option[Amount] = None)
 
-object Adjustments {
-  implicit val writes: Writes[Adjustments] = Json.writes[Adjustments]
+object FHLPropertiesAllowances {
+  implicit val writes: Writes[FHLPropertiesAllowances] = Json.writes[FHLPropertiesAllowances]
 
-  implicit val reads: Reads[Adjustments] = (
-    (__ \ "lossBroughtForward").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "rentARoomExempt").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "privateUseAdjustment").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "balancingCharge").readNullable[Amount](positiveAmountValidator)
-  ) (Adjustments.apply _)
+  implicit val reads: Reads[FHLPropertiesAllowances] = (
+    (__ \ "annualInvestmentAllowance").readNullable[Amount](positiveAmountValidator) and
+      (__ \ "otherCapitalAllowance").readNullable[Amount](positiveAmountValidator)
+    ) (FHLPropertiesAllowances.apply _)
 }

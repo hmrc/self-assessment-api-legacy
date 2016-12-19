@@ -5,7 +5,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
 
   "amending annual summaries" should {
-    "return code 204 when amending annual summaries for an arbitrary tax year" in {
+    "return code 204 when amending annual summaries" in {
       val property = Jsons.Properties()
 
       val annualSummaries = Jsons.Properties.otherAnnualSummary(
@@ -93,8 +93,6 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         privateUseAdjustment = 22.23,
         balancingCharge = 350.34)
 
-      val expectedJson = Jsons.Errors.urlError(400 -> "ERROR_INVALID_PROPERTY_TYPE")
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -104,9 +102,9 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .when()
         .put(annualSummaries).at(s"/ni/$nino/uk-properties/silly/$taxYear")
         .thenAssertThat()
-        .statusIs(400)
+        .statusIs(404)
         .contentTypeIsJson()
-        .bodyIsLike(expectedJson)
+        .bodyIsLike(Jsons.Errors.notFound)
     }
   }
 

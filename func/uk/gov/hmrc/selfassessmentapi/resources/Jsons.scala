@@ -16,14 +16,13 @@ object Jsons {
          """.stripMargin
     }
 
-    def urlError(error: (Int, String)) = {
+    val notFound: String =
       s"""
          |{
-         |  "statusCode": ${error._1},
-         |  "message": "${error._2}"
+         |  "code": "NOT_FOUND",
+         |  "message": "Resource was not found"
          |}
        """.stripMargin
-    }
 
     def invalidRequest(errors: (String, String)*): String = {
       s"""

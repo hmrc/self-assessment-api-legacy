@@ -49,8 +49,8 @@ trait PropertiesPeriodService {
 
   def updatePeriod(nino: Nino, id: PropertyType, periodId: PeriodId, periodicData: PropertiesPeriodicData): Future[Boolean] = {
     repository.retrieve(nino).flatMap {
-      case Some(selfEmployment) if selfEmployment.periodExists(id, periodId) =>
-        repository.update(nino, selfEmployment.update(id, periodId, periodicData))
+      case Some(property) if property.periodExists(id, periodId) =>
+        repository.update(nino, property.update(id, periodId, periodicData))
       case _ => Future.successful(false)
     }
   }

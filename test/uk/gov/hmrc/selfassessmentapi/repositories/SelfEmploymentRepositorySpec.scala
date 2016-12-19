@@ -17,15 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.repositories
 
 import org.joda.time.{DateTimeZone, LocalDate}
-import org.scalatest.BeforeAndAfterEach
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
   private val ninoGenerator = NinoGenerator()
@@ -72,7 +69,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
       val updatedSelfEmployment = await(repo.retrieve(id.stringify, nino)).get
 
       updatedSelfEmployment.annualSummaries.size shouldBe 1
-      updatedSelfEmployment.annualSummary(TaxYear("2016-17")) shouldBe Some(summary)
+      updatedSelfEmployment.annualSummary(TaxYear("2016-17")) shouldBe summary
     }
 
     "return true when updating periods" in {

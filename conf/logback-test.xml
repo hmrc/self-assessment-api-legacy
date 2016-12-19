@@ -42,7 +42,7 @@
       <appender-ref ref="STDOUT"/>
     </appender>
 
-    <root level="DEBUG">
+    <root level="ERROR">
         <appender-ref ref="ASYNC_FILE"/>
         <appender-ref ref="ASYNC_STDOUT"/>
     </root>

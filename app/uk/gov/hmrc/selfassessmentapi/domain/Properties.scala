@@ -47,7 +47,7 @@ case class Properties(id: BSONObjectID,
     validationErrors.map(Left(_)).getOrElse(Right(this))
   }
 
-  def annualSummary(propertyType: PropertyType, key: TaxYear): AnnualSummary = propertyType match {
+  def annualSummary(propertyType: PropertyType, key: TaxYear): PropertiesAnnualSummary = propertyType match {
     case PropertyType.OTHER => otherBucket.annualSummaries.getOrElse(key, new OtherPropertiesAnnualSummary(None, None))
     case PropertyType.FHL => fhlBucket.annualSummaries.getOrElse(key, new FHLPropertiesAnnualSummary(None, None))
   }

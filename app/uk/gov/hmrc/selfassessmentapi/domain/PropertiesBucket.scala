@@ -17,12 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Json, Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AnnualSummary, PeriodId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary, PropertiesPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{PeriodId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary, PropertiesAnnualSummary, PropertiesPeriod}
 
 trait PropertiesBucket extends PeriodValidator[PropertiesPeriod] {
   val periods: Map[PeriodId, PropertiesPeriod]
-  val annualSummaries: Map[TaxYear, AnnualSummary]
+  val annualSummaries: Map[TaxYear, PropertiesAnnualSummary]
 }
 
 case class FHLPropertiesBucket(periods: Map[PeriodId, PropertiesPeriod],

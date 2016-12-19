@@ -43,10 +43,11 @@ object PropertiesPeriodResource extends BaseController {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case Right(periodId) =>
-          Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${SourceType.Properties.toString}/periods/$periodId")
+          Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${SourceType.Properties.toString}/${id.toString}/periods/$periodId")
         case Left(error) =>
           if (error.code == ErrorCode.NOT_FOUND.toString) NotFound
-          else if (error.code == ErrorCode.ALREADY_EXISTS.toString) Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${SourceType.Properties.toString}/periods/${error.path}")
+          else if (error.code == ErrorCode.ALREADY_EXISTS.toString)
+            Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${SourceType.Properties.toString}/${id.toString}/periods/${error.path}")
           else Forbidden(Json.toJson(Errors.businessError(error)))
       }
     }

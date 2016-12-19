@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
+import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AnnualSummary, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary, PropertiesAnnualSummary, PropertyType}
+import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -27,20 +28,23 @@ import scala.concurrent.Future
 
 trait PropertiesAnnualSummaryService {
 
+  val logger: Logger
   val repository: PropertiesRepository
 
-  def updateAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear, summary: AnnualSummary): Future[Boolean] = {
+  def updateAnnualSummary(nino: Nino, taxYear: TaxYear, summary: PropertiesAnnualSummary): Future[Boolean] = {
     repository.retrieve(nino).flatMap {
-      case Some(properties) => propertyId match {
-        case PropertyType.OTHER => ??? // repository.update(nino, properties.copy(annualSummaries = properties.annualSummaries.updated(taxYear, summary)))
-        case PropertyType.FHL => ???
+      case Some(properties) => summary match {
+        case o @ OtherPropertiesAnnualSummary(_, _) =>
+          repository.update(nino, properties.copy(otherBucket = properties.otherBucket.copy(annualSummaries = properties.otherBucket.annualSummaries.updated(taxYear, o))))
+        case o @ FHLPropertiesAnnualSummary(_, _) =>
+          repository.update(nino, properties.copy(fhlBucket = properties.fhlBucket.copy(annualSummaries = properties.fhlBucket.annualSummaries.updated(taxYear, o))))
       }
       case None => Future.successful(false)
     }
   }
 
 
-  def retrieveAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear): Future[Option[AnnualSummary]] = {
+  def retrieveAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear): Future[Option[PropertiesAnnualSummary]] = {
     repository.retrieve(nino).map {
       case Some(resource) =>
         Some(resource.annualSummary(propertyId, taxYear))
@@ -50,5 +54,6 @@ trait PropertiesAnnualSummaryService {
 }
 
 object PropertiesAnnualSummaryService extends PropertiesAnnualSummaryService {
+  override val logger: Logger = Logger(classOf[PropertiesAnnualSummaryService])
   override val repository: PropertiesRepository = PropertiesRepository()
 }

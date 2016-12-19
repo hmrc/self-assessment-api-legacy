@@ -19,10 +19,9 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AnnualSummary, ErrorCode}
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 
 case class SelfEmploymentAnnualSummary(allowances: Option[Allowances], adjustments: Option[Adjustments])
-    extends AnnualSummary
 
 object SelfEmploymentAnnualSummary {
   implicit val writes: OWrites[SelfEmploymentAnnualSummary] = Json.writes[SelfEmploymentAnnualSummary]

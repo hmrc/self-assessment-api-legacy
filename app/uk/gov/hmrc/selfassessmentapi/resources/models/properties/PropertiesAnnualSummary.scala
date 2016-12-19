@@ -18,10 +18,23 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.AnnualSummary
+
+sealed trait PropertiesAnnualSummary
+
+case class OtherPropertiesAnnualSummary(allowances: Option[Allowances],
+                                        adjustments: Option[Adjustments]) extends PropertiesAnnualSummary
+
+object OtherPropertiesAnnualSummary {
+  implicit val writes: Writes[OtherPropertiesAnnualSummary] = Json.writes[OtherPropertiesAnnualSummary]
+
+  implicit val reads: Reads[OtherPropertiesAnnualSummary] = (
+    (__ \ "allowances").readNullable[Allowances] and
+      (__ \ "adjustments").readNullable[Adjustments]
+    ) (OtherPropertiesAnnualSummary.apply _)
+}
 
 case class FHLPropertiesAnnualSummary(allowances: Option[Allowances],
-                                      adjustments: Option[Adjustments]) extends AnnualSummary
+                                      adjustments: Option[Adjustments]) extends PropertiesAnnualSummary
 
 object FHLPropertiesAnnualSummary {
   implicit val writes: Writes[FHLPropertiesAnnualSummary] = Json.writes[FHLPropertiesAnnualSummary]

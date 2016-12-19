@@ -16,6 +16,15 @@ object Jsons {
          """.stripMargin
     }
 
+    def urlError(error: (Int, String)) = {
+      s"""
+         |{
+         |  "statusCode": ${error._1},
+         |  "message": "${error._2}"
+         |}
+       """.stripMargin
+    }
+
     def invalidRequest(errors: (String, String)*): String = {
       s"""
          |{

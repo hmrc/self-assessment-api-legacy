@@ -89,7 +89,7 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
-        .jsonBodyIsEmptyObject
+        .jsonBodyIsEmptyObject()
     }
 
     "return code 404 when retrieving an annual summary for a non-existent self-employment" in {

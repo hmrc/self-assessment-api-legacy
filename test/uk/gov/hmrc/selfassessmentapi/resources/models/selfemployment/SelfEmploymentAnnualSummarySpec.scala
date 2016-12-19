@@ -16,78 +16,59 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-import org.scalacheck.Gen
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import uk.gov.hmrc.selfassessmentapi.Generators.amountGen
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 
-class SelfEmploymentAnnualSummarySpec extends JsonSpec with GeneratorDrivenPropertyChecks {
-
-  def genAllowances(withBusinessPremisesRenovationAllowance: Boolean = true): Gen[Allowances] =
-    for {
-      annualInvestmentAllowance <- Gen.option[BigDecimal](amountGen(0, 2000))
-      capitalAllowanceMainPool <- Gen.option[BigDecimal](amountGen(0, 2000))
-      capitalAllowanceSpecialRatePool <- Gen.option[BigDecimal](amountGen(0, 2000))
-      businessPremisesRenovationAllowance <- amountGen(0, 2000)
-      enhancedCapitalAllowance <- Gen.option[BigDecimal](amountGen(0, 2000))
-      allowanceOnSales <- Gen.option[BigDecimal](amountGen(0, 2000))
-      zeroEmissionGoodsVehicleAllowance <- Gen.option[BigDecimal](amountGen(0, 2000))
-    } yield
-      Allowances(annualInvestmentAllowance = annualInvestmentAllowance,
-                 capitalAllowanceMainPool = capitalAllowanceMainPool,
-                 capitalAllowanceSpecialRatePool = capitalAllowanceSpecialRatePool,
-                 businessPremisesRenovationAllowance =
-                   if (withBusinessPremisesRenovationAllowance) Some(businessPremisesRenovationAllowance) else None,
-                 enhancedCapitalAllowance = enhancedCapitalAllowance,
-                 allowanceOnSales = allowanceOnSales,
-                 zeroEmissionGoodsVehicleAllowance = zeroEmissionGoodsVehicleAllowance)
-
-  val genAdjustments: Gen[Adjustments] = for {
-    includedNonTaxableProfits <- Gen.option[BigDecimal](amountGen(0, 2000))
-    basisAdjustment <- Gen.option[BigDecimal](amountGen(-2000, 2000))
-    overlapReliefUsed <- Gen.option[BigDecimal](amountGen(0, 2000))
-    accountingAdjustment <- Gen.option[BigDecimal](amountGen(0, 2000))
-    averagingAdjustment <- Gen.option[BigDecimal](amountGen(-2000, 2000))
-    lossBroughtForward <- Gen.option[BigDecimal](amountGen(0, 2000))
-    outstandingBusinessIncome <- Gen.option[BigDecimal](amountGen(0, 2000))
-    balancingChargeBPRA <- amountGen(0, 2000)
-    balancingChargeOther <- Gen.option[BigDecimal](amountGen(0, 2000))
-    goodsAndServicesOwnUse <- Gen.option[BigDecimal](amountGen(0, 2000))
-
-  } yield
-    Adjustments(includedNonTaxableProfits = includedNonTaxableProfits,
-                basisAdjustment = basisAdjustment,
-                overlapReliefUsed = overlapReliefUsed,
-                accountingAdjustment = accountingAdjustment,
-                averagingAdjustment = averagingAdjustment,
-                lossBroughtForward = lossBroughtForward,
-                outstandingBusinessIncome = outstandingBusinessIncome,
-                balancingChargeBPRA = Some(balancingChargeBPRA),
-                balancingChargeOther = balancingChargeOther,
-                goodsAndServicesOwnUse = goodsAndServicesOwnUse)
-
+class SelfEmploymentAnnualSummarySpec extends JsonSpec {
   "format" should {
-    val genValidAnnualSummary = for {
-      allowances <- genAllowances()
-      adjustments <- genAdjustments
-    } yield SelfEmploymentAnnualSummary(allowances = Some(allowances), adjustments = Some(adjustments))
+    "round trip" in {
+      val summary = SelfEmploymentAnnualSummary(
+        Some(Allowances(
+          annualInvestmentAllowance = Some(50.50),
+          capitalAllowanceMainPool = Some(12.34),
+          capitalAllowanceSpecialRatePool = Some(55.65),
+          businessPremisesRenovationAllowance = Some(20.20),
+          enhancedCapitalAllowance = Some(12.23),
+          allowanceOnSales = Some(87.56),
+          zeroEmissionGoodsVehicleAllowance = Some(5.33)
+        )),
+        Some(Adjustments(
+          includedNonTaxableProfits = Some(12.22),
+          basisAdjustment = Some(55.55),
+          overlapReliefUsed = Some(12.23),
+          accountingAdjustment = Some(12.23),
+          averagingAdjustment = Some(-12.22),
+          lossBroughtForward = Some(22.22),
+          outstandingBusinessIncome = Some(300.33),
+          balancingChargeBPRA = Some(10.55),
+          balancingChargeOther = Some(5.55),
+          goodsAndServicesOwnUse = Some(12.23)
+        )))
 
-    "round trip Expense json" in forAll(genValidAnnualSummary) { annualSummary =>
-      roundTripJson(annualSummary)
+      roundTripJson(summary)
+    }
+
+    "round trip empty json" in {
+      roundTripJson(SelfEmploymentAnnualSummary(None, None))
     }
   }
 
   "validate" should {
-    val genInvalidAnnualSummary = for {
-      allowances <- genAllowances(withBusinessPremisesRenovationAllowance = false)
-      adjustments <- genAdjustments
-    } yield SelfEmploymentAnnualSummary(allowances = Some(allowances), adjustments = Some(adjustments))
+    "reject annual summaries where allowances.businessPremisesRenovationAllowance is not defined but adjustments.balancingChargeBPRA is defined" in {
+      val summary = SelfEmploymentAnnualSummary(
+        Some(Allowances(businessPremisesRenovationAllowance = Some(0))),
+        Some(Adjustments(balancingChargeBPRA = Some(200.90))))
 
-    "reject annual summaries where allowances.businessPremisesRenovationAllowance is not defined but adjustments.balancingChargeBPRA is defined" in
-      forAll(genInvalidAnnualSummary) { annualSummary =>
-        assertValidationErrorWithCode(annualSummary, "", INVALID_BALANCING_CHARGE_BPRA)
-      }
+      assertValidationErrorWithCode(summary, "", ErrorCode.INVALID_BALANCING_CHARGE_BPRA)
+    }
+
+    "accept annual summaries with only businessPremisesRenovationAllowance defined" in {
+      val summary = SelfEmploymentAnnualSummary(
+        Some(Allowances(businessPremisesRenovationAllowance = Some(0))),
+        None)
+
+      assertValidationPasses(summary)
+    }
   }
 
 }

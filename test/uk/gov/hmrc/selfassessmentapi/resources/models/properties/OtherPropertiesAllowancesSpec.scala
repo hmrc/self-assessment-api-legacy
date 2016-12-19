@@ -73,12 +73,12 @@ class OtherPropertiesAllowancesSpec extends JsonSpec {
 
     "reject zeroEmissionGoodsVehicleAllowance with a negative value" in {
       assertValidationErrorWithCode(OtherPropertiesAllowances(zeroEmissionsGoodsVehicleAllowance = Some(-50)),
-        "/zeroEmissionGoodsVehicleAllowance", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/zeroEmissionsGoodsVehicleAllowance", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
 
     "reject zeroEmissionGoodsVehicleAllowance with more than two decimal places" in {
       assertValidationErrorWithCode(OtherPropertiesAllowances(zeroEmissionsGoodsVehicleAllowance = Some(-50)),
-        "/zeroEmissionGoodsVehicleAllowance", ErrorCode.INVALID_MONETARY_AMOUNT)
+        "/zeroEmissionsGoodsVehicleAllowance", ErrorCode.INVALID_MONETARY_AMOUNT)
     }
   }
 }

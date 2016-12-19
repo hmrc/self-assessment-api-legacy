@@ -24,16 +24,21 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 case class SelfEmploymentAnnualSummary(allowances: Option[Allowances], adjustments: Option[Adjustments])
 
 object SelfEmploymentAnnualSummary {
-  implicit val writes: OWrites[SelfEmploymentAnnualSummary] = Json.writes[SelfEmploymentAnnualSummary]
+  implicit val writes: Writes[SelfEmploymentAnnualSummary] = Json.writes[SelfEmploymentAnnualSummary]
 
   implicit val reads: Reads[SelfEmploymentAnnualSummary] = (
     (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments]
   )(SelfEmploymentAnnualSummary.apply _).filter(
     ValidationError(
-      "Balancing charge on BPRA (Business Premises Renovation Allowance) can only be claimed when there is a value for BPRA)",
-      ErrorCode.INVALID_BALANCING_CHARGE_BPRA)) { annualSummary =>
-    annualSummary.adjustments.exists(adjustments => adjustments.balancingChargeBPRA.isDefined) &&
-    annualSummary.allowances.exists(allowances => allowances.businessPremisesRenovationAllowance.isDefined)
+      "Balancing charge on BPRA (Business Premises Renovation Allowance) can only be claimed when there is a value for BPRA.",
+      ErrorCode.INVALID_BALANCING_CHARGE_BPRA)) { annualSummary => validateBalancingChargeBPRA(annualSummary) }
+
+  private def validateBalancingChargeBPRA(annualSummary: SelfEmploymentAnnualSummary): Boolean = {
+    annualSummary.adjustments.forall { adjustments =>
+      adjustments.balancingChargeBPRA.forall{ _ =>
+        annualSummary.allowances.exists(_.businessPremisesRenovationAllowance.exists(_ > 0))
+      }
+    }
   }
 }

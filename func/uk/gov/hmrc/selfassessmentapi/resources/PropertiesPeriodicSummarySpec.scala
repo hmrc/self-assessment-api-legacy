@@ -187,6 +187,15 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .contentTypeIsJson()
         .jsonBodyIsEmptyArray
     }
+
+    "return code 404 for a property business that does not exist" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .get(s"/ni/$nino/uk-properties/other/periods")
+        .thenAssertThat()
+        .statusIs(404)
+    }
   }
 
   "retrieving a single period" should {

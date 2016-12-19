@@ -62,12 +62,12 @@ trait SelfEmploymentPeriodService {
     }
   }
 
-  def retrieveAllPeriods(nino: Nino, id: SourceId): Future[Seq[PeriodSummary]] = {
+  def retrieveAllPeriods(nino: Nino, id: SourceId): Future[Option[Seq[PeriodSummary]]] = {
     repository.retrieve(id, nino).map {
-      case Some(selfEmployment) => selfEmployment.periods.map {
+      case Some(selfEmployment) => Some(selfEmployment.periods.map {
         case (k, v) => PeriodSummary(k, v.from, v.to)
-      }.toSeq.sorted
-      case _ => Seq.empty
+      }.toSeq.sorted)
+      case None => None
     }
   }
 }

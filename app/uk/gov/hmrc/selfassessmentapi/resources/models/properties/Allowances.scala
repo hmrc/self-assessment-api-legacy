@@ -25,8 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models._
 case class Allowances(annualInvestmentAllowance: Option[Amount] = None,
                       businessPremisesRenovationAllowance: Option[Amount] = None,
                       otherCapitalAllowance: Option[Amount] = None,
-                      wearAndTearAllowance: Option[Amount] = None
-                     ) {
+                      wearAndTearAllowance: Option[Amount] = None) {
 
   def total: BigDecimal = Sum(annualInvestmentAllowance, businessPremisesRenovationAllowance, otherCapitalAllowance, wearAndTearAllowance)
 }

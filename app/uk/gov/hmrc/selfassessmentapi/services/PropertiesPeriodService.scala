@@ -62,7 +62,7 @@ trait PropertiesPeriodService {
     }
   }
 
-  def retrieveAllPeriods(nino: Nino, id: PropertyType): Future[Seq[PeriodSummary]] = {
+  def retrieveAllPeriods(nino: Nino, id: PropertyType): Future[Option[Seq[PeriodSummary]]] = {
     repository.retrieve(nino).map {
       case Some(properties) => {
         val bucket = id match {
@@ -70,9 +70,9 @@ trait PropertiesPeriodService {
           case PropertyType.FHL => properties.fhlBucket.periods
         }
 
-        bucket.map { case (k, v) => PeriodSummary(k, v.from, v.to) }.toSeq.sorted
+        Some(bucket.map { case (k, v) => PeriodSummary(k, v.from, v.to) }.toSeq.sorted)
       }
-      case _ => Seq.empty
+      case None => None
     }
   }
 }

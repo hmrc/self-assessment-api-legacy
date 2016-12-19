@@ -258,6 +258,15 @@ class SelfEmploymentPeriodicSummarySpec extends BaseFunctionalSpec {
         .statusIs(200)
         .jsonBodyIsEmptyArray
     }
+
+    "return code 404 when retrieving all periods for a non-existent self-employment source" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/sillyid/periods")
+        .thenAssertThat()
+        .statusIs(404)
+    }
   }
 
 

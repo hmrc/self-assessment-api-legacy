@@ -73,6 +73,9 @@ object PropertiesPeriodResource extends BaseController {
   }
 
   def retrievePeriods(nino: Nino, id: PropertyType): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    service.retrieveAllPeriods(nino, id).map { periods => Ok(Json.toJson(periods)) }
+    service.retrieveAllPeriods(nino, id).map {
+      case Some(periods) => Ok(Json.toJson(periods))
+      case None => NotFound
+    }
   }
 }

@@ -68,6 +68,9 @@ object SelfEmploymentPeriodResource extends BaseController {
   }
 
   def retrievePeriods(nino: Nino, id: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    periodService.retrieveAllPeriods(nino, id).map { periods => Ok(Json.toJson(periods)) }
+    periodService.retrieveAllPeriods(nino, id).map {
+      case Some(periods) => Ok(Json.toJson(periods))
+      case None => NotFound
+    }
   }
 }

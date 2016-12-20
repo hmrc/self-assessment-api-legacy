@@ -3,7 +3,7 @@
   "title": "Periods",
   "type": "array",
   "items": {
-    "$ref": "Period.json"
+    "$ref": "SE_Period.json"
   },
   "additionalProperties": false
 }

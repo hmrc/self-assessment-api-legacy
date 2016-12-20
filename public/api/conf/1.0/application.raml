@@ -28,11 +28,11 @@ documentation:
         type: string
     /self-employments:
       (annotations.group):
-          name: Self employment
+          name: Self Employment Businesses
           description: !include docs/self-employment.md
       post:
-        displayName: Create self employment
-        description: Create a self-employment source of income
+        displayName: Register a self-employment business
+        description: Register a self-employment business
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -52,8 +52,8 @@ documentation:
                 type: !include schemas/Error.json
                 example: !include examples/errors/TOO_MANY_SOURCES.json
       get:
-        displayName: Get all self employments
-        description: List all self-employments sources of income
+        displayName: List self-employment businesses
+        description: List self-employment businesses
         is: [headers.acceptHeader]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -64,15 +64,15 @@ documentation:
                 type: !include schemas/SelfEmployments.json
                 example: !include examples/self-employment/SelfEmployments.json
       /{selfEmploymentId}:
-        description: Self Employment
+        description: Self Employment Business
         uriParameters:
           selfEmploymentId:
-            displayName: Self Employment ID
-            description: An identifier for the self-employmment, unique to the customer
+            displayName: Self-employment ID
+            description: An identifier for the self-employmment business, unique to the customer
             type: string
         get:
-          displayName: Get self employment
-          description: Get a self-employment source of income
+          displayName: Get self-employment business
+          description: Get a self-employment business
           is: [headers.acceptHeader]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -88,8 +88,8 @@ documentation:
                   type: !include schemas/Error.json
                   example: !include examples/errors/NOT_FOUND.json
         put:
-          displayName: Update self employment
-          description: Update a self-employment source of income, e.g. to change accounting period
+          displayName: Update self-employment business
+          description: Update a self-employment business, e.g. to change accounting period
           is: [headers.acceptHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -106,14 +106,14 @@ documentation:
                   example: !include examples/errors/INVALID_ACCOUNTING_PERIOD.json
         /periods:
           post:
-            displayName: Create self employment period
-            description: Create a self employment period
+            displayName: Create a self-employment period
+            description: Create a self-employment period for submission of periodic data i.e incomes and expenses
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             body:
               application/json:
-                type: !include schemas/Period.json
+                type: !include schemas/SE_Period.json
                 example: !include examples/self-employment/Period.json
             responses:
               201:
@@ -127,8 +127,8 @@ documentation:
                     type: !include schemas/Error.json
                     example: !include examples/errors/INVALID_REQUEST.json
           get:
-            displayName: Get all self employment periods
-            description: List all self employment periods
+            displayName: List all self-employment periods
+            description: List all self-employment periods
             is: [headers.acceptHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -136,7 +136,7 @@ documentation:
               200:
                 body:
                   application/json:
-                    type: !include schemas/Periods.json
+                    type: !include schemas/SE_Periods.json
                     example: !include examples/self-employment/Periods.json
           /{periodId}:
             uriParameters:
@@ -144,8 +144,8 @@ documentation:
                 description: An identifier for the period
                 type: string
             get:
-              displayName: Get self employment period
-              description: Get a self employment period
+              displayName: Get self-employment period
+              description: Get a single self-employment period for a given identifier
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -153,7 +153,7 @@ documentation:
                 200:
                   body:
                     application/json:
-                      type: !include schemas/Period.json
+                      type: !include schemas/SE_Period.json
                       example: !include examples/self-employment/Period.json
                 404:
                   body:
@@ -168,7 +168,7 @@ documentation:
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               body:
                 application/json:
-                  type: !include schemas/UpdatePeriod.json
+                  type: !include schemas/SE_UpdatePeriod.json
                   example: !include examples/self-employment/UpdatePeriod.json
               responses:
                 204:
@@ -189,14 +189,14 @@ documentation:
               type: string
               example: 2016-17
           put:
-            displayName: Update self employment annual summary
-            description: Update a self employment annual summary
+            displayName: Update self-employment annual summary
+            description: Update self-employment annual summary for the given year
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             body:
               application/json:
-                type: !include schemas/AnnualSummary.json
+                type: !include schemas/SE_AnnualSummary.json
                 example: !include examples/self-employment/AnnualSummary.json
             responses:
               204:
@@ -215,5 +215,269 @@ documentation:
               200:
                 body:
                   application/json:
-                    type: !include schemas/AnnualSummary.json
+                    type: !include schemas/SE_AnnualSummary.json
                     example: !include examples/self-employment/AnnualSummary.json
+    /uk-properties:
+      (annotations.group):
+        name: Self Employment Businesses
+        description: !include docs/self-employment.md
+      post:
+        displayName: Register a UK Property business
+        description: Register a UK Property business
+        is: [headers.acceptHeader]
+        (annotations.scope): "write:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        body:
+          application/json:
+            type: !include schemas/UkProperties.json
+            example: !include examples/uk-properties/UkProperties.json
+        responses:
+          201:
+            headers:
+              Location:
+                example: /self-assessment/ni/{nino}/uk-properties
+          400:
+            body:
+              application/json:
+                type: !include schemas/Error.json
+                example: !include examples/errors/INVALID_ACCOUNTING_PERIOD.json
+          409:
+            headers:
+              Location:
+                example: /self-assessment/ni/{nino}/uk-properties
+            body:
+              application/json:
+                type: !include schemas/Error.json
+                example: !include examples/errors/CONFLICT.json
+      get:
+        displayName: Get UK Property business
+        description: Get a UK Property business
+        is: [headers.acceptHeader]
+        (annotations.scope): "read:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+        responses:
+          200:
+            body:
+              application/json:
+                type: !include schemas/UkProperties.json
+                example: !include examples/uk-properties/UkProperties.json
+      /other:
+        /periods:
+          post:
+            displayName: Create a UK Property period
+            description: Create a UK Property period for submission of periodic data i.e incomes and expenses
+            is: [headers.acceptHeader]
+            (annotations.scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            body:
+              application/json:
+                type: !include schemas/UK_PROP_Period.json
+                example: !include examples/uk-properties/Period.json
+            responses:
+              201:
+                headers:
+                  Location:
+                    example: /self-assessment/ni/{nino}/uk-properties/{propertyType}/periods/{periodId}
+              400:
+                body:
+                  application/json:
+                    type: !include schemas/Error.json
+                    example: !include examples/uk-properties/errors/Period_INVALID_REQUEST.json
+              403:
+                body:
+                  application/json:
+                    type: !include schemas/Error.json
+                    example: !include examples/errors/OVERLAPPING_PERIOD.json
+              409:
+                body:
+                  application/json:
+                    type: !include schemas/Error.json
+                    example: !include examples/errors/CONFLICT.json
+          get:
+            displayName: List all UK Property periods
+            description: List all UK Property periods
+            is: [headers.acceptHeader]
+            (annotations.scope): "read:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: !include schemas/UK_PROP_Periods.json
+                    example: !include examples/uk-properties/Periods.json
+          /{periodId}:
+            uriParameters:
+              periodId:
+                displayName: Period ID
+                type: string
+            get:
+              description: Get period
+              is: [headers.acceptHeader]
+              (annotations.scope): "read:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+              responses:
+                200:
+                  body:
+                    application/json:
+                      type: !include schemas/UK_PROP_Period.json
+                      example: !include examples/uk-properties/Period.json
+            put:
+              description: Amend period
+              is: [headers.acceptHeader]
+              (annotations.scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/UK_PROP_Period.json
+                  example: !include examples/uk-properties/Period.json
+              responses:
+                204:
+                400:
+                  body:
+                    application/json:
+                      type: !include schemas/Error.json
+                      example: !include examples/uk-properties/errors/Period_INVALID_REQUEST.json
+        /{taxYear}:
+            displayName: Annual Summary
+            uriParameters:
+              taxYear:
+                type: string
+                example: 2016-17
+                displayName: Tax Year
+            put:
+              description: Update annual summary
+              is: [headers.acceptHeader]
+              (annotations.scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/UK_PROP_OTHER_AnnualSummary.json
+                  example: !include examples/uk-properties/other/AnnualSummary.json
+              responses:
+                204:
+                400:
+                  body:
+                    application/json:
+                      type: !include schemas/Error.json
+                      example: !include examples/uk-properties/errors/AnnualSummary_INVALID_REQUEST.json
+            get:
+              description: Get annual summary
+              is: [headers.acceptHeader]
+              (annotations.scope): "read:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+              responses:
+                200:
+                  body:
+                    application/json:
+                      type: !include schemas/UK_PROP_OTHER_AnnualSummary.json
+                      example: !include ./examples/uk-properties/other/AnnualSummary.json
+
+      /furnished-holiday-letting:
+        /periods:
+          displayName: Periods
+          post:
+            description: Create period
+            is: [headers.acceptHeader]
+            (annotations.scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            body:
+              application/json:
+                type: !include schemas/UK_PROP_Periods.json
+                example: !include examples/uk-properties/Periods.json
+            responses:
+              201:
+                headers:
+                  Location:
+                    example: /self-assessment/ni/{nino}/uk-properties/{propertyType}/periods/{periodId}
+              400:
+                body:
+                  application/json:
+                    type: !include schemas/Error.json
+                    example: !include examples/uk-properties/errors/Period_INVALID_REQUEST.json
+              403:
+                body:
+                  application/json:
+                    type: !include schemas/Error.json
+                    example: !include examples/errors/OVERLAPPING_PERIOD.json
+              409:
+                body:
+                  application/json:
+                    type: !include schemas/Error.json
+                    example: !include examples/errors/CONFLICT.json
+          get:
+            description: List periods
+            is: [headers.acceptHeader]
+            (annotations.scope): "read:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: !include schemas/UK_PROP_Periods.json
+                    example: !include examples/uk-properties/Periods.json
+          /{periodId}:
+            uriParameters:
+              periodId:
+                displayName: Period ID
+                type: string
+            get:
+              description: Get period
+              is: [headers.acceptHeader]
+              (annotations.scope): "read:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+              responses:
+                200:
+                  body:
+                    application/json:
+                      type: !include schemas/UK_PROP_Period.json
+                      example: !include examples/uk-properties/Period.json
+            put:
+              description: Amend period
+              is: [headers.acceptHeader]
+              (annotations.scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/UK_PROP_UpdatePeriod.json
+                  example: !include examples/uk-properties/UpdatePeriod.json
+              responses:
+                204:
+                400:
+                  body:
+                    application/json:
+                      type: !include schemas/Error.json
+                      example: !include examples/uk-properties/errors/Period_INVALID_REQUEST.json
+        /{taxYear}:
+            displayName: Annual Summary
+            uriParameters:
+              taxYear:
+                type: string
+                example: 2016-17
+                displayName: Tax Year
+            put:
+              description: Update annual summary
+              is: [headers.acceptHeader]
+              (annotations.scope): "write:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              body:
+                application/json:
+                  type: !include schemas/UK_PROP_FHL_AnnualSummary.json
+                  example: !include ./examples/uk-properties/fhl/AnnualSummary.json
+              responses:
+                204:
+                400:
+                  body:
+                    application/json:
+                      type: !include schemas/Error.json
+                      example: !include examples/uk-properties/errors/AnnualSummary_INVALID_REQUEST.json
+            get:
+              description: Get annual summary
+              is: [headers.acceptHeader]
+              (annotations.scope): "read:self-assessment"
+              securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+              responses:
+                200:
+                  body:
+                    application/json:
+                      type: !include schemas/UK_PROP_FHL_AnnualSummary.json
+                      example: !include ./examples/uk-properties/fhl/AnnualSummary.json

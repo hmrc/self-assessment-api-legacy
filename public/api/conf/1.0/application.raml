@@ -207,7 +207,7 @@ documentation:
                     example: !include examples/errors/AnnualSummary_INVALID_REQUEST.json
           get:
             displayName: Get self employment annual summary
-            description: Get a self employment annual summary
+            description: Get self employment annual summary
             is: [headers.acceptHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -219,8 +219,8 @@ documentation:
                     example: !include examples/self-employment/AnnualSummary.json
     /uk-properties:
       (annotations.group):
-        name: Self Employment Businesses
-        description: !include docs/self-employment.md
+        name: UK Property Business
+        description: !include docs/uk-property.md
       post:
         displayName: Register a UK Property business
         description: Register a UK Property business
@@ -251,7 +251,7 @@ documentation:
                 example: !include examples/errors/CONFLICT.json
       get:
         displayName: Get UK Property business
-        description: Get a UK Property business
+        description: Get UK Property business
         is: [headers.acceptHeader]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -264,8 +264,8 @@ documentation:
       /other:
         /periods:
           post:
-            displayName: Create a UK Property period
-            description: Create a UK Property period for submission of periodic data i.e incomes and expenses
+            displayName: Create a non FHL UK Property period
+            description: Create a non FHL UK Property period for submission of periodic data i.e incomes and expenses
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -294,8 +294,8 @@ documentation:
                     type: !include schemas/Error.json
                     example: !include examples/errors/CONFLICT.json
           get:
-            displayName: List all UK Property periods
-            description: List all UK Property periods
+            displayName: List all non FHL UK property periods
+            description: List all non FHL UK property periods
             is: [headers.acceptHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -311,7 +311,8 @@ documentation:
                 displayName: Period ID
                 type: string
             get:
-              description: Get period
+              displayName: Get a non FHL UK property period
+              description: Get a non FHL UK property period for a given identifier
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -322,7 +323,8 @@ documentation:
                       type: !include schemas/UK_PROP_Period.json
                       example: !include examples/uk-properties/Period.json
             put:
-              description: Amend period
+              displayName: Update a non FHL UK Property period
+              description: Update a non FHL UK Property period
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -345,7 +347,8 @@ documentation:
                 example: 2016-17
                 displayName: Tax Year
             put:
-              description: Update annual summary
+              displayName: Update non FHL UK Property business annual summary
+              description: Update non FHL UK Property business annual summary
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -361,7 +364,8 @@ documentation:
                       type: !include schemas/Error.json
                       example: !include examples/uk-properties/errors/AnnualSummary_INVALID_REQUEST.json
             get:
-              description: Get annual summary
+              displayName: Get non FHL UK Property business annual summary
+              description: Get non FHL UK Property business annual summary
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -374,9 +378,9 @@ documentation:
 
       /furnished-holiday-letting:
         /periods:
-          displayName: Periods
           post:
-            description: Create period
+            displayName: Create a FHL UK Property period
+            description: Create a FHL UK Property period for submission of periodic data i.e incomes and expenses
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -405,7 +409,8 @@ documentation:
                     type: !include schemas/Error.json
                     example: !include examples/errors/CONFLICT.json
           get:
-            description: List periods
+            displayName: List all FHL UK property periods
+            description: List all FHL UK property periods
             is: [headers.acceptHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -421,7 +426,8 @@ documentation:
                 displayName: Period ID
                 type: string
             get:
-              description: Get period
+              displayName: Get a FHL UK property period
+              description: Get a FHL UK property period for a given identifier
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -432,7 +438,8 @@ documentation:
                       type: !include schemas/UK_PROP_Period.json
                       example: !include examples/uk-properties/Period.json
             put:
-              description: Amend period
+              displayName: Update a FHL UK Property period
+              description: Update a FHL UK Property period
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -455,7 +462,8 @@ documentation:
                 example: 2016-17
                 displayName: Tax Year
             put:
-              description: Update annual summary
+              displayName: Update non FHL UK Property business annual summary
+              description: Update non FHL UK Property business annual summary
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -471,7 +479,8 @@ documentation:
                       type: !include schemas/Error.json
                       example: !include examples/uk-properties/errors/AnnualSummary_INVALID_REQUEST.json
             get:
-              description: Get annual summary
+              displayName: Get non FHL UK Property business annual summary
+              description: Get non FHL UK Property business annual summary
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]

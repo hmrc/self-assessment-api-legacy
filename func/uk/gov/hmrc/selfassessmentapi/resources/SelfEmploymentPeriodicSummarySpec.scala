@@ -74,7 +74,27 @@ class SelfEmploymentPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(403)
         .bodyIsLike(expectedBody)
+    }
 
+    "return code 409 when attempting to create a period that already exists" in {
+      val periodOne = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
+      val periodTwo = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(periodOne).to(s"%sourceLocation%/periods")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(periodTwo).to(s"%sourceLocation%/periods")
+        .thenAssertThat()
+        .statusIs(409)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+/periods/\\w+".r)
     }
   }
 

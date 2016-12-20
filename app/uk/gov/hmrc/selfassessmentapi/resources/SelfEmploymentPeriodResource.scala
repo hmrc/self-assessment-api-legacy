@@ -43,6 +43,7 @@ object SelfEmploymentPeriodResource extends BaseController {
         case Right(periodId) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${SourceType.SelfEmployments.toString}/$sourceId/periods/$periodId")
         case Left(error) =>
           if (error.code == ErrorCode.NOT_FOUND.toString) NotFound
+          else if (error.path.nonEmpty) Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/${SourceType.SelfEmployments.toString}/$sourceId/periods/${error.path}")
           else Forbidden(Json.toJson(Errors.businessError(error)))
       }
     }

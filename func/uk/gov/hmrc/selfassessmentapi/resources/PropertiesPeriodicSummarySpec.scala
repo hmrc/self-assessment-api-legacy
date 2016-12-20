@@ -68,7 +68,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .bodyIsLike(expectedJson)
     }
 
-    "return code 403 when creating a period that overlaps with another" in {
+    "return code 403 when creating an invalid period" in {
       val property = Jsons.Properties()
       val periodOne = Jsons.Properties.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-01"))
       val periodTwo = Jsons.Properties.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-02"))
@@ -88,7 +88,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(403)
         .contentTypeIsJson()
-        .bodyIsLike(Jsons.Errors.businessError(("OVERLAPPING_PERIOD", "")))
+        .bodyIsLike(Jsons.Errors.businessError(("INVALID_PERIOD", "")))
     }
 
     "return code 409 when creating a period with a from and to date that already exists" in {

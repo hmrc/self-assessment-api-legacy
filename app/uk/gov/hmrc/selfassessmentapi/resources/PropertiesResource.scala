@@ -50,7 +50,8 @@ object PropertiesResource extends BaseController {
             case false => InternalServerError
           }
 
-        case Left(err) => Conflict(Json.toJson(Errors.businessError(err)))
+        case Left(err) =>
+          Conflict(Json.toJson(Errors.businessError(err))).withHeaders(LOCATION ->  s"/self-assessment/ni/$nino/uk-properties")
       }
     }
   }

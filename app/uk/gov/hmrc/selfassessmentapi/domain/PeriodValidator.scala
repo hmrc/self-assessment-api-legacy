@@ -29,26 +29,19 @@ trait PeriodValidator[P <: Period] {
   implicit private val ordering: Ordering[P] = Ordering.by(_.from)
 
   def validatePeriod(period: P, accountingPeriod: AccountingPeriod): Option[Errors.Error] = {
-    if (containsPeriod(period).isDefined) {
-      Some(Error(ALREADY_EXISTS.toString, "Period already exists", containsPeriod(period).get))
-    }
-    else if (containsOverlappingPeriod(period)) {
-      Some(Error(OVERLAPPING_PERIOD.toString, "Periods should not overlap", ""))
-    }
-    else if (containsGap(period)) {
-      Some(Error(GAP_PERIOD.toString, "Periods should not contain gaps between each other", ""))
-    }
-    else if (containsMisalignedPeriod(period, accountingPeriod)) {
-      Some(Error(MISALIGNED_PERIOD.toString,
-                 "Periods must fall on or within the start and end dates of the resource accounting period",""))
+    if (containsPeriod(period).isDefined ||
+      containsOverlappingPeriod(period) ||
+      containsGap(period) ||
+      containsMisalignedPeriod(period, accountingPeriod)) {
+      Some(Error(INVALID_PERIOD.toString, "Periods should be contiguous and have no gaps between one another.", containsPeriod(period).getOrElse("")))
     }
     else None
   }
 
-  def containsPeriod(period: Period): Option[PeriodId] =
+  private def containsPeriod(period: Period): Option[PeriodId] =
     periods.find { case (_, p) => p.from == period.from && p.to == period.to }.map(_._1)
 
-  def containsOverlappingPeriod(period: P): Boolean = {
+  private def containsOverlappingPeriod(period: P): Boolean = {
     val newPeriod = new Interval(period.from.toDateTimeAtStartOfDay(DateTimeZone.UTC), period.from.toDateTimeAtStartOfDay(DateTimeZone.UTC))
 
     periods.exists { case (_, p) =>
@@ -57,7 +50,7 @@ trait PeriodValidator[P <: Period] {
     }
   }
 
-  def containsGap(period: P): Boolean = {
+  private def containsGap(period: P): Boolean = {
     val newPeriod = new Interval(period.from.toDateTimeAtStartOfDay(DateTimeZone.UTC), period.to.toDateTimeAtStartOfDay(DateTimeZone.UTC))
 
     val existingIntervals = periods.values.toSeq.sorted.reverse.map { period =>
@@ -70,7 +63,7 @@ trait PeriodValidator[P <: Period] {
     }
   }
 
-  def containsMisalignedPeriod(period: P, accountingPeriod: AccountingPeriod): Boolean = {
+  private def containsMisalignedPeriod(period: P, accountingPeriod: AccountingPeriod): Boolean = {
     val alignedWithEnd = period.to.isBefore(accountingPeriod.end) || period.to.isEqual(accountingPeriod.end)
 
     if (periods.isEmpty) !(period.from.isEqual(accountingPeriod.start) && alignedWithEnd)

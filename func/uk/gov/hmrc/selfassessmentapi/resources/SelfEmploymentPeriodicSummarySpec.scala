@@ -53,7 +53,7 @@ class SelfEmploymentPeriodicSummarySpec extends BaseFunctionalSpec {
       val periodTwo = Jsons.SelfEmployment.period(fromDate = Some("2017-07-05"), toDate = Some("2017-08-04"))
       val overlappingPeriod = Jsons.SelfEmployment.period(fromDate = Some("2017-08-04"), toDate = Some("2017-09-04"))
 
-      val expectedBody = Jsons.Errors.businessError(("OVERLAPPING_PERIOD", ""))
+      val expectedBody = Jsons.Errors.businessError(("INVALID_PERIOD", ""))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -75,29 +75,6 @@ class SelfEmploymentPeriodicSummarySpec extends BaseFunctionalSpec {
         .statusIs(403)
         .bodyIsLike(expectedBody)
 
-    }
-
-    "return code 403 when attempting to create a period that would leave a gap between the latest period and the one provided" in {
-      val periodOne = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
-      val periodTwoWithGap = Jsons.SelfEmployment.period(fromDate = Some("2017-07-06"), toDate = Some("2017-08-04"))
-
-      val expectedBody = Jsons.Errors.businessError(("GAP_PERIOD", ""))
-
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .post(periodOne).to(s"%sourceLocation%/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .post(periodTwoWithGap).to(s"%sourceLocation%/periods")
-        .thenAssertThat()
-        .statusIs(403)
-        .bodyIsLike(expectedBody)
     }
   }
 

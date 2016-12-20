@@ -80,7 +80,7 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .statusIs(404)
     }
 
-    "return code 400 when attempting to update annual summaries for an invalid property type" in {
+    "return code 404 when attempting to update annual summaries for an invalid property type" in {
       val property = Jsons.Properties()
 
       val annualSummaries = Jsons.Properties.otherAnnualSummary(

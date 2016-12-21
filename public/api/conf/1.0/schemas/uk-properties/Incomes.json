@@ -11,14 +11,12 @@
     },
     "premiumsOfLeaseGrant": {
       "title": "Premiums of lease grant",
-      "type": "number",
-      "minimum": 0
+      "$ref": "../SimpleIncome.json"
     },
     "reversePremiums": {
       "title": "Reverse premiums",
       "description": "Reverse premiums and inducements",
-      "type": "number",
-      "minimum": 0
+      "$ref": "../SimpleIncome.json"
     }
   },
   "additionalProperties": false

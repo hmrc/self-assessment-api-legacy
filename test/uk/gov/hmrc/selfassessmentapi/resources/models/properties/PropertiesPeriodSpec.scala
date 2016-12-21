@@ -18,14 +18,14 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
 import org.joda.time.LocalDate
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, Expense, Income}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, Income, SimpleExpense}
 
 class PropertiesPeriodSpec extends JsonSpec {
 
   def propertiesPeriod(from: LocalDate = LocalDate.parse("2017-04-01"),
                        to: LocalDate = LocalDate.parse("2017-04-02"),
                       incomes: Map[IncomeType.IncomeType, Income] = Map(IncomeType.PremiumsOfLeaseGrant -> Income(1000, None)),
-                      expenses: Map[ExpenseType.ExpenseType, Expense] = Map(ExpenseType.PremisesRunningCosts -> Expense(1000.50, Some(22.25)))) = {
+                      expenses: Map[ExpenseType.ExpenseType, SimpleExpense] = Map(ExpenseType.PremisesRunningCosts -> SimpleExpense(1000.50))) = {
     PropertiesPeriod(from = from, to = to,
       data = PropertiesPeriodicData(
         incomes = incomes,

@@ -330,8 +330,8 @@ documentation:
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               body:
                 application/json:
-                  type: !include schemas/UK_PROP_Period.json
-                  example: !include examples/uk-properties/Period.json
+                  type: !include schemas/UK_PROP_UpdatePeriod.json
+                  example: !include examples/uk-properties/UpdatePeriod.json
               responses:
                 204:
                 400:
@@ -386,8 +386,8 @@ documentation:
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             body:
               application/json:
-                type: !include schemas/UK_PROP_Periods.json
-                example: !include examples/uk-properties/Periods.json
+                type: !include schemas/UK_PROP_Period.json
+                example: !include examples/uk-properties/Period.json
             responses:
               201:
                 headers:

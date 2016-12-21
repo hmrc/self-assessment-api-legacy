@@ -59,17 +59,18 @@ object Jsons {
          """.stripMargin)
     }
 
-    def period(fromDate: Option[String] = None, toDate: Option[String] = None,
+    def period(fromDate: Option[String] = None,
+               toDate: Option[String] = None,
                rentIncome: BigDecimal = 0,
                rentIncomeTaxDeducted: BigDecimal = 0,
                premiumsOfLeaseGrant: BigDecimal = 0,
                reversePremiums: BigDecimal = 0,
-               premisesRunningCosts: (BigDecimal, BigDecimal) = (0, 0),
-               repairsAndMaintenance: (BigDecimal, BigDecimal) = (0, 0),
-               financialCosts: (BigDecimal, BigDecimal) = (0, 0),
-               professionalFees: (BigDecimal, BigDecimal) = (0, 0),
-               costOfServices: (BigDecimal, BigDecimal) = (0, 0),
-               otherCost: (BigDecimal, BigDecimal) = (0, 0)): JsValue = {
+               premisesRunningCosts: BigDecimal = 0,
+               repairsAndMaintenance: BigDecimal = 0,
+               financialCosts: BigDecimal = 0,
+               professionalFees: BigDecimal = 0,
+               costOfServices: BigDecimal = 0,
+               otherCost: BigDecimal = 0): JsValue = {
 
       val from =
         fromDate.map { date =>
@@ -96,12 +97,12 @@ object Jsons {
            |    "reversePremiums": { "amount": $reversePremiums }
            |  },
            |  "expenses": {
-           |    "premisesRunningCosts": { "amount": ${premisesRunningCosts._1}, "disallowableAmount": ${premisesRunningCosts._2} },
-           |    "repairsAndMaintenance": { "amount": ${repairsAndMaintenance._1}, "disallowableAmount": ${repairsAndMaintenance._2} },
-           |    "financialCosts": { "amount": ${financialCosts._1}, "disallowableAmount": ${financialCosts._2} },
-           |    "professionalFees": { "amount": ${professionalFees._1}, "disallowableAmount": ${professionalFees._2} },
-           |    "costOfServices": { "amount": ${costOfServices._1}, "disallowableAmount": ${costOfServices._2} },
-           |    "other": { "amount": ${otherCost._1}, "disallowableAmount": ${otherCost._2} }
+           |    "premisesRunningCosts": { "amount": $premisesRunningCosts },
+           |    "repairsAndMaintenance": { "amount": $repairsAndMaintenance },
+           |    "financialCosts": { "amount": $financialCosts },
+           |    "professionalFees": { "amount": $professionalFees },
+           |    "costOfServices": { "amount": $costOfServices },
+           |    "other": { "amount": $otherCost }
            |  }
            |}
        """.stripMargin)

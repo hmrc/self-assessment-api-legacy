@@ -45,7 +45,7 @@ object PropertiesPeriod extends PeriodValidator[PropertiesPeriod] {
     (__ \ "from").read[LocalDate] and
       (__ \ "to").read[LocalDate] and
       (__ \ "incomes").readNullable[Map[IncomeType, Income]] and
-      (__ \ "expenses").readNullable[Map[ExpenseType, Expense]]
+      (__ \ "expenses").readNullable[Map[ExpenseType, SimpleExpense]]
     ) (
     (from, to, incomes, expenses) => {
       PropertiesPeriod(from, to, PropertiesPeriodicData(incomes.getOrElse(Map.empty), expenses.getOrElse(Map.empty)))})

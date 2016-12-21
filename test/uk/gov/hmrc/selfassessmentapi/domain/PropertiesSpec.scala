@@ -35,13 +35,13 @@ class PropertiesSpec extends UnitSpec {
     LocalDate.parse("2018-04-05"),
     PropertiesPeriodicData(
       Map(IncomeType.RentIncome -> Income(10000, None)),
-      Map(ExpenseType.PremisesRunningCosts -> Expense(50.55, None))))
+      Map(ExpenseType.PremisesRunningCosts -> SimpleExpense(50.55))))
   val fhlPeriod: PropertiesPeriod = PropertiesPeriod(
     LocalDate.parse("2017-04-06"),
     LocalDate.parse("2018-04-05"),
     PropertiesPeriodicData(
       Map(IncomeType.PremiumsOfLeaseGrant -> Income(1234.56, None)),
-      Map(ExpenseType.FinancialCosts -> Expense(500.12, None))))
+      Map(ExpenseType.FinancialCosts -> SimpleExpense(500.12))))
 
   val properties: Properties = Properties(
     BSONObjectID.generate,

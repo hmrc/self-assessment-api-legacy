@@ -14,12 +14,12 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         rentIncomeTaxDeducted = 250.55,
         premiumsOfLeaseGrant = 200.22,
         reversePremiums = 22.35,
-        premisesRunningCosts = (20.20, 10),
-        repairsAndMaintenance = (11.25, 5.50),
-        financialCosts = (100, 25.25),
-        professionalFees = (1232.55, 130.55),
-        costOfServices = (500.25, 20.50),
-        otherCost = (50.22, 27.89))
+        premisesRunningCosts = 20.20,
+        repairsAndMaintenance = 11.25,
+        financialCosts = 100,
+        professionalFees = 1232.55,
+        costOfServices = 500.25,
+        otherCost = 50.22)
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -42,13 +42,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         rentIncome = -500,
         rentIncomeTaxDeducted = 250.55,
         premiumsOfLeaseGrant = -200.22,
-        reversePremiums = 22.35,
-        premisesRunningCosts = (20.20, 10),
-        repairsAndMaintenance = (11.25, 5.50),
-        financialCosts = (100, 25.25),
-        professionalFees = (1232.55, 130.55),
-        costOfServices = (500.25, 20.50),
-        otherCost = (50.22, 27.89))
+        reversePremiums = 22.35)
 
       val expectedJson = Jsons.Errors.invalidRequest("INVALID_DATE" -> "/to",
         "INVALID_MONETARY_AMOUNT" -> "/incomes/rentIncome/amount",
@@ -119,31 +113,11 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
       val property = Jsons.Properties()
       val periodOne = Jsons.Properties.period(
         fromDate = Some("2017-04-06"),
-        toDate = Some("2017-04-07"),
-        rentIncome = 500,
-        rentIncomeTaxDeducted = 250.55,
-        premiumsOfLeaseGrant = 200.22,
-        reversePremiums = 22.35,
-        premisesRunningCosts = (20.20, 10),
-        repairsAndMaintenance = (11.25, 5.50),
-        financialCosts = (100, 25.25),
-        professionalFees = (1232.55, 130.55),
-        costOfServices = (500.25, 20.50),
-        otherCost = (50.22, 27.89))
+        toDate = Some("2017-04-07"))
 
       val periodTwo = Jsons.Properties.period(
         fromDate = Some("2017-04-08"),
-        toDate = Some("2017-04-09"),
-        rentIncome = 200000,
-        rentIncomeTaxDeducted = 2550.55,
-        premiumsOfLeaseGrant = 2000.22,
-        reversePremiums = 222.35,
-        premisesRunningCosts = (200.20, 100),
-        repairsAndMaintenance = (110.25, 50.50),
-        financialCosts = (1000, 205.25),
-        professionalFees = (10232.55, 1300.55),
-        costOfServices = (5000.25, 200.50),
-        otherCost = (500.22, 270.89))
+        toDate = Some("2017-04-09"))
 
       val expectedJson = Jsons.Properties.periodSummary(("2017-04-06", "2017-04-07"),
         ("2017-04-08", "2017-04-09"))
@@ -185,7 +159,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
-        .jsonBodyIsEmptyArray
+        .jsonBodyIsEmptyArray()
     }
 
     "return code 404 for a property business that does not exist" in {
@@ -203,17 +177,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
       val property = Jsons.Properties()
       val period = Jsons.Properties.period(
         fromDate = Some("2017-04-06"),
-        toDate = Some("2018-04-05"),
-        rentIncome = 500,
-        rentIncomeTaxDeducted = 250.55,
-        premiumsOfLeaseGrant = 200.22,
-        reversePremiums = 22.35,
-        premisesRunningCosts = (20.20, 10),
-        repairsAndMaintenance = (11.25, 5.50),
-        financialCosts = (100, 25.25),
-        professionalFees = (1232.55, 130.55),
-        costOfServices = (500.25, 20.50),
-        otherCost = (50.22, 27.89))
+        toDate = Some("2018-04-05"))
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -255,31 +219,19 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
 
       val period = Jsons.Properties.period(
         fromDate = Some("2017-04-06"),
-        toDate = Some("2018-04-05"),
-        rentIncome = 500,
-        rentIncomeTaxDeducted = 250.55,
-        premiumsOfLeaseGrant = 200.22,
-        reversePremiums = 22.35,
-        premisesRunningCosts = (20.20, 10),
-        repairsAndMaintenance = (11.25, 5.50),
-        financialCosts = (100, 25.25),
-        professionalFees = (1232.55, 130.55),
-        costOfServices = (500.25, 20.50),
-        otherCost = (50.22, 27.89))
+        toDate = Some("2018-04-05"))
 
       val updatedPeriod = Jsons.Properties.period(
-        fromDate = None,
-        toDate = None,
         rentIncome = 600,
         rentIncomeTaxDeducted = 252.55,
         premiumsOfLeaseGrant = 202.22,
         reversePremiums = 22.37,
-        premisesRunningCosts = (20.22, 12),
-        repairsAndMaintenance = (111.25, 51.50),
-        financialCosts = (160, 25.15),
-        professionalFees = (1132.55, 131.55),
-        costOfServices = (510.25, 20.10),
-        otherCost = (50.12, 17.89))
+        premisesRunningCosts = 20.22,
+        repairsAndMaintenance = 111.25,
+        financialCosts = 160,
+        professionalFees = 1132.55,
+        costOfServices = 510.25,
+        otherCost = 50.12)
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -308,29 +260,13 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
 
       val period = Jsons.Properties.period(
         fromDate = Some("2017-04-06"),
-        toDate = Some("2018-04-05"),
-        rentIncome = 500,
-        rentIncomeTaxDeducted = 250.55,
-        premiumsOfLeaseGrant = 200.22,
-        reversePremiums = 22.35,
-        premisesRunningCosts = (20.20, 10),
-        repairsAndMaintenance = (11.25, 5.50),
-        financialCosts = (100, 25.25),
-        professionalFees = (1232.55, 130.55),
-        costOfServices = (500.25, 20.50),
-        otherCost = (50.22, 27.89))
+        toDate = Some("2018-04-05"))
 
       val invalidPeriod = Jsons.Properties.period(
         rentIncome = -500,
         rentIncomeTaxDeducted = 250.55,
         premiumsOfLeaseGrant = -200.22,
-        reversePremiums = 22.35,
-        premisesRunningCosts = (20.20, 10),
-        repairsAndMaintenance = (11.25, 5.50),
-        financialCosts = (100, 25.25),
-        professionalFees = (1232.55, 130.55),
-        costOfServices = (500.25, 20.50),
-        otherCost = (50.22, 27.89))
+        reversePremiums = 22.35)
 
       val expectedJson = Jsons.Errors.invalidRequest(
         "INVALID_MONETARY_AMOUNT" -> "/incomes/rentIncome/amount",

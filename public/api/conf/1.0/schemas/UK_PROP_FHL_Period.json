@@ -19,7 +19,7 @@
             "format": "date"
         },
         "incomes": {
-            "$ref": "uk-properties/Incomes.json"
+            "$ref": "uk-properties/fhl/Incomes.json"
         },
         "expenses": {
             "$ref": "uk-properties/Expenses.json"
@@ -29,5 +29,5 @@
         "from",
         "to"
     ],
-    "additonalProperties": false
+    "additionalProperties": false
 }

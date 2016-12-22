@@ -63,7 +63,7 @@ object Jsons {
                toDate: Option[String] = None,
                rentIncome: BigDecimal = 0,
                rentIncomeTaxDeducted: BigDecimal = 0,
-               premiumsOfLeaseGrant: BigDecimal = 0,
+               premiumsOfLeaseGrant: Option[BigDecimal] = None,
                reversePremiums: BigDecimal = 0,
                premisesRunningCosts: BigDecimal = 0,
                repairsAndMaintenance: BigDecimal = 0,
@@ -93,7 +93,7 @@ object Jsons {
            |  $to
            |  "incomes": {
            |    "rentIncome": { "amount": $rentIncome, "taxDeducted": $rentIncomeTaxDeducted },
-           |    "premiumsOfLeaseGrant": { "amount": $premiumsOfLeaseGrant },
+           |    ${premiumsOfLeaseGrant.map(income => s""" "premiumsOfLeaseGrant": { "amount": $income },""").getOrElse("")}
            |    "reversePremiums": { "amount": $reversePremiums }
            |  },
            |  "expenses": {

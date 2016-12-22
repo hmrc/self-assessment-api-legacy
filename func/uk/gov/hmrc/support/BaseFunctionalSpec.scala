@@ -323,6 +323,11 @@ trait BaseFunctionalSpec extends TestApplication {
         assertions
       }
 
+      def isAbsent() = {
+        content shouldBe None
+        assertions
+      }
+
       def is(value: BigDecimal) = {
         content match {
           case Some(v) => v.as[BigDecimal] shouldBe value

@@ -111,5 +111,21 @@ class PropertiesSpec extends UnitSpec {
       newProperties.otherBucket.periods("other") shouldBe newOtherPeriod
       newProperties.fhlBucket.periods("fhl") shouldBe newFhlPeriod
     }
+
+    "remove Income type " in {
+      val period = otherPeriod.copy(data = otherPeriod.data.copy(incomes =
+        Map(IncomeType.RentIncome -> Income(1000, None), IncomeType.PremiumsOfLeaseGrant -> Income(1000, None))))
+
+      val newProperties = properties
+        .setPeriodsTo(PropertyType.OTHER, "periodId", period)
+        .setPeriodsTo(PropertyType.FHL, "periodId", period)
+
+      val otherPeriodicData = newProperties.otherBucket.periods("periodId").data
+      otherPeriodicData.incomes.size shouldBe 2
+
+      val fhlPeriodicData = newProperties.fhlBucket.periods("periodId").data
+      fhlPeriodicData.incomes.size shouldBe 1
+      fhlPeriodicData.incomes.exists(income => income._1 == IncomeType.PremiumsOfLeaseGrant) shouldBe false
+    }
   }
 }

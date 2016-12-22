@@ -136,8 +136,8 @@ documentation:
               200:
                 body:
                   application/json:
-                    type: !include schemas/SE_Periods.json
-                    example: !include examples/self-employment/Periods.json
+                    type: !include schemas/Periods.json
+                    example: !include examples/Periods.json
           /{periodId}:
             uriParameters:
               periodId:
@@ -271,8 +271,8 @@ documentation:
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             body:
               application/json:
-                type: !include schemas/UK_PROP_Period.json
-                example: !include examples/uk-properties/Period.json
+                type: !include schemas/UK_PROP_OTHER_Period.json
+                example: !include examples/uk-properties/other/Period.json
             responses:
               201:
                 headers:
@@ -303,8 +303,8 @@ documentation:
               200:
                 body:
                   application/json:
-                    type: !include schemas/UK_PROP_Periods.json
-                    example: !include examples/uk-properties/Periods.json
+                    type: !include schemas/Periods.json
+                    example: !include examples/Periods.json
           /{periodId}:
             uriParameters:
               periodId:
@@ -320,8 +320,8 @@ documentation:
                 200:
                   body:
                     application/json:
-                      type: !include schemas/UK_PROP_Period.json
-                      example: !include examples/uk-properties/Period.json
+                      type: !include schemas/UK_PROP_OTHER_Period.json
+                      example: !include examples/uk-properties/other/Period.json
             put:
               displayName: Update a non FHL UK Property period
               description: Update a non FHL UK Property period
@@ -330,8 +330,8 @@ documentation:
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               body:
                 application/json:
-                  type: !include schemas/UK_PROP_UpdatePeriod.json
-                  example: !include examples/uk-properties/UpdatePeriod.json
+                  type: !include schemas/UK_PROP_OTHER_UpdatePeriod.json
+                  example: !include examples/uk-properties/other/UpdatePeriod.json
               responses:
                 204:
                 400:
@@ -386,8 +386,8 @@ documentation:
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             body:
               application/json:
-                type: !include schemas/UK_PROP_Period.json
-                example: !include examples/uk-properties/Period.json
+                type: !include schemas/UK_PROP_FHL_Period.json
+                example: !include examples/uk-properties/fhl/Period.json
             responses:
               201:
                 headers:
@@ -418,8 +418,8 @@ documentation:
               200:
                 body:
                   application/json:
-                    type: !include schemas/UK_PROP_Periods.json
-                    example: !include examples/uk-properties/Periods.json
+                    type: !include schemas/Periods.json
+                    example: !include examples/Periods.json
           /{periodId}:
             uriParameters:
               periodId:
@@ -435,8 +435,8 @@ documentation:
                 200:
                   body:
                     application/json:
-                      type: !include schemas/UK_PROP_Period.json
-                      example: !include examples/uk-properties/Period.json
+                      type: !include schemas/UK_PROP_FHL_Period.json
+                      example: !include examples/uk-properties/fhl/Period.json
             put:
               displayName: Update a FHL UK Property period
               description: Update a FHL UK Property period
@@ -445,8 +445,8 @@ documentation:
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               body:
                 application/json:
-                  type: !include schemas/UK_PROP_UpdatePeriod.json
-                  example: !include examples/uk-properties/UpdatePeriod.json
+                  type: !include schemas/UK_PROP_FHL_UpdatePeriod.json
+                  example: !include examples/uk-properties/fhl/UpdatePeriod.json
               responses:
                 204:
                 400:

@@ -7,16 +7,16 @@
     "rentIncome": {
       "title": "rentIncome",
       "description": "Total rents and other income from property",
-      "$ref": "../Income.json"
+      "$ref": "../../Income.json"
     },
     "premiumsOfLeaseGrant": {
       "title": "Premiums of lease grant",
-      "$ref": "../SimpleIncome.json"
+      "$ref": "../../SimpleIncome.json"
     },
     "reversePremiums": {
       "title": "Reverse premiums",
       "description": "Reverse premiums and inducements",
-      "$ref": "../SimpleIncome.json"
+      "$ref": "../../SimpleIncome.json"
     }
   },
   "additionalProperties": false

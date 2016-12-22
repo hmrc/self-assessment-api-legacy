@@ -61,7 +61,16 @@ case class Properties(id: BSONObjectID,
 
   def setPeriodsTo(propertyType: PropertyType, periodId: PeriodId, period: PropertiesPeriod): Properties = propertyType match {
     case PropertyType.OTHER => this.copy(otherBucket = otherBucket.copy(periods = otherBucket.periods.updated(periodId, period)))
-    case PropertyType.FHL => this.copy(fhlBucket = fhlBucket.copy(periods = fhlBucket.periods.updated(periodId, period)))
+    case PropertyType.FHL => this.copy(fhlBucket = fhlBucket.copy(periods = fhlBucket.periods.updated(periodId, periodWithoutPremiumsOfLeaseGrant(period))))
+  }
+
+  /**
+    * This is a hack. FHL doesn't have income of type PremiumsOfLeaseGrant.
+    * so rather than creating a completely diff period model for FHL, I have decide to keep the 2 periods same but throw away
+    * PremiumsOfLeaseGrant if the TPV provides for a FHL.
+    */
+  private def periodWithoutPremiumsOfLeaseGrant(period: PropertiesPeriod) = {
+    period.copy(data = period.data.copy(incomes = period.data.incomes.filterNot(income => income._1 == IncomeType.PremiumsOfLeaseGrant)))
   }
 
   def update(propertyType: PropertyType, periodId: PeriodId, periodicData: PropertiesPeriodicData): Properties = {

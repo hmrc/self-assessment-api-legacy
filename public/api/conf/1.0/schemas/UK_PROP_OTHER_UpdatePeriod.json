@@ -4,11 +4,11 @@
     "title": "Period",
     "properties": {
         "incomes": {
-            "$ref": "uk-properties/Incomes.json"
+            "$ref": "uk-properties/other/Incomes.json"
         },
         "expenses": {
             "$ref": "uk-properties/Expenses.json"
         }
     },
-    "additonalProperties": false
+    "additionalProperties": false
 }

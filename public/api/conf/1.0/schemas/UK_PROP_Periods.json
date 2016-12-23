@@ -1,9 +1,0 @@
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Periods",
-  "type": "array",
-  "items": {
-    "$ref": "UK_PROP_Period.json"
-  },
-  "additionalProperties": false
-}

@@ -22,7 +22,7 @@
         "endpoints":[
           {
             "uriPattern": "/ni/{nino}/self-employments",
-            "endpointName": "Get all self employments",
+            "endpointName": "List self employment businesses",
             "method": "GET",
             "authType": "USER",
             "throttlingTier": "UNLIMITED",
@@ -31,7 +31,7 @@
           },
           {
             "uriPattern": "/ni/{nino}/self-employments",
-            "endpointName": "Create self employment",
+            "endpointName": "Register a self employment business",
             "method": "POST",
             "authType": "USER",
             "throttlingTier": "UNLIMITED",
@@ -40,25 +40,7 @@
           },
           {
             "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}",
-            "endpointName": "Get self employment",
-            "method": "GET",
-            "authType": "USER",
-            "throttlingTier": "UNLIMITED",
-            "scope": "read:self-assessment",
-            "groupName": "Self Employments"
-          },
-          {
-            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}",
-            "endpointName": "Update self employment",
-            "method": "PUT",
-            "authType": "USER",
-            "throttlingTier": "UNLIMITED",
-            "scope": "write:self-assessment",
-            "groupName": "Self Employments"
-          },
-          {
-            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/periods",
-            "endpointName": "Get all self employment periods",
+            "endpointName": "Get self employment business",
             "method": "GET",
             "authType": "USER",
             "throttlingTier": "UNLIMITED",
@@ -67,7 +49,16 @@
           },
           {
             "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/periods",
-            "endpointName": "Create self employment period",
+            "endpointName": "List all self employment periods",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/ni/{nino}/self-employments/{selfEmploymentId}/periods",
+            "endpointName": "Create a self employment period",
             "method": "POST",
             "authType": "USER",
             "throttlingTier": "UNLIMITED",
@@ -109,6 +100,132 @@
             "throttlingTier": "UNLIMITED",
             "scope": "write:self-assessment",
             "groupName": "Self Employments"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties",
+            "endpointName": "Get UK property business",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties",
+            "endpointName": "Register a UK property business",
+            "method": "POST",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/other/periods",
+            "endpointName": "List all non FHL UK property periods",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/other/periods",
+            "endpointName": "Create a non FHL UK property period",
+            "method": "POST",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/other/periods/{periodId}",
+            "endpointName": "Get a non FHL UK property period",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/other/periods/{periodId}",
+            "endpointName": "Update a non FHL UK property period",
+            "method": "PUT",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/other/{taxYear}",
+            "endpointName": "Get non FHL UK property business annual summary",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/other/{taxYear}",
+            "endpointName": "Update non FHL UK property business annual summary",
+            "method": "PUT",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/periods",
+            "endpointName": "List all FHL UK property periods",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/periods",
+            "endpointName": "Create a FHL UK property period",
+            "method": "POST",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/periods/{periodId}",
+            "endpointName": "Get a FHL UK property period",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/periods/{periodId}",
+            "endpointName": "Update a FHL UK property period",
+            "method": "PUT",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/{taxYear}",
+            "endpointName": "Get FHL UK property business annual summary",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "read:self-assessment",
+            "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/{taxYear}",
+            "endpointName": "Update FHL UK property business annual summary",
+            "method": "PUT",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "UK Property"
           }
         ]
       }

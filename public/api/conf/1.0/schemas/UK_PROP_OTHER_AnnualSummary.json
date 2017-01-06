@@ -3,11 +3,11 @@
   "title": "Annual summary",
   "type": "object",
   "properties": {
-    "allowances": {
-      "$ref": "uk-properties/other/Allowances.json"
-    },
     "adjustments": {
       "$ref": "uk-properties/Adjustments.json"
+    },
+    "allowances": {
+      "$ref": "uk-properties/other/Allowances.json"
     }
   },
   "additionalProperties": false

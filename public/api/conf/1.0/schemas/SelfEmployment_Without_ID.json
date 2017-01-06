@@ -3,11 +3,6 @@
   "title": "Self-employment source of income",
   "type": "object",
   "properties": {
-    "id": {
-      "title": "ID",
-      "description": "Unique identifier",
-      "type": "string"
-    },
     "accountingPeriod": {
       "$ref": "AccountingPeriod.json"
     },

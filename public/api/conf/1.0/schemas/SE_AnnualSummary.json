@@ -3,16 +3,16 @@
   "title": "Annual summary",
   "type": "object",
   "properties": {
-    "allowances": {
-      "$ref": "self-employment/Allowances.json"
-    },
     "adjustments": {
       "$ref": "self-employment/Adjustments.json"
+    },
+    "allowances": {
+      "$ref": "self-employment/Allowances.json"
     }
   },
   "required": [
-    "allowances",
-    "adjustments"
+    "adjustments",
+    "allowances"
   ],
   "additionalProperties": false
 }

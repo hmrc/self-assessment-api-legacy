@@ -21,11 +21,9 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
-import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.{NoContent, NotFound}
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors._
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -50,8 +48,7 @@ object PropertiesResource extends BaseController {
             case false => InternalServerError
           }
 
-        case Left(err) =>
-          Conflict(Json.toJson(Errors.businessError(err))).withHeaders(LOCATION ->  s"/self-assessment/ni/$nino/uk-properties")
+        case Left(_) => Conflict
       }
     }
   }

@@ -3,7 +3,10 @@ package uk.gov.hmrc.selfassessmentapi.live
 import play.api.test.FakeApplication
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class LiabilityControllerSpec extends BaseFunctionalSpec {
+// FIXME: Suite aborts if all tests are ignored. Remove constructor to re-enable these tests.
+// Temporary fix is to add a constructor, causing the whole class
+// to be ignored by ScalaTest.
+class LiabilityControllerSpec(ignored: String) extends BaseFunctionalSpec {
 
   /*override lazy val app = FakeApplication(additionalConfiguration = Map(
     "Test.feature-switch.self-employments.enabled" -> true,
@@ -14,7 +17,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     "Test.feature-switch.employments.enabled" -> true,
     "Test.feature-switch.uk-properties.enabled" -> true))
 */
-  "request liability" ignore {
+  "request liability" in {
 
     "return a 202 response with a link to retrieve the liability" in {
       given()
@@ -26,7 +29,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     }
   }
 
-  "retrieve liability" ignore {
+  "retrieve liability" in {
 
     "return a not found response when a liability has not been requested" in {
       given()

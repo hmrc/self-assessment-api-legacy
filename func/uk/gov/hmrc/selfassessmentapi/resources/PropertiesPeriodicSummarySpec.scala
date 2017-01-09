@@ -34,7 +34,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .responseContainsHeader("Location", s"/self-assessment/ni/$nino/uk-properties/other/periods/\\w+".r)
     }
 
-    "not store PremiumsOfLeaseGrant for FHL if provided by the TPV" in {
+    "not store PremiumsOfLeaseGrant, ReversePremiums nor CostOfServicesfor FHL if provided by the TPV" in {
       val property = Jsons.Properties()
       val period = Jsons.Properties.period(
         fromDate = Some("2017-04-06"),
@@ -66,6 +66,8 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(200)
         .body(_ \ "incomes" \ "premiumsOfLeaseGrant").isAbsent()
+        .body(_ \ "incomes" \ "reversePremiums").isAbsent()
+        .body(_ \ "expenses" \ "costOfServices").isAbsent()
     }
 
     "return code 400 when provided with an invalid property period" in {
@@ -289,7 +291,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .bodyIsLike(updatedPeriod.toString)
     }
 
-    "not store PremiumsOfLeaseGrant for FHL if provided by the TPV" in {
+    "not store PremiumsOfLeaseGrant, ReversePremiums nor CostOfServices for FHL if provided by the TPV" in {
       val property = Jsons.Properties()
 
       val period = Jsons.Properties.period(
@@ -328,6 +330,8 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         .statusIs(200)
         .contentTypeIsJson()
         .body(_ \ "incomes" \ "premiumsOfLeaseGrant").isAbsent()
+        .body(_ \ "incomes" \ "reversePremiums").isAbsent()
+        .body(_ \ "expenses" \ "costOfServices").isAbsent()
     }
 
     "return code 400 when updating a period with invalid data" in {

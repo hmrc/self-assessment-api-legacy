@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,20 +112,44 @@ class PropertiesSpec extends UnitSpec {
       newProperties.fhlBucket.periods("fhl") shouldBe newFhlPeriod
     }
 
-    "remove Income type " in {
+    "remove invalid Income types for FHL" in {
       val period = otherPeriod.copy(data = otherPeriod.data.copy(incomes =
-        Map(IncomeType.RentIncome -> Income(1000, None), IncomeType.PremiumsOfLeaseGrant -> Income(1000, None))))
+        Map(IncomeType.RentIncome -> Income(1000, None),
+          IncomeType.PremiumsOfLeaseGrant -> Income(1000, None),
+          IncomeType.ReversePremiums -> Income(1000, None))))
 
       val newProperties = properties
         .setPeriodsTo(PropertyType.OTHER, "periodId", period)
         .setPeriodsTo(PropertyType.FHL, "periodId", period)
 
       val otherPeriodicData = newProperties.otherBucket.periods("periodId").data
-      otherPeriodicData.incomes.size shouldBe 2
+      otherPeriodicData.incomes.size shouldBe 3
 
       val fhlPeriodicData = newProperties.fhlBucket.periods("periodId").data
       fhlPeriodicData.incomes.size shouldBe 1
       fhlPeriodicData.incomes.exists(income => income._1 == IncomeType.PremiumsOfLeaseGrant) shouldBe false
+      fhlPeriodicData.incomes.exists(income => income._1 == IncomeType.ReversePremiums) shouldBe false
+    }
+
+    "remove invalid Expense types for FHL" in {
+      val period = otherPeriod.copy(data = otherPeriod.data.copy(expenses =
+        Map(ExpenseType.FinancialCosts -> SimpleExpense(1000),
+          ExpenseType.CostOfServices -> SimpleExpense(1000),
+          ExpenseType.PremisesRunningCosts -> SimpleExpense(1000),
+          ExpenseType.ProfessionalFees -> SimpleExpense(1000),
+          ExpenseType.RepairsAndMaintenance -> SimpleExpense(1000),
+          ExpenseType.Other -> SimpleExpense(1000))))
+
+      val newProperties = properties
+        .setPeriodsTo(PropertyType.OTHER, "periodId", period)
+        .setPeriodsTo(PropertyType.FHL, "periodId", period)
+
+      val otherPeriodicData = newProperties.otherBucket.periods("periodId").data
+      otherPeriodicData.expenses.size shouldBe 6
+
+      val fhlPeriodicData = newProperties.fhlBucket.periods("periodId").data
+      fhlPeriodicData.expenses.size shouldBe 5
+      fhlPeriodicData.expenses.exists(expense => expense._1 == ExpenseType.CostOfServices) shouldBe false
     }
   }
 }

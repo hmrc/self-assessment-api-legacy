@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,16 +61,19 @@ case class Properties(id: BSONObjectID,
 
   def setPeriodsTo(propertyType: PropertyType, periodId: PeriodId, period: PropertiesPeriod): Properties = propertyType match {
     case PropertyType.OTHER => this.copy(otherBucket = otherBucket.copy(periods = otherBucket.periods.updated(periodId, period)))
-    case PropertyType.FHL => this.copy(fhlBucket = fhlBucket.copy(periods = fhlBucket.periods.updated(periodId, periodWithoutPremiumsOfLeaseGrant(period))))
+    case PropertyType.FHL => this.copy(fhlBucket = fhlBucket.copy(periods = fhlBucket.periods.updated(periodId, filterFHLPeriodInformation(period))))
   }
 
   /**
-    * This is a hack. FHL doesn't have income of type PremiumsOfLeaseGrant.
-    * so rather than creating a completely diff period model for FHL, I have decide to keep the 2 periods same but throw away
-    * PremiumsOfLeaseGrant if the TPV provides for a FHL.
+    * This is a hack. FHL doesn't have income of type PremiumsOfLeaseGrant or ReversePremiums, nor does it contain expenses
+    * for CostOfServices.
+    * Rather than creating a completely diff period model for FHL, I have decide to keep the 2 periods same but throw away
+    * PremiumsOfLeaseGrant, ReversePremiums and CostOfServices if the TPV provides them for a FHL.
     */
-  private def periodWithoutPremiumsOfLeaseGrant(period: PropertiesPeriod) = {
-    period.copy(data = period.data.copy(incomes = period.data.incomes.filterNot(income => income._1 == IncomeType.PremiumsOfLeaseGrant)))
+  private def filterFHLPeriodInformation(period: PropertiesPeriod) = {
+    period.copy(data = period.data.copy(
+      incomes = period.data.incomes.filterNot(income => income._1 == IncomeType.PremiumsOfLeaseGrant || income._1 == IncomeType.ReversePremiums),
+      expenses = period.data.expenses.filterNot(expense => expense._1 == ExpenseType.CostOfServices)))
   }
 
   def update(propertyType: PropertyType, periodId: PeriodId, periodicData: PropertiesPeriodicData): Properties = {

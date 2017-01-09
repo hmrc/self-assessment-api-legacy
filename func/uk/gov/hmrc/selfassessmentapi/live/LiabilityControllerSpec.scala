@@ -14,7 +14,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     "Test.feature-switch.employments.enabled" -> true,
     "Test.feature-switch.uk-properties.enabled" -> true))
 */
-  "request liability" should {
+  "request liability" ignore {
 
     "return a 202 response with a link to retrieve the liability" in {
       given()
@@ -26,7 +26,7 @@ class LiabilityControllerSpec extends BaseFunctionalSpec {
     }
   }
 
-  "retrieve liability" should {
+  "retrieve liability" ignore {
 
     "return a not found response when a liability has not been requested" in {
       given()

@@ -47,8 +47,7 @@ object PropertiesResource extends BaseController {
             case true => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
             case false => InternalServerError
           }
-
-        case Left(_) => Conflict
+        case Left(_) => Conflict.withHeaders(LOCATION ->  s"/self-assessment/ni/$nino/uk-properties")
       }
     }
   }

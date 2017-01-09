@@ -31,6 +31,7 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
         .post(Jsons.Properties()).to(s"/ni/$nino/uk-properties")
         .thenAssertThat()
         .statusIs(409)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/uk-properties".r)
     }
 
     "return code 400 when attempting to create a property business with invalid information" in {

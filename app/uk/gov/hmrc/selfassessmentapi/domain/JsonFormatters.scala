@@ -144,4 +144,22 @@ object JsonFormatters {
     }
   }
 
+  object DividendsFormatters {
+    import uk.gov.hmrc.selfassessmentapi.resources.models.dividends
+
+    implicit val annualSummaryMapFormat: Format[Map[TaxYear, dividends.Dividends]] = new Format[Map[TaxYear, dividends.Dividends]] {
+      override def writes(o: Map[TaxYear, dividends.Dividends]): JsValue = {
+        play.api.libs.json.Writes.mapWrites[dividends.Dividends].writes(o.map {
+          case (k, v) => k.toString -> v
+        })
+      }
+
+      override def reads(json: JsValue): JsResult[Map[TaxYear, dividends.Dividends]] = {
+        play.api.libs.json.Reads.mapReads[dividends.Dividends].reads(json).map(_.map {
+          case (k, v) => TaxYear(k) -> v
+        })
+      }
+    }
+  }
+
 }

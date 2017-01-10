@@ -21,7 +21,7 @@ class SelfEmploymentAnnualSummaryFeatureSwitchSpec extends BaseFunctionalSpec {
       val selfEmployment = Json.toJson(SelfEmployment(
         accountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")),
         accountingType = AccountingType.CASH,
-        commencementDate = LocalDate.now.minusDays(1)))
+        commencementDate = Some(LocalDate.now.minusDays(1))))
 
       given()
         .userIsAuthorisedForTheResource(nino)

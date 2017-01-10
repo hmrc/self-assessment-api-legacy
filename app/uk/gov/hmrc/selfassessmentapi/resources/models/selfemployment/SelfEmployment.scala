@@ -26,7 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
 case class SelfEmployment(id: Option[SourceId] = None,
                           accountingPeriod: AccountingPeriod,
                           accountingType: AccountingType,
-                          commencementDate: LocalDate)
+                          commencementDate: Option[LocalDate])
 
 object SelfEmployment {
 
@@ -40,6 +40,6 @@ object SelfEmployment {
     Reads.pure(None) and
       (__ \ "accountingPeriod").read[AccountingPeriod] and
       (__ \ "accountingType").read[AccountingType] and
-      (__ \ "commencementDate").read[LocalDate](commencementDateValidator)
+      (__ \ "commencementDate").readNullable[LocalDate](commencementDateValidator)
     ) (SelfEmployment.apply _)
 }

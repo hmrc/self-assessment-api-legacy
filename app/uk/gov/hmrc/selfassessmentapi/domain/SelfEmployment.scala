@@ -33,7 +33,7 @@ case class SelfEmployment(id: BSONObjectID,
                           lastModifiedDateTime: LocalDate,
                           accountingPeriod: AccountingPeriod,
                           accountingType: AccountingType,
-                          commencementDate: LocalDate,
+                          commencementDate: Option[LocalDate],
                           annualSummaries: Map[TaxYear, SelfEmploymentAnnualSummary] = Map.empty,
                           periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty)
     extends PeriodValidator[SelfEmploymentPeriod]

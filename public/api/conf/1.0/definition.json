@@ -174,7 +174,7 @@
             "groupName": "UK Property"
           },
           {
-            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/periods",
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-lettings/periods",
             "endpointName": "List all FHL UK property periods",
             "method": "GET",
             "authType": "USER",
@@ -183,7 +183,7 @@
             "groupName": "UK Property"
           },
           {
-            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/periods",
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-lettings/periods",
             "endpointName": "Create a FHL UK property period",
             "method": "POST",
             "authType": "USER",
@@ -192,7 +192,7 @@
             "groupName": "UK Property"
           },
           {
-            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/periods/{periodId}",
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-lettings/periods/{periodId}",
             "endpointName": "Get a FHL UK property period",
             "method": "GET",
             "authType": "USER",
@@ -201,7 +201,7 @@
             "groupName": "UK Property"
           },
           {
-            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/periods/{periodId}",
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-lettings/periods/{periodId}",
             "endpointName": "Update a FHL UK property period",
             "method": "PUT",
             "authType": "USER",
@@ -210,7 +210,7 @@
             "groupName": "UK Property"
           },
           {
-            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/{taxYear}",
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-lettings/{taxYear}",
             "endpointName": "Get FHL UK property business annual summary",
             "method": "GET",
             "authType": "USER",
@@ -219,7 +219,7 @@
             "groupName": "UK Property"
           },
           {
-            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-letting/{taxYear}",
+            "uriPattern": "/ni/{nino}/uk-properties/furnished-holiday-lettings/{taxYear}",
             "endpointName": "Update FHL UK property business annual summary",
             "method": "PUT",
             "authType": "USER",

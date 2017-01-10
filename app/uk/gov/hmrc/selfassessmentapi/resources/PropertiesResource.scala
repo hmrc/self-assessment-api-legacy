@@ -43,10 +43,8 @@ object PropertiesResource extends BaseController {
         Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case Right(successful) =>
-          successful match {
-            case true => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
-            case false => InternalServerError
-          }
+          if (successful) Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
+          else InternalServerError
         case Left(_) => Conflict.withHeaders(LOCATION ->  s"/self-assessment/ni/$nino/uk-properties")
       }
     }

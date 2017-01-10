@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.resources.models
+package uk.gov.hmrc.selfassessmentapi.resources.models.dividends
 
-object SourceType extends Enumeration {
-  type SourceType = Value
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.resources.models.positiveAmountValidator
 
-  val SelfEmployments = Value("self-employments")
-  val Properties = Value("uk-properties")
-  val Dividends = Value("dividends")
+case class Dividends(ukDividends: Option[BigDecimal])
+
+object Dividends {
+  implicit val reads: Reads[Dividends] =
+    (__ \ "ukDividends").readNullable[BigDecimal](positiveAmountValidator).map(Dividends(_))
+
+  implicit val writes: Writes[Dividends] = Json.writes[Dividends]
 }

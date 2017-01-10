@@ -284,4 +284,15 @@ object Jsons {
     }
 
   }
+
+  object Dividends {
+    def apply(amount: BigDecimal): JsValue = {
+      Json.parse(
+        s"""
+           |{
+           |  "ukDividends": $amount
+           |}
+         """.stripMargin)
+    }
+  }
 }

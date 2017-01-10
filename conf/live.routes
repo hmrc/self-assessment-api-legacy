@@ -33,6 +33,12 @@ PUT  /ni/:nino/uk-properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resour
 GET  /ni/:nino/uk-properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.PropertiesAnnualSummaryResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 
 ####################
+#     Dividends    #
+####################
+PUT /ni/:nino/dividends/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.DividendsAnnualSummaryResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
+GET /ni/:nino/dividends/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.DividendsAnnualSummaryResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
+
+####################
 #    Liabilities   #
 ####################
 # POST    /ni/:nino/liability/:taxYear   uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.requestLiability(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)

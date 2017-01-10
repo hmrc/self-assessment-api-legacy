@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "UpdateDividendsIncome",
+  "properties": {
+    "ukDividends": {
+      "title": "UK Dividends Income",
+      "description": "Total UK Dividends Income",
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

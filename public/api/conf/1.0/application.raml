@@ -173,7 +173,7 @@ documentation:
               example: 2016-17
           put:
             displayName: Update self employment annual summary
-            description: Update self employment annual summary for the given year
+            description: Update self employment annual summary for a tax year
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -190,7 +190,7 @@ documentation:
                     example: !include examples/errors/AnnualSummary_INVALID_REQUEST.json
           get:
             displayName: Get self employment annual summary
-            description: Get self employment annual summary
+            description: Get self employment annual summary for a tax year
             is: [headers.acceptHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -328,12 +328,12 @@ documentation:
             displayName: Annual Summary
             uriParameters:
               taxYear:
+                description: The tax year the data applies to
                 type: string
                 example: 2016-17
-                displayName: Tax Year
             put:
               displayName: Update non FHL UK property business annual summary
-              description: Update non FHL UK property business annual summary
+              description: Update non FHL UK property business for a tax year
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -350,7 +350,7 @@ documentation:
                       example: !include examples/uk-properties/errors/AnnualSummary_INVALID_REQUEST.json
             get:
               displayName: Get non FHL UK property business annual summary
-              description: Get non FHL UK property business annual summary
+              description: Get non FHL UK property business for a tax year
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -444,12 +444,12 @@ documentation:
             displayName: Annual Summary
             uriParameters:
               taxYear:
+                description: The tax year the data applies to
                 type: string
                 example: 2016-17
-                displayName: Tax Year
             put:
               displayName: Update FHL UK property business annual summary
-              description: Update FHL UK property business annual summary
+              description: Update FHL UK property business for a tax year
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -466,7 +466,7 @@ documentation:
                       example: !include examples/uk-properties/errors/AnnualSummary_INVALID_REQUEST.json
             get:
               displayName: Get FHL UK property business annual summary
-              description: Get FHL UK property business annual summary
+              description: Get FHL UK property business for a tax year
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -476,3 +476,43 @@ documentation:
                     application/json:
                       type: !include schemas/UK_PROP_FHL_AnnualSummary.json
                       example: !include examples/uk-properties/fhl/AnnualSummary.json
+    /dividends:
+      (annotations.group):
+        name: Dividends Income
+        description: !include docs/dividends-income.md
+      /{taxYear}:
+        displayName: Annual Summary
+        uriParameters:
+          taxYear:
+            description: The tax year the data applies to
+            type: string
+            example: 2016-17
+        put:
+          displayName: Update dividends income annual summary
+          description: Update dividends income for a tax year
+          is: [headers.acceptHeader]
+          (annotations.scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          body:
+            application/json:
+              type: !include schemas/DIV_AnnualSummary.json
+              example: !include examples/dividends/AnnualSummary.json
+          responses:
+            204:
+            400:
+              body:
+                application/json:
+                  type: !include schemas/Error.json
+                  example: !include examples/errors/INVALID_REQUEST.json
+        get:
+          displayName: Get dividends income annual summary
+          description: Get dividends income for a tax year
+          is: [headers.acceptHeader]
+          (annotations.scope): "read:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+          responses:
+            200:
+              body:
+                application/json:
+                  type: !include schemas/DIV_AnnualSummary.json
+                  example: !include examples/dividends/AnnualSummary.json

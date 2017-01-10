@@ -226,6 +226,24 @@
             "throttlingTier": "UNLIMITED",
             "scope": "write:self-assessment",
             "groupName": "UK Property"
+          },
+          {
+            "uriPattern": "/ni/{nino}/dividends/{taxYear}",
+            "endpointName": "Get dividends annual summary",
+            "method": "GET",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "Dividends"
+          },
+          {
+            "uriPattern": "/ni/{nino}/dividends/{taxYear}",
+            "endpointName": "Update dividends annual summary",
+            "method": "PUT",
+            "authType": "USER",
+            "throttlingTier": "UNLIMITED",
+            "scope": "write:self-assessment",
+            "groupName": "Dividends"
           }
         ]
       }

@@ -23,25 +23,13 @@ import uk.gov.hmrc.selfassessmentapi.config.MicroserviceGlobal
 
 class JobEnabledSpec extends TestApplication {
 
-  override lazy val app = FakeApplication(additionalConfiguration = Map("Test.scheduling.deleteExpiredDataJob.enabled" -> true,
-    "Test.scheduling.dropMongoCollectionJob.enabled" -> true))
+  override lazy val app = FakeApplication(additionalConfiguration = Map("Test.scheduling.deleteExpiredDataJob.enabled" -> true))
 
   "DeleteExpiredDataJob" should {
 
     "Be added to the scheduler jobs when enabled" in {
-      MicroserviceGlobal.createScheduledJobs().size shouldBe 2
+      MicroserviceGlobal.createScheduledJobs().size shouldBe 1
       MicroserviceGlobal.createScheduledJobs() should contain(DeleteExpiredDataJob)
-      MicroserviceGlobal.createScheduledJobs() should contain(DropMongoCollectionJob)
-    }
-
-  }
-
-  "DropMongoCollectionJob" should {
-
-    "Be added to the scheduler jobs when enabled" in {
-      MicroserviceGlobal.createScheduledJobs().size shouldBe 2
-      MicroserviceGlobal.createScheduledJobs() should contain(DeleteExpiredDataJob)
-      MicroserviceGlobal.createScheduledJobs() should contain(DropMongoCollectionJob)
     }
 
   }

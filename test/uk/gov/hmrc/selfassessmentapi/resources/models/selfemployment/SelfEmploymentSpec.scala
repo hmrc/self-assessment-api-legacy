@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, AccountingType, ErrorCode}

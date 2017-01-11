@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
@@ -27,7 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models
 case class Dividends(id: BSONObjectID,
                      nino: Nino,
                      dividends: Map[TaxYear, models.dividends.Dividends],
-                     lastModifiedDateTime: LocalDate = LocalDate.now(DateTimeZone.UTC)) {
+                     lastModifiedDateTime: DateTime = DateTime.now(DateTimeZone.UTC)) extends LastModifiedDateTime {
 
   def dividendForTaxYear(taxYear: TaxYear): Option[models.dividends.Dividends] =
     dividends.get(taxYear)
@@ -39,6 +39,7 @@ object Dividends {
   implicit val mongoFormats: Format[Dividends] = ReactiveMongoFormats.mongoEntity({
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
+    implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
     Format(Json.reads[Dividends], Json.writes[Dividends])
   })
 }

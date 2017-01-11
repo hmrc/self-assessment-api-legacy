@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import org.joda.time.LocalDate
+import org.joda.time.DateTime
 
 trait LastModifiedDateTime {
-  val lastModifiedDateTime: LocalDate
+  val lastModifiedDateTime: DateTime
 }

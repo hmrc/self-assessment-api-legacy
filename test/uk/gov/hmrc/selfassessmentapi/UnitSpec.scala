@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi
 
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logger
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear
-import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
+import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 
 import scala.concurrent.duration._
 

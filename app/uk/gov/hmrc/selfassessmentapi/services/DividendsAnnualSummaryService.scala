@@ -32,7 +32,7 @@ trait DividendsAnnualSummaryService {
   def updateAnnualSummary(nino: Nino, taxYear: TaxYear, newDividends: models.dividends.Dividends): Future[Boolean] = {
     repository.retrieve(nino).flatMap {
       case Some(resource) => repository.update(nino, resource.copy(dividends = resource.dividends.updated(taxYear, newDividends)))
-      case None => repository.update(nino, Dividends(BSONObjectID.generate, nino, Map(taxYear -> newDividends)))
+      case None => repository.create(Dividends(BSONObjectID.generate, nino, Map(taxYear -> newDividends)))
     }
   }
 

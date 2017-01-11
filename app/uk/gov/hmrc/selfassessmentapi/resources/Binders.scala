@@ -50,18 +50,6 @@ object Binders {
     }
   }
 
-  implicit def apiTaxYearBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear] {
-
-    def unbind(key: String, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear): String = stringBinder.unbind(key, taxYear.value)
-
-    def bind(key: String, value: String): Either[String, uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear] = {
-      AppContext.supportedTaxYears.contains(value) match {
-        case true => Right(uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear(value))
-        case false => Left("ERROR_TAX_YEAR_INVALID")
-      }
-    }
-  }
-
   implicit def sourceTypeBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[SourceType] {
 
     def unbind(key: String, `type`: SourceType): String = `type`.toString

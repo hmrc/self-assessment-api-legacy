@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.libs.json.JsObject
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
@@ -49,7 +49,7 @@ class PropertiesRepository(implicit mongo: () => DB)
   def retrieve(nino: Nino): Future[Option[Properties]] = find("nino" -> nino.nino).map(_.headOption)
 
   def update(nino: Nino, properties: Properties): Future[Boolean] = {
-    domainFormatImplicit.writes(properties.copy(lastModifiedDateTime = LocalDate.now(DateTimeZone.UTC))) match {
+    domainFormatImplicit.writes(properties.copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC))) match {
       case d @ JsObject(_) =>
         collection.update(
           BSONDocument("nino" -> nino.nino),
@@ -61,6 +61,14 @@ class PropertiesRepository(implicit mongo: () => DB)
       case _ => Future.successful(false)
     }
   }
+
+  def deleteAllBeforeDate(lastModifiedDate: DateTime): Future[Int] = {
+    val query = BSONDocument("lastModifiedDateTime" ->
+      BSONDocument("$lt" -> BSONDateTime(lastModifiedDate.getMillis)))
+
+    collection.remove(query).map(_.n)
+  }
+
 }
 
 object PropertiesRepository extends MongoDbConnection {

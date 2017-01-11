@@ -48,7 +48,9 @@ object ErrorCode extends Enumeration {
   ALREADY_EXISTS,
   INVALID_BALANCING_CHARGE_BPRA,
   NOT_FOUND,
-  INTERNAL_ERROR = Value
+  INTERNAL_ERROR,
+  TAX_YEAR_INVALID,
+  NINO_INVALID = Value
 
   implicit val format = EnumJson.enumFormat(ErrorCode, Some("ErrorCode is invalid"))
 }

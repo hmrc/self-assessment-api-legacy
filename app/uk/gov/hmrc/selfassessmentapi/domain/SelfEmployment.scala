@@ -21,7 +21,6 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api.PeriodId
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
@@ -30,7 +29,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploy
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: String,
                           nino: Nino,
-                          lastModifiedDateTime: LocalDate,
+                          lastModifiedDateTime: DateTime,
                           accountingPeriod: AccountingPeriod,
                           accountingType: AccountingType,
                           commencementDate: LocalDate,
@@ -69,6 +68,7 @@ object SelfEmployment {
 
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
+    implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
     Format(Json.reads[SelfEmployment], Json.writes[SelfEmployment])
   })
 }

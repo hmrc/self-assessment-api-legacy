@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.libs.json.JsObject
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
@@ -45,19 +45,27 @@ class DividendsRepository(implicit mongo: () => DB)
 
   def retrieve(nino: Nino): Future[Option[Dividends]] = find("nino" -> nino.nino).map(_.headOption)
 
+  def create(dividends: Dividends): Future[Boolean] = insert(dividends).map(_.ok)
+
   def update(nino: Nino, dividends: Dividends): Future[Boolean] = {
-    domainFormatImplicit.writes(dividends.copy(lastModifiedDateTime = LocalDate.now(DateTimeZone.UTC))) match {
+    domainFormatImplicit.writes(dividends.copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC))) match {
       case d @ JsObject(_) =>
         collection.update(
           BSONDocument("nino" -> nino.nino),
-          d,
-          upsert = true
+          d
         ).map { res =>
           if (res.hasErrors) logger.error(s"Database error occurred. Error: ${res.errmsg} Code: ${res.code}")
-          res.ok && (res.nModified > 0  || res.upserted.nonEmpty)
+          res.ok && res.nModified > 0
         }
       case _ => Future.successful(false)
     }
+  }
+
+  def deleteAllBeforeDate(lastModifiedDateTime: DateTime): Future[Int] = {
+    val query = BSONDocument("lastModifiedDateTime" ->
+      BSONDocument("$lt" -> BSONDateTime(lastModifiedDateTime.getMillis)))
+
+    collection.remove(query).map(_.n)
   }
 }
 

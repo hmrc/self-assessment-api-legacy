@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
@@ -29,28 +30,36 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
   private val nino = ninoGenerator.nextNino()
   private val repo = new SelfEmploymentsRepository
   private val id = BSONObjectID.generate
-  private val selfEmployment = SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC),
-    AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
+
+  private def createSelfEmployment(nino: Nino, id: BSONObjectID = BSONObjectID.generate): SelfEmployment = {
+    val accountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"))
+
+    SelfEmployment(id, id.stringify, nino, DateTime.now(DateTimeZone.UTC),
+      accountingPeriod, AccountingType.CASH, LocalDate.now, Map.empty, Map.empty)
+  }
 
   "create" should {
     "create a self employment with a non-null id" in {
+      val se = createSelfEmployment(nino, id)
 
-      await(repo.create(selfEmployment))
+      await(repo.create(se))
 
       val result = await(repo.retrieve(id.stringify, nino)).get
 
-      result.commencementDate shouldBe selfEmployment.commencementDate
+      result.commencementDate shouldBe se.commencementDate
     }
   }
 
   "update" should {
     "fail if a self-employment does not already exist" in {
-      await(repo.update("invalidSourceId", ninoGenerator.nextNino(), selfEmployment)) shouldBe false
+      await(repo.update("invalidSourceId", nino, createSelfEmployment(nino))) shouldBe false
     }
 
     "overwrite existing fields in self-employment with new data provided by the user" in {
-      await(repo.create(selfEmployment))
-      val updatedSelfEmployment = selfEmployment.copy(commencementDate = now.toLocalDate.plusDays(1))
+      val se = createSelfEmployment(nino, id)
+
+      await(repo.create(se))
+      val updatedSelfEmployment = se.copy(commencementDate = now.toLocalDate.plusDays(1))
 
       await(repo.update(id.stringify, nino, updatedSelfEmployment)) shouldBe true
 
@@ -61,11 +70,12 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
     }
 
     "return true when updating an annual summaries" in {
+      val se = createSelfEmployment(nino, id)
       val summary = SelfEmploymentAnnualSummary(Some(Allowances.example), Some(Adjustments.example))
 
-      await(repo.create(selfEmployment))
+      await(repo.create(se))
 
-      await(repo.update(id.stringify, nino, selfEmployment.copy(annualSummaries = Map(TaxYear("2016-17") -> summary)))) shouldBe true
+      await(repo.update(id.stringify, nino, se.copy(annualSummaries = Map(TaxYear("2016-17") -> summary)))) shouldBe true
       val updatedSelfEmployment = await(repo.retrieve(id.stringify, nino)).get
 
       updatedSelfEmployment.annualSummaries.size shouldBe 1
@@ -73,11 +83,13 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
     }
 
     "return true when updating periods" in {
-      await(repo.create(selfEmployment))
+      val se = createSelfEmployment(nino, id)
+
+      await(repo.create(se))
       val period = SelfEmploymentPeriod(LocalDate.now, LocalDate.now.plusDays(1),
         SelfEmploymentPeriodicData(Map(IncomeType.Turnover -> Income(500.00, None)), Map.empty))
 
-      await(repo.update(id.stringify, nino, selfEmployment.copy(periods = Map("1" -> period)))) shouldBe true
+      await(repo.update(id.stringify, nino, se.copy(periods = Map("1" -> period)))) shouldBe true
       val updatedSelfEmployment = await(repo.retrieve(id.stringify, nino)).get
       updatedSelfEmployment.periods.size shouldBe 1
       updatedSelfEmployment.period("1") shouldBe Some(period)
@@ -96,16 +108,32 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
     }
 
     "return a sequence of self employments" in {
+      val se = createSelfEmployment(nino)
+
       val id2 = BSONObjectID.generate
-      val selfEmploymentTwo = SelfEmployment(id2, id2.stringify, nino, LocalDate.now(DateTimeZone.UTC),
+      val selfEmploymentTwo = SelfEmployment(id2, id2.stringify, nino, DateTime.now(DateTimeZone.UTC),
         AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")), AccountingType.CASH, LocalDate.now(DateTimeZone.UTC))
 
-      await(repo.create(selfEmployment))
+      await(repo.create(se))
       await(repo.create(selfEmploymentTwo))
 
       val result = await(repo.retrieveAll(nino))
 
-      result should contain theSameElementsAs Seq(selfEmployment, selfEmploymentTwo)
+      result should contain theSameElementsAs Seq(se, selfEmploymentTwo)
+    }
+  }
+
+  "deleteAllBeforeDate" should {
+    "delete all records older than the provided DateTime object" in {
+      val selfEmploymentToKeep = createSelfEmployment(nino).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val selfEmploymentToRemoveOne = createSelfEmployment(nino).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).minusDays(1))
+      val selfEmploymentToRemoveTwo = createSelfEmployment(nino)
+
+      await(repo.create(selfEmploymentToKeep))
+      await(repo.create(selfEmploymentToRemoveOne))
+      await(repo.create(selfEmploymentToRemoveTwo))
+      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC))) shouldBe 2
+      await(repo.retrieveAll(nino)) should contain theSameElementsAs Seq(selfEmploymentToKeep)
     }
   }
 

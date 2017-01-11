@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTime, DateTimeUtils}
+import org.joda.time.{DateTime, DateTimeUtils, DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.core.errors.DatabaseException
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType
 
@@ -30,11 +31,14 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
 
   private val repo = new PropertiesRepository
   private val nino = NinoGenerator().nextNino()
-  private val properties = Properties(BSONObjectID.generate, nino, AccountingType.CASH)
+
+  def createProperties(nino: Nino, id: BSONObjectID = BSONObjectID.generate): Properties = {
+    Properties(id, nino, AccountingType.CASH)
+  }
 
   "create" should {
     "persist a properties object" in {
-      await(repo.create(properties))
+      await(repo.create(createProperties(nino)))
 
       val result = await(repo.retrieve(nino)).get
       result.nino shouldBe nino
@@ -43,15 +47,17 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
     }
 
     "fail if customer tries to create a second properties business" in {
-      await(repo.create(properties))
+      await(repo.create(createProperties(nino)))
 
-      a [DatabaseException] shouldBe thrownBy (await(repo.create(properties)))
+      a [DatabaseException] shouldBe thrownBy (await(repo.create(createProperties(nino))))
 
     }
   }
 
   "update" should {
     "update a persisted object" in {
+      val properties = createProperties(nino)
+
       await(repo.create(properties))
 
       await(repo.update(nino, properties.copy(accountingType = AccountingType.ACCRUAL)))
@@ -63,6 +69,7 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
     }
 
     "update the lastModifiedDateTime on the persisted object" in {
+      val properties = createProperties(nino)
       await(repo.create(properties))
 
       val creationDateTime = await(repo.retrieve(nino)).get.lastModifiedDateTime
@@ -77,6 +84,20 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
 
       DateTimeUtils.setCurrentMillisSystem()
 
+    }
+  }
+
+  "deleteAllBeforeDate" should {
+    "delete all records older than the provided DateTime object" in {
+      val selfEmploymentToKeep = createProperties(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val selfEmploymentToRemoveOne = createProperties(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).minusDays(1))
+      val selfEmploymentToRemoveTwo = createProperties(nino)
+
+      await(repo.create(selfEmploymentToKeep))
+      await(repo.create(selfEmploymentToRemoveOne))
+      await(repo.create(selfEmploymentToRemoveTwo))
+      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC))) shouldBe 2
+      await(repo.findAll()) should contain theSameElementsAs Seq(selfEmploymentToKeep)
     }
   }
 

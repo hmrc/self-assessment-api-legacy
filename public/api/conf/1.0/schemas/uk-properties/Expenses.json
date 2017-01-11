@@ -10,7 +10,7 @@
     },
     "repairsAndMaintenance": {
       "title": "Repairs and maintenance",
-      "description": "Property repairs and maintenace",
+      "description": "Property repairs and maintenance",
       "$ref": "../SimpleExpense.json"
     },
     "financialCosts": {

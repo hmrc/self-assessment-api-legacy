@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.controllers.definition
 import play.api.http.LazyHttpErrorHandler
+import play.api.libs.json.Json
+import play.api.mvc.Action
+import uk.gov.hmrc.selfassessmentapi.controllers.definition.JsonFormatters._
 
 
 abstract class DocumentationController extends uk.gov.hmrc.api.controllers.DocumentationController(LazyHttpErrorHandler) {
 
-  override def definition() = {
-    super.at(s"/public/api/conf/1.0", "definition.json")
+  override def definition() = Action {
+    Ok(Json.toJson(SelfAssessmentApiDefinition.definition))
   }
 
   def conf(version: String, file: String) = {

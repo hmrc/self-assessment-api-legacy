@@ -49,13 +49,14 @@ class DividendsAnnualSummaryResourceSpec extends BaseFunctionalSpec {
   }
 
   "retrieve annual summary" should {
-    "return code 404 when retrieving a dividends annual summary that does not exist" in {
+    "return code 200 with empty json when retrieving a dividends annual summary that does not exist" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/dividends/$taxYear")
         .thenAssertThat()
-        .statusIs(404)
+        .statusIs(200)
+        .jsonBodyIsEmptyObject()
     }
   }
 }

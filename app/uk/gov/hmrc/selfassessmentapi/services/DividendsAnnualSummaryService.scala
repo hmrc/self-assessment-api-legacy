@@ -39,7 +39,7 @@ trait DividendsAnnualSummaryService {
   def retrieveAnnualSummary(nino: Nino, taxYear: TaxYear): Future[Option[models.dividends.Dividends]] = {
     repository.retrieve(nino).map {
       case Some(resource) => resource.dividends.get(taxYear)
-      case None => None
+      case None => Some(models.dividends.Dividends(None))
     }
   }
 }

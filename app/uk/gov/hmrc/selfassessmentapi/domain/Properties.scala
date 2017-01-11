@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
@@ -30,7 +30,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, TaxYear
 case class Properties(id: BSONObjectID,
                       nino: Nino,
                       accountingType: AccountingType,
-                      lastModifiedDateTime: LocalDate = LocalDate.now(DateTimeZone.UTC),
+                      lastModifiedDateTime: DateTime = DateTime.now(DateTimeZone.UTC),
                       accountingPeriod: AccountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
                       fhlBucket: FHLPropertiesBucket = FHLPropertiesBucket(Map.empty, Map.empty),
                       otherBucket: OtherPropertiesBucket = OtherPropertiesBucket(Map.empty, Map.empty))
@@ -91,6 +91,7 @@ case class Properties(id: BSONObjectID,
 object Properties {
   implicit val mongoFormats: Format[Properties] = ReactiveMongoFormats.mongoEntity({
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
+    implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
     implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
     Format(Json.reads[Properties], Json.writes[Properties])
   })

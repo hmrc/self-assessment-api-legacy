@@ -21,7 +21,7 @@ import uk.gov.hmrc.play.auth.controllers.AuthConfig
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel.L50
 import uk.gov.hmrc.play.auth.microservice.connectors.{AuthRequestParameters, HttpVerb}
 import uk.gov.hmrc.selfassessmentapi.config.MicroserviceAuthFilter
-import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 
 class MicroserviceAuthFilterSpec extends UnitSpec with Matchers {
 

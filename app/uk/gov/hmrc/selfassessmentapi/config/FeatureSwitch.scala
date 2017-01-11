@@ -18,7 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.config
 
 import play.api.Configuration
 import uk.gov.hmrc.selfassessmentapi.config.AppContext._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYearPropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
 
 case class FeatureSwitch(value: Option[Configuration]) {
@@ -36,10 +35,6 @@ case class FeatureSwitch(value: Option[Configuration]) {
     case None => DEFAULT_VALUE
   }
 
-  def isEnabled(source: TaxYearPropertyType): Boolean = value match {
-    case Some(config) => FeatureConfig(config).isSourceEnabled(source.name)
-    case None => DEFAULT_VALUE
-  }
 
   def isWhiteListingEnabled: Boolean = {
     value match {

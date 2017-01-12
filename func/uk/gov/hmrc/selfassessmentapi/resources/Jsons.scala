@@ -49,6 +49,18 @@ object Jsons {
     }
   }
 
+  object Banks {
+    def apply(accountName: String = "Savings Account", foreign: Boolean = false): JsValue = {
+      Json.parse(
+        s"""
+           |{
+           |  "accountName": "$accountName",
+           |  "foreign": $foreign
+           |}
+         """.stripMargin)
+    }
+  }
+
   object Properties {
     def apply(accountingType: String = "CASH"): JsValue = {
       Json.parse(

@@ -78,6 +78,6 @@ object DeleteExpiredDataService {
                                  FurnishedHolidayLettingsRepository(),
                                  UKPropertiesRepository(),
                                  DividendRepository(),
-                                 BanksRepository(),
+                                 uk.gov.hmrc.selfassessmentapi.repositories.live.BanksRepository(),
                                  JobHistoryRepository())
 }

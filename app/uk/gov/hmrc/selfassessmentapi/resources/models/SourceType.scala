@@ -21,5 +21,6 @@ object SourceType extends Enumeration {
 
   val SelfEmployments = Value("self-employments")
   val Properties = Value("uk-properties")
+  val Banks = Value("savings-accounts")
   val Dividends = Value("dividends")
 }

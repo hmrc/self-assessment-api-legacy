@@ -66,7 +66,7 @@ class BanksResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(Jsons.Errors.invalidRequest("MAX_FIELD_LENGTH_EXCEEDED" -> "/accountName"))
     }
 
-    "return code 404 when updating a property business that does not exist" in {
+    "return code 404 when updating a a bank interest source that does not exist" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -76,8 +76,8 @@ class BanksResourceSpec extends BaseFunctionalSpec {
     }
   }
 
-  "retrieving a property business" should {
-    "return code 404 when accessing a property business which doesn't exists" in {
+  "retrieving a bank interest source" should {
+    "return code 404 when accessing a a bank interest source which doesn't exists" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()

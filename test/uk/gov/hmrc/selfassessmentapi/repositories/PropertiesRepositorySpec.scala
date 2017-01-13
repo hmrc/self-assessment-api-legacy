@@ -44,18 +44,6 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
       val result = await(repo.retrieve(nino)).get
       result.nino shouldBe nino
       result.lastModifiedDateTime should not be null
-
-    }
-
-    "fail if customer tries to create a second properties business" in {
-      val props = createProperties(nino)
-
-      await(repo.create(props))
-      await(repo.retrieve(nino)) shouldBe Some(props)
-
-      a [DatabaseException] shouldBe thrownBy {
-        await(repo.create(createProperties(nino)))
-      }
     }
   }
 

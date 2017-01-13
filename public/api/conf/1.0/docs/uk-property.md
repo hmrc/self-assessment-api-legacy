@@ -4,6 +4,6 @@ UK Property business that is required to calculate the estimated tax liability.
 Here, the developer can provide the following data:
 
 * UK Property Income for both Furnished Holiday Lettings and Other rentals
-* UK Property Expenses (total & disallowable by type of expense)
+* UK Property Expenses (total by type of expense)
 * Adjustments
 * Balancing charges

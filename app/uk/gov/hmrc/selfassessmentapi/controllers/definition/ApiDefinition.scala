@@ -107,7 +107,7 @@ object ResourceThrottlingTier extends Enumeration {
 
 object GroupName extends Enumeration {
   type GroupName = Value
-  val SelfEmployments = Value("Self Employments")
-  val UKProperties = Value("UK Properties")
-  val Dividends = Value("Dividends")
+  val SelfEmployments = Value("Self Employment Businesses")
+  val UKProperties = Value("UK Property Business")
+  val Dividends = Value("Dividends Income")
 }

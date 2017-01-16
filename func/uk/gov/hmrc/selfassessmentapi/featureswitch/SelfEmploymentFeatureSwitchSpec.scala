@@ -1,8 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.featureswitch
 
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
-import uk.gov.hmrc.selfassessmentapi.controllers.api.selfemployment.SourceType.SelfEmployments
+import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, SourceType}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentFeatureSwitchSpec extends BaseFunctionalSpec {
@@ -23,7 +22,7 @@ class SelfEmploymentFeatureSwitchSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/ni/$nino/${SelfEmployments.name}")
+        .get(s"/ni/$nino/${SourceType.SelfEmployments.toString}")
         .thenAssertThat()
         .statusIs(404)
     }

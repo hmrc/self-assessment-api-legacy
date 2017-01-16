@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import org.joda.time.LocalDate
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
 
@@ -47,7 +47,7 @@ class PropertiesSpec extends UnitSpec {
     BSONObjectID.generate,
     NinoGenerator().nextNino(),
     AccountingType.CASH,
-    LocalDate.now(),
+    DateTime.now(DateTimeZone.UTC),
     AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
     FHLPropertiesBucket(
       Map("fhl" -> fhlPeriod),

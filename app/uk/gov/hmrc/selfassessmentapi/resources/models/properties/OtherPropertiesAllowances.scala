@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.Sum
+import uk.gov.hmrc.selfassessmentapi.resources.Sum
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 
 case class OtherPropertiesAllowances(annualInvestmentAllowance: Option[Amount] = None,

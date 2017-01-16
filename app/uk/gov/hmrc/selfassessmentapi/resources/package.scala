@@ -18,7 +18,6 @@ package uk.gov.hmrc.selfassessmentapi
 
 import play.api.libs.json._
 import play.api.mvc.Result
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.AmountHolder
 import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.BadRequest
 import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorResult, Errors, GenericErrorResult, ValidationErrorResult}
 
@@ -53,10 +52,6 @@ package object resources {
 
   object Sum {
     def apply(values: Option[BigDecimal]*) = values.flatten.sum
-  }
-
-  object Total {
-    def apply(values: Seq[AmountHolder]) = values.map(_.amount).sum
   }
 
   object CapAt {

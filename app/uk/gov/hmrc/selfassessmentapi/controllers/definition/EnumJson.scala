@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.ErrorCode.{ INVALID_TYPE, INVALID_VALUE }
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 
 object EnumJson {
 
@@ -32,9 +32,9 @@ object EnumJson {
           JsSuccess(enum.withName(s))
         } catch {
           case _: NoSuchElementException =>
-            JsError(JsPath, ValidationError(valueMissingMessage.getOrElse(defaultValueMissingMessage(s)), INVALID_VALUE))
+            JsError(JsPath, ValidationError(valueMissingMessage.getOrElse(defaultValueMissingMessage(s)), ErrorCode.INVALID_VALUE))
         }
-      case _ => JsError(JsPath(), ValidationError("String value expected", INVALID_TYPE))
+      case _ => JsError(JsPath(), ValidationError("String value expected", ErrorCode.INVALID_TYPE))
     }
   }
 

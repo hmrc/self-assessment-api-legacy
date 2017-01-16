@@ -37,11 +37,9 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
   lazy private val mongoClient =
     MongoClient("localhost", if (useEmbeddedMongo) embeddedPort else diskPort)("self-assessment-api")
 
-
   override def beforeAll() = startEmbeddedMongo()
   override def beforeEach() =
-    List("selfEmployments", "employments", "selfAssessments", "jobHistory", "liabilities",
-      "properties", "banks", "benefits", "ukProperties", "furnishedHolidayLettings", "dividends").foreach {
+    List("selfEmployments", "properties", "dividends", "jobHistory").foreach {
     coll => mongoClient.getCollection(coll).remove(new BasicDBObject())
   }
 }

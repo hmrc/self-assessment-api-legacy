@@ -21,24 +21,27 @@ import reactivemongo.bson.BSONObjectID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.selfassessmentapi.domain.PropertyPeriodOps
+import uk.gov.hmrc.selfassessmentapi.domain.PropertyPeriodOps._
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesPeriod, PropertiesPeriodicData, PropertyType}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPeriodicData, FHLProperties, OtherPeriodicData, OtherProperties}
 
 
-trait PropertiesPeriodService {
+trait PropertiesPeriodService[T <: Period, P <: PeriodicData] {
   val repository: PropertiesRepository
 
-  def createPeriod(nino: Nino, id: PropertyType, period: PropertiesPeriod): Future[Either[Error, PeriodId]] = {
+  val propertyOps: PropertyPeriodOps[T, P]
+
+  def createPeriod(nino: Nino, period: T): Future[Either[Error, PeriodId]] = {
     val periodId = BSONObjectID.generate.stringify
 
     repository.retrieve(nino).flatMap {
-      case Some(property) => property.validatePeriod(id, period) match {
+      case Some(property) => propertyOps.validatePeriod(period, property) match {
         case Left(error) => Future.successful(Left(error))
-        case Right(validResource) => repository.update(nino, validResource.setPeriodsTo(id, periodId, period)).flatMap {
+        case Right(validResource) => repository.update(nino, propertyOps.setPeriodsTo(periodId, period, validResource)).flatMap {
           case true => Future.successful(Right(periodId))
           case false => Future.successful(Left(Error(INTERNAL_ERROR.toString, "", "")))
         }
@@ -47,28 +50,25 @@ trait PropertiesPeriodService {
     }
   }
 
-  def updatePeriod(nino: Nino, id: PropertyType, periodId: PeriodId, periodicData: PropertiesPeriodicData): Future[Boolean] = {
+  def updatePeriod(nino: Nino, periodId: PeriodId, period: P): Future[Boolean] = {
     repository.retrieve(nino).flatMap {
-      case Some(property) if property.periodExists(id, periodId) =>
-        repository.update(nino, property.update(id, periodId, periodicData))
+      case Some(property) if propertyOps.periodExists(periodId, property) =>
+        repository.update(nino, propertyOps.update(periodId, period, property))
       case _ => Future.successful(false)
     }
   }
 
-  def retrievePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Future[Option[PropertiesPeriod]] = {
+  def retrievePeriod(nino: Nino, periodId: PeriodId): Future[Option[T]] = {
     repository.retrieve(nino).map {
-      case Some(properties) => properties.period(id, periodId)
+      case Some(properties) => propertyOps.period(periodId, properties)
       case None => None
     }
   }
 
-  def retrieveAllPeriods(nino: Nino, id: PropertyType): Future[Option[Seq[PeriodSummary]]] = {
+  def retrieveAllPeriods(nino: Nino): Future[Option[Seq[PeriodSummary]]] = {
     repository.retrieve(nino).map {
       case Some(properties) => {
-        val bucket = id match {
-          case PropertyType.OTHER => properties.otherBucket.periods
-          case PropertyType.FHL => properties.fhlBucket.periods
-        }
+        val bucket = propertyOps.periods(properties)
 
         Some(bucket.map { case (k, v) => PeriodSummary(k, v.from, v.to) }.toSeq.sorted)
       }
@@ -77,6 +77,14 @@ trait PropertiesPeriodService {
   }
 }
 
-object PropertiesPeriodService extends PropertiesPeriodService {
+object OtherPropertiesPeriodService extends PropertiesPeriodService[OtherProperties, OtherPeriodicData] {
   override val repository: PropertiesRepository = PropertiesRepository()
+  override val propertyOps: PropertyPeriodOps[OtherProperties, OtherPeriodicData] =
+    implicitly[PropertyPeriodOps[OtherProperties, OtherPeriodicData]]
+}
+
+object FHLPropertiesPeriodService extends PropertiesPeriodService[FHLProperties, FHLPeriodicData] {
+  override val repository: PropertiesRepository = PropertiesRepository()
+  override val propertyOps: PropertyPeriodOps[FHLProperties, FHLPeriodicData] =
+    implicitly[PropertyPeriodOps[FHLProperties, FHLPeriodicData]]
 }

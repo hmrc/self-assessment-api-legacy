@@ -59,7 +59,47 @@ object Jsons {
          """.stripMargin)
     }
 
-    def period(fromDate: Option[String] = None,
+    def fhlPeriod(fromDate: Option[String] = None,
+               toDate: Option[String] = None,
+               rentIncome: BigDecimal = 0,
+               repairsAndMaintenance: BigDecimal = 0,
+               financialCosts: BigDecimal = 0,
+               professionalFees: BigDecimal = 0,
+               otherCost: BigDecimal = 0): JsValue = {
+
+      val from =
+        fromDate.map { date =>
+          s"""
+             | "from": "$date",
+         """.stripMargin
+        }.getOrElse("")
+
+      val to =
+        toDate.map { date =>
+          s"""
+             | "to": "$date",
+         """.stripMargin
+        }.getOrElse("")
+
+      Json.parse(
+        s"""
+           |{
+           |  $from
+           |  $to
+           |  "incomes": {
+           |    "rentIncome": { "amount": $rentIncome }
+           |  },
+           |  "expenses": {
+           |    "repairsAndMaintenance": { "amount": $repairsAndMaintenance },
+           |    "financialCosts": { "amount": $financialCosts },
+           |    "professionalFees": { "amount": $professionalFees },
+           |    "other": { "amount": $otherCost }
+           |  }
+           |}
+       """.stripMargin)
+    }
+
+    def otherPeriod(fromDate: Option[String] = None,
                toDate: Option[String] = None,
                rentIncome: BigDecimal = 0,
                rentIncomeTaxDeducted: BigDecimal = 0,

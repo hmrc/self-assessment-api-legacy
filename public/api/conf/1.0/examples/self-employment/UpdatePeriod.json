@@ -54,7 +54,7 @@
     },
     "depreciation": {
       "amount": 100.25,
-      "disallowableAmount": 50.25
+      "disallowableAmount": 100.25
     },
     "other": {
       "amount": 100.25,

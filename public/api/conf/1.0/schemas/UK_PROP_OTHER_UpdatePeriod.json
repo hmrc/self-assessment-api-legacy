@@ -7,7 +7,7 @@
             "$ref": "uk-properties/other/Incomes.json"
         },
         "expenses": {
-            "$ref": "uk-properties/Expenses.json"
+            "$ref": "uk-properties/other/OtherExpenses.json"
         }
     },
     "additionalProperties": false

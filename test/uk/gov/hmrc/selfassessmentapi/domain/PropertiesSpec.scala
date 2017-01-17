@@ -22,6 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
+import PropertyPeriodOps._
 
 class PropertiesSpec extends UnitSpec {
 
@@ -30,18 +31,16 @@ class PropertiesSpec extends UnitSpec {
   val fhlAllowances = FHLPropertiesAllowances(Some(50.12), Some(50.55))
   val fhlAdjustments = FHLPropertiesAdjustments(Some(50.12), Some(38.77), Some(12.20))
 
-  val otherPeriod: PropertiesPeriod = PropertiesPeriod(
+  val otherPeriod: OtherProperties = OtherProperties(
     LocalDate.parse("2017-04-06"),
     LocalDate.parse("2018-04-05"),
-    PropertiesPeriodicData(
-      Map(IncomeType.RentIncome -> Income(10000, None)),
-      Map(ExpenseType.PremisesRunningCosts -> SimpleExpense(50.55))))
-  val fhlPeriod: PropertiesPeriod = PropertiesPeriod(
+    OtherPeriodicData(Map(IncomeType.RentIncome -> Income(10000, None)),
+    Map(ExpenseType.PremisesRunningCosts -> SimpleExpense(50.55))))
+  val fhlPeriod: FHLProperties = FHLProperties(
     LocalDate.parse("2017-04-06"),
     LocalDate.parse("2018-04-05"),
-    PropertiesPeriodicData(
-      Map(IncomeType.PremiumsOfLeaseGrant -> Income(1234.56, None)),
-      Map(ExpenseType.FinancialCosts -> SimpleExpense(500.12))))
+    FHLPeriodicData(Map(FHLIncomeType.RentIncome -> SimpleIncome(1234.56)),
+    Map(FHLExpenseType.ProfessionalFees -> SimpleExpense(500.12))))
 
   val properties: Properties = Properties(
     BSONObjectID.generate,
@@ -58,12 +57,10 @@ class PropertiesSpec extends UnitSpec {
 
   "annualSummary" should {
     "return an empty annual summary when no annual summary exists for the provided tax year" in {
-      val properties = Properties(
-        BSONObjectID.generate,
-        NinoGenerator().nextNino(),
-        AccountingType.CASH)
+      val properties = Properties(BSONObjectID.generate, NinoGenerator().nextNino(), AccountingType.CASH)
 
-      properties.annualSummary(PropertyType.OTHER, TaxYear("2016-17")) shouldBe OtherPropertiesAnnualSummary(None, None)
+      properties.annualSummary(PropertyType.OTHER, TaxYear("2016-17")) shouldBe OtherPropertiesAnnualSummary(None,
+                                                                                                             None)
       properties.annualSummary(PropertyType.FHL, TaxYear("2016-17")) shouldBe FHLPropertiesAnnualSummary(None, None)
     }
 
@@ -77,25 +74,25 @@ class PropertiesSpec extends UnitSpec {
 
   "periodExists" should {
     "return false if a period with the given id does not exist" in {
-      properties.periodExists(PropertyType.OTHER, "cake") shouldBe false
-      properties.periodExists(PropertyType.FHL, "cake") shouldBe false
+      OtherPeriodOps.periodExists("cake", properties) shouldBe false
+      FHLPeriodOps.periodExists("cake", properties) shouldBe false
     }
 
     "return true if a period with the given id exists" in {
-      properties.periodExists(PropertyType.OTHER, "other") shouldBe true
-      properties.periodExists(PropertyType.FHL, "fhl") shouldBe true
+      OtherPeriodOps.periodExists("other", properties) shouldBe true
+      FHLPeriodOps.periodExists("fhl", properties) shouldBe true
     }
   }
 
   "period" should {
     "return a period with the given id if it exists" in {
-      properties.period(PropertyType.OTHER, "other") shouldBe Some(otherPeriod)
-      properties.period(PropertyType.FHL, "fhl") shouldBe Some(fhlPeriod)
+      OtherPeriodOps.period("other", properties) shouldBe Some(otherPeriod)
+      FHLPeriodOps.period("fhl", properties) shouldBe Some(fhlPeriod)
     }
 
     "return None if a period with the given id does not exist" in {
-      properties.period(PropertyType.OTHER, "cake") shouldBe None
-      properties.period(PropertyType.FHL, "cake") shouldBe None
+      OtherPeriodOps.period("cake", properties) shouldBe None
+      FHLPeriodOps.period("cake", properties) shouldBe None
     }
   }
 
@@ -104,52 +101,11 @@ class PropertiesSpec extends UnitSpec {
       val newOtherPeriod = otherPeriod.copy(data = otherPeriod.data.copy(incomes = Map.empty))
       val newFhlPeriod = fhlPeriod.copy(data = fhlPeriod.data.copy(incomes = Map.empty))
 
-      val newProperties = properties
-        .setPeriodsTo(PropertyType.OTHER, "other", newOtherPeriod)
-        .setPeriodsTo(PropertyType.FHL, "fhl", newFhlPeriod)
+      val otherProps = OtherPeriodOps.setPeriodsTo("other", newOtherPeriod, properties)
+      val fhlProps = FHLPeriodOps.setPeriodsTo("fhl", newFhlPeriod, properties)
 
-      newProperties.otherBucket.periods("other") shouldBe newOtherPeriod
-      newProperties.fhlBucket.periods("fhl") shouldBe newFhlPeriod
-    }
-
-    "remove invalid Income types for FHL" in {
-      val period = otherPeriod.copy(data = otherPeriod.data.copy(incomes =
-        Map(IncomeType.RentIncome -> Income(1000, None),
-          IncomeType.PremiumsOfLeaseGrant -> Income(1000, None),
-          IncomeType.ReversePremiums -> Income(1000, None))))
-
-      val newProperties = properties
-        .setPeriodsTo(PropertyType.OTHER, "periodId", period)
-        .setPeriodsTo(PropertyType.FHL, "periodId", period)
-
-      val otherPeriodicData = newProperties.otherBucket.periods("periodId").data
-      otherPeriodicData.incomes.size shouldBe 3
-
-      val fhlPeriodicData = newProperties.fhlBucket.periods("periodId").data
-      fhlPeriodicData.incomes.size shouldBe 1
-      fhlPeriodicData.incomes.exists(income => income._1 == IncomeType.PremiumsOfLeaseGrant) shouldBe false
-      fhlPeriodicData.incomes.exists(income => income._1 == IncomeType.ReversePremiums) shouldBe false
-    }
-
-    "remove invalid Expense types for FHL" in {
-      val period = otherPeriod.copy(data = otherPeriod.data.copy(expenses =
-        Map(ExpenseType.FinancialCosts -> SimpleExpense(1000),
-          ExpenseType.CostOfServices -> SimpleExpense(1000),
-          ExpenseType.PremisesRunningCosts -> SimpleExpense(1000),
-          ExpenseType.ProfessionalFees -> SimpleExpense(1000),
-          ExpenseType.RepairsAndMaintenance -> SimpleExpense(1000),
-          ExpenseType.Other -> SimpleExpense(1000))))
-
-      val newProperties = properties
-        .setPeriodsTo(PropertyType.OTHER, "periodId", period)
-        .setPeriodsTo(PropertyType.FHL, "periodId", period)
-
-      val otherPeriodicData = newProperties.otherBucket.periods("periodId").data
-      otherPeriodicData.expenses.size shouldBe 6
-
-      val fhlPeriodicData = newProperties.fhlBucket.periods("periodId").data
-      fhlPeriodicData.expenses.size shouldBe 5
-      fhlPeriodicData.expenses.exists(expense => expense._1 == ExpenseType.CostOfServices) shouldBe false
+      OtherPeriodOps.period("other", otherProps) shouldBe Some(newOtherPeriod)
+      FHLPeriodOps.period("fhl", fhlProps) shouldBe Some(newFhlPeriod)
     }
   }
 }

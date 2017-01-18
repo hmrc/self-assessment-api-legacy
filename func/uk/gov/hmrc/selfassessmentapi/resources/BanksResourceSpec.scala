@@ -28,7 +28,7 @@ class BanksResourceSpec extends BaseFunctionalSpec {
         .post(Jsons.Banks("A waaaayyyyyyyyyyyyyyyyyyyyyy to looooong account name")).to(s"/ni/$nino/savings-accounts")
         .thenAssertThat()
         .statusIs(400)
-        .bodyIsLike(Jsons.Errors.invalidRequest("MAX_FIELD_LENGTH_EXCEEDED" -> "/accountName"))
+        .bodyIsLike(Jsons.Errors.invalidRequest("INVALID_FIELD_LENGTH" -> "/accountName"))
     }
   }
 
@@ -63,7 +63,7 @@ class BanksResourceSpec extends BaseFunctionalSpec {
         .put(Jsons.Banks("A waaaayyyyyyyyyyyyyyyyyyyyyy to looooong account name")).at("%sourceLocation%")
         .thenAssertThat()
         .statusIs(400)
-        .bodyIsLike(Jsons.Errors.invalidRequest("MAX_FIELD_LENGTH_EXCEEDED" -> "/accountName"))
+        .bodyIsLike(Jsons.Errors.invalidRequest("INVALID_FIELD_LENGTH" -> "/accountName"))
     }
 
     "return code 404 when updating a a bank interest source that does not exist" in {

@@ -73,7 +73,7 @@ class BanksRepository(implicit mongo: () => DB) extends ReactiveRepository[Bank,
 
   def deleteAllBeforeDate(lastModifiedDateTime: DateTime): Future[Int] = {
     val query = BSONDocument("lastModifiedDateTime" ->
-      BSONDocument("$lt" -> BSONDateTime(lastModifiedDateTime.getMillis)))
+      BSONDocument("$lte" -> BSONDateTime(lastModifiedDateTime.getMillis)))
 
     collection.remove(query).map(_.n)
   }

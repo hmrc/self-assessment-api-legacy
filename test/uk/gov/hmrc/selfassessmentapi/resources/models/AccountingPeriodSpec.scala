@@ -42,8 +42,8 @@ class AccountingPeriodSpec extends JsonSpec {
     "reject an accounting period if any fields are missing" in {
       assertValidationErrorsWithMessage[AccountingPeriod](Json.obj(),
         Map(
-          "/start" -> "error.path.missing",
-          "/end" -> "error.path.missing"))
+          "/start" -> Seq("error.path.missing"),
+          "/end" -> Seq("error.path.missing")))
     }
 
     "accept an accounting period if the `start` date comes before the `end` date and the `start` date is after 2017-04-01" in {

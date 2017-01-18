@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.selfassessmentapi.repositories
 
 import org.joda.time.{DateTime, DateTimeZone}
@@ -11,7 +27,7 @@ class BanksRepositorySpec extends MongoEmbeddedDatabase {
   private val nino = generateNino
 
   private def createBank(nino: Nino, lastModifiedDateTime: DateTime, id: BSONObjectID = BSONObjectID.generate): Bank = {
-    Bank(id, id.stringify, nino, lastModifiedDateTime, "myBank", foreign = false)
+    Bank(id, id.stringify, nino, lastModifiedDateTime, Some("myBank"))
   }
 
   "create" should {
@@ -37,12 +53,11 @@ class BanksRepositorySpec extends MongoEmbeddedDatabase {
       await(repo.create(bank)) shouldBe true
       await(repo.retrieve(id.stringify, nino)) shouldBe Some(bank)
 
-      val newBank = bank.copy(accountName = "superBank")
+      val newBank = bank.copy(accountName = Some("superBank"))
       await(repo.update(id.stringify, nino, newBank)) shouldBe true
 
       val result = await(repo.retrieve(id.stringify, nino)).get
       result.accountName shouldBe newBank.accountName
-      result.foreign shouldBe newBank.foreign
     }
   }
 
@@ -71,15 +86,15 @@ class BanksRepositorySpec extends MongoEmbeddedDatabase {
 
   "deleteAllBeforeDate" should {
     "delete all records older than the provided DateTime object" in {
-      val bankToKeep = createBank(nino, DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val bankToKeepOne = createBank(nino, DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val bankToKeepTwo = createBank(nino, DateTime.now(DateTimeZone.UTC))
       val bankToRemoveOne = createBank(nino, DateTime.now(DateTimeZone.UTC).minusDays(1))
-      val bankToRemoveTwo = createBank(nino, DateTime.now(DateTimeZone.UTC))
 
-      await(repo.create(bankToKeep))
+      await(repo.create(bankToKeepOne))
       await(repo.create(bankToRemoveOne))
-      await(repo.create(bankToRemoveTwo))
-      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC))) shouldBe 2
-      await(repo.retrieveAll(nino)) should contain theSameElementsAs Seq(bankToKeep)
+      await(repo.create(bankToKeepTwo))
+      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC).minusHours(1))) shouldBe 1
+      await(repo.retrieveAll(nino)) should contain theSameElementsAs Seq(bankToKeepOne, bankToKeepTwo)
     }
   }
 }

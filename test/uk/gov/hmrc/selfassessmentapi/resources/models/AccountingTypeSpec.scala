@@ -48,7 +48,7 @@ class AccountingTypeSpec extends JsonSpec {
     "return INVALID_VALUE when provided with an invalid accounting type" in {
       val json = properties(accountingType = "INVALID")
 
-      assertValidationErrorsWithCode[Properties](json, Map("/accountingType" -> ErrorCode.INVALID_VALUE))
+      assertValidationErrorsWithCode[Properties](json, Map("/accountingType" -> Seq(ErrorCode.INVALID_VALUE)))
     }
 
     "pass when provided all valid accounting types" in {

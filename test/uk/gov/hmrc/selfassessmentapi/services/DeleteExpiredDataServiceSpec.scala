@@ -48,7 +48,9 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   private val nino = NinoGenerator().nextNino()
   private val nino2 = NinoGenerator().nextNino()
   private val nino3 = NinoGenerator().nextNino()
-  private val removalDate = DateTime.now(DateTimeZone.UTC)
+
+  private val baseInsertionDate = DateTime.now(DateTimeZone.UTC)
+  private val removalDate = baseInsertionDate.minusHours(1)
 
   implicit override val patienceConfig = PatienceConfig(timeout = Span(15, Seconds), interval = Span(300, Millis))
 
@@ -76,7 +78,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   }
 
   private def createBank(lastModifiedDateTime: DateTime, nino: Nino, id: BSONObjectID = BSONObjectID.generate): Bank = {
-    Bank(id, id.stringify, nino, lastModifiedDateTime, "my-bank", foreign = false)
+    Bank(id, id.stringify, nino, lastModifiedDateTime, Some("my-bank"))
   }
 
   "deleteExpiredData" should {
@@ -86,9 +88,9 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
       val id2 = BSONObjectID.generate
       val id3 = BSONObjectID.generate
 
-      val se1 = createSelfEmployment(removalDate, nino, id1)
-      val se2 = createSelfEmployment(removalDate.plusDays(1), nino2, id2)
-      val seToRemove = createSelfEmployment(removalDate.minusDays(1), nino3, id3)
+      val se1 = createSelfEmployment(baseInsertionDate, nino, id1)
+      val se2 = createSelfEmployment(baseInsertionDate.plusDays(1), nino2, id2)
+      val seToRemove = createSelfEmployment(baseInsertionDate.minusDays(1), nino3, id3)
 
       insertSelfEmployment(se1, se2, seToRemove)
 
@@ -111,9 +113,9 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
     }
 
     "delete only the expired records (older than the lastModifiedDate) and not the latest records for properties" in {
-      val prop1 = createProperties(removalDate, nino)
-      val prop2 = createProperties(removalDate.plusDays(1), nino2)
-      val propToRemove = createProperties(removalDate.minusDays(1), nino3)
+      val prop1 = createProperties(baseInsertionDate, nino)
+      val prop2 = createProperties(baseInsertionDate.plusDays(1), nino2)
+      val propToRemove = createProperties(baseInsertionDate.minusDays(1), nino3)
 
       insertProperties(prop1, prop2, propToRemove)
 
@@ -136,9 +138,9 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
     }
 
     "delete only the expired records (older than the lastModifiedDate) and not the latest records for dividends" in {
-      val div1 = createDividend(removalDate, nino)
-      val div2 = createDividend(removalDate.plusDays(1), nino2)
-      val divToRemove = createDividend(removalDate.minusDays(1), nino3)
+      val div1 = createDividend(baseInsertionDate, nino)
+      val div2 = createDividend(baseInsertionDate.plusDays(1), nino2)
+      val divToRemove = createDividend(baseInsertionDate.minusDays(1), nino3)
 
       insertDividends(div1, div2, divToRemove)
 
@@ -165,9 +167,9 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
       val id2 = BSONObjectID.generate
       val id3 = BSONObjectID.generate
 
-      val bank1 = createBank(removalDate, nino, id1)
-      val bank2 = createBank(removalDate.plusDays(1), nino2, id2)
-      val bankToRemove = createBank(removalDate.minusDays(1), nino3, id3)
+      val bank1 = createBank(baseInsertionDate, nino, id1)
+      val bank2 = createBank(baseInsertionDate.plusDays(1), nino2, id2)
+      val bankToRemove = createBank(baseInsertionDate.minusDays(1), nino3, id3)
 
       insertBanks(bank1, bank2, bankToRemove)
 

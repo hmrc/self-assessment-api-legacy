@@ -27,13 +27,12 @@ case class Bank(id: BSONObjectID,
                 sourceId: String,
                 nino: Nino,
                 lastModifiedDateTime: DateTime,
-                accountName: String,
-                foreign: Boolean)
+                accountName: Option[String])
     extends LastModifiedDateTime {
 
   def toModel(elideID: Boolean = false): banks.Bank = {
     val id = if (elideID) None else Some(sourceId)
-    banks.Bank(id, accountName, foreign)
+    banks.Bank(id, accountName)
   }
 }
 

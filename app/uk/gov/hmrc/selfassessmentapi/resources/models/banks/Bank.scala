@@ -22,19 +22,22 @@ import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, SourceId}
 
 case class Bank(id: Option[SourceId] = None,
-                          accountName: String,
-                          foreign: Boolean = false)
+                accountName: Option[String])
 
 object Bank {
 
+  private def lengthIsBetween(minLength: Int, maxLength: Int): Reads[String] =
+    Reads.of[String].filter(ValidationError(s"field length must be between $minLength and $maxLength characters", ErrorCode.INVALID_FIELD_LENGTH)
+    )(name => name.length <= maxLength && name.length >= minLength)
+
+  private def isAlphaNumeric: Reads[String] =
+    Reads.of[String].filter(ValidationError(s"field should only consist of alphanumeric characters", ErrorCode.INVALID_VALUE)
+  )(_.matches("^([a-zA-Z0-9]+\\s?)+$"))
+
+  private val validateAccountName: Reads[String] = lengthIsBetween(1, 32).andKeep(isAlphaNumeric)
+
   implicit val writes: Writes[Bank] = Json.writes[Bank]
 
-  //TODO: the function below is very similar (duplication) of uk.gov.hmrc.selfassessmentapi.controllers.api package object - to be refactored
-  private def notLongerThan(maxLength : Int) = Reads.of[String].filter(ValidationError(s"field length exceeded the max $maxLength chars", ErrorCode.MAX_FIELD_LENGTH_EXCEEDED))(_.length <= maxLength)
-
-  implicit val reads: Reads[Bank] = (
-    Reads.pure(None) and
-      (__ \ "accountName").read[String](notLongerThan((32))) and
-      (__ \ "foreign").read[Boolean]
-    ) (Bank.apply _)
+  implicit val reads: Reads[Bank] =
+    (__ \ "accountName").readNullable[String](validateAccountName).map(name => Bank(None, name))
 }

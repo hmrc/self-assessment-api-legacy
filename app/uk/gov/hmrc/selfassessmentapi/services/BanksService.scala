@@ -35,7 +35,7 @@ trait BanksMongoService {
     val id = BSONObjectID.generate
     val newBank =
       domain.Bank(id, id.stringify, nino, DateTime.now(DateTimeZone.UTC),
-        bank.accountName, bank.foreign)
+        bank.accountName)
     mongoRepository.create(newBank).map {
       case true => Some(newBank.sourceId)
       case false => None
@@ -45,7 +45,7 @@ trait BanksMongoService {
   def update(nino: Nino, bank: Bank, id: SourceId): Future[Boolean] = {
     mongoRepository.retrieve(id, nino).flatMap {
       case Some(oldBank) =>
-        mongoRepository.update(id, nino, oldBank.copy(accountName = bank.accountName, foreign = bank.foreign))
+        mongoRepository.update(id, nino, oldBank.copy(accountName = bank.accountName))
       case None => Future.successful(false)
     }
   }

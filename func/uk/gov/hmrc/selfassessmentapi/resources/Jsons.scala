@@ -54,8 +54,7 @@ object Jsons {
       Json.parse(
         s"""
            |{
-           |  "accountName": "$accountName",
-           |  "foreign": $foreign
+           |  "accountName": "$accountName"
            |}
          """.stripMargin)
     }

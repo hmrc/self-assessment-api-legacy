@@ -24,23 +24,34 @@ class BankSpec extends JsonSpec {
 
   "Bank JSON" should {
 
-    "round ignore the id if it is provided by the user" in {
-      val input = Bank(Some("myid"), "")
+    "round trip" in {
+      roundTripJson(Bank(None, Some("name")))
+    }
+
+    "round trip empty json" in {
+      roundTripJson(Bank(None, None))
+    }
+
+    "should ignore the id if it is provided by the user" in {
+      val input = Bank(Some("myid"), None)
       val expectedOutput = input.copy(id = None)
       assertJsonIs(input, expectedOutput)
     }
 
-    "return a MAX_FIELD_LENGTH_EXCEEDED error when account name is too long" in {
-      val input = Bank(None, "A way toooooooooooooo long bank account name")
-      assertValidationErrorWithCode(input, "/accountName", ErrorCode.MAX_FIELD_LENGTH_EXCEEDED)
+    "return a INVALID_FIELD_LENGTH error when account name is too long" in {
+      val input = Bank(None, Some("A way toooooooooooooo long bank account name"))
+      assertValidationErrorWithCode(input, "/accountName", ErrorCode.INVALID_FIELD_LENGTH)
     }
 
-    "return a error when providing an empty Bank body" in {
-      val json = "{}"
+    "return a INVALID_VALUE error when the account name is non-alphanumeric" in {
+      val input = Bank(None, Some("Oh No!"))
+      assertValidationErrorWithCode(input, "/accountName", ErrorCode.INVALID_VALUE)
+    }
 
-      assertValidationErrorsWithMessage[Bank](Json.parse(json),
-        Map("/accountName" -> "error.path.missing",
-            "/foreign" -> "error.path.missing"))
+    "return a INVALID_VALUE and INVALID_FIELD_LENGTH error when the account name string is empty" in {
+      val input = Bank(None, Some(""))
+      assertValidationErrorsWithCode[Bank](Json.toJson(input),
+        Map("/accountName" -> Seq(ErrorCode.INVALID_VALUE, ErrorCode.INVALID_FIELD_LENGTH)))
     }
   }
 }

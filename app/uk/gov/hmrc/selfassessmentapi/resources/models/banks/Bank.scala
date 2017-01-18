@@ -31,7 +31,7 @@ object Bank {
     )(name => name.length <= maxLength && name.length >= minLength)
 
   private def isAlphaNumeric: Reads[String] =
-    Reads.of[String].filter(ValidationError(s"field should only consist of alphanumeric characters", ErrorCode.INVALID_VALUE)
+    Reads.of[String].filter(ValidationError("field should only consist of alphanumeric characters", ErrorCode.INVALID_VALUE)
   )(_.matches("^([a-zA-Z0-9]+\\s?)+$"))
 
   private val validateAccountName: Reads[String] = lengthIsBetween(1, 32).andKeep(isAlphaNumeric)

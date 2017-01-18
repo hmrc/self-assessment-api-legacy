@@ -516,3 +516,80 @@ documentation:
                 application/json:
                   type: !include schemas/DIV_AnnualSummary.json
                   example: !include examples/dividends/AnnualSummary.json
+    /savings-accounts:
+      (annotations.group):
+        name: Savings Accounts
+        description: !include docs/savings-accounts.md
+      post:
+        displayName: Add a savings account
+        description: Add a savings account
+        is: [headers.acceptHeader]
+        (annotations.scope): "write:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        body:
+          application/json:
+            type: !include schemas/SavingsAccount_Without_ID.json
+            example: !include examples/savings-accounts/SavingsAccount.json
+        responses:
+          201:
+            headers:
+              Location:
+                example: /self-assessment/ni/{nino}/savings-accounts/
+                description: Location of the resource created
+          400:
+            body:
+              application/json:
+                type: !include schemas/Error.json
+                example: !include examples/errors/Bank_INVALID_REQUEST.json
+      get:
+        displayName: Retrieve all savings accounts
+        description: Retrieve all savings accounts
+        is: [headers.acceptHeader]
+        (annotations.scope): "write:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        responses:
+          200:
+            body:
+              application/json:
+                type: !include schemas/SavingsAccount.json
+                example: !include examples/savings-accounts/SavingsAccounts.json
+      /{savingsAccountId}:
+        put:
+          displayName: Update a savings account
+          description: Update a savings account
+          is: [headers.acceptHeader]
+          (annotations.scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          body:
+            application/json:
+              type: !include schemas/SavingsAccount_Without_ID.json
+              example: !include examples/savings-accounts/SavingsAccount.json
+          responses:
+            204:
+            400:
+              body:
+                application/json:
+                  type: !include schemas/Error.json
+                  example: !include examples/errors/Bank_INVALID_REQUEST.json
+            404:
+              body:
+                application/json:
+                  type: !include schemas/Error.json
+                  example: !include examples/errors/NOT_FOUND.json
+        get:
+          displayName: Retrieve a savings account
+          description: Retrieve a savings account
+          is: [headers.acceptHeader]
+          (annotations.scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          responses:
+            200:
+              body:
+                application/json:
+                  type: !include schemas/SavingsAccount_Without_ID.json
+                  example: !include examples/savings-accounts/SavingsAccount.json
+            404:
+              body:
+                application/json:
+                  type: !include schemas/Error.json
+                  example: !include examples/errors/NOT_FOUND.json

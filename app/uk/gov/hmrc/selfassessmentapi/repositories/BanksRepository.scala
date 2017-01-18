@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.libs.json.JsObject
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
@@ -26,8 +26,8 @@ import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
 import uk.gov.hmrc.selfassessmentapi.domain.Bank
+import uk.gov.hmrc.selfassessmentapi.resources.models.SourceId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -51,9 +51,6 @@ class BanksRepository(implicit mongo: () => DB) extends ReactiveRepository[Bank,
     find("nino" -> nino.nino)
   }
 
-  /*
-   * Inserts a new SelfEmployment document.
-   */
   def create(selfEmployment: Bank): Future[Boolean] = {
     insert(selfEmployment).map { res =>
       if (res.hasErrors) logger.error(s"Database error occurred. Error: ${res.errmsg} Code: ${res.code}")
@@ -61,14 +58,8 @@ class BanksRepository(implicit mongo: () => DB) extends ReactiveRepository[Bank,
     }
   }
 
-  /*
-   * Replaces the whole SelfEmployment document with the `newSelfEmployment` document.
-   *
-   * This method should be used whenever making a change to a SelfEmployment document.
-   * Hand-written persistence code is discouraged.
-   */
   def update(id: SourceId, nino: Nino, newBank: Bank): Future[Boolean] = {
-    domainFormatImplicit.writes(newBank.copy(lastModifiedDateTime = LocalDate.now(DateTimeZone.UTC))) match {
+    domainFormatImplicit.writes(newBank.copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC))) match {
       case d @ JsObject(_) => collection.update(
         BSONDocument("nino" -> nino.nino, "sourceId" -> id),
         d

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
@@ -34,7 +34,7 @@ trait BanksMongoService {
   def create(nino: Nino, bank: Bank): Future[Option[SourceId]] = {
     val id = BSONObjectID.generate
     val newBank =
-      domain.Bank(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC),
+      domain.Bank(id, id.stringify, nino, DateTime.now(DateTimeZone.UTC),
         bank.accountName, bank.foreign)
     mongoRepository.create(newBank).map {
       case true => Some(newBank.sourceId)

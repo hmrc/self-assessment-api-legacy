@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import org.joda.time._
+import org.joda.time.DateTime
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
@@ -26,21 +26,21 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.banks
 case class Bank(id: BSONObjectID,
                 sourceId: String,
                 nino: Nino,
-                lastModifiedDateTime: LocalDate,
+                lastModifiedDateTime: DateTime,
                 accountName: String,
                 foreign: Boolean)
     extends LastModifiedDateTime {
 
   def toModel(elideID: Boolean = false): banks.Bank = {
     val id = if (elideID) None else Some(sourceId)
-    banks.Bank(id,accountName, foreign)
+    banks.Bank(id, accountName, foreign)
   }
 }
 
 object Bank {
-  implicit val mongoFormats = ReactiveMongoFormats.mongoEntity({
+  implicit val mongoFormats: Format[Bank] = ReactiveMongoFormats.mongoEntity({
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
-    implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
+    implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
     Format(Json.reads[Bank], Json.writes[Bank])
   })
 }

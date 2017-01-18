@@ -28,5 +28,6 @@ object SourceType extends Enumeration {
     case SelfEmployments => "SelfEmployments"
     case Properties => "Properties"
     case Dividends => "Dividends"
+    case Banks => "SavingsAccounts"
   }
 }

@@ -18,7 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Format, JsResult, JsSuccess, JsValue}
 import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.FHLExpenseType.FHLExpenseType
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.FHLIncomeType.FHLIncomeType
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLExpenseType, FHLIncomeType, FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary}
 
 /**
   * Provides a suite of JSON formats for objects used throughout the codebase.
@@ -105,11 +107,31 @@ object JsonFormatters {
       }
     }
 
+    implicit def fhlIncomeTypeFormat[V: Format]: MapEnumFormat[FHLIncomeType, V] = new MapEnumFormat[FHLIncomeType, V] {
+      override def reads(json: JsValue): JsResult[Map[FHLIncomeType, V]] = {
+        play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
+          JsSuccess(result.map {
+            case (k, v) => FHLIncomeType.withName(k) -> v
+          })
+        }
+      }
+    }
+
     implicit def expenseTypeFormat[V: Format]: MapEnumFormat[ExpenseType, V] = new MapEnumFormat[ExpenseType, V] {
       override def reads(json: JsValue): JsResult[Map[ExpenseType, V]] = {
         play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
           JsSuccess(result.map {
             case (k, v) => ExpenseType.withName(k) -> v
+          })
+        }
+      }
+    }
+
+    implicit def fhlExpenseTypeFormat[V: Format]: MapEnumFormat[FHLExpenseType, V] = new MapEnumFormat[FHLExpenseType, V] {
+      override def reads(json: JsValue): JsResult[Map[FHLExpenseType, V]] = {
+        play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
+          JsSuccess(result.map {
+            case (k, v) => FHLExpenseType.withName(k) -> v
           })
         }
       }

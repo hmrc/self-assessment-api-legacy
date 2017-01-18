@@ -17,38 +17,72 @@
 package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
 import org.joda.time.LocalDate
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, Income, SimpleExpense}
+import uk.gov.hmrc.selfassessmentapi.resources.models._
+import org.scalacheck.Gen
 
-class PropertiesPeriodSpec extends JsonSpec {
+class PropertiesPeriodSpec extends JsonSpec with GeneratorDrivenPropertyChecks {
 
-  def propertiesPeriod(from: LocalDate = LocalDate.parse("2017-04-01"),
-                       to: LocalDate = LocalDate.parse("2017-04-02"),
-                      incomes: Map[IncomeType.IncomeType, Income] = Map(IncomeType.PremiumsOfLeaseGrant -> Income(1000, None)),
-                      expenses: Map[ExpenseType.ExpenseType, SimpleExpense] = Map(ExpenseType.PremisesRunningCosts -> SimpleExpense(1000.50))) = {
-    PropertiesPeriod(from = from, to = to,
-      data = PropertiesPeriodicData(
-        incomes = incomes,
-        expenses = expenses))
-  }
+  def amountGen(lower: BigDecimal, upper: BigDecimal): Gen[BigDecimal] =
+    for {
+      value <- Gen.chooseNum(lower.intValue(), upper.intValue())
+    } yield BigDecimal(value)
+
+  val genSimpleIncome: Gen[SimpleIncome] = for {
+    amount <- amountGen(1000, 5000)
+  } yield SimpleIncome(amount)
+
+  val genIncome: Gen[Income] = for {
+    amount <- amountGen(1000, 5000)
+  } yield Income(amount, None)
+
+  val genSimpleExpense: Gen[SimpleExpense] = for {
+    amount <- amountGen(1000, 5000)
+  } yield SimpleExpense(amount)
+
+  def genFHLPropertiesPeriodicData(valid: Boolean): Gen[FHLProperties] =
+    for {
+      from <- Gen.const(LocalDate.now())
+      to <- Gen.oneOf(from, from.plusDays(1))
+      incomes <- Gen.mapOf(Gen.zip(Gen.oneOf(FHLIncomeType.values.toList), genSimpleIncome))
+      expenses <- Gen.mapOf(Gen.zip(Gen.oneOf(FHLExpenseType.values.toList), genSimpleExpense))
+    } yield
+      if (valid) FHLProperties(from, to, FHLPeriodicData(incomes, expenses))
+      else FHLProperties(from, from.minusDays(1), FHLPeriodicData(incomes, expenses))
+
+  def genOtherPropertiesPeriodicData(valid: Boolean): Gen[OtherProperties] =
+    for {
+      from <- Gen.const(LocalDate.now())
+      to <- Gen.oneOf(from, from.plusDays(1))
+      incomes <- Gen.mapOf(Gen.zip(Gen.oneOf(IncomeType.values.toList), genIncome))
+      expenses <- Gen.mapOf(Gen.zip(Gen.oneOf(ExpenseType.values.toList), genSimpleExpense))
+    } yield
+      if (valid) OtherProperties(from, to, OtherPeriodicData(incomes, expenses))
+      else OtherProperties(from, from.minusDays(1), OtherPeriodicData(incomes, expenses))
 
   "PropertiesPeriod" should {
-    "round trip" in {
-      roundTripJson(propertiesPeriod())
+
+    "round trip FHL properties" in forAll(genFHLPropertiesPeriodicData(true)) { fhlProps =>
+      roundTripJson(fhlProps)
+    }
+
+    "round trip Other properties" in forAll(genOtherPropertiesPeriodicData(true)) { otherProps =>
+      roundTripJson(otherProps)
     }
   }
 
   "validate" should {
-    "reject a PropertiesPeriod where the `to` date comes before the `from` date" in {
-      val period = propertiesPeriod(from = LocalDate.parse("2017-04-02"), to = LocalDate.parse("2017-04-01"))
-      assertValidationErrorWithCode(period, "", ErrorCode.INVALID_PERIOD)
+
+    "reject a FHL properties where the `to` date comes before the `from` date" in forAll(
+      genFHLPropertiesPeriodicData(false)) { fhlProps =>
+      assertValidationErrorWithCode(fhlProps, "", ErrorCode.INVALID_PERIOD)
     }
-    
-    "accept a PropertiesPeriod where the `from` and `to` dates are equal" in {
-      val date = LocalDate.parse("2017-04-01")
-      val period = propertiesPeriod(from = date, to = date)
-      
-      assertValidationPasses(period)
+
+    "reject a Other properties where the `to` date comes before the `from` date" in forAll(
+      genOtherPropertiesPeriodicData(false)) { otherProps =>
+      assertValidationErrorWithCode(otherProps, "", ErrorCode.INVALID_PERIOD)
     }
+
   }
 }

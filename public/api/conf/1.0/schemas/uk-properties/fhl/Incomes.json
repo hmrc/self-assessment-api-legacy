@@ -8,11 +8,6 @@
       "title": "rentIncome",
       "description": "Total rents and other income from property",
       "$ref": "../../Income.json"
-    },
-    "reversePremiums": {
-      "title": "Reverse premiums",
-      "description": "Reverse premiums and inducements",
-      "$ref": "../../SimpleIncome.json"
     }
   },
   "additionalProperties": false

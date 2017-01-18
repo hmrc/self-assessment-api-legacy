@@ -17,12 +17,6 @@
       "title": "To date",
       "type": "string",
       "format": "date"
-    },
-    "incomes": {
-      "$ref": "self-employment/Incomes.json"
-    },
-    "expenses": {
-      "$ref": "self-employment/Expenses.json"
     }
   },
   "required": [

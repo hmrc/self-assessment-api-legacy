@@ -17,19 +17,19 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Json, Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{PeriodId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary, PropertiesAnnualSummary, PropertiesPeriod}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
 
-trait PropertiesBucket extends PeriodValidator[PropertiesPeriod] {
-  val periods: Map[PeriodId, PropertiesPeriod]
+trait PropertiesBucket[T <: Period] extends PeriodValidator[T] {
+  val periods: Map[PeriodId, T]
   val annualSummaries: Map[TaxYear, PropertiesAnnualSummary]
 }
 
-case class FHLPropertiesBucket(periods: Map[PeriodId, PropertiesPeriod],
-                               annualSummaries: Map[TaxYear, FHLPropertiesAnnualSummary]) extends PropertiesBucket
+case class FHLPropertiesBucket(periods: Map[PeriodId, FHLProperties],
+                               annualSummaries: Map[TaxYear, FHLPropertiesAnnualSummary]) extends PropertiesBucket[FHLProperties]
 
-case class OtherPropertiesBucket(periods: Map[PeriodId, PropertiesPeriod],
-                                 annualSummaries: Map[TaxYear, OtherPropertiesAnnualSummary]) extends PropertiesBucket
+case class OtherPropertiesBucket(periods: Map[PeriodId, OtherProperties],
+                                 annualSummaries: Map[TaxYear, OtherPropertiesAnnualSummary]) extends PropertiesBucket[OtherProperties]
 
 object FHLPropertiesBucket {
   import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.PropertiesFormatters.annualSummaryFHLMapFormat

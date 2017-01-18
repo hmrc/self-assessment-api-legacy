@@ -22,7 +22,7 @@
             "$ref": "uk-properties/fhl/Incomes.json"
         },
         "expenses": {
-            "$ref": "uk-properties/Expenses.json"
+            "$ref": "uk-properties/fhl/FHLExpenses.json"
         }
     },
     "required": [

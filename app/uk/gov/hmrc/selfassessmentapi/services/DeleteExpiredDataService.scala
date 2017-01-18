@@ -27,6 +27,7 @@ import scala.concurrent.{Await, Future}
 class DeleteExpiredDataService(seRepo: SelfEmploymentsRepository,
                                propsRepo: PropertiesRepository,
                                divRepo: DividendsRepository,
+                               banksRepo: BanksRepository,
                                jobRepo: JobHistoryMongoRepository) {
 
   def deleteExpiredData(lastModifiedDate: DateTime): Future[Int] = {
@@ -49,7 +50,8 @@ class DeleteExpiredDataService(seRepo: SelfEmploymentsRepository,
         seModified <- seRepo.deleteAllBeforeDate(lastModifiedDate)
         propModified <- propsRepo.deleteAllBeforeDate(lastModifiedDate)
         divModified <- divRepo.deleteAllBeforeDate(lastModifiedDate)
-      } yield seModified + propModified + divModified
+        bankModified <- banksRepo.deleteAllBeforeDate(lastModifiedDate)
+      } yield seModified + propModified + divModified + bankModified
 
   private def abortJob(jobNumber: Int, t: Throwable) =
     for {
@@ -63,5 +65,6 @@ object DeleteExpiredDataService {
       SelfEmploymentsRepository(),
       PropertiesRepository(),
       DividendsRepository(),
+      BanksRepository(),
       JobHistoryRepository())
 }

@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTime, DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.JsObject
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
@@ -51,8 +51,8 @@ class BanksRepository(implicit mongo: () => DB) extends ReactiveRepository[Bank,
     find("nino" -> nino.nino)
   }
 
-  def create(selfEmployment: Bank): Future[Boolean] = {
-    insert(selfEmployment).map { res =>
+  def create(bank: Bank): Future[Boolean] = {
+    insert(bank).map { res =>
       if (res.hasErrors) logger.error(s"Database error occurred. Error: ${res.errmsg} Code: ${res.code}")
       res.ok
     }
@@ -71,9 +71,15 @@ class BanksRepository(implicit mongo: () => DB) extends ReactiveRepository[Bank,
     }
   }
 
+  def deleteAllBeforeDate(lastModifiedDateTime: DateTime): Future[Int] = {
+    val query = BSONDocument("lastModifiedDateTime" ->
+      BSONDocument("$lt" -> BSONDateTime(lastModifiedDateTime.getMillis)))
+
+    collection.remove(query).map(_.n)
+  }
 }
 
 object BanksRepository extends MongoDbConnection {
   private lazy val repository = new BanksRepository()
-  def apply() = repository
+  def apply(): BanksRepository = repository
 }

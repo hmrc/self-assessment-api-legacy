@@ -34,7 +34,7 @@ GET  /ni/:nino/uk-properties/:id/:taxYear   uk.gov.hmrc.selfassessmentapi.resour
 
 
 ####################
-# Banks #
+#      Banks       #
 ####################
 GET /ni/:nino/savings-accounts      uk.gov.hmrc.selfassessmentapi.resources.BanksResource.retrieveAll(nino: uk.gov.hmrc.domain.Nino)
 POST /ni/:nino/savings-accounts     uk.gov.hmrc.selfassessmentapi.resources.BanksResource.create(nino: uk.gov.hmrc.domain.Nino)

@@ -30,13 +30,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object JobHistoryRepository extends MongoDbConnection {
-  private lazy val repository = {
-    val repo = new JobHistoryMongoRepository
-    repo.ensureIndexes
-    repo
-  }
+  private lazy val repository = new JobHistoryMongoRepository
 
-  def apply() = repository
+  def apply(): JobHistoryMongoRepository = repository
 }
 
 class JobHistoryMongoRepository(implicit mongo: () => DB)
@@ -44,9 +40,8 @@ class JobHistoryMongoRepository(implicit mongo: () => DB)
   collectionName = "jobHistory", mongo = mongo, domainFormat = JobHistory.mongoFormats){
 
 
-  override def indexes: Seq[Index] = {
-    Seq(Index(key = Seq("jobNumber" -> IndexType.Ascending), name = Some("job_number"), unique = true))
-  }
+  override def indexes: Seq[Index] = Seq(
+    Index(key = Seq("jobNumber" -> IndexType.Ascending), name = Some("job_number"), unique = true))
 
   def startJob(): Future[JobHistory] =
     findLatestJob.flatMap {
@@ -68,12 +63,12 @@ class JobHistoryMongoRepository(implicit mongo: () => DB)
   def completeJob(jobNumber: Int, recordsDeleted: Int): Future[Unit] =
     collection
       .update(Json.obj("jobNumber" -> jobNumber), Json.obj("$set" -> Json.obj("status" ->  Success, "finishedAt" -> DateTime.now, "recordsDeleted" -> recordsDeleted)))
-      .map(writeResult => if (writeResult.n == 0) throw new JobNotFoundException(jobNumber))
+      .map(writeResult => if (writeResult.n == 0) throw JobNotFoundException(jobNumber))
 
   def abortJob(jobNumber: Int): Future[Unit] = {
     collection
       .update(Json.obj("jobNumber" -> jobNumber), Json.obj("$set" -> Json.obj("status" -> Failed, "finishedAt" -> DateTime.now)))
-      .map(writeResult => if (writeResult.n == 0) throw new JobNotFoundException(jobNumber))
+      .map(writeResult => if (writeResult.n == 0) throw JobNotFoundException(jobNumber))
   }
 
   def isLatestJobInProgress: Future[Boolean] = findLatestJob.map(latestJob => latestJob.exists(_.isInProgress))

@@ -39,7 +39,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
 
   override def beforeAll() = startEmbeddedMongo()
   override def beforeEach() =
-    List("selfEmployments", "properties", "dividends", "jobHistory").foreach {
+    List("selfEmployments", "properties", "dividends", "banks", "jobHistory").foreach {
     coll => mongoClient.getCollection(coll).remove(new BasicDBObject())
   }
 }

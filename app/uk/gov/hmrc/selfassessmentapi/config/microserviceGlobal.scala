@@ -41,9 +41,8 @@ import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.http.{HeaderCarrier, NotImplementedException}
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.scheduling._
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{ErrorCode, SourceTypes}
-import uk.gov.hmrc.selfassessmentapi.controllers.{ErrorBadRequest, ErrorNotImplemented}
-import uk.gov.hmrc.selfassessmentapi.jobs.{DeleteExpiredDataJob, DropMongoCollectionJob}
+import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
+import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.services.errors.{BusinessError, BusinessException}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -90,7 +89,7 @@ object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSu
 
 
 class MicroserviceMonitoringFilter @Inject()(metrics: Metrics) extends MonitoringFilter with MicroserviceFilterSupport {
-  override lazy val urlPatternToNameMapping = SourceTypes.types.map(sourceType => s".*[/]${sourceType.name}[/]?.*" -> sourceType.documentationName.replaceAll("\\s", "")).toMap
+  override lazy val urlPatternToNameMapping = SourceType.values.map(sourceType => s".*[/]${sourceType.toString}[/]?.*" -> SourceType.sourceTypeToDocumentationName(sourceType)).toMap
   override def kenshooRegistry = metrics.defaultRegistry
 }
 
@@ -162,17 +161,11 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 
   def createScheduledJobs(): Seq[ExclusiveScheduledJob] = {
-    val expiredJobEnabled: Boolean = AppContext.deleteExpiredDataJob.getBoolean("enabled").getOrElse(false)
-    val dropMongoJobEnabled: Boolean = AppContext.dropMongoCollectionJob.getBoolean("enabled").getOrElse(false)
-    (expiredJobEnabled, dropMongoJobEnabled) match {
-      case (true, true) => Seq(DeleteExpiredDataJob, DropMongoCollectionJob)
-      case (true, false) => Seq(DeleteExpiredDataJob)
-      case (false, true) => Seq(DropMongoCollectionJob)
-      case _ => Seq()
-    }
+    val expiredJobEnabled = AppContext.deleteExpiredDataJob.getBoolean("enabled").getOrElse(false)
+    if (expiredJobEnabled) Seq(DeleteExpiredDataJob) else Seq.empty
   }
 
-  override def onStart(app : Application): Unit = {
+  override def onStart(app: Application): Unit = {
     super.onStart(app)
     application = app
   }

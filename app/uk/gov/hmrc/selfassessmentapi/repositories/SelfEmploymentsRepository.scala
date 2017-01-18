@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.libs.json.JsObject
 import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.DB
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType.Ascending
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.controllers.api.SourceId
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.resources.models.SourceId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -52,6 +52,13 @@ class SelfEmploymentsRepository(implicit mongo: () => DB)
     find("nino" -> nino.nino)
   }
 
+  def deleteAllBeforeDate(lastModifiedDateTime: DateTime): Future[Int] = {
+    val query = BSONDocument("lastModifiedDateTime" ->
+      BSONDocument("$lt" -> BSONDateTime(lastModifiedDateTime.getMillis)))
+
+    collection.remove(query).map(_.n)
+  }
+
   /*
    * Inserts a new SelfEmployment document.
    */
@@ -69,7 +76,7 @@ class SelfEmploymentsRepository(implicit mongo: () => DB)
    * Hand-written persistence code is discouraged.
    */
   def update(id: SourceId, nino: Nino, newSelfEmployment: SelfEmployment): Future[Boolean] = {
-    domainFormatImplicit.writes(newSelfEmployment.copy(lastModifiedDateTime = LocalDate.now(DateTimeZone.UTC))) match {
+    domainFormatImplicit.writes(newSelfEmployment.copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC))) match {
       case d @ JsObject(_) => collection.update(
         BSONDocument("nino" -> nino.nino, "sourceId" -> id),
         d
@@ -84,7 +91,7 @@ class SelfEmploymentsRepository(implicit mongo: () => DB)
 }
 
 object SelfEmploymentsRepository extends MongoDbConnection {
-  private lazy val repository = new SelfEmploymentsRepository()
+  private lazy val repository = new SelfEmploymentsRepository
 
-  def apply() = repository
+  def apply(): SelfEmploymentsRepository = repository
 }

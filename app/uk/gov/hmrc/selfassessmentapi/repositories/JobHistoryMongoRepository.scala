@@ -30,7 +30,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object JobHistoryRepository extends MongoDbConnection {
-  private lazy val repository = new JobHistoryMongoRepository
+  private lazy val repository = {
+    val repo = new JobHistoryMongoRepository
+    repo.ensureIndexes
+    repo
+  }
 
   def apply() = repository
 }

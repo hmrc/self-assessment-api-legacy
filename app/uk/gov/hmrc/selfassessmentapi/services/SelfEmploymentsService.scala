@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
@@ -35,7 +35,7 @@ trait SelfEmploymentsMongoService {
   def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]] = {
     val id = BSONObjectID.generate
     val newSelfEmployment =
-      domain.SelfEmployment(id, id.stringify, nino, LocalDate.now(DateTimeZone.UTC),
+      domain.SelfEmployment(id, id.stringify, nino, DateTime.now(DateTimeZone.UTC),
         selfEmployment.accountingPeriod, selfEmployment.accountingType, selfEmployment.commencementDate)
 
     mongoRepository.retrieveAll(nino).flatMap { selfEmployments =>

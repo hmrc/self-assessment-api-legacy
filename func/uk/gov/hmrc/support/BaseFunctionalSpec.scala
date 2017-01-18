@@ -10,10 +10,8 @@ import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.TestApplication
-import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureConfig}
-import uk.gov.hmrc.selfassessmentapi.controllers.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.controllers.api.{SourceType, SourceTypes, SummaryType}
-import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorNotImplemented
+import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 
 import scala.collection.mutable
 import scala.util.matching.Regex
@@ -59,72 +57,6 @@ trait BaseFunctionalSpec extends TestApplication {
           }
         case None => ()
       }
-      this
-    }
-
-    def bodyHasSummaryLinks(sourceType: SourceType, sourceId: String, nino: Nino, taxYear: String) = {
-      sourceType.summaryTypes.foreach { summaryType =>
-        bodyHasLink(summaryType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}/$sourceId/${summaryType.name}".r)
-      }
-      this
-    }
-
-    def bodyHasSummaryLinks(sourceType: SourceType, nino: Nino, taxYear: String) = {
-      sourceType.summaryTypes.foreach { summaryType =>
-        bodyHasLink(summaryType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
-      }
-      this
-    }
-
-    def bodyHasSummaryLink(sourceType: SourceType, summaryType: SummaryType, nino: Nino, taxYear: String) = {
-      bodyHasLink(summaryType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r)
-      this
-    }
-
-    def bodyDoesNotHaveSummaryLink(sourceType: SourceType, summaryType: SummaryType, nino: Nino, taxYear: String) = {
-      val hrefPattern = s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}/.+/${summaryType.name}".r
-      getLinkFromBody(summaryType.name) match {
-        case Some(href) =>
-          hrefPattern findFirstIn href match {
-            case Some(v) => fail(s"$summaryType Hal link found.")
-            case None => ()
-          }
-        case None => ()
-      }
-      this
-    }
-
-    def bodyHasLinksForAllSourceTypes(nino: Nino, taxYear: String) = {
-      SourceTypes.types.foreach { sourceType =>
-        bodyHasLink(sourceType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}")
-      }
-      this
-    }
-
-    def bodyHasLinksForSourceType(sourceType: SourceType, nino: Nino, taxYear: String) = {
-      bodyHasLink(sourceType.name, s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}")
-      this
-    }
-
-    def bodyDoesNotHaveLinksForSourceType(sourceType: SourceType, nino: Nino, taxYear: String) = {
-      val hrefPattern = s"/self-assessment/ni/$nino/$taxYear/${sourceType.name}".r
-      getLinkFromBody(sourceType.name) match {
-        case Some(href) =>
-          hrefPattern findFirstIn href match {
-            case Some(v) => fail(s"$sourceType Hal link found.")
-            case None => ()
-          }
-        case None => ()
-      }
-      this
-    }
-
-    def bodyHasLinksForEnabledSourceTypes(nino: Nino, taxYear: String) = {
-      SourceTypes.types.filter { source =>
-        AppContext.featureSwitch.exists { config =>
-          FeatureConfig(config).isSourceEnabled(source.name)
-        }
-      } foreach { sourceType => bodyHasLinksForSourceType(sourceType, nino, taxYear) }
       this
     }
 

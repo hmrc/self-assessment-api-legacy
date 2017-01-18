@@ -17,7 +17,6 @@
 package uk.gov.hmrc.selfassessmentapi.services
 
 import reactivemongo.bson.BSONObjectID
-import reactivemongo.core.errors.DatabaseException
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
@@ -27,8 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PropertiesService {
-  private val repository = PropertiesRepository()
+class PropertiesService(repository: PropertiesRepository) {
 
   def update(nino: Nino, prop: properties.Properties): Future[Boolean] =
     repository.retrieve(nino).flatMap {
@@ -47,15 +45,14 @@ class PropertiesService {
   def create(nino: Nino, props: properties.Properties): Future[Either[Error, Boolean]] = {
     val properties = Properties(BSONObjectID.generate, nino, props.accountingType)
 
-    repository.create(properties).map(Right(_)) recover {
-      case e: DatabaseException if e.code.contains(11000) => // i.e. Duplicate key exception.
-        Left(
-          Error(ErrorCode.ALREADY_EXISTS.toString, s"A property business already exists", ""))
+    repository.retrieve(nino) flatMap {
+      case Some(_) => Future.successful(Left(Error(ErrorCode.ALREADY_EXISTS.toString, s"A property business already exists", "")))
+      case None => repository.create(properties).map(Right(_))
     }
   }
 
 }
 
 object PropertiesService {
-  def apply(): PropertiesService = new PropertiesService
+  def apply(): PropertiesService = new PropertiesService(PropertiesRepository())
 }

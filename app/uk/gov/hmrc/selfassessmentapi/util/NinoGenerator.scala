@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.controllers.util
+package uk.gov.hmrc.selfassessmentapi.util
 
 import uk.gov.hmrc.domain.Nino
 

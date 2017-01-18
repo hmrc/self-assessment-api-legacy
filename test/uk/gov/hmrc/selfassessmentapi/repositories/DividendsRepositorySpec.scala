@@ -16,46 +16,86 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
+import org.joda.time.{DateTime, DateTimeUtils, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, UnitSpec}
-import uk.gov.hmrc.selfassessmentapi.controllers.util.NinoGenerator
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
+import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.domain.Dividends
 import uk.gov.hmrc.selfassessmentapi.resources.models
 import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class DividendsRepositorySpec extends MongoEmbeddedDatabase {
-  private val repository = new DividendsRepository
+  private val repo = new DividendsRepository
 
   private val nino = NinoGenerator().nextNino()
-  private val exampleDividend =
+
+  def createDividend(nino: Nino, id: BSONObjectID = BSONObjectID.generate): Dividends = {
     Dividends(BSONObjectID.generate, nino, Map(TaxYear("2016-17") -> models.dividends.Dividends(Some(500.25))))
+  }
 
+  "create" should {
+    "store a dividends object" in {
+      await(repo.create(createDividend(nino))) shouldBe true
 
-  "update" should {
-    "create a dividends object the first time the user inserts a record" in {
-      await(repository.update(nino, exampleDividend)) shouldBe true
-
-      val result = await(repository.retrieve(nino))
+      val result = await(repo.retrieve(nino))
       result.isDefined shouldBe true
       result.get.dividends.get(TaxYear("2016-17")) shouldBe Some(models.dividends.Dividends(Some(500.25)))
     }
+  }
 
+  "update" should {
     "overwrite an existing dividend" in {
-      val updatedDividend = exampleDividend.copy(dividends =
-        exampleDividend.dividends.updated(TaxYear("2016-17"), models.dividends.Dividends(None)))
+      val originalDividend = createDividend(nino)
+      val updatedDividend = originalDividend.copy(dividends =
+        originalDividend.dividends.updated(TaxYear("2016-17"), models.dividends.Dividends(None)))
 
-      await(repository.update(nino, exampleDividend)) shouldBe true
-      await(repository.update(nino, updatedDividend)) shouldBe true
+      await(repo.create(originalDividend)) shouldBe true
+      await(repo.update(nino, updatedDividend)) shouldBe true
 
-      val result = await(repository.retrieve(nino))
+      val result = await(repo.retrieve(nino))
       result.isDefined shouldBe true
       result.get.dividends.get(TaxYear("2016-17")) shouldBe Some(models.dividends.Dividends(None))
+    }
+
+    "update the lastModifiedDateTime on the persisted object" in {
+      val dividend = createDividend(nino)
+      await(repo.create(dividend))
+
+      val creationDateTime = await(repo.retrieve(nino)).get.lastModifiedDateTime
+
+      DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusDays(1).getMillis)
+
+      await(repo.update(nino, dividend.copy(dividends =
+        dividend.dividends.updated(TaxYear("2016-17"), models.dividends.Dividends(None)))))
+
+      val lastModifiedDateTime = await(repo.retrieve(nino)).get.lastModifiedDateTime
+
+      lastModifiedDateTime.isAfter(creationDateTime) shouldBe true
+
+      DateTimeUtils.setCurrentMillisSystem()
     }
   }
 
   "retrieve" should {
     "return None if the user has no dividends" in {
-      await(repository.retrieve(nino)) shouldBe None
+      await(repo.retrieve(nino)) shouldBe None
+    }
+  }
+
+  "deleteAllBeforeDate" should {
+    "delete all records older than the provided DateTime object" in {
+      val dividendToKeep = createDividend(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val dividendToRemoveOne = createDividend(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).minusDays(1))
+      val dividendToRemoveTwo = createDividend(nino)
+
+      await(repo.create(dividendToKeep))
+      await(repo.create(dividendToRemoveOne))
+      await(repo.create(dividendToRemoveTwo))
+      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC))) shouldBe 2
+      await(repo.findAll()) should contain theSameElementsAs Seq(dividendToKeep)
     }
   }
 }

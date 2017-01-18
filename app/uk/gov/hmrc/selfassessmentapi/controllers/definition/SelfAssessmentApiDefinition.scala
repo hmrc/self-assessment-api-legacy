@@ -42,7 +42,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/self-employments",
-        endpointName = "Register a self employment business",
+        endpointName = "Add a self employment business",
         method = POST,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -78,7 +78,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/self-employments/{selfEmploymentId}/periods/{periodId}",
-        endpointName = "Get self employment period",
+        endpointName = "Get self employment periodic summary",
         method = GET,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -87,7 +87,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/self-employments/{selfEmploymentId}/periods/{periodId}",
-        endpointName = "Update self employment period",
+        endpointName = "Update self employment periodic summary",
         method = PUT,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -128,7 +128,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/uk-properties",
-        endpointName = "Register a UK property business",
+        endpointName = "Add a UK property business",
         method = POST,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -146,7 +146,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/other/periods",
-        endpointName = "Create a non FHL UK property period",
+        endpointName = "Create a non FHL UK property periodic summary",
         method = POST,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -155,7 +155,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/other/periods/{periodId}",
-        endpointName = "Get a non FHL UK property period",
+        endpointName = "Get a non FHL UK property periodic summary",
         method = GET,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -164,7 +164,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/other/periods/{periodId}",
-        endpointName = "Update a non FHL UK property period",
+        endpointName = "Update a non FHL UK property periodic summary",
         method = PUT,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -209,7 +209,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/furnished-holiday-lettings/periods/{periodId}",
-        endpointName = "Get a FHL UK property period",
+        endpointName = "Get a FHL UK property periodic summary",
         method = GET,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -218,7 +218,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/furnished-holiday-lettings/periods/{periodId}",
-        endpointName = "Update a FHL UK property period",
+        endpointName = "Update a FHL UK property periodic summary",
         method = PUT,
         authType = USER,
         throttlingTier = UNLIMITED,

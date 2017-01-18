@@ -18,32 +18,25 @@ package uk.gov.hmrc.selfassessmentapi.services
 
 import org.joda.time.DateTime
 import play.api.Logger
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.SelfAssessment
 import uk.gov.hmrc.selfassessmentapi.repositories._
-import uk.gov.hmrc.selfassessmentapi.repositories.live._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository,
-                               seRepo: SelfEmploymentMongoRepository,
-                               benRepo: BenefitsMongoRepository,
-                               fhlRepo: FurnishedHolidayLettingsMongoRepository,
-                               ukPropertyRepo: UKPropertiesMongoRepository,
-                               divRepo: DividendMongoRepository,
-                               bankRepo: BanksMongoRepository,
+class DeleteExpiredDataService(seRepo: SelfEmploymentsRepository,
+                               propsRepo: PropertiesRepository,
+                               divRepo: DividendsRepository,
                                jobRepo: JobHistoryMongoRepository) {
 
   def deleteExpiredData(lastModifiedDate: DateTime): Future[Int] = {
-    Logger.info(s"Deleting records older than lastModifiedDate : $lastModifiedDate ")
+    Logger.info(s"Deleting records older than lastModifiedDate: $lastModifiedDate ")
 
     jobRepo.startJob().flatMap { job =>
       val result = for {
-        oldRecords <- saRepo.findOlderThan(lastModifiedDate)
-        _ <- deleteRecords(oldRecords)
-        _ <- jobRepo.completeJob(job.jobNumber, oldRecords.size)
-      } yield oldRecords.size
+        nRemoved <- deleteRecords(lastModifiedDate)
+        _ <- jobRepo.completeJob(job.jobNumber, nRemoved)
+      } yield nRemoved
 
       result.recover {
         case t => Await.result(abortJob(job.jobNumber, t), Duration.Inf)
@@ -51,18 +44,12 @@ class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository,
     }
   }
 
-  private def deleteRecords(records: Seq[SelfAssessment]): Future[Unit] =
-    Future.successful {
-      records.foreach { record =>
-        saRepo.delete(record.nino, record.taxYear)
-        seRepo.delete(record.nino, record.taxYear)
-        benRepo.delete(record.nino, record.taxYear)
-        fhlRepo.delete(record.nino, record.taxYear)
-        divRepo.delete(record.nino, record.taxYear)
-        bankRepo.delete(record.nino, record.taxYear)
-        ukPropertyRepo.delete(record.nino, record.taxYear)
-      }
-    }
+  private def deleteRecords(lastModifiedDate: DateTime): Future[Int] =
+      for {
+        seModified <- seRepo.deleteAllBeforeDate(lastModifiedDate)
+        propModified <- propsRepo.deleteAllBeforeDate(lastModifiedDate)
+        divModified <- divRepo.deleteAllBeforeDate(lastModifiedDate)
+      } yield seModified + propModified + divModified
 
   private def abortJob(jobNumber: Int, t: Throwable) =
     for {
@@ -72,12 +59,9 @@ class DeleteExpiredDataService(saRepo: SelfAssessmentMongoRepository,
 
 object DeleteExpiredDataService {
   def apply() =
-    new DeleteExpiredDataService(SelfAssessmentRepository(),
-                                 SelfEmploymentRepository(),
-                                 BenefitsRepository(),
-                                 FurnishedHolidayLettingsRepository(),
-                                 UKPropertiesRepository(),
-                                 DividendRepository(),
-                                 uk.gov.hmrc.selfassessmentapi.repositories.live.BanksRepository(),
-                                 JobHistoryRepository())
+    new DeleteExpiredDataService(
+      SelfEmploymentsRepository(),
+      PropertiesRepository(),
+      DividendsRepository(),
+      JobHistoryRepository())
 }

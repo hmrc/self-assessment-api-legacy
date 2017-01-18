@@ -31,8 +31,8 @@ documentation:
           name: Self Employment Businesses
           description: !include docs/self-employment.md
       post:
-        displayName: Register a self employment business
-        description: Register a self employment business
+        displayName: Add a self employment business
+        description: Add a self employment business
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -127,8 +127,8 @@ documentation:
                 description: An identifier for the period
                 type: string
             get:
-              displayName: Get self employment period
-              description: Get a single self employment period for a given identifier
+              displayName: Get self employment periodic summary
+              description: Get a single self employment periodic summary for a given identifier
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -144,8 +144,8 @@ documentation:
                       type: !include schemas/Error.json
                       example: !include examples/errors/NOT_FOUND.json
             put:
-              displayName: Update self employment period
-              description: Update a self employment period
+              displayName: Update self employment periodic summary
+              description: Update a self employment periodic summary
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -205,8 +205,8 @@ documentation:
         name: UK Property Business
         description: !include docs/uk-property.md
       post:
-        displayName: Register a UK property business
-        description: Register a UK property business
+        displayName: Add a UK property business
+        description: Add a UK property business
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -296,8 +296,8 @@ documentation:
                 displayName: Period ID
                 type: string
             get:
-              displayName: Get a non FHL UK property period
-              description: Get a non FHL UK property period for a given identifier
+              displayName: Get a non FHL UK property periodic summary
+              description: Get a non FHL UK property periodic summary for a given identifier
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -308,8 +308,8 @@ documentation:
                       type: !include schemas/UK_PROP_OTHER_Period_Without_ID.json
                       example: !include examples/uk-properties/other/Period.json
             put:
-              displayName: Update a non FHL UK property period
-              description: Update a non FHL UK property period
+              displayName: Update a non FHL UK property periodic summary
+              description: Update a non FHL UK property periodic summary
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -412,8 +412,8 @@ documentation:
                 displayName: Period ID
                 type: string
             get:
-              displayName: Get a FHL UK property period
-              description: Get a FHL UK property period for a given identifier
+              displayName: Get a FHL UK property periodic summary
+              description: Get a FHL UK property periodic summary for a given identifier
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -424,8 +424,8 @@ documentation:
                       type: !include schemas/UK_PROP_FHL_Period_Without_ID.json
                       example: !include examples/uk-properties/fhl/Period.json
             put:
-              displayName: Update a FHL UK property period
-              description: Update a FHL UK property period
+              displayName: Update a FHL UK property periodic summary
+              description: Update a FHL UK property periodic summary
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]

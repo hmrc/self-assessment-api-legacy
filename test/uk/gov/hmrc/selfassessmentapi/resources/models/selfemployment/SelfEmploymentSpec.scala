@@ -49,7 +49,7 @@ class SelfEmploymentSpec extends JsonSpec {
     "return a DATE_NOT_IN_THE_PAST error when proving an accounting period with a start date that is before 2017-04-01" in {
       val input = SelfEmployment(None, AccountingPeriod(LocalDate.parse("2017-03-01"), LocalDate.parse("2017-03-03")), AccountingType.CASH, Some(LocalDate.now.minusDays(1)))
       assertValidationErrorWithCode(input,
-        "/accountingPeriod/start", ErrorCode.DATE_NOT_IN_THE_PAST)
+        "/accountingPeriod/start", ErrorCode.START_DATE_INVALID)
     }
 
     "return a INVALID_VALUE error when providing an invalid accounting type" in {

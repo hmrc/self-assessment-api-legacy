@@ -31,7 +31,7 @@ class AccountingPeriodSpec extends JsonSpec {
   "validate" should {
     "reject an accounting period if the `start` date is before 2017-04-01" in {
       val accPeriod = AccountingPeriod(LocalDate.parse("2017-03-31"), LocalDate.parse("2017-04-02"))
-      assertValidationErrorWithCode(accPeriod, "/start", ErrorCode.DATE_NOT_IN_THE_PAST)
+      assertValidationErrorWithCode(accPeriod, "/start", ErrorCode.START_DATE_INVALID)
     }
 
     "reject an accounting period if the `end` date comes before the `start` date" in {

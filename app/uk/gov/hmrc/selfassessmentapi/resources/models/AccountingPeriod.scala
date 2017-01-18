@@ -38,7 +38,7 @@ object AccountingPeriod {
   }
 
   private def startDateValidator = Reads.of[LocalDate].filter(
-    ValidationError("the 'start' should be after or equal to 2017-04-01", ErrorCode.DATE_NOT_IN_THE_PAST)
+    ValidationError("the 'start' should be after or equal to 2017-04-01", ErrorCode.START_DATE_INVALID)
   )(date => {
     val mvpStart = LocalDate.parse("2017-04-01")
     date.isAfter(mvpStart) || date.isEqual(mvpStart)

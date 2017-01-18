@@ -21,7 +21,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.EnumJson
 object FHLExpenseType extends Enumeration {
   type FHLExpenseType = Value
 
-  val Rent = Value("rent")
+  val PremisesRunningCosts = Value("premisesRunningCosts")
   val RepairsAndMaintenance = Value("repairsAndMaintenance")
   val FinancialCosts = Value("financialCosts")
   val ProfessionalFees = Value("professionalFees")

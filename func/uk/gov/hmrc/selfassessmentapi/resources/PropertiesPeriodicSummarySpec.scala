@@ -12,6 +12,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
         fromDate = Some("2017-04-06"),
         toDate = Some("2018-04-05"),
         rentIncome = 500,
+        premisesRunningCosts = 20.20,
         repairsAndMaintenance = 11.25,
         financialCosts = 100,
         professionalFees = 1232.55,
@@ -421,6 +422,7 @@ class PropertiesPeriodicSummarySpec extends BaseFunctionalSpec {
 
       val updatedPeriod = Jsons.Properties.fhlPeriod(
         rentIncome = 600,
+        premisesRunningCosts = 20.20,
         repairsAndMaintenance = 111.25,
         financialCosts = 160,
         professionalFees = 1132.55,

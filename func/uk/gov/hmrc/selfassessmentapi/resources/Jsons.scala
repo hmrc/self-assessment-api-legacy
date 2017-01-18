@@ -51,8 +51,7 @@ object Jsons {
 
   object Properties {
     def apply(accountingType: String = "CASH"): JsValue = {
-      Json.parse(
-        s"""
+      Json.parse(s"""
            |{
            |  "accountingType": "$accountingType"
            |}
@@ -60,29 +59,33 @@ object Jsons {
     }
 
     def fhlPeriod(fromDate: Option[String] = None,
-               toDate: Option[String] = None,
-               rentIncome: BigDecimal = 0,
-               repairsAndMaintenance: BigDecimal = 0,
-               financialCosts: BigDecimal = 0,
-               professionalFees: BigDecimal = 0,
-               otherCost: BigDecimal = 0): JsValue = {
+                  toDate: Option[String] = None,
+                  rentIncome: BigDecimal = 0,
+                  premisesRunningCosts: BigDecimal = 0,
+                  repairsAndMaintenance: BigDecimal = 0,
+                  financialCosts: BigDecimal = 0,
+                  professionalFees: BigDecimal = 0,
+                  otherCost: BigDecimal = 0): JsValue = {
 
       val from =
-        fromDate.map { date =>
-          s"""
+        fromDate
+          .map { date =>
+            s"""
              | "from": "$date",
          """.stripMargin
-        }.getOrElse("")
+          }
+          .getOrElse("")
 
       val to =
-        toDate.map { date =>
-          s"""
+        toDate
+          .map { date =>
+            s"""
              | "to": "$date",
          """.stripMargin
-        }.getOrElse("")
+          }
+          .getOrElse("")
 
-      Json.parse(
-        s"""
+      Json.parse(s"""
            |{
            |  $from
            |  $to
@@ -90,6 +93,7 @@ object Jsons {
            |    "rentIncome": { "amount": $rentIncome }
            |  },
            |  "expenses": {
+           |    "premisesRunningCosts": { "amount": $premisesRunningCosts },
            |    "repairsAndMaintenance": { "amount": $repairsAndMaintenance },
            |    "financialCosts": { "amount": $financialCosts },
            |    "professionalFees": { "amount": $professionalFees },
@@ -100,40 +104,45 @@ object Jsons {
     }
 
     def otherPeriod(fromDate: Option[String] = None,
-               toDate: Option[String] = None,
-               rentIncome: BigDecimal = 0,
-               rentIncomeTaxDeducted: BigDecimal = 0,
-               premiumsOfLeaseGrant: Option[BigDecimal] = None,
-               reversePremiums: BigDecimal = 0,
-               premisesRunningCosts: BigDecimal = 0,
-               repairsAndMaintenance: BigDecimal = 0,
-               financialCosts: BigDecimal = 0,
-               professionalFees: BigDecimal = 0,
-               costOfServices: BigDecimal = 0,
-               otherCost: BigDecimal = 0): JsValue = {
+                    toDate: Option[String] = None,
+                    rentIncome: BigDecimal = 0,
+                    rentIncomeTaxDeducted: BigDecimal = 0,
+                    premiumsOfLeaseGrant: Option[BigDecimal] = None,
+                    reversePremiums: BigDecimal = 0,
+                    premisesRunningCosts: BigDecimal = 0,
+                    repairsAndMaintenance: BigDecimal = 0,
+                    financialCosts: BigDecimal = 0,
+                    professionalFees: BigDecimal = 0,
+                    costOfServices: BigDecimal = 0,
+                    otherCost: BigDecimal = 0): JsValue = {
 
       val from =
-        fromDate.map { date =>
-          s"""
+        fromDate
+          .map { date =>
+            s"""
              | "from": "$date",
          """.stripMargin
-        }.getOrElse("")
+          }
+          .getOrElse("")
 
       val to =
-        toDate.map { date =>
-          s"""
+        toDate
+          .map { date =>
+            s"""
              | "to": "$date",
          """.stripMargin
-        }.getOrElse("")
+          }
+          .getOrElse("")
 
-      Json.parse(
-        s"""
+      Json.parse(s"""
            |{
            |  $from
            |  $to
            |  "incomes": {
            |    "rentIncome": { "amount": $rentIncome, "taxDeducted": $rentIncomeTaxDeducted },
-           |    ${premiumsOfLeaseGrant.map(income => s""" "premiumsOfLeaseGrant": { "amount": $income },""").getOrElse("")}
+           |    ${premiumsOfLeaseGrant
+                      .map(income => s""" "premiumsOfLeaseGrant": { "amount": $income },""")
+                      .getOrElse("")}
            |    "reversePremiums": { "amount": $reversePremiums }
            |  },
            |  "expenses": {
@@ -149,14 +158,16 @@ object Jsons {
     }
 
     def periodSummary(dates: (String, String)*): JsValue = {
-      val nestedDates = dates.map { date =>
-        s"""
+      val nestedDates = dates
+        .map { date =>
+          s"""
            |{
            |  "from": "${date._1}",
            |  "to": "${date._2}"
            |}
            """.stripMargin
-      }.mkString(",")
+        }
+        .mkString(",")
 
       Json.parse(
         s"""
@@ -188,13 +199,13 @@ object Jsons {
     }
 
     def otherAnnualSummary(annualInvestmentAllowance: BigDecimal = 0.0,
-                          businessPremisesRenovationAllowance : BigDecimal = 0.0,
-                          otherCapitalAllowance: BigDecimal = 0.0,
+                           businessPremisesRenovationAllowance: BigDecimal = 0.0,
+                           otherCapitalAllowance: BigDecimal = 0.0,
                            zeroEmissionsGoodsVehicleAllowance: BigDecimal = 0.0,
-                          costOfReplacingDomesticItems: BigDecimal = 0.0,
-                          lossBroughtForward: BigDecimal = 0.0,
-                          privateUseAdjustment: BigDecimal = 0.0,
-                          balancingCharge: BigDecimal = 0.0): JsValue = {
+                           costOfReplacingDomesticItems: BigDecimal = 0.0,
+                           lossBroughtForward: BigDecimal = 0.0,
+                           privateUseAdjustment: BigDecimal = 0.0,
+                           balancingCharge: BigDecimal = 0.0): JsValue = {
       Json.parse(s"""
                     |{
                     |  "allowances": {
@@ -216,10 +227,11 @@ object Jsons {
   }
 
   object SelfEmployment {
-    def apply(accPeriodStart: String = "2017-04-06", accPeriodEnd: String = "2018-04-05", accountingType: String = "CASH",
-                       commencementDate: String = s"${LocalDate.now.minusDays(1)}"): JsValue = {
-      Json.parse(
-        s"""
+    def apply(accPeriodStart: String = "2017-04-06",
+              accPeriodEnd: String = "2018-04-05",
+              accountingType: String = "CASH",
+              commencementDate: String = s"${LocalDate.now.minusDays(1)}"): JsValue = {
+      Json.parse(s"""
            |{
            |  "accountingPeriod": {
            |    "start": "$accPeriodStart",
@@ -231,17 +243,24 @@ object Jsons {
          """.stripMargin)
     }
 
-    def annualSummary(annualInvestmentAllowance: BigDecimal = 500.25, capitalAllowanceMainPool: BigDecimal = 500.25,
-                      capitalAllowanceSpecialRatePool: BigDecimal = 500.25, businessPremisesRenovationAllowance: BigDecimal = 500.25,
-                      enhancedCapitalAllowance: BigDecimal = 500.25, allowanceOnSales: BigDecimal = 500.25,
+    def annualSummary(annualInvestmentAllowance: BigDecimal = 500.25,
+                      capitalAllowanceMainPool: BigDecimal = 500.25,
+                      capitalAllowanceSpecialRatePool: BigDecimal = 500.25,
+                      businessPremisesRenovationAllowance: BigDecimal = 500.25,
+                      enhancedCapitalAllowance: BigDecimal = 500.25,
+                      allowanceOnSales: BigDecimal = 500.25,
                       zeroEmissionGoodsVehicleAllowance: BigDecimal = 500.25,
-                      includedNonTaxableProfits: BigDecimal = 500.25, basisAdjustment: BigDecimal = -500.25,
-                      overlapReliefUsed: BigDecimal = 500.25, accountingAdjustment: BigDecimal = 500.25,
-                      averagingAdjustment: BigDecimal = -500.25, lossBroughtForward: BigDecimal = 500.25,
-                      outstandingBusinessIncome: BigDecimal = 500.25, balancingChargeBPRA: BigDecimal = 500.25,
-                      balancingChargeOther: BigDecimal = 500.25, goodsAndServicesOwnUse: BigDecimal = 500.25): JsValue = {
-      Json.parse(
-        s"""
+                      includedNonTaxableProfits: BigDecimal = 500.25,
+                      basisAdjustment: BigDecimal = -500.25,
+                      overlapReliefUsed: BigDecimal = 500.25,
+                      accountingAdjustment: BigDecimal = 500.25,
+                      averagingAdjustment: BigDecimal = -500.25,
+                      lossBroughtForward: BigDecimal = 500.25,
+                      outstandingBusinessIncome: BigDecimal = 500.25,
+                      balancingChargeBPRA: BigDecimal = 500.25,
+                      balancingChargeOther: BigDecimal = 500.25,
+                      goodsAndServicesOwnUse: BigDecimal = 500.25): JsValue = {
+      Json.parse(s"""
            |{
            |  "allowances": {
            |    "annualInvestmentAllowance": $annualInvestmentAllowance,
@@ -268,34 +287,44 @@ object Jsons {
        """.stripMargin)
     }
 
-
-
-    def period(fromDate: Option[String] = None, toDate: Option[String] = None,
-                             turnover: BigDecimal = 0, otherIncome: BigDecimal = 0,
-                             costOfGoodsBought: (BigDecimal, BigDecimal) = (0, 0), cisPaymentsToSubcontractors: (BigDecimal, BigDecimal) = (0, 0),
-                             staffCosts: (BigDecimal, BigDecimal) = (0, 0), travelCosts: (BigDecimal, BigDecimal) = (0, 0),
-                             premisesRunningCosts: (BigDecimal, BigDecimal) = (0, 0), maintenanceCosts: (BigDecimal, BigDecimal) = (0, 0),
-                             adminCosts: (BigDecimal, BigDecimal) = (0, 0), advertisingCosts: (BigDecimal, BigDecimal) = (0, 0),
-                             interest: (BigDecimal, BigDecimal) = (0, 0), financialCharges: (BigDecimal, BigDecimal) = (0, 0),
-                             badDebt: (BigDecimal, BigDecimal) = (0, 0), professionalFees: (BigDecimal, BigDecimal) = (0, 0),
-                             depreciation: (BigDecimal, BigDecimal) = (0, 0), otherExpenses: (BigDecimal, BigDecimal) = (0, 0)): JsValue = {
+    def period(fromDate: Option[String] = None,
+               toDate: Option[String] = None,
+               turnover: BigDecimal = 0,
+               otherIncome: BigDecimal = 0,
+               costOfGoodsBought: (BigDecimal, BigDecimal) = (0, 0),
+               cisPaymentsToSubcontractors: (BigDecimal, BigDecimal) = (0, 0),
+               staffCosts: (BigDecimal, BigDecimal) = (0, 0),
+               travelCosts: (BigDecimal, BigDecimal) = (0, 0),
+               premisesRunningCosts: (BigDecimal, BigDecimal) = (0, 0),
+               maintenanceCosts: (BigDecimal, BigDecimal) = (0, 0),
+               adminCosts: (BigDecimal, BigDecimal) = (0, 0),
+               advertisingCosts: (BigDecimal, BigDecimal) = (0, 0),
+               interest: (BigDecimal, BigDecimal) = (0, 0),
+               financialCharges: (BigDecimal, BigDecimal) = (0, 0),
+               badDebt: (BigDecimal, BigDecimal) = (0, 0),
+               professionalFees: (BigDecimal, BigDecimal) = (0, 0),
+               depreciation: (BigDecimal, BigDecimal) = (0, 0),
+               otherExpenses: (BigDecimal, BigDecimal) = (0, 0)): JsValue = {
 
       val from =
-        fromDate.map { date =>
-          s"""
+        fromDate
+          .map { date =>
+            s"""
              | "from": "$date",
          """.stripMargin
-        }.getOrElse("")
+          }
+          .getOrElse("")
 
       val to =
-        toDate.map { date =>
-          s"""
+        toDate
+          .map { date =>
+            s"""
              | "to": "$date",
          """.stripMargin
-        }.getOrElse("")
+          }
+          .getOrElse("")
 
-      Json.parse(
-        s"""
+      Json.parse(s"""
            |{
            |  $from
            |  $to
@@ -327,8 +356,7 @@ object Jsons {
 
   object Dividends {
     def apply(amount: BigDecimal): JsValue = {
-      Json.parse(
-        s"""
+      Json.parse(s"""
            |{
            |  "ukDividends": $amount
            |}

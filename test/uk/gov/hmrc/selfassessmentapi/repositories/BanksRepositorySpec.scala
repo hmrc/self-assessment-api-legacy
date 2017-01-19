@@ -21,13 +21,14 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.domain.Bank
+import uk.gov.hmrc.selfassessmentapi.resources.models.banks.BankAnnualSummary
 
 class BanksRepositorySpec extends MongoEmbeddedDatabase {
   private val repo = new BanksRepository
   private val nino = generateNino
 
   private def createBank(nino: Nino, lastModifiedDateTime: DateTime, id: BSONObjectID = BSONObjectID.generate): Bank = {
-    Bank(id, id.stringify, nino, lastModifiedDateTime, Some("myBank"))
+    Bank(id, id.stringify, nino, lastModifiedDateTime, Some("myBank"), Map(taxYear -> BankAnnualSummary(Some(50.23), Some(12.55))))
   }
 
   "create" should {

@@ -35,7 +35,7 @@ trait BanksMongoService {
     val id = BSONObjectID.generate
     val newBank =
       domain.Bank(id, id.stringify, nino, DateTime.now(DateTimeZone.UTC),
-        bank.accountName)
+        bank.accountName, Map.empty)
     mongoRepository.create(newBank).map {
       case true => Some(newBank.sourceId)
       case false => None

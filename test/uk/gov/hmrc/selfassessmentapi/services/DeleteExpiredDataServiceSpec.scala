@@ -30,6 +30,7 @@ import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
 import uk.gov.hmrc.selfassessmentapi.repositories._
 import uk.gov.hmrc.selfassessmentapi.resources.models
+import uk.gov.hmrc.selfassessmentapi.resources.models.banks.BankAnnualSummary
 import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, AccountingType, TaxYear}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -78,7 +79,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   }
 
   private def createBank(lastModifiedDateTime: DateTime, nino: Nino, id: BSONObjectID = BSONObjectID.generate): Bank = {
-    Bank(id, id.stringify, nino, lastModifiedDateTime, Some("my-bank"))
+    Bank(id, id.stringify, nino, lastModifiedDateTime, Some("my-bank"), Map(taxYear -> BankAnnualSummary(Some(122.22), Some(33.45))))
   }
 
   "deleteExpiredData" should {

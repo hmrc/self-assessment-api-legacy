@@ -21,22 +21,29 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.resources.models.banks
+import uk.gov.hmrc.selfassessmentapi.resources.models.banks.BankAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.resources.models.{TaxYear, banks}
 
 case class Bank(id: BSONObjectID,
                 sourceId: String,
                 nino: Nino,
                 lastModifiedDateTime: DateTime,
-                accountName: Option[String])
+                accountName: Option[String],
+                annualSummaries: Map[TaxYear, BankAnnualSummary])
     extends LastModifiedDateTime {
 
   def toModel(elideID: Boolean = false): banks.Bank = {
     val id = if (elideID) None else Some(sourceId)
     banks.Bank(id, accountName)
   }
+
+  def annualSummary(taxYear: TaxYear): BankAnnualSummary =
+    annualSummaries.getOrElse(taxYear, BankAnnualSummary(None, None))
 }
 
 object Bank {
+  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.BankFormatters.annualSummaryMapFormat
+
   implicit val mongoFormats: Format[Bank] = ReactiveMongoFormats.mongoEntity({
     implicit val BSONObjectIDFormat: Format[BSONObjectID] = ReactiveMongoFormats.objectIdFormats
     implicit val dateTimeFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats

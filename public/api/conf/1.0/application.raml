@@ -1051,7 +1051,6 @@ documentation:
                       description: Not Found
                       value:
                         code: NOT_FOUND
-
     /savings-accounts:
       (annotations.group):
         name: Savings Accounts
@@ -1075,8 +1074,20 @@ documentation:
           400:
             body:
               application/json:
-                type: !include schemas/Error.json
-                example: !include examples/errors/Bank_INVALID_REQUEST.json
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
+                  invalidLength:
+                    description: accountName length is invalid
+                    value:
+                      code: INVALID_FIELD_LENGTH
+                  invalidValue:
+                    description: accountName is not alphanumeric
+                    value:
+                      code: INVALID_VALUE
       get:
         displayName: Retrieve all savings accounts
         description: Retrieve all savings accounts
@@ -1089,6 +1100,15 @@ documentation:
               application/json:
                 type: !include schemas/SavingsAccount.json
                 example: !include examples/savings-accounts/SavingsAccounts.json
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
       /{savingsAccountId}:
         put:
           displayName: Update a savings account
@@ -1105,13 +1125,29 @@ documentation:
             400:
               body:
                 application/json:
-                  type: !include schemas/Error.json
-                  example: !include examples/errors/Bank_INVALID_REQUEST.json
+                  type: types.errorResponse
+                  examples:
+                    invalidNino:
+                      description: Invalid NINO
+                      value:
+                        code: NINO_INVALID
+                    invalidLength:
+                      description: accountName length is invalid
+                      value:
+                        code: INVALID_FIELD_LENGTH
+                    invalidValue:
+                      description: accountName is not alphanumeric
+                      value:
+                        code: INVALID_VALUE
             404:
               body:
                 application/json:
-                  type: !include schemas/Error.json
-                  example: !include examples/errors/NOT_FOUND.json
+                  type: types.errorResponse
+                  examples:
+                    notFound:
+                      description: Not Found
+                      value:
+                        code: NOT_FOUND
         get:
           displayName: Retrieve a savings account
           description: Retrieve a savings account
@@ -1124,11 +1160,24 @@ documentation:
                 application/json:
                   type: !include schemas/SavingsAccount_Without_ID.json
                   example: !include examples/savings-accounts/SavingsAccount.json
+            400:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    invalidNino:
+                      description: Invalid NINO
+                      value:
+                        code: NINO_INVALID
             404:
               body:
                 application/json:
-                  type: !include schemas/Error.json
-                  example: !include examples/errors/NOT_FOUND.json
+                  type: types.errorResponse
+                  examples:
+                    notFound:
+                      description: Not Found
+                      value:
+                        code: NOT_FOUND
         /{taxYear}:
           put:
             displayName: Update a savings account annual summary
@@ -1145,8 +1194,29 @@ documentation:
               400:
                 body:
                   application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/errors/Bank_AnnualSummary_INVALID_REQUEST.json
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      invalidTaxYear:
+                        description: Invalid taxYear
+                        value:
+                          code: TAX_YEAR_INVALID
+                      invalidAmount:
+                        description: taxedUkInterest is not positive amount or up to 2 decimal places
+                        value:
+                          code: INVALID_MONETARY_AMOUNT
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
           get:
             displayName: Retrieve a savings account annual summary
             description: Retrieve a savings account annual summary
@@ -1159,3 +1229,25 @@ documentation:
                   application/json:
                     type: !include schemas/SavingsAccount_AnnualSummary.json
                     example: !include examples/savings-accounts/AnnualSummary.json
+              400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      invalidTaxYear:
+                        description: Invalid taxYear
+                        value:
+                          code: TAX_YEAR_INVALID
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND

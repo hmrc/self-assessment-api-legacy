@@ -26,8 +26,6 @@ package object models {
   type PropertyId = String
   type PeriodId = String
   type SummaryId = String
-  type LiabilityId = String
-  type LiabilityCalculationErrorId = String
   type ValidationErrors = Seq[(JsPath, Seq[ValidationError])]
 
   /**

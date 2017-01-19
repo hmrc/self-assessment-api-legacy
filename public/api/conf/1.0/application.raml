@@ -11,6 +11,7 @@ uses:
   sec: http://api-documentation-raml-frontend.service/api-documentation/assets/common/modules/securitySchemes.raml
   headers: http://api-documentation-raml-frontend.service/api-documentation/assets/common/modules/headers.raml
   annotations: http://api-documentation-raml-frontend.service/api-documentation/assets/common/modules/annotations.raml
+  types: http://api-documentation-raml-frontend.service/api-documentation/assets/common/modules/types.raml
 
 documentation:
   - title: Overview
@@ -19,6 +20,8 @@ documentation:
     content: !include http://api-documentation-raml-frontend.service/api-documentation/assets/common/docs/versioning.md
   - title: Errors
     content: !include http://api-documentation-raml-frontend.service/api-documentation/assets/common/docs/errors.md
+  - title: Error Codes
+    content: !include docs/error_codes.md
 
 /self-assessment:
   /ni/{nino}:
@@ -49,8 +52,45 @@ documentation:
           400:
             body:
               application/json:
-                type: !include schemas/Error.json
-                example: !include examples/errors/TOO_MANY_SOURCES.json
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
+                  mandatoryField:
+                    description: Mandatory field missing
+                    value:
+                      code: MANDATORY_FIELD_MISSING
+                  invalidDate:
+                    description: Non ISO format date
+                    value:
+                      code: INVALID_DATE
+                  commencementDateInThePast:
+                    description: commencementDate not in past
+                    value:
+                      code: DATE_NOT_IN_THE_PAST
+                  startDateInvalid:
+                    description: Invalid start date
+                    value:
+                      code: START_DATE_INVALID
+                  invalidAccountingPeriod:
+                    description: Accounting period end is after start
+                    value:
+                      code: INVALID_ACCOUNTING_PERIOD
+                  invalidValue:
+                    description: Invalid accounting type
+                    value:
+                      code: INVALID_VALUE
+          403:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  tooManySources:
+                    description: Adding 2nd SE business
+                    value:
+                      code: TOO_MANY_SOURCES
       get:
         displayName: List self employment businesses
         description: List self employment businesses
@@ -63,6 +103,15 @@ documentation:
               application/json:
                 type: !include schemas/SelfEmployments.json
                 example: !include examples/self-employment/SelfEmployments.json
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
       /{selfEmploymentId}:
         description: Self Employment Business
         uriParameters:
@@ -82,11 +131,24 @@ documentation:
                 application/json:
                   type: !include schemas/SelfEmployment_Without_ID.json
                   example: !include examples/self-employment/SelfEmployment.json
+            400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
             404:
-              body:
-                application/json:
-                  type: !include schemas/Error.json
-                  example: !include examples/errors/NOT_FOUND.json
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
         /periods:
           post:
             displayName: Create a self employment period
@@ -107,8 +169,45 @@ documentation:
               400:
                 body:
                   application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/errors/INVALID_REQUEST.json
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      mandatoryField:
+                        description: Mandatory field missing (from and to fields)
+                        value:
+                          code: MANDATORY_FIELD_MISSING
+                      invalidDate:
+                        description: Non ISO format date (from and to fields)
+                        value:
+                          code: INVALID_DATE
+                      invalidPeriod:
+                        description: from is not <= to
+                        value:
+                          code: INVALID_PERIOD
+                      invalidMonetaryAmount:
+                        description: income or expense is not positive amount or up to 2 decimal places
+                        value:
+                          code: INVALID_MONETARY_AMOUNT
+                      invalidDisallowableAmount:
+                        description: disallowableAmount > amount (except for depreciation expenseType)
+                        value:
+                          code: INVALID_DISALLOWABLE_AMOUNT
+                      depreciationDisallowableAmount:
+                        description: disallowableAmount != amount (for depreciation expenseType)
+                        value:
+                          code: DEPRECIATION_DISALLOWABLE_AMOUNT
+              403:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidPeriod:
+                        description: If periods are not contiguous
+                        value:
+                          code: INVALID_PERIOD
           get:
             displayName: List all self employment periods
             description: List all self employment periods
@@ -121,6 +220,24 @@ documentation:
                   application/json:
                     type: !include schemas/Periods.json
                     example: !include examples/Periods.json
+              400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
           /{periodId}:
             uriParameters:
               periodId:
@@ -138,11 +255,24 @@ documentation:
                     application/json:
                       type: !include schemas/SE_Period_Without_ID.json
                       example: !include examples/self-employment/Period.json
+                400:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
                 404:
                   body:
                     application/json:
-                      type: !include schemas/Error.json
-                      example: !include examples/errors/NOT_FOUND.json
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
             put:
               displayName: Update self employment periodic summary
               description: Update a self employment periodic summary
@@ -158,13 +288,29 @@ documentation:
                 400:
                   body:
                     application/json:
-                      type: !include schemas/Error.json
-                      example: !include examples/errors/INVALID_REQUEST.json
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                        invalidDisallowableAmount:
+                          description: disallowableAmount > amount (except for depreciation expenseType)
+                          value:
+                            code: INVALID_DISALLOWABLE_AMOUNT
+                        depreciationDisallowableAmount:
+                          description: disallowableAmount != amount (for depreciation expenseType)
+                          value:
+                            code: DEPRECIATION_DISALLOWABLE_AMOUNT
                 404:
                   body:
                     application/json:
-                      type: !include schemas/Error.json
-                      example: !include examples/errors/NOT_FOUND.json
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
         /{taxYear}:
           uriParameters:
             taxYear:
@@ -186,8 +332,46 @@ documentation:
               400:
                 body:
                   application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/errors/AnnualSummary_INVALID_REQUEST.json
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      invalidTaxYear:
+                        description: Invalid taxYear
+                        value:
+                          code: TAX_YEAR_INVALID
+                      mandatoryField:
+                        description: Mandatory field missing (from and to fields)
+                        value:
+                          code: MANDATORY_FIELD_MISSING
+                      invalidMonetaryAmount1:
+                        description: valid positive amount not provided where expected (except averagingAdjustment and basisAdjustment)
+                        value:
+                          code: INVALID_MONETARY_AMOUNT
+                      invalidMonetaryAmount2:
+                        description: valid amount not provided where expected (for averagingAdjustment and basisAdjustment)
+                        value:
+                          code: INVALID_MONETARY_AMOUNT
+              403:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidBalancingChargeBPRA:
+                        description: Balancing charge on sale or cessation of business use (Box 58) can only have a value > 0 in if BPRA (Box 54) is also > 0
+                        value:
+                          code: INVALID_BALANCING_CHARGE_BPRA
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
           get:
             displayName: Get self employment annual summary
             description: Get self employment annual summary for a tax year
@@ -200,6 +384,28 @@ documentation:
                   application/json:
                     type: !include schemas/SE_AnnualSummary.json
                     example: !include examples/self-employment/AnnualSummary.json
+              400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      invalidTaxYear:
+                        description: Invalid taxYear
+                        value:
+                          code: TAX_YEAR_INVALID
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
     /uk-properties:
       (annotations.group):
         name: UK Property Business
@@ -223,8 +429,16 @@ documentation:
           400:
             body:
               application/json:
-                type: !include schemas/Error.json
-                example: !include examples/errors/INVALID_ACCOUNTING_PERIOD.json
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
+                  invalidValue:
+                    description: Invalid accounting type
+                    value:
+                      code: INVALID_VALUE
           409:
             headers:
               Location:
@@ -245,6 +459,58 @@ documentation:
               application/json:
                 type: !include schemas/UkProperties.json
                 example: !include examples/uk-properties/UkProperties.json
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
+          404:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  notFound:
+                    description: Not Found
+                    value:
+                      code: NOT_FOUND
+      put:
+        displayName: Update UK property business
+        description: Update UK property business
+        is: [headers.acceptHeader]
+        (annotations.scope): "write:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        body:
+          application/json:
+            type: !include schemas/UkProperties.json
+            example: !include examples/uk-properties/UkProperties.json
+        responses:
+          204:
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
+                  invalidValue:
+                    description: Invalid accounting type
+                    value:
+                      code: INVALID_VALUE
+          404:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  notFound:
+                    description: Not Found
+                    value:
+                      code: NOT_FOUND
       /other:
         /periods:
           post:
@@ -266,8 +532,28 @@ documentation:
               400:
                 body:
                   application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/uk-properties/errors/Period_INVALID_REQUEST.json
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      mandatoryField:
+                        description: Mandatory field missing (from and to fields)
+                        value:
+                          code: MANDATORY_FIELD_MISSING
+                      invalidDate:
+                        description: Non ISO format date (from and to fields)
+                        value:
+                          code: INVALID_DATE
+                      invalidPeriod:
+                        description: from is not <= to
+                        value:
+                          code: INVALID_PERIOD
+                      invalidMonetaryAmount:
+                        description: income or expense is not positive amount or up to 2 decimal places
+                        value:
+                          code: INVALID_MONETARY_AMOUNT
               403:
                 body:
                   application/json:
@@ -290,6 +576,24 @@ documentation:
                   application/json:
                     type: !include schemas/Periods.json
                     example: !include examples/Periods.json
+              400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
           /{periodId}:
             uriParameters:
               periodId:
@@ -307,6 +611,24 @@ documentation:
                     application/json:
                       type: !include schemas/UK_PROP_OTHER_Period_Without_ID.json
                       example: !include examples/uk-properties/other/Period.json
+                400:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                404:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
             put:
               displayName: Update a non FHL UK property periodic summary
               description: Update a non FHL UK property periodic summary
@@ -322,8 +644,25 @@ documentation:
                 400:
                   body:
                     application/json:
-                      type: !include schemas/Error.json
-                      example: !include examples/uk-properties/errors/Period_INVALID_REQUEST.json
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                        invalidMonetaryAmount:
+                          description: income or expense is not positive amount or up to 2 decimal places
+                          value:
+                            code: INVALID_MONETARY_AMOUNT
+                404:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
         /{taxYear}:
             displayName: Annual Summary
             uriParameters:
@@ -346,8 +685,29 @@ documentation:
                 400:
                   body:
                     application/json:
-                      type: !include schemas/Error.json
-                      example: !include examples/uk-properties/errors/AnnualSummary_INVALID_REQUEST.json
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                        invalidTaxYear:
+                          description: Invalid taxYear
+                          value:
+                            code: TAX_YEAR_INVALID
+                        invalidMonetaryAmount:
+                          description: adjustments or allowances is not positive amount or up to 2 decimal places
+                          value:
+                            code: INVALID_MONETARY_AMOUNT
+                404:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
             get:
               displayName: Get non FHL UK property business annual summary
               description: Get non FHL UK property business for a tax year
@@ -360,7 +720,28 @@ documentation:
                     application/json:
                       type: !include schemas/UK_PROP_OTHER_AnnualSummary.json
                       example: !include examples/uk-properties/other/AnnualSummary.json
-
+                400:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                        invalidTaxYear:
+                          description: Invalid taxYear
+                          value:
+                            code: TAX_YEAR_INVALID
+                404:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
       /furnished-holiday-lettings:
         /periods:
           post:
@@ -382,8 +763,28 @@ documentation:
               400:
                 body:
                   application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/uk-properties/errors/Period_INVALID_REQUEST.json
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      mandatoryField:
+                        description: Mandatory field missing (from and to fields)
+                        value:
+                          code: MANDATORY_FIELD_MISSING
+                      invalidDate:
+                        description: Non ISO format date (from and to fields)
+                        value:
+                          code: INVALID_DATE
+                      invalidPeriod:
+                        description: from is not <= to
+                        value:
+                          code: INVALID_PERIOD
+                      invalidMonetaryAmount:
+                        description: income or expense is not positive amount or up to 2 decimal places
+                        value:
+                          code: INVALID_MONETARY_AMOUNT
               403:
                 body:
                   application/json:
@@ -406,6 +807,24 @@ documentation:
                   application/json:
                     type: !include schemas/Periods.json
                     example: !include examples/Periods.json
+              400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
           /{periodId}:
             uriParameters:
               periodId:
@@ -423,6 +842,24 @@ documentation:
                     application/json:
                       type: !include schemas/UK_PROP_FHL_Period_Without_ID.json
                       example: !include examples/uk-properties/fhl/Period.json
+                400:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                404:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
             put:
               displayName: Update a FHL UK property periodic summary
               description: Update a FHL UK property periodic summary
@@ -438,8 +875,29 @@ documentation:
                 400:
                   body:
                     application/json:
-                      type: !include schemas/Error.json
-                      example: !include examples/uk-properties/errors/Period_INVALID_REQUEST.json
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                        invalidTaxYear:
+                          description: Invalid taxYear
+                          value:
+                            code: TAX_YEAR_INVALID
+                        invalidMonetaryAmount:
+                          description: adjustments or allowances is not positive amount or up to 2 decimal places
+                          value:
+                            code: INVALID_MONETARY_AMOUNT
+                404:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
         /{taxYear}:
             displayName: Annual Summary
             uriParameters:
@@ -462,8 +920,29 @@ documentation:
                 400:
                   body:
                     application/json:
-                      type: !include schemas/Error.json
-                      example: !include examples/uk-properties/errors/AnnualSummary_INVALID_REQUEST.json
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                        invalidTaxYear:
+                          description: Invalid taxYear
+                          value:
+                            code: TAX_YEAR_INVALID
+                        invalidMonetaryAmount:
+                          description: adjustments or allowances is not positive amount or up to 2 decimal places
+                          value:
+                            code: INVALID_MONETARY_AMOUNT
+                404:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
             get:
               displayName: Get FHL UK property business annual summary
               description: Get FHL UK property business for a tax year
@@ -476,6 +955,28 @@ documentation:
                     application/json:
                       type: !include schemas/UK_PROP_FHL_AnnualSummary.json
                       example: !include examples/uk-properties/fhl/AnnualSummary.json
+                400:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        invalidNino:
+                          description: Invalid NINO
+                          value:
+                            code: NINO_INVALID
+                        invalidTaxYear:
+                          description: Invalid taxYear
+                          value:
+                            code: TAX_YEAR_INVALID
+                404:
+                  body:
+                    application/json:
+                      type: types.errorResponse
+                      examples:
+                        notFound:
+                          description: Not Found
+                          value:
+                            code: NOT_FOUND
     /dividends:
       (annotations.group):
         name: Dividends Income
@@ -502,8 +1003,20 @@ documentation:
             400:
               body:
                 application/json:
-                  type: !include schemas/Error.json
-                  example: !include examples/errors/INVALID_REQUEST.json
+                  type: types.errorResponse
+                  examples:
+                    invalidNino:
+                      description: Invalid NINO
+                      value:
+                        code: NINO_INVALID
+                    invalidTaxYear:
+                      description: Invalid taxYear
+                      value:
+                        code: TAX_YEAR_INVALID
+                    invalidMonetaryAmount:
+                      description: ukDividends is not positive amount or up to 2 decimal places
+                      value:
+                        code: INVALID_MONETARY_AMOUNT
         get:
           displayName: Get dividends income annual summary
           description: Get dividends income for a tax year
@@ -516,6 +1029,29 @@ documentation:
                 application/json:
                   type: !include schemas/DIV_AnnualSummary.json
                   example: !include examples/dividends/AnnualSummary.json
+            400:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    invalidNino:
+                      description: Invalid NINO
+                      value:
+                        code: NINO_INVALID
+                    invalidTaxYear:
+                      description: Invalid taxYear
+                      value:
+                        code: TAX_YEAR_INVALID
+            404:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    notFound:
+                      description: Not Found
+                      value:
+                        code: NOT_FOUND
+
     /savings-accounts:
       (annotations.group):
         name: Savings Accounts

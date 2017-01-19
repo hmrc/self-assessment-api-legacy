@@ -22,6 +22,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType.AccountingType
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
@@ -38,53 +39,9 @@ case class Properties(id: BSONObjectID,
 
   def toModel = properties.Properties(accountingType = accountingType)
 
-  def validatePeriod(propertyType: PropertyType, period: PropertiesPeriod): Either[Errors.Error, Properties] = {
-    val validationErrors = propertyType match {
-      case PropertyType.OTHER => otherBucket.validatePeriod(period, accountingPeriod)
-      case PropertyType.FHL => fhlBucket.validatePeriod(period, accountingPeriod)
-    }
-
-    validationErrors.map(Left(_)).getOrElse(Right(this))
-  }
-
   def annualSummary(propertyType: PropertyType, key: TaxYear): PropertiesAnnualSummary = propertyType match {
     case PropertyType.OTHER => otherBucket.annualSummaries.getOrElse(key, new OtherPropertiesAnnualSummary(None, None))
     case PropertyType.FHL => fhlBucket.annualSummaries.getOrElse(key, new FHLPropertiesAnnualSummary(None, None))
-  }
-
-  def periodExists(propertyType: PropertyType, periodId: PeriodId): Boolean = period(propertyType, periodId).nonEmpty
-
-  def period(propertyType: PropertyType, periodId: PeriodId): Option[PropertiesPeriod] = propertyType match {
-    case PropertyType.OTHER => otherBucket.periods.get(periodId)
-    case PropertyType.FHL => fhlBucket.periods.get(periodId)
-  }
-
-  def setPeriodsTo(propertyType: PropertyType, periodId: PeriodId, period: PropertiesPeriod): Properties = propertyType match {
-    case PropertyType.OTHER => this.copy(otherBucket = otherBucket.copy(periods = otherBucket.periods.updated(periodId, period)))
-    case PropertyType.FHL => this.copy(fhlBucket = fhlBucket.copy(periods = fhlBucket.periods.updated(periodId, filterFHLPeriodInformation(period))))
-  }
-
-  /**
-    * This is a hack. FHL doesn't have income of type PremiumsOfLeaseGrant or ReversePremiums, nor does it contain expenses
-    * for CostOfServices.
-    * Rather than creating a completely diff period model for FHL, I have decide to keep the 2 periods same but throw away
-    * PremiumsOfLeaseGrant, ReversePremiums and CostOfServices if the TPV provides them for a FHL.
-    */
-  private def filterFHLPeriodInformation(period: PropertiesPeriod) = {
-    period.copy(data = period.data.copy(
-      incomes = period.data.incomes.filterNot(income => income._1 == IncomeType.PremiumsOfLeaseGrant || income._1 == IncomeType.ReversePremiums),
-      expenses = period.data.expenses.filterNot(expense => expense._1 == ExpenseType.CostOfServices)))
-  }
-
-  def update(propertyType: PropertyType, periodId: PeriodId, periodicData: PropertiesPeriodicData): Properties = {
-    val periodOpt = propertyType match {
-      case PropertyType.OTHER => otherBucket.periods.find(period => period._1.equals(periodId))
-      case PropertyType.FHL => fhlBucket.periods.find(period => period._1.equals(periodId))
-    }
-
-    periodOpt.map { period =>
-      setPeriodsTo(propertyType, periodId, period._2.copy(data = periodicData))
-    }.get
   }
 }
 
@@ -95,4 +52,72 @@ object Properties {
     implicit val localDateFormat: Format[LocalDate] = ReactiveMongoFormats.localDateFormats
     Format(Json.reads[Properties], Json.writes[Properties])
   })
+}
+
+ trait PropertyPeriodOps[T <: Period, P <: PeriodicData] {
+  def periods(properties: Properties): Map[PeriodId, T]
+
+  def validatePeriod(period: T, properties: Properties): Either[Errors.Error, Properties]
+
+  def periodExists(periodId: PeriodId, properties: Properties): Boolean
+
+  def period(periodId: PeriodId, properties: Properties): Option[T]
+
+  def setPeriodsTo(periodId: PeriodId, period: T, properties: Properties): Properties
+
+  def update(periodId: PeriodId, periodicData: P, properties: Properties): Properties
+}
+
+object PropertyPeriodOps {
+  implicit object OtherPeriodOps extends PropertyPeriodOps[OtherProperties, OtherPeriodicData] {
+
+    override def periods(properties: Properties): Map[PeriodId, OtherProperties] = properties.otherBucket.periods
+
+    override def validatePeriod(period: OtherProperties, properties: Properties): Either[Errors.Error, Properties] = {
+      val errors = properties.otherBucket.validatePeriod(period, properties.accountingPeriod)
+      errors.map(Left(_)).getOrElse(Right(properties))
+    }
+
+    override def periodExists(periodId: PeriodId, properties: Properties): Boolean = period(periodId, properties).isDefined
+
+    override def period(periodId: PeriodId, properties: Properties): Option[OtherProperties] =
+      properties.otherBucket.periods.get(periodId)
+
+    override def setPeriodsTo(periodId: PeriodId, period: OtherProperties, properties: Properties): Properties =
+      properties.copy(otherBucket = properties.otherBucket.copy(periods = properties.otherBucket.periods.updated(periodId, period)))
+
+    override def update(periodId: PeriodId, periodicData: OtherPeriodicData, properties: Properties): Properties = {
+      val periodOpt = properties.otherBucket.periods.find(period => period._1.equals(periodId))
+
+      periodOpt.map { period =>
+        setPeriodsTo(periodId, period._2.copy(data = periodicData), properties)
+      }.get
+    }
+  }
+
+  implicit object FHLPeriodOps extends PropertyPeriodOps[FHLProperties, FHLPeriodicData] {
+
+    override def periods(properties: Properties): Map[PeriodId, FHLProperties] = properties.fhlBucket.periods
+
+    override def validatePeriod(period: FHLProperties, properties: Properties): Either[Error, Properties] = {
+      val errors = properties.fhlBucket.validatePeriod(period, properties.accountingPeriod)
+      errors.map(Left(_)).getOrElse(Right(properties))
+    }
+
+    override def periodExists(periodId: PeriodId, properties: Properties): Boolean = period(periodId, properties).isDefined
+
+    override def period(periodId: PeriodId, properties: Properties): Option[FHLProperties] =
+      properties.fhlBucket.periods.get(periodId)
+
+    override def setPeriodsTo(periodId: PeriodId, period: FHLProperties, properties: Properties): Properties =
+      properties.copy(fhlBucket = properties.fhlBucket.copy(periods = properties.fhlBucket.periods.updated(periodId, period)))
+
+    override def update(periodId: PeriodId, periodicData: FHLPeriodicData, properties: Properties): Properties = {
+      val periodOpt = properties.fhlBucket.periods.find(period => period._1.equals(periodId))
+
+      periodOpt.map { period =>
+        setPeriodsTo(periodId, period._2.copy(data = periodicData), properties)
+      }.get
+    }
+  }
 }

@@ -17,15 +17,15 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{PropertiesPeriod, PropertiesPeriodicData}
-import uk.gov.hmrc.selfassessmentapi.services.PropertiesPeriodService
+import uk.gov.hmrc.selfassessmentapi.services.{FHLPropertiesPeriodService, OtherPropertiesPeriodService, PropertiesPeriodService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -34,12 +34,8 @@ object PropertiesPeriodResource extends BaseController {
 
   lazy val featureSwitch = FeatureSwitchAction(SourceType.Properties, "periods")
 
-  private val service = PropertiesPeriodService
-
   def createPeriod(nino: Nino, id: PropertyType): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
-    validate[PropertiesPeriod, Either[Error, PeriodId]](request.body) { period =>
-      service.createPeriod(nino, id, period)
-    } match {
+    validateCreateRequest(id, nino, request) match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case Right(periodId) =>
@@ -54,9 +50,7 @@ object PropertiesPeriodResource extends BaseController {
   }
 
   def updatePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
-    validate[PropertiesPeriodicData, Boolean](request.body) {
-      service.updatePeriod(nino, id, periodId, _)
-    } match {
+    validateUpdateRequest(id, nino, periodId, request) match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
         case true => NoContent
@@ -66,16 +60,54 @@ object PropertiesPeriodResource extends BaseController {
   }
 
   def retrievePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    service.retrievePeriod(nino, id, periodId).map {
-      case Some(period) => Ok(Json.toJson(period))
-      case None => NotFound
+    id match {
+      case PropertyType.OTHER => OtherPropertiesPeriodService.retrievePeriod(nino, periodId).map {
+        case Some(period) => Ok(Json.toJson(period))
+        case None => NotFound
+      }
+      case PropertyType.FHL => FHLPropertiesPeriodService.retrievePeriod(nino, periodId).map {
+        case Some(period) => Ok(Json.toJson(period))
+        case None => NotFound
+      }
     }
   }
 
   def retrievePeriods(nino: Nino, id: PropertyType): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    service.retrieveAllPeriods(nino, id).map {
-      case Some(periods) => Ok(Json.toJson(periods))
-      case None => NotFound
+    id match {
+      case PropertyType.OTHER => OtherPropertiesPeriodService.retrieveAllPeriods(nino).map {
+        case Some(period) => Ok(Json.toJson(period))
+        case None => NotFound
+      }
+      case PropertyType.FHL => FHLPropertiesPeriodService.retrieveAllPeriods(nino).map {
+        case Some(period) => Ok(Json.toJson(period))
+        case None => NotFound
+      }
+    }
+  }
+
+  private def validateCreateRequest(id: PropertyType, nino: Nino, request: Request[JsValue]): Either[ErrorResult, Future[Either[Error, PeriodId]]] = id match {
+    case PropertyType.OTHER => {
+      validate[OtherProperties, Either[Error, PeriodId]](request.body) { period =>
+        OtherPropertiesPeriodService.createPeriod(nino, period)
+      }
+    }
+    case PropertyType.FHL => {
+      validate[FHLProperties, Either[Error, PeriodId]](request.body) { period =>
+        FHLPropertiesPeriodService.createPeriod(nino, period)
+      }
+    }
+  }
+
+  private def validateUpdateRequest(id: PropertyType, nino: Nino, periodId: PeriodId, request: Request[JsValue]): Either[ErrorResult, Future[Boolean]] = id match {
+    case PropertyType.OTHER => {
+      validate[OtherPeriodicData, Boolean](request.body) { period =>
+        OtherPropertiesPeriodService.updatePeriod(nino, periodId, period)
+      }
+    }
+    case PropertyType.FHL => {
+      validate[FHLPeriodicData, Boolean](request.body) { period =>
+        FHLPropertiesPeriodService.updatePeriod(nino, periodId, period)
+      }
     }
   }
 }

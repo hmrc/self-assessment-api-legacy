@@ -593,3 +593,33 @@ documentation:
                 application/json:
                   type: !include schemas/Error.json
                   example: !include examples/errors/NOT_FOUND.json
+        /{taxYear}:
+          put:
+            displayName: Update a savings account annual summary
+            description: Update a savings account annual summary
+            is: [headers.acceptHeader]
+            (annotations.scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            body:
+              application/json:
+                type: !include schemas/SavingsAccount_AnnualSummary.json
+                example: !include examples/savings-accounts/AnnualSummary.json
+            responses:
+              204:
+              400:
+                body:
+                  application/json:
+                    type: !include schemas/Error.json
+                    example: !include examples/errors/Bank_AnnualSummary_INVALID_REQUEST.json
+          get:
+            displayName: Retrieve a savings account annual summary
+            description: Retrieve a savings account annual summary
+            is: [headers.acceptHeader]
+            (annotations.scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: !include schemas/SavingsAccount_AnnualSummary.json
+                    example: !include examples/savings-accounts/AnnualSummary.json

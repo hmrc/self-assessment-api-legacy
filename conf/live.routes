@@ -41,6 +41,9 @@ POST /ni/:nino/savings-accounts     uk.gov.hmrc.selfassessmentapi.resources.Bank
 PUT /ni/:nino/savings-accounts/:id  uk.gov.hmrc.selfassessmentapi.resources.BanksResource.update(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.SourceId)
 GET /ni/:nino/savings-accounts/:id  uk.gov.hmrc.selfassessmentapi.resources.BanksResource.retrieve(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.SourceId)
 
+# Banks Annual Summaries
+#GET /ni/:nino/savings-accounts/:id/:taxYear
+#PUT /ni/:nino/savings-accounts/:id/:taxYear
 
 ####################
 #     Dividends    #

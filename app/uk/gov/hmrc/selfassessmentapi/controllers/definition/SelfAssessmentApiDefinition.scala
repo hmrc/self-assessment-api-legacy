@@ -136,6 +136,15 @@ class SelfAssessmentApiDefinition {
         groupName = UKProperties)
       ,
       Endpoint(
+        uriPattern = "/ni/{nino}/uk-properties",
+        endpointName = "Update UK property business",
+        method = PUT,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(writeScope),
+        groupName = UKProperties)
+      ,
+      Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/other/periods",
         endpointName = "List all non FHL UK property periods",
         method = GET,
@@ -272,7 +281,7 @@ class SelfAssessmentApiDefinition {
     Seq(
       Endpoint(
         uriPattern = "/ni/{nino}/savings-accounts",
-        endpointName = "Retrieve all savings accounts",
+        endpointName = "List all savings accounts",
         method = GET,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -290,7 +299,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/savings-accounts/{savingsAccountId}",
-        endpointName = "Retrieve a savings account",
+        endpointName = "Get a savings account",
         method = GET,
         authType = USER,
         throttlingTier = UNLIMITED,
@@ -308,7 +317,7 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/savings-accounts/{savingsAccountId}/{taxYear}",
-        endpointName = "Retrieve a savings account annual summary",
+        endpointName = "Get a savings account annual summary",
         method = GET,
         authType = USER,
         throttlingTier = UNLIMITED,

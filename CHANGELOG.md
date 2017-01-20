@@ -1,12 +1,14 @@
 
-## [0.65.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.65.0) Release Candidate. Not Yet Released to Production.
+## [0.82.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.82.0) 19-Jan-2017
 
-* Removed 'Employments' source and its summaries
-
-* Removed 'Unearned Income' source
-   * 'savings' summary is now 'Banks' Income source. Change made based on feedback from TPV's.
-   * 'dividends' summary now 'Dividends' Income source. Change made based on feedback from TPV's.
-   * 'benefits' summary now 'Benefits' source
+* API re-design
+* Ability to provide HMRC periodic and annual information
+     * Self-employment income/expense
+     * Income/expense from UK property including Furnished Holiday Lettings 
+* Ability to provide HMRC with annual information on customers income from
+     * Income from dividends
+* Removed Liability end-point (only temporarily)
+* Removed Employment, UnEarned Income Source end-points (Not part of MVP)
 
 ## [0.61.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.61.0) 10-Oct-2016
 

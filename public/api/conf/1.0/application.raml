@@ -1089,16 +1089,16 @@ documentation:
                     value:
                       code: INVALID_VALUE
       get:
-        displayName: Retrieve all savings accounts
-        description: Retrieve all savings accounts
+        displayName: List all savings accounts
+        description: List all savings accounts
         is: [headers.acceptHeader]
-        (annotations.scope): "write:self-assessment"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        (annotations.scope): "read:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
         responses:
           200:
             body:
               application/json:
-                type: !include schemas/SavingsAccount.json
+                type: !include schemas/SavingsAccounts.json
                 example: !include examples/savings-accounts/SavingsAccounts.json
           400:
             body:
@@ -1149,11 +1149,11 @@ documentation:
                       value:
                         code: NOT_FOUND
         get:
-          displayName: Retrieve a savings account
-          description: Retrieve a savings account
+          displayName: Get a savings account
+          description: Get a savings account
           is: [headers.acceptHeader]
-          (annotations.scope): "write:self-assessment"
-          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          (annotations.scope): "read:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:
             200:
               body:
@@ -1218,11 +1218,11 @@ documentation:
                         value:
                           code: NOT_FOUND
           get:
-            displayName: Retrieve a savings account annual summary
-            description: Retrieve a savings account annual summary
+            displayName: Get a savings account annual summary
+            description: Get a savings account annual summary
             is: [headers.acceptHeader]
-            (annotations.scope): "write:self-assessment"
-            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            (annotations.scope): "read:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
               200:
                 body:

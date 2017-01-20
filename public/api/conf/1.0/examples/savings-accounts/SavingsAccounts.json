@@ -1,4 +1,6 @@
-{
-  "id": "{savingsAccountId}",
-  "accountName": "myaccount"
-}
+[
+  {
+    "id": "{savingsAccountId}",
+    "accountName": "myaccount"
+  }
+]

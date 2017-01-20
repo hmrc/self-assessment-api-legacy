@@ -3,36 +3,193 @@
   "title": "RequestLiability",
   "type": "object",
   "properties": {
-    "income": {
-      "title": "Income",
-      "description": "Income summary",
-      "$ref": "liability/IncomeSummary.json"
-    },
-    "incomeTaxCalculations": {
-      "title": "Income tax calculations",
-      "description": "Income tax calculations",
-      "$ref": "liability/IncomeTaxCalculations.json"
-    },
-    "otherCharges": {
-      "title": "Other charges",
-      "description": "Other charged",
-      "$ref": "liability/OtherCharges.json"
-    },
-    "taxDeducted": {
-      "title": "Tax deducted",
-      "description": "Tax deducted",
-      "$ref": "liability/TaxDeducted.json"
-    },
-    "totalTaxDue": {
-      "title": "Total tax due",
-      "description": "The total amount of tax due",
+    "payFromAllEmployments": {
+      "title": "Pay from all employments",
+      "description": "Pay from all employments",
       "type": "number",
+      "format": "money",
       "minimum": 0
     },
-    "totalTaxOverpaid": {
-      "title": "Total tax overpaid",
-      "description": "The total amount of tax overpaid",
+    "benefitsAndExpensesReceived": {
+      "title": "Benefits and expenses received",
+      "description": "Benefits and expenses received",
       "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "payFromAllEmploymentsAfterExpenses": {
+      "title": "Pay from all employments after expenses",
+      "description": "Total from all employments",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "interestReceivedFromUkBanksAndBuildingSocieties": {
+      "title": "Interest received from UK banks and building societies",
+      "description": "Interest received from UK banks and building societies",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "dividendsFromUkCompanies": {
+      "title": "Dividends from UK companies",
+      "description": "Dividends from UK companies (plus 10% tax credits)",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "totalIncomeReceived": {
+      "title": "Total income received",
+      "description": "Total income received",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "personalAllowance": {
+      "title": "Personal allowance",
+      "description": "Reduced Personal Allowance",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "totalIncomeOnWhichTaxIsDue": {
+      "title": "Total income on which tax is due",
+      "description": "Total income on which tax is due",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "giftExtender": {
+      "title": "Gift extender",
+      "description": "Basic rate band extension amount relating to Gift Aid",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "extendedBR": {
+      "title": "Extended basic rate",
+      "description": "Amount for Extending Basic Rate Band",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "payPensionsProfitAtBRT": {
+      "title": "Pay, pensions and profit at BRT",
+      "description": "Amount of pay, pensions and profit at the Basic Rate of Tax (BRT)",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "incomeTaxOnPayPensionsProfitAtBRT": {
+      "title": "Income tax on pay, pensions and profit at BRT",
+      "description": "Tax on pay, pensions and profit at the Basic Rate of Tax (BRT)",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "interestReceivedAtStartingRate": {
+      "title": "Interest received at starting rate",
+      "description": "Amount of Interest received from a bank or building society etc. at starting rate (SR)",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "incomeTaxOnInterestReceivedAtStartingRate": {
+      "title": "Income tax on interest received at starting rate",
+      "description": "Tax on Interest received from a bank or building society etc. at starting rate (SR)",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "dividendsAtBRT": {
+      "title": "Dividends at BRT",
+      "description": "Amount of Dividends from companies etc at basic rate",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "incomeTaxOnDividendsAtBRT": {
+      "title": "Income tax on dividends at BRT",
+      "description": "Tax on Dividends from companies etc at basic rate",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "dividendsAtHRT": {
+      "title": "Dividends at HRT",
+      "description": "Amount of Dividends from companies etc at higher rate",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "incomeTaxOnDividendsAtHRT": {
+      "title": "Income tax on dividends at HRT",
+      "description": "Tax on Dividends from companies etc at higher rate",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "totalIncomeOnWhichTaxHasBeenCharged": {
+      "title": "Total income on which tax has been charged",
+      "description": "Total income on which tax is due",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "incomeTaxCharged": {
+      "title": "Income tax charged",
+      "description": "Income Tax charges",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "taxCreditsOnDividendsFromUkCompanies": {
+      "title": "Tax credits on dividends from UK companies",
+      "description": "Tax credits on dividends from UK companies (not repayable)",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "incomeTaxDueAfterDividendTaxCredits": {
+      "title": "Income tax due after dividend tax credits",
+      "description": "Income Tax due after dividend tax credits",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "highIncomeChildBenefitCharge": {
+      "title": "High income child benefit charge",
+      "description": "High Income Child Benefit Charge",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "incomeTaxDue": {
+      "title": "Income tax due",
+      "description": "Income Tax due",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "employmentsPensionsAndBenefits": {
+      "title": "Employments, pensions and benefits",
+      "description": "From all employments, UK pensions and state benefits",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "totalTaxDeducted": {
+      "title": "Total tax deducted",
+      "description": "Total tax deducted",
+      "type": "number",
+      "format": "money",
+      "minimum": 0
+    },
+    "incomeTaxDueAfterDeductions": {
+      "title": "Income tax due after deductions",
+      "description": "Total income tax due",
+      "type": "number",
+      "format": "money",
       "minimum": 0
     }
   },

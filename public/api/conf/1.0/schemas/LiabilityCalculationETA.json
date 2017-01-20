@@ -3,8 +3,8 @@
   "title": "CreateLiability",
   "type": "object",
   "properties": {
-    "eta": {
-      "title": "etaSeconds",
+    "etaSeconds": {
+      "title": "ETA Seconds",
       "description": "The estimated amount of time it will take to compute the liability calculation",
       "type": "number",
       "minimum": 0

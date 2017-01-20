@@ -1,189 +1,29 @@
 {
-  "income":{
-    "incomes":{
-      "nonSavings":{
-        "selfEmployment":[
-          {
-            "id":"self-employment-1",
-            "taxableProfit":8200,
-            "profit":10000
-          },
-          {
-            "id":"self-employment-2",
-            "taxableProfit":25000,
-            "profit":28000
-          }
-        ],
-        "ukProperties":[
-          {
-            "id":"property1",
-            "profit":2000
-          },
-          {
-            "id":"property2",
-            "profit":1500
-          }
-        ],
-        "furnishedHolidayLettings":[
-          {
-            "id":"furnished-holiday-letting-1",
-            "profit":8200
-          },
-          {
-            "id":"furnished-holiday-letting-2",
-            "profit":25000
-          }
-        ]
-      },
-      "savings":{
-        "fromUKBanksAndBuildingSocieties":[
-          {
-            "id":"interest-income-1",
-            "totalInterest":100
-          },
-          {
-            "id":"interest-income-2",
-            "totalInterest":200
-          }
-        ]
-      },
-      "dividends":{
-        "fromUKSources":[
-          {
-            "id":"dividend-income-1",
-            "totalDividend":1000
-          },
-          {
-            "id":"dividend-income-2",
-            "totalDividend":2000
-          }
-        ]
-      },
-      "total":93039
-    },
-    "deductions":{
-      "incomeTaxRelief":5000,
-      "personalAllowance":9440,
-      "retirementAnnuityContract":10000,
-      "total":24440
-    },
-    "totalIncomeOnWhichTaxIsDue":80000
-  },
-  "incomeTaxCalculations":{
-    "nonSavings":[
-      {
-        "taxBand":"basicRate",
-        "taxableAmount":10000,
-        "chargedAt":"20%",
-        "tax":2000
-      },
-      {
-        "taxBand":"higherRate",
-        "taxableAmount":10000,
-        "chargedAt":"40%",
-        "tax":4000
-      },
-      {
-        "taxBand":"additionalHigherRate",
-        "taxableAmount":10000,
-        "chargedAt":"45%",
-        "tax":4500
-      }
-    ],
-    "savings":[
-      {
-        "taxBand":"startingRate",
-        "taxableAmount":10000,
-        "chargedAt":"0%",
-        "tax":0
-      },
-      {
-        "taxBand":"nilRate",
-        "taxableAmount":10000,
-        "chargedAt":"0%",
-        "tax":0
-      },
-      {
-        "taxBand":"basicRate",
-        "taxableAmount":10000,
-        "chargedAt":"20%",
-        "tax":2000
-      },
-      {
-        "taxBand":"higherRate",
-        "taxableAmount":10000,
-        "chargedAt":"40%",
-        "tax":4000
-      },
-      {
-        "taxBand":"additionalHigherRate",
-        "taxableAmount":10000,
-        "chargedAt":"45%",
-        "tax":4500
-      }
-    ],
-    "dividends":[
-      {
-        "taxBand":"nilRate",
-        "taxableAmount":10000,
-        "chargedAt":"0%",
-        "tax":0
-      },
-      {
-        "taxBand":"basicRate",
-        "taxableAmount":10000,
-        "chargedAt":"20%",
-        "tax":2000
-      },
-      {
-        "taxBand":"higherRate",
-        "taxableAmount":10000,
-        "chargedAt":"40%",
-        "tax":4000
-      },
-      {
-        "taxBand":"additionalHigherRate",
-        "taxableAmount":10000,
-        "chargedAt":"45%",
-        "tax":4500
-      }
-    ],
-    "total":31500
-  },
-  "otherCharges":{
-    "pensionSavings":[
-      {
-        "taxBand":"basicRate",
-        "taxableAmount":10000,
-        "chargedAt":"20%",
-        "tax":2000
-      },
-      {
-        "taxBand":"higherRate",
-        "taxableAmount":10000,
-        "chargedAt":"40%",
-        "tax":4000
-      },
-      {
-        "taxBand":"additionalHigherRate",
-        "taxableAmount":10000,
-        "chargedAt":"45%",
-        "tax":4500
-      }
-    ],
-    "total":10500
-  },
-  "taxDeducted":{
-    "interestFromUk":0,
-    "taxPaidByPensionScheme":10500,
-    "fromUkProperties":[
-      {
-        "id": "uk-properties-1",
-        "taxPaid": 500.55
-      }
-    ],
-    "total":0
-  },
-  "totalTaxDue":25796.95,
-  "totalTaxOverpaid":0
+  "payFromAllEmployments": 100.25,
+  "benefitsAndExpensesReceived": 100.25,
+  "payFromAllEmploymentsAfterExpenses": 100.25,
+  "interestReceivedFromUkBanksAndBuildingSocieties": 100.25,
+  "dividendsFromUkCompanies": 100.25,
+  "totalIncomeReceived": 100.25,
+  "personalAllowance": 100.25,
+  "totalIncomeOnWhichTaxIsDue": 100.25,
+  "giftExtender": 100.25,
+  "extendedBR": 100.25,
+  "payPensionsProfitAtBRT": 100.25,
+  "incomeTaxOnPayPensionsProfitAtBRT": 100.25,
+  "interestReceivedAtStartingRate": 100.25,
+  "incomeTaxOnInterestReceivedAtStartingRate": 100.25,
+  "dividendsAtBRT": 100.25,
+  "incomeTaxOnDividendsAtBRT": 100.25,
+  "dividendsAtHRT": 100.25,
+  "incomeTaxOnDividendsAtHRT": 100.25,
+  "totalIncomeOnWhichTaxHasBeenCharged": 100.25,
+  "incomeTaxCharged": 100.25,
+  "taxCreditsOnDividendsFromUkCompanies": 100.25,
+  "incomeTaxDueAfterDividendTaxCredits": 100.25,
+  "highIncomeChildBenefitCharge": 100.25,
+  "incomeTaxDue": 100.25,
+  "employmentsPensionsAndBenefits": 100.25,
+  "totalTaxDeducted": 100.25,
+  "incomeTaxDueAfterDeductions": 100.25
 }

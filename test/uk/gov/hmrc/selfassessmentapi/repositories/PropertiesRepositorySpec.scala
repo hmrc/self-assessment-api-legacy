@@ -82,15 +82,15 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
 
   "deleteAllBeforeDate" should {
     "delete all records older than the provided DateTime object" in {
-      val selfEmploymentToKeep = createProperties(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val selfEmploymentToKeepOne = createProperties(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val selfEmploymentToKeepTwo = createProperties(nino)
       val selfEmploymentToRemoveOne = createProperties(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).minusDays(1))
-      val selfEmploymentToRemoveTwo = createProperties(nino)
 
-      await(repo.create(selfEmploymentToKeep))
+      await(repo.create(selfEmploymentToKeepOne))
       await(repo.create(selfEmploymentToRemoveOne))
-      await(repo.create(selfEmploymentToRemoveTwo))
-      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC))) shouldBe 2
-      await(repo.findAll()) should contain theSameElementsAs Seq(selfEmploymentToKeep)
+      await(repo.create(selfEmploymentToKeepTwo))
+      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC).minusHours(1))) shouldBe 1
+      await(repo.findAll()) should contain theSameElementsAs Seq(selfEmploymentToKeepOne, selfEmploymentToKeepTwo)
     }
   }
 

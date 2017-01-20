@@ -79,7 +79,7 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
 
     "return an error when provided with an empty json body" in {
       assertValidationErrorsWithMessage[SelfEmploymentPeriod](Json.parse("{}"),
-        Map("/from" -> "error.path.missing", "/to" -> "error.path.missing"))
+        Map("/from" -> Seq("error.path.missing"), "/to" -> Seq("error.path.missing")))
     }
 
     "pass if the from date is equal to the end date" in {

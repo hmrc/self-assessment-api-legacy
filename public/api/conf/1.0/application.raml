@@ -1051,3 +1051,203 @@ documentation:
                       description: Not Found
                       value:
                         code: NOT_FOUND
+    /savings-accounts:
+      (annotations.group):
+        name: Savings Accounts
+        description: !include docs/savings-accounts.md
+      post:
+        displayName: Add a savings account
+        description: Add a savings account
+        is: [headers.acceptHeader]
+        (annotations.scope): "write:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        body:
+          application/json:
+            type: !include schemas/SavingsAccount_Without_ID.json
+            example: !include examples/savings-accounts/SavingsAccount.json
+        responses:
+          201:
+            headers:
+              Location:
+                example: /self-assessment/ni/{nino}/savings-accounts/{savingsAccountId}
+                description: Location of the resource created
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
+                  invalidLength:
+                    description: accountName length is invalid
+                    value:
+                      code: INVALID_FIELD_LENGTH
+                  invalidValue:
+                    description: accountName is not alphanumeric
+                    value:
+                      code: INVALID_VALUE
+      get:
+        displayName: Retrieve all savings accounts
+        description: Retrieve all savings accounts
+        is: [headers.acceptHeader]
+        (annotations.scope): "write:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        responses:
+          200:
+            body:
+              application/json:
+                type: !include schemas/SavingsAccount.json
+                example: !include examples/savings-accounts/SavingsAccounts.json
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
+      /{savingsAccountId}:
+        put:
+          displayName: Update a savings account
+          description: Update a savings account
+          is: [headers.acceptHeader]
+          (annotations.scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          body:
+            application/json:
+              type: !include schemas/SavingsAccount_Without_ID.json
+              example: !include examples/savings-accounts/SavingsAccount.json
+          responses:
+            204:
+            400:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    invalidNino:
+                      description: Invalid NINO
+                      value:
+                        code: NINO_INVALID
+                    invalidLength:
+                      description: accountName length is invalid
+                      value:
+                        code: INVALID_FIELD_LENGTH
+                    invalidValue:
+                      description: accountName is not alphanumeric
+                      value:
+                        code: INVALID_VALUE
+            404:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    notFound:
+                      description: Not Found
+                      value:
+                        code: NOT_FOUND
+        get:
+          displayName: Retrieve a savings account
+          description: Retrieve a savings account
+          is: [headers.acceptHeader]
+          (annotations.scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          responses:
+            200:
+              body:
+                application/json:
+                  type: !include schemas/SavingsAccount_Without_ID.json
+                  example: !include examples/savings-accounts/SavingsAccount.json
+            400:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    invalidNino:
+                      description: Invalid NINO
+                      value:
+                        code: NINO_INVALID
+            404:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    notFound:
+                      description: Not Found
+                      value:
+                        code: NOT_FOUND
+        /{taxYear}:
+          put:
+            displayName: Update a savings account annual summary
+            description: Update a savings account annual summary
+            is: [headers.acceptHeader]
+            (annotations.scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            body:
+              application/json:
+                type: !include schemas/SavingsAccount_AnnualSummary.json
+                example: !include examples/savings-accounts/AnnualSummary.json
+            responses:
+              204:
+              400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      invalidTaxYear:
+                        description: Invalid taxYear
+                        value:
+                          code: TAX_YEAR_INVALID
+                      invalidAmount:
+                        description: taxedUkInterest is not positive amount or up to 2 decimal places
+                        value:
+                          code: INVALID_MONETARY_AMOUNT
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
+          get:
+            displayName: Retrieve a savings account annual summary
+            description: Retrieve a savings account annual summary
+            is: [headers.acceptHeader]
+            (annotations.scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: !include schemas/SavingsAccount_AnnualSummary.json
+                    example: !include examples/savings-accounts/AnnualSummary.json
+              400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+                      invalidTaxYear:
+                        description: Invalid taxYear
+                        value:
+                          code: TAX_YEAR_INVALID
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND

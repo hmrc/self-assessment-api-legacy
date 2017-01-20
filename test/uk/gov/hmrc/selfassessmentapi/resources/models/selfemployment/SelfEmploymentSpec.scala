@@ -65,7 +65,7 @@ class SelfEmploymentSpec extends JsonSpec {
            |}
          """.stripMargin
 
-      assertValidationErrorsWithCode[SelfEmployment](Json.parse(json), Map("/accountingType" -> ErrorCode.INVALID_VALUE))
+      assertValidationErrorsWithCode[SelfEmployment](Json.parse(json), Map("/accountingType" -> Seq(ErrorCode.INVALID_VALUE)))
     }
 
     "return a error when providing an empty commencementDate" in {
@@ -81,7 +81,7 @@ class SelfEmploymentSpec extends JsonSpec {
            |}
          """.stripMargin
 
-      assertValidationErrorsWithMessage[SelfEmployment](Json.parse(json), Map("/commencementDate" -> "error.expected.jodadate.format"))
+      assertValidationErrorsWithMessage[SelfEmployment](Json.parse(json), Map("/commencementDate" -> Seq("error.expected.jodadate.format")))
     }
 
     "return a error when providing an non-ISO (i.e. YYYY-MM-DD) commencementDate" in {
@@ -97,7 +97,7 @@ class SelfEmploymentSpec extends JsonSpec {
            |}
          """.stripMargin
 
-      assertValidationErrorsWithMessage[SelfEmployment](Json.parse(json), Map("/commencementDate" -> "error.expected.jodadate.format"))
+      assertValidationErrorsWithMessage[SelfEmployment](Json.parse(json), Map("/commencementDate" -> Seq("error.expected.jodadate.format")))
     }
 
     "return a error when providing non-ISO (i.e. YYYY-MM-DD) dates to the accountingPeriod" in {
@@ -114,16 +114,16 @@ class SelfEmploymentSpec extends JsonSpec {
          """.stripMargin
 
       assertValidationErrorsWithMessage[SelfEmployment](Json.parse(json),
-        Map("/accountingPeriod/start" -> "error.expected.jodadate.format",
-          "/accountingPeriod/end" -> "error.expected.jodadate.format"))
+        Map("/accountingPeriod/start" -> Seq("error.expected.jodadate.format"),
+          "/accountingPeriod/end" -> Seq("error.expected.jodadate.format")))
     }
 
     "return a error when providing an empty SelfEmployment body" in {
       val json = "{}"
 
       assertValidationErrorsWithMessage[SelfEmployment](Json.parse(json),
-        Map("/accountingPeriod" -> "error.path.missing",
-            "/accountingType" -> "error.path.missing"))
+        Map("/accountingPeriod" -> Seq("error.path.missing"),
+            "/accountingType" -> Seq("error.path.missing")))
     }
 
     "return a error when providing an empty accountingPeriod body" in {
@@ -137,8 +137,8 @@ class SelfEmploymentSpec extends JsonSpec {
          """.stripMargin
 
       assertValidationErrorsWithMessage[SelfEmployment](Json.parse(json),
-        Map("/accountingPeriod/start" -> "error.path.missing",
-            "/accountingPeriod/end" -> "error.path.missing"))
+        Map("/accountingPeriod/start" -> Seq("error.path.missing"),
+            "/accountingPeriod/end" -> Seq("error.path.missing")))
     }
   }
 }

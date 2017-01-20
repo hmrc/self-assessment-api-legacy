@@ -49,6 +49,43 @@ object Jsons {
     }
   }
 
+  object Banks {
+    def apply(accountName: String = "Savings Account"): JsValue = {
+      Json.parse(
+        s"""
+           |{
+           |  "accountName": "$accountName"
+           |}
+         """.stripMargin)
+    }
+
+    def annualSummary(taxedUkInterest: Option[BigDecimal], untaxedUkInterest: Option[BigDecimal]): JsValue = {
+
+      val taxed = taxedUkInterest.map { taxed =>
+        val separator = if (untaxedUkInterest.isDefined) "," else ""
+
+        s"""
+           |  "taxedUkInterest": $taxed$separator
+         """.stripMargin
+      }
+
+
+      val untaxed = untaxedUkInterest.map { untaxed =>
+        s"""
+           |  "untaxedUkInterest": $untaxed
+         """.stripMargin
+      }
+
+      Json.parse(
+        s"""
+         |{
+         |  ${taxed.getOrElse("")}
+         |  ${untaxed.getOrElse("")}
+         |}
+       """.stripMargin)
+    }
+  }
+
   object Properties {
     def apply(accountingType: String = "CASH"): JsValue = {
       Json.parse(s"""

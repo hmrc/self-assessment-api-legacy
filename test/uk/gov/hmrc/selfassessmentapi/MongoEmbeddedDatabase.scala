@@ -27,21 +27,20 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import play.api.Logger
 import uk.gov.hmrc.mongo.MongoConnector
 
-import scala.util.Try
-
 trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeAndAfterEach {
   import MongoEmbeddedDatabase._
 
-  implicit val mongo = new MongoConnector(mongoUri).db
+  implicit val mongo = MongoConnector(mongoUri).db
 
   lazy private val mongoClient =
     MongoClient("localhost", if (useEmbeddedMongo) embeddedPort else diskPort)("self-assessment-api")
 
-  override def beforeAll() = startEmbeddedMongo()
-  override def beforeEach() =
-    List("selfEmployments", "properties", "dividends", "jobHistory").foreach {
+  override def beforeEach(): Unit =
+    List("selfEmployments", "properties", "dividends", "banks", "jobHistory").foreach {
     coll => mongoClient.getCollection(coll).remove(new BasicDBObject())
   }
+
+  startEmbeddedMongo()
 }
 
 object MongoEmbeddedDatabase {
@@ -52,11 +51,11 @@ object MongoEmbeddedDatabase {
   private val useEmbeddedMongo = mongoUri.contains(embeddedPort.toString)
   private val runtimeConfig = new RuntimeConfigBuilder()
     .defaults(Command.MongoD)
-    .processOutput(ProcessOutput.getDefaultInstanceSilent())
+    .processOutput(ProcessOutput.getDefaultInstanceSilent)
     .build()
 
   private var mongodExe: MongodExecutable = _
-  private var mongod: MongodProcess = _
+  @volatile private var mongod: MongodProcess = _
 
   private def startEmbeddedMongo() = this.synchronized {
     if (mongod == null && useEmbeddedMongo) {

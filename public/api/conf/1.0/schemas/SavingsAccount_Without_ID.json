@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Self-employment source of income",
+  "type": "object",
+  "properties": {
+    "accountName": {
+      "title": "Account name",
+      "description": "Friendly account name",
+      "type": "string",
+      "format": "alphanumeric"
+    }
+  },
+  "additionalProperties": false
+}

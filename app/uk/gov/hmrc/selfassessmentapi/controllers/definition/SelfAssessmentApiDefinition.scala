@@ -267,7 +267,66 @@ class SelfAssessmentApiDefinition {
     )
   }
 
-  private val allEndpoints = selfEmploymentEndpoints ++ ukPropertyEndpoints ++ dividendEndpoints
+
+  val bankSavingEndpoints: Seq[Endpoint] = {
+    Seq(
+      Endpoint(
+        uriPattern = "/ni/{nino}/savings-accounts",
+        endpointName = "Retrieve all savings accounts",
+        method = GET,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(readScope),
+        groupName = BankSavings)
+      ,
+      Endpoint(
+        uriPattern = "/ni/{nino}/savings-accounts",
+        endpointName = "Add a savings account",
+        method = POST,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(writeScope),
+        groupName = BankSavings)
+      ,
+      Endpoint(
+        uriPattern = "/ni/{nino}/savings-accounts/{savingsAccountId}",
+        endpointName = "Retrieve a savings account",
+        method = GET,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(readScope),
+        groupName = BankSavings)
+      ,
+      Endpoint(
+        uriPattern = "/ni/{nino}/savings-accounts/{savingsAccountId}",
+        endpointName = "Update a savings account",
+        method = PUT,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(writeScope),
+        groupName = BankSavings)
+      ,
+      Endpoint(
+        uriPattern = "/ni/{nino}/savings-accounts/{savingsAccountId}/{taxYear}",
+        endpointName = "Retrieve a savings account annual summary",
+        method = GET,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(readScope),
+        groupName = BankSavings)
+      ,
+      Endpoint(
+        uriPattern = "/ni/{nino}/savings-accounts/{savingsAccountId}/{taxYear}",
+        endpointName = "Update a savings account annual summary",
+        method = PUT,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(writeScope),
+        groupName = BankSavings)
+    )
+  }
+
+  private val allEndpoints = selfEmploymentEndpoints ++ ukPropertyEndpoints ++ dividendEndpoints ++ bankSavingEndpoints
 
 
   lazy val definition: Definition =

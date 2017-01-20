@@ -87,15 +87,15 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase {
 
   "deleteAllBeforeDate" should {
     "delete all records older than the provided DateTime object" in {
-      val dividendToKeep = createDividend(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val dividendToKeepOne = createDividend(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).plusDays(1))
+      val dividendToKeepTwo = createDividend(nino)
       val dividendToRemoveOne = createDividend(NinoGenerator().nextNino()).copy(lastModifiedDateTime = DateTime.now(DateTimeZone.UTC).minusDays(1))
-      val dividendToRemoveTwo = createDividend(nino)
 
-      await(repo.create(dividendToKeep))
+      await(repo.create(dividendToKeepOne))
       await(repo.create(dividendToRemoveOne))
-      await(repo.create(dividendToRemoveTwo))
-      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC))) shouldBe 2
-      await(repo.findAll()) should contain theSameElementsAs Seq(dividendToKeep)
+      await(repo.create(dividendToKeepTwo))
+      await(repo.deleteAllBeforeDate(DateTime.now(DateTimeZone.UTC).minusHours(1))) shouldBe 1
+      await(repo.findAll()) should contain theSameElementsAs Seq(dividendToKeepOne, dividendToKeepTwo)
     }
   }
 }

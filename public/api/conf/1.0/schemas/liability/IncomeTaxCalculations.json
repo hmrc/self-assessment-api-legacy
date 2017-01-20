@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "IncomeTaxCalculations",
+  "type": "object",
+  "properties": {
+    "nonSavings": {
+      "title": "Non-savings",
+      "description": "",
+      "type": "array",
+      "items": {
+        "$ref": "TaxBandSummary.json"
+      }
+    },
+    "savings": {
+      "title": "Savings",
+      "description": "",
+      "type": "array",
+      "items": {
+        "$ref": "TaxBandSummary.json"
+      }
+    },
+    "dividends": {
+      "title": "Dividends",
+      "description": "",
+      "type": "array",
+      "items": {
+        "$ref": "TaxBandSummary.json"
+      }
+    },
+    "total": {
+      "title": "Total",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

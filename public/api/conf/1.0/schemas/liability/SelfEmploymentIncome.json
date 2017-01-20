@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "SelfEmploymentIncome",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string"
+    },
+    "taxableProfit": {
+      "title": "Taxable profit",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    },
+    "profit": {
+      "title": "Profit",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

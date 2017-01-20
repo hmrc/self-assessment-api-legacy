@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Deductions",
+  "type": "object",
+  "properties": {
+    "incomeTaxRelief": {
+      "title": "Income tax relief",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    },
+    "personalAllowance": {
+      "title": "Personal allowance",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    },
+    "retirementAnnuityContract": {
+      "title": "Retirement annuity contract",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    },
+    "total": {
+      "title": "Total",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

@@ -1251,3 +1251,64 @@ documentation:
                         description: Not Found
                         value:
                           code: NOT_FOUND
+    /liabilities:
+      (annotations.group):
+        name: Tax Liability
+        description: !include docs/tax-liability.md
+      post:
+        displayName: Request a liability calculation
+        description: Request a liability calculation
+        is: [headers.acceptHeader]
+        (annotations.scope): "write:self-assessment"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        responses:
+          202:
+            body:
+              application/json:
+                type: !include schemas/LiabilityCalculationID.json
+                example: !include examples/liability/LiabilityCalculationID.json
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  invalidNino:
+                    description: Invalid NINO
+                    value:
+                      code: NINO_INVALID
+      /{liabilityCalculationId}:
+        uriParameters:
+          liabilityCalculationId:
+            description: The ID of the liability calculation
+            type: string
+        get:
+          displayName: Retrieve a liability calculation
+          description: Retrieve a liability calculation
+          is: [headers.acceptHeader]
+          (annotations.scope): "write:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          responses:
+            200:
+              body:
+                application/json:
+                  type: !include schemas/Liability.json
+                  example: !include examples/liability/Liability.json
+            404:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    notFound:
+                      description: Not Found
+                      value:
+                        code: NOT_FOUND
+            400:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    invalidNino:
+                      description: Invalid NINO
+                      value:
+                        code: NINO_INVALID
+

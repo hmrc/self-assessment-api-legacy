@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "RequestLiability",
+  "type": "object",
+  "properties": {
+    "income": {
+      "title": "Income",
+      "description": "Income summary",
+      "$ref": "liability/IncomeSummary.json"
+    },
+    "incomeTaxCalculations": {
+      "title": "Income tax calculations",
+      "description": "Income tax calculations",
+      "$ref": "liability/IncomeTaxCalculations.json"
+    },
+    "otherCharges": {
+      "title": "Other charges",
+      "description": "Other charged",
+      "$ref": "liability/OtherCharges.json"
+    },
+    "taxDeducted": {
+      "title": "Tax deducted",
+      "description": "Tax deducted",
+      "$ref": "liability/TaxDeducted.json"
+    },
+    "totalTaxDue": {
+      "title": "Total tax due",
+      "description": "The total amount of tax due",
+      "type": "number",
+      "minimum": 0
+    },
+    "totalTaxOverpaid": {
+      "title": "Total tax overpaid",
+      "description": "The total amount of tax overpaid",
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

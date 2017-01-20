@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "UKPropertiesIncome",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string"
+    },
+    "profit": {
+      "title": "Profit",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

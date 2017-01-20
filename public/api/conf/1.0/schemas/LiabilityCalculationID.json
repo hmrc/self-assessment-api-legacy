@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "CreateLiability",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id"
+  ],
+  "additionalProperties": false
+}

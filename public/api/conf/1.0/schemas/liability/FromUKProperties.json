@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "FromUKProperties",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string"
+    },
+    "taxPaid": {
+      "title": "Tax paid",
+      "description": "Tax paid for a UK property",
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

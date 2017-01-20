@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "NonSavingsIncomes",
+  "type": "object",
+  "properties": {
+    "selfEmployment": {
+      "title": "Self-employment",
+      "description": "",
+      "type": "array",
+      "items": {
+        "$ref": "SelfEmploymentIncome.json"
+      }
+    },
+    "ukProperties": {
+      "title": "UK properties",
+      "description": "",
+      "type": "array",
+      "items": {
+        "$ref": "UKPropertiesIncome.json"
+      }
+    },
+    "furnishedHolidayLettings": {
+      "title": "Furnished holiday lettings",
+      "description": "",
+      "type": "array",
+      "items": {
+        "$ref": "FurnishedHolidayLettingsIncome.json"
+      }
+    }
+  },
+  "additionalProperties": false
+}

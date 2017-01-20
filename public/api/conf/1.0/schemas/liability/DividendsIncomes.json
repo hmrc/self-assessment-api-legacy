@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "DividendsIncomes",
+  "type": "object",
+  "properties": {
+    "fromUKSources": {
+      "title": "From UK sources",
+      "description": "",
+      "type": "array",
+      "items": {
+        "$ref": "DividendsFromUKSources.json"
+      }
+    }
+  },
+  "additionalProperties": false
+}

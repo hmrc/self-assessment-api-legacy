@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "IncomeFromSources",
+  "type": "object",
+  "properties": {
+    "nonSavings": {
+      "title": "Non-savings",
+      "description": "",
+      "$ref": "NonSavingsIncomes.json"
+    },
+    "savings": {
+      "title": "Savings",
+      "description": "",
+      "$ref": "SavingsIncomes.json"
+    },
+    "dividends": {
+      "title": "Dividends",
+      "description": "",
+      "$ref": "DividendsIncomes.json"
+    },
+    "total": {
+      "title": "Total",
+      "description": "",
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

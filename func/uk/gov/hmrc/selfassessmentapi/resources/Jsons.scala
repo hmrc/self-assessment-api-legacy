@@ -400,4 +400,63 @@ object Jsons {
          """.stripMargin)
     }
   }
+
+  object CannedLiability {
+    def apply(payFromAllEmployments: BigDecimal = 100.25, benefitsAndExpensesReceived: BigDecimal = 100.25,
+              payFromAllEmploymentsAfterExpenses: BigDecimal = 100.25, interestReceivedFromUkBanksAndBuildingSocieties: BigDecimal = 100.25,
+              dividendsFromUkCompanies: BigDecimal = 100.25, totalIncomeReceived: BigDecimal = 100.25,
+              personalAllowance: BigDecimal = 100.25, totalIncomeOnWhichTaxIsDue: BigDecimal = 100.25,
+              giftExtender: BigDecimal = 100.25, extendedBR: BigDecimal = 100.25,
+              payPensionsProfitAtBRT: BigDecimal = 100.25, incomeTaxOnPayPensionsProfitAtBRT: BigDecimal = 100.25,
+              interestReceivedAtStartingRate: BigDecimal = 100.25, incomeTaxOnInterestReceivedAtStartingRate: BigDecimal = 100.25,
+              dividendsAtBRT: BigDecimal = 100.25, incomeTaxOnDividendsAtBRT: BigDecimal = 100.25,
+              dividendsAtHRT: BigDecimal = 100.25, incomeTaxOnDividendsAtHRT: BigDecimal = 100.25,
+              totalIncomeOnWhichTaxHasBeenCharged: BigDecimal = 100.25, incomeTaxCharged: BigDecimal = 100.25,
+              taxCreditsOnDividendsFromUkCompanies: BigDecimal = 100.25, incomeTaxDueAfterDividendTaxCredits: BigDecimal = 100.25,
+              highIncomeChildBenefitCharge: BigDecimal = 100.25, incomeTaxDue: BigDecimal = 100.25,
+              employmentsPensionsAndBenefits: BigDecimal = 100.25, totalTaxDeducted: BigDecimal = 100.25,
+              incomeTaxDueAfterDeductions: BigDecimal = 100.25): JsValue = {
+      Json.parse(s"""
+         |{
+         |  "payFromAllEmployments": $payFromAllEmployments,
+         |  "benefitsAndExpensesReceived": $benefitsAndExpensesReceived,
+         |  "payFromAllEmploymentsAfterExpenses": $payFromAllEmploymentsAfterExpenses,
+         |  "interestReceivedFromUkBanksAndBuildingSocieties": $interestReceivedFromUkBanksAndBuildingSocieties,
+         |  "dividendsFromUkCompanies": $dividendsFromUkCompanies,
+         |  "totalIncomeReceived": $totalIncomeReceived,
+         |  "personalAllowance": $personalAllowance,
+         |  "totalIncomeOnWhichTaxIsDue": $totalIncomeOnWhichTaxIsDue,
+         |  "giftExtender": $giftExtender,
+         |  "extendedBR": $extendedBR,
+         |  "payPensionsProfitAtBRT": $payPensionsProfitAtBRT,
+         |  "incomeTaxOnPayPensionsProfitAtBRT": $incomeTaxOnPayPensionsProfitAtBRT,
+         |  "interestReceivedAtStartingRate": $interestReceivedAtStartingRate,
+         |  "incomeTaxOnInterestReceivedAtStartingRate": $incomeTaxOnInterestReceivedAtStartingRate,
+         |  "dividendsAtBRT": $dividendsAtBRT,
+         |  "incomeTaxOnDividendsAtBRT": $incomeTaxOnDividendsAtBRT,
+         |  "dividendsAtHRT": $dividendsAtHRT,
+         |  "incomeTaxOnDividendsAtHRT": $incomeTaxOnDividendsAtHRT,
+         |  "totalIncomeOnWhichTaxHasBeenCharged": $totalIncomeOnWhichTaxHasBeenCharged,
+         |  "incomeTaxCharged": $incomeTaxCharged,
+         |  "taxCreditsOnDividendsFromUkCompanies": $taxCreditsOnDividendsFromUkCompanies,
+         |  "incomeTaxDueAfterDividendTaxCredits": $incomeTaxDueAfterDividendTaxCredits,
+         |  "highIncomeChildBenefitCharge": $highIncomeChildBenefitCharge,
+         |  "incomeTaxDue": $incomeTaxDue,
+         |  "employmentsPensionsAndBenefits": $employmentsPensionsAndBenefits,
+         |  "totalTaxDeducted": $totalTaxDeducted,
+         |  "incomeTaxDueAfterDeductions": $incomeTaxDueAfterDeductions
+         |}
+       """.stripMargin)
+    }
+
+    def eta(seconds: Int): JsValue = {
+      Json.parse(
+        s"""
+           |{
+           |  "etaSeconds": $seconds
+           |}
+         """.stripMargin)
+    }
+  }
+
 }

@@ -54,7 +54,7 @@ GET /ni/:nino/dividends/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.Divid
 ####################
 #    Liabilities   #
 ####################
-# POST    /ni/:nino/liability/:taxYear   uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.requestLiability(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)
-# GET     /ni/:nino/liability/:taxYear   uk.gov.hmrc.selfassessmentapi.controllers.live.LiabilityController.retrieveLiability(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.controllers.api.TaxYear)
+POST    /ni/:nino/liability-calculation       uk.gov.hmrc.selfassessmentapi.resources.CannedLiabilityResource.requestLiability(nino: uk.gov.hmrc.domain.Nino)
+GET     /ni/:nino/liability-calculation/:id   uk.gov.hmrc.selfassessmentapi.resources.CannedLiabilityResource.retrieveLiability(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.SourceId)
 
 

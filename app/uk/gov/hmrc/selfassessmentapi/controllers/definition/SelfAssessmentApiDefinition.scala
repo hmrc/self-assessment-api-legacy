@@ -335,7 +335,28 @@ class SelfAssessmentApiDefinition {
     )
   }
 
-  private val allEndpoints = selfEmploymentEndpoints ++ ukPropertyEndpoints ++ dividendEndpoints ++ bankSavingEndpoints
+  val liabilityEndpoints: Seq[Endpoint] = Seq(
+    Endpoint(
+      uriPattern = "/ni/{nino}/liability-calculation",
+      endpointName = "Request a liability calculation",
+      method = POST,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(writeScope),
+      groupName = Liability),
+    Endpoint(
+      uriPattern = "/ni/{nino}/liability-calculation/{liabilityCalculationId}",
+      endpointName = "Retrieve a liability calculation result",
+      method = GET,
+      authType = USER,
+      throttlingTier = UNLIMITED,
+      scope = Some(readScope),
+      groupName = Liability
+    )
+  )
+
+  private val allEndpoints =
+    selfEmploymentEndpoints ++ ukPropertyEndpoints ++ dividendEndpoints ++ bankSavingEndpoints ++ liabilityEndpoints
 
 
   lazy val definition: Definition =

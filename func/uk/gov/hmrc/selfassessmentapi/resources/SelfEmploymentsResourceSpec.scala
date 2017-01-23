@@ -1,7 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.resources.models.{PeriodId, SourceId}
+import uk.gov.hmrc.selfassessmentapi.resources.models.SourceId
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
@@ -15,6 +15,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+".r)
+        .responseContainsHeader("X-CorrelationId", s"ALEX".r)
     }
 
     "return code 400 (INVALID_REQUEST) when attempting to create a self-employment with an invalid dates in the accountingPeriod" in {

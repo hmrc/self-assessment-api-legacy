@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
@@ -31,14 +32,18 @@ import scala.concurrent.Future
 object SelfEmploymentsResource extends BaseController {
   private lazy val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
   private val service = SelfEmploymentsService
+  private val logger = LoggerFactory.getLogger(this.getClass)
 
   def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
+
+    logger.info("ALEX headers=" + request.headers)
+
     validate[SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
       service.create(nino, selfEmployment)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(idOption) => idOption.map {
-        case Some(id) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/self-employments/$id")
+        case Some(id) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/self-employments/$id", "X-CorrelationId" -> "ALEX")
         case None => InternalServerError
       }
     }

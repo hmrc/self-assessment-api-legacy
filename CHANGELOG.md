@@ -1,4 +1,8 @@
 
+## [0.85.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.85.0) 24-Jan-2017
+
+* Ability to provide UK interest received
+
 ## [0.82.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.82.0) 19-Jan-2017
 
 * API re-design

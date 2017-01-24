@@ -400,4 +400,103 @@ object Jsons {
          """.stripMargin)
     }
   }
+
+  object CannedLiability {
+    def apply(amount: BigDecimal = 100.25): JsValue = {
+      Json.parse(s"""
+         |{
+         |  "profitFromSelfEmployment": $amount,
+         |  "profitFromUkLandAndProperty": $amount,
+         |  "interestReceivedFromUkBanksAndBuildingSocieties": $amount,
+         |  "dividendsFromUkCompanies": $amount,
+         |  "totalIncomeReceived": $amount,
+         |  "personalAllowance": $amount,
+         |  "totalIncomeOnWhichTaxIsDue": $amount,
+         |  "payPensionsProfitAtBRT": $amount,
+         |  "incomeTaxOnPayPensionsProfitAtBRT": $amount,
+         |  "payPensionsProfitAtHRT": $amount,
+         |  "incomeTaxOnPayPensionsProfitAtHRT": $amount,
+         |  "payPensionsProfitAtART": $amount,
+         |  "incomeTaxOnPayPensionsProfitAtART": $amount,
+         |  "interestReceivedAtStartingRate": $amount,
+         |  "incomeTaxOnInterestReceivedAtStartingRate": $amount,
+         |  "interestReceivedAtZeroRate": $amount,
+         |  "incomeTaxOnInterestReceivedAtZeroRate": $amount,
+         |  "interestReceivedAtBRT": $amount,
+         |  "incomeTaxOnInterestReceivedAtBRT": $amount,
+         |  "interestReceivedAtHRT": $amount,
+         |  "incomeTaxOnInterestReceivedAtHRT": $amount,
+         |  "interestReceivedAtART": $amount,
+         |  "incomeTaxOnInterestReceivedAtART": $amount,
+         |  "dividendsAtZeroRate": $amount,
+         |  "incomeTaxOnDividendsAtZeroRate": $amount,
+         |  "dividendsAtBRT": $amount,
+         |  "incomeTaxOnDividendsAtBRT": $amount,
+         |  "dividendsAtHRT": $amount,
+         |  "incomeTaxOnDividendsAtHRT": $amount,
+         |  "dividendsAtART": $amount,
+         |  "incomeTaxOnDividendsAtART": $amount,
+         |  "totalIncomeOnWhichTaxHasBeenCharged": $amount,
+         |  "incomeTaxDue": $amount,
+         |  "incomeTaxCharged": $amount,
+         |  "taxCreditsOnDividendsFromUkCompanies": $amount,
+         |  "incomeTaxDueAfterDividendTaxCredits": $amount,
+         |  "incomeTaxOverPaid": $amount,
+         |  "allowance": $amount,
+         |  "limitBRT": $amount,
+         |  "limitHRT": $amount,
+         |  "rateBRT": $amount,
+         |  "rateHRT": $amount,
+         |  "rateART": $amount,
+         |  "limitAIA": $amount,
+         |  "allowanceBRT": $amount,
+         |  "interestAllowanceHRT": $amount,
+         |  "interestAllowanceBRT": $amount,
+         |  "dividendAllowance": $amount,
+         |  "dividendBRT": $amount,
+         |  "dividendHRT": $amount,
+         |  "dividendART": $amount,
+         |  "proportionAllowance": $amount,
+         |  "proportionLimitBRT": $amount,
+         |  "proportionLimitHRT": $amount,
+         |  "proportionalTaxDue": $amount,
+         |  "proportionInterestAllowanceBRT": $amount,
+         |  "proportionInterestAllowanceHRT": $amount,
+         |  "proportionDividendAllowance": $amount,
+         |  "proportionPayPensionsProfitAtART": $amount,
+         |  "proportionIncomeTaxOnPayPensionsProfitAtART": $amount,
+         |  "proportionPayPensionsProfitAtBRT": $amount,
+         |  "proportionIncomeTaxOnPayPensionsProfitAtBRT": $amount,
+         |  "proportionPayPensionsProfitAtHRT": $amount,
+         |  "proportionIncomeTaxOnPayPensionsProfitAtHRT": $amount,
+         |  "proportionInterestReceivedAtZeroRate": $amount,
+         |  "proportionIncomeTaxOnInterestReceivedAtZeroRate": $amount,
+         |  "proportionInterestReceivedAtBRT": $amount,
+         |  "proportionIncomeTaxOnInterestReceivedAtBRT": $amount,
+         |  "proportionInterestReceivedAtHRT": $amount,
+         |  "proportionIncomeTaxOnInterestReceivedAtHRT": $amount,
+         |  "proportionInterestReceivedAtART": $amount,
+         |  "proportionIncomeTaxOnInterestReceivedAtART": $amount,
+         |  "proportionDividendsAtZeroRate": $amount,
+         |  "proportionIncomeTaxOnDividendsAtZeroRate": $amount,
+         |  "proportionDividendsAtBRT": $amount,
+         |  "proportionIncomeTaxOnDividendsAtBRT": $amount,
+         |  "proportionDividendsAtHRT": $amount,
+         |  "proportionIncomeTaxOnDividendsAtHRT": $amount,
+         |  "proportionDividendsAtART": $amount,
+         |  "proportionIncomeTaxOnDividendsAtART": $amount
+         |}
+       """.stripMargin)
+    }
+
+    def eta(seconds: Int): JsValue = {
+      Json.parse(
+        s"""
+           |{
+           |  "etaSeconds": $seconds
+           |}
+         """.stripMargin)
+    }
+  }
+
 }

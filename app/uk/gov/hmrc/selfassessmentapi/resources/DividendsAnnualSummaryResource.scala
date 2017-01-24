@@ -33,7 +33,7 @@ object DividendsAnnualSummaryResource extends BaseController {
   private lazy val featureSwitch = FeatureSwitchAction(SourceType.Dividends, "annual")
   private val service = DividendsAnnualSummaryService
 
-  def updateAnnualSummary(nino: Nino, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def updateAnnualSummary(nino: Nino, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validate[Dividends, Boolean](request.body) { dividends =>
       service.updateAnnualSummary(nino, taxYear, dividends)
     } match {

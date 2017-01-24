@@ -34,7 +34,7 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
   private lazy val annualSummaryFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
   private val annualSummaryService = SelfEmploymentAnnualSummaryService
 
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncFeatureSwitch { request =>
+  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmploymentAnnualSummary, Boolean](request.body) {
       annualSummaryService.updateAnnualSummary(nino, id, taxYear, _)
     } match {

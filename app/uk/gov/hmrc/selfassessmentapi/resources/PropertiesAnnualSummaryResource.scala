@@ -33,7 +33,7 @@ object PropertiesAnnualSummaryResource extends BaseController {
   private lazy val featureSwitch = FeatureSwitchAction(SourceType.Properties, "annual")
   private val service = PropertiesAnnualSummaryService
 
-  def updateAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def updateAnnualSummary(nino: Nino, propertyId: PropertyType, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validateProperty(propertyId, request.body, service.updateAnnualSummary(nino, taxYear, _)) match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {

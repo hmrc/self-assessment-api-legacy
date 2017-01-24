@@ -32,7 +32,7 @@ object SelfEmploymentsResource extends BaseController {
   private lazy val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
   private val service = SelfEmploymentsService
 
-  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
+  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
       service.create(nino, selfEmployment)
     } match {
@@ -44,7 +44,7 @@ object SelfEmploymentsResource extends BaseController {
     }
   }
 
-  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
+  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmployment, Boolean](request.body) { selfEmployment =>
       service.update(nino, selfEmployment, id)
     } match {

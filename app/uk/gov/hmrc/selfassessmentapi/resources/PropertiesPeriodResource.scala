@@ -34,7 +34,7 @@ object PropertiesPeriodResource extends BaseController {
 
   lazy val featureSwitch = FeatureSwitchAction(SourceType.Properties, "periods")
 
-  def createPeriod(nino: Nino, id: PropertyType): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def createPeriod(nino: Nino, id: PropertyType): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validateCreateRequest(id, nino, request) match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {
@@ -49,7 +49,7 @@ object PropertiesPeriodResource extends BaseController {
     }
   }
 
-  def updatePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def updatePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validateUpdateRequest(id, nino, periodId, request) match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map {

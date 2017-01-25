@@ -511,6 +511,43 @@ documentation:
                     description: Not Found
                     value:
                       code: NOT_FOUND
+      /obligations:
+        get:
+          displayName: Retrieve UK property business obligations
+          description: Retrieve UK property business obligations
+          is: [headers.acceptHeader]
+          (annotations.scope): "read:self-assessment"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
+          headers:
+            X-Request-Scenario:
+              description: Request a response in which either only the first obligation has been met, or all obligations have been met. By default, no obligations are met.
+              type: string
+              required: false
+              example: PROP_OB_FIRST_MET or PROP_OB_ALL_MET
+          responses:
+            200:
+              body:
+                application/json:
+                  type: !include schemas/Obligations.json
+                  example: !include examples/Obligations.json
+            400:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    invalidNino:
+                      description: Invalid NINO
+                      value:
+                        code: NINO_INVALID
+            404:
+              body:
+                application/json:
+                  type: types.errorResponse
+                  examples:
+                    notFound:
+                      description: Not Found
+                      value:
+                        code: NOT_FOUND
       /other:
         /periods:
           post:
@@ -1251,9 +1288,9 @@ documentation:
                         description: Not Found
                         value:
                           code: NOT_FOUND
-    /liability-calculation:
+    /liability-calculations:
       (annotations.group):
-        name: Liability Calculation
+        name: Liability Calculations
         description: !include docs/tax-liability.md
       post:
         displayName: Request a liability calculation
@@ -1265,7 +1302,7 @@ documentation:
           202:
             headers:
               Location:
-                example: /self-assessment/ni/{nino}/liability-calculation/{liabilityCalculationId}
+                example: /self-assessment/ni/{nino}/liability-calculations/{liabilityCalculationId}
                 description: Location of the liability calculation result
             body:
               application/json:

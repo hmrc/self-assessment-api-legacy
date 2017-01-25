@@ -126,7 +126,7 @@ object CannedLiabilityResource extends BaseController {
   def requestLiability(nino: Nino): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
     Future.successful {
       Accepted(Json.parse(cannedEtaResponse))
-        .withHeaders("Location" -> s"/self-assessment/ni/$nino/liability-calculation/$magicId")
+        .withHeaders("Location" -> s"/self-assessment/ni/$nino/liability-calculations/$magicId")
     }
   }
 

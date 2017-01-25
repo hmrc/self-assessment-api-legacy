@@ -34,7 +34,7 @@ object SelfEmploymentPeriodResource extends BaseController {
   private lazy val featureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "periods")
   val periodService: SelfEmploymentPeriodService = SelfEmploymentPeriodService
 
-  def createPeriod(nino: Nino, sourceId: SourceId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def createPeriod(nino: Nino, sourceId: SourceId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmploymentPeriod, Either[Error, PeriodId]](request.body) { period =>
       periodService.createPeriod(nino, sourceId, period)
     } match {
@@ -49,7 +49,7 @@ object SelfEmploymentPeriodResource extends BaseController {
     }
   }
 
-  def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmploymentPeriodicData, Boolean](request.body) {
       periodService.updatePeriod(nino, id, periodId, _)
     } match {

@@ -32,7 +32,7 @@ object BanksAnnualSummaryResource extends BaseController {
   private lazy val featureSwitch = FeatureSwitchAction(SourceType.Banks, "annual")
   private val annualSummaryService = BanksAnnualSummaryService
 
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validate[BankAnnualSummary, Boolean](request.body) {
       annualSummaryService.updateAnnualSummary(nino, id, taxYear, _)
     } match {

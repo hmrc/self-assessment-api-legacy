@@ -32,7 +32,7 @@ object BanksResource extends BaseController {
   private lazy val seFeatureSwitch = FeatureSwitchAction(SourceType.Banks)
   private val service = BanksService
 
-  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
+  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
     validate[Bank, Option[SourceId]](request.body) { bank =>
       service.create(nino, bank)
     } match {
@@ -44,7 +44,7 @@ object BanksResource extends BaseController {
     }
   }
 
-  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncFeatureSwitch { request =>
+  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
     validate[Bank, Boolean](request.body) { bank =>
       service.update(nino, bank, id)
     } match {

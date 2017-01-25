@@ -9,7 +9,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
     "return 200 with json response" in {
       given()
         .when()
-        .get("/api/definition").withoutAcceptHeader()
+        .get("/api/definition")
         .thenAssertThat()
         .statusIs(200)
     }
@@ -19,7 +19,7 @@ class DocumentationSpec extends BaseFunctionalSpec {
     "return 200 with raml response" in {
       given()
         .when()
-        .get("/api/conf/1.0/application.raml").withoutAcceptHeader()
+        .get("/api/conf/1.0/application.raml")
         .thenAssertThat()
         .statusIs(200)
     }

@@ -1,4 +1,4 @@
-This section allows API developer to provide data relating to the taxpayer's
+This section allows API developer to provide and retrieve data relating to the taxpayer's
 UK Property business that is required to calculate the estimated tax liability.
 
 Here, the developer can provide the following data:

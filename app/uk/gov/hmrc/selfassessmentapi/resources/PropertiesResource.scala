@@ -35,7 +35,7 @@ object PropertiesResource extends BaseController {
 
   private val service = PropertiesService()
 
-  def create(nino: Nino): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def create(nino: Nino): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validate[properties.Properties, Either[Error, Boolean]](request.body) {
       service.create(nino, _)
     } match {
@@ -57,7 +57,7 @@ object PropertiesResource extends BaseController {
     }
   }
 
-  def update(nino: Nino): Action[JsValue] = featureSwitch.asyncFeatureSwitch { request =>
+  def update(nino: Nino): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validate[Properties, Boolean](request.body) { properties =>
       service.update(nino, properties)
     } match {

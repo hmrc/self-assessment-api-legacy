@@ -499,4 +499,37 @@ object Jsons {
     }
   }
 
+  object Obligations {
+    def apply(firstMet: Boolean = false, secondMet: Boolean = false,
+              thirdMet: Boolean = false, fourthMet: Boolean = false): JsValue = {
+      Json.parse(
+        s"""
+           |{
+           |  "obligations": [
+           |    {
+           |      "start": "2017-04-06",
+           |      "end": "2017-07-05",
+           |      "met": $firstMet
+           |    },
+           |    {
+           |      "start": "2017-07-06",
+           |      "end": "2017-10-05",
+           |      "met": $secondMet
+           |    },
+           |    {
+           |      "start": "2017-10-06",
+           |      "end": "2018-01-05",
+           |      "met": $thirdMet
+           |    },
+           |    {
+           |      "start": "2018-01-06",
+           |      "end": "2018-04-05",
+           |      "met": $fourthMet
+           |    }
+           |  ]
+           |}
+         """.stripMargin)
+    }
+  }
+
 }

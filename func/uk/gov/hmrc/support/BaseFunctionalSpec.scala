@@ -291,7 +291,7 @@ trait BaseFunctionalSpec extends TestApplication {
     }
   }
 
-  class HttpRequest(method: String, path: String, body: Option[JsValue])(
+  class HttpRequest(method: String, path: String, body: Option[JsValue], hc: HeaderCarrier = HeaderCarrier())(
       implicit urlPathVariables: mutable.Map[String, String])
       extends UrlInterpolation {
 
@@ -300,16 +300,10 @@ trait BaseFunctionalSpec extends TestApplication {
 
     val url = s"http://localhost:$port$interpolatedPath"
     var addAcceptHeader = true
-    val hc = HeaderCarrier()
 
-    def withoutAcceptHeader() = {
-      this.addAcceptHeader = false
-      this
-    }
-
-    def thenAssertThat() = {
+    def thenAssertThat(): Assertions = {
       implicit val carrier =
-        if (addAcceptHeader) hc.withExtraHeaders(("Accept", "application/vnd.hmrc.1.0+json")) else hc
+        if (addAcceptHeader) hc.withExtraHeaders("Accept" -> "application/vnd.hmrc.1.0+json") else hc
 
       withClue(s"Request $method $url") {
         method match {
@@ -327,9 +321,18 @@ trait BaseFunctionalSpec extends TestApplication {
       }
     }
 
-    def withAcceptHeader() = {
+    def withAcceptHeader(): HttpRequest = {
       addAcceptHeader = true
       this
+    }
+
+    def withoutAcceptHeader(): HttpRequest = {
+      addAcceptHeader = false
+      this
+    }
+
+    def withHeaders(header: String, value: String): HttpRequest = {
+      new HttpRequest(method, path, body, hc.withExtraHeaders(header -> value))
     }
   }
 

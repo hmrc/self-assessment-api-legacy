@@ -519,11 +519,12 @@ documentation:
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           headers:
-            X-Request-Scenario:
-              description: Request a response in which either only the first obligation has been met, or all obligations have been met. By default, no obligations are met.
+            X-Test-Scenario:
+              description: See the Test Data section for all available testing scenarios.
               type: string
               required: false
               example: PROP_OB_FIRST_MET or PROP_OB_ALL_MET
+          (annotations.sandboxData): !include scenarios/property-obligation-scenarios.md
           responses:
             200:
               body:

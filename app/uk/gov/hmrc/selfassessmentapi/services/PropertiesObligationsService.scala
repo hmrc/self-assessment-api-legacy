@@ -36,9 +36,9 @@ trait PropertiesObligationsService {
 
   private def selectCannedResponse(header: Option[String]): Obligations = {
     header match {
-      case Some("PROP_OB_FIRST_MET") =>
+      case Some("FIRST_MET") =>
         cannedResponse(firstMet = true)
-      case Some("PROP_OB_ALL_MET") =>
+      case Some("ALL_MET") =>
         cannedResponse(firstMet = true, secondMet = true, thirdMet = true, fourthMet = true)
       case Some(_) | None =>
         cannedResponse()

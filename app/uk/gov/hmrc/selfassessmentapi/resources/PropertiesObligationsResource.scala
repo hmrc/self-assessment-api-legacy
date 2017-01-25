@@ -31,7 +31,7 @@ object PropertiesObligationsResource extends BaseController {
   private val propertiesService = PropertiesObligationsService
 
   def retrieveObligations(nino: Nino): Action[Unit] = featureSwitch.asyncEmptyFeatureSwitch { request =>
-    propertiesService.retrieveObligations(nino, request.headers.get("X-Request-Scenario")) map {
+    propertiesService.retrieveObligations(nino, request.headers.get("X-Test-Scenario")) map {
       case Some(obligations) => Ok(Json.toJson(obligations))
       case None => NotFound
     }

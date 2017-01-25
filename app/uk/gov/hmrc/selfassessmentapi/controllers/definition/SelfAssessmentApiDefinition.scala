@@ -145,6 +145,14 @@ class SelfAssessmentApiDefinition {
         groupName = UKProperties)
       ,
       Endpoint(
+        uriPattern = "/ni/{nino}/uk-properties/obligations",
+        endpointName = "Retrieve UK property business obligations",
+        method = PUT,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(readScope),
+        groupName = UKProperties),
+      Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/other/periods",
         endpointName = "List all non FHL UK property periods",
         method = GET,

@@ -1288,9 +1288,9 @@ documentation:
                         description: Not Found
                         value:
                           code: NOT_FOUND
-    /liability-calculation:
+    /liability-calculations:
       (annotations.group):
-        name: Liability Calculation
+        name: Liability Calculations
         description: !include docs/tax-liability.md
       post:
         displayName: Request a liability calculation
@@ -1302,7 +1302,7 @@ documentation:
           202:
             headers:
               Location:
-                example: /self-assessment/ni/{nino}/liability-calculation/{liabilityCalculationId}
+                example: /self-assessment/ni/{nino}/liability-calculations/{liabilityCalculationId}
                 description: Location of the liability calculation result
             body:
               application/json:

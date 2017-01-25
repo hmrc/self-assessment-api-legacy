@@ -8,10 +8,10 @@ class CannedLiabilityResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(s"/ni/$nino/liability-calculation")
+        .post(s"/ni/$nino/liability-calculations")
         .thenAssertThat()
         .statusIs(202)
-        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/liability-calculation/\\w+".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/liability-calculations/\\w+".r)
         .bodyIsLike(Jsons.CannedLiability.eta(5).toString())
     }
   }
@@ -21,7 +21,7 @@ class CannedLiabilityResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(s"/ni/$nino/liability-calculation")
+        .post(s"/ni/$nino/liability-calculations")
         .thenAssertThat()
         .statusIs(202)
         .when()
@@ -35,7 +35,7 @@ class CannedLiabilityResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .get(s"/ni/$nino/liability-calculation/ohno")
+        .get(s"/ni/$nino/liability-calculations/ohno")
         .thenAssertThat()
         .statusIs(404)
     }

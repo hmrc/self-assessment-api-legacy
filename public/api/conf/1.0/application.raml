@@ -31,11 +31,11 @@ documentation:
         type: string
     /self-employments:
       (annotations.group):
-          name: Self Employment Businesses
+          name: Self-employment business
           description: !include docs/self-employment.md
       post:
-        displayName: Add a self employment business
-        description: Add a self employment business
+        displayName: Add a self-employment business
+        description: Add a self-employment business
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -92,8 +92,8 @@ documentation:
                     value:
                       code: TOO_MANY_SOURCES
       get:
-        displayName: List self employment businesses
-        description: List self employment businesses
+        displayName: List self-employment businesses
+        description: List self-employment businesses
         is: [headers.acceptHeader]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -113,15 +113,15 @@ documentation:
                     value:
                       code: NINO_INVALID
       /{selfEmploymentId}:
-        description: Self Employment Business
+        description: Self-employment business
         uriParameters:
           selfEmploymentId:
             displayName: Self-employment ID
-            description: An identifier for the self-employmment business, unique to the customer
+            description: An identifier for the self-employment business, unique to the customer
             type: string
         get:
-          displayName: Get self employment business
-          description: Get a self employment business
+          displayName: Get self-employment business
+          description: Get a self-employment business
           is: [headers.acceptHeader]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -151,8 +151,8 @@ documentation:
                           code: NOT_FOUND
         /periods:
           post:
-            displayName: Create a self employment period
-            description: Create a self employment period for submission of periodic data i.e incomes and expenses
+            displayName: Create a self-employment period
+            description: Create a self-employment period for submission of periodic data i.e incomes and expenses
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -209,8 +209,8 @@ documentation:
                         value:
                           code: INVALID_PERIOD
           get:
-            displayName: List all self employment periods
-            description: List all self employment periods
+            displayName: List all self-employment periods
+            description: List all self-employment periods
             is: [headers.acceptHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -244,8 +244,8 @@ documentation:
                 description: An identifier for the period
                 type: string
             get:
-              displayName: Get self employment periodic summary
-              description: Get a single self employment periodic summary for a given identifier
+              displayName: Get self-employment periodic summary
+              description: Get a single self-employment periodic summary for a given identifier
               is: [headers.acceptHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -274,8 +274,8 @@ documentation:
                           value:
                             code: NOT_FOUND
             put:
-              displayName: Update self employment periodic summary
-              description: Update a self employment periodic summary
+              displayName: Update self-employment periodic summary
+              description: Update a self-employment periodic summary
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -318,8 +318,8 @@ documentation:
               type: string
               example: 2016-17
           put:
-            displayName: Update self employment annual summary
-            description: Update self employment annual summary for a tax year
+            displayName: Update self-employment annual summary
+            description: Update self-employment annual summary for a tax year
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
@@ -373,8 +373,8 @@ documentation:
                         value:
                           code: NOT_FOUND
           get:
-            displayName: Get self employment annual summary
-            description: Get self employment annual summary for a tax year
+            displayName: Get self-employment annual summary
+            description: Get self-employment annual summary for a tax year
             is: [headers.acceptHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
@@ -408,7 +408,7 @@ documentation:
                           code: NOT_FOUND
     /uk-properties:
       (annotations.group):
-        name: UK Property Business
+        name: UK property business
         description: !include docs/uk-property.md
       post:
         displayName: Add a UK property business
@@ -1017,7 +1017,7 @@ documentation:
                             code: NOT_FOUND
     /dividends:
       (annotations.group):
-        name: Dividends Income
+        name: Dividends income
         description: !include docs/dividends-income.md
       /{taxYear}:
         displayName: Annual Summary
@@ -1091,7 +1091,7 @@ documentation:
                         code: NOT_FOUND
     /savings-accounts:
       (annotations.group):
-        name: Savings Accounts
+        name: Savings accounts
         description: !include docs/savings-accounts.md
       post:
         displayName: Add a savings account
@@ -1291,7 +1291,7 @@ documentation:
                           code: NOT_FOUND
     /liability-calculations:
       (annotations.group):
-        name: Liability Calculations
+        name: Liability calculations
         description: !include docs/tax-liability.md
       post:
         displayName: Request a liability calculation

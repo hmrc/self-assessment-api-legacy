@@ -67,7 +67,9 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
     val accountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"))
 
     SelfEmployment(id, id.stringify, nino, lastModifiedDateTime,
-      accountingPeriod, AccountingType.CASH, Some(LocalDate.now), Map.empty, Map.empty)
+      accountingPeriod, AccountingType.CASH, LocalDate.now, Some(LocalDate.now.plusDays(1)), "Acme Ltd.",
+      "Boxes made of corrugated cardboard (manufacture)", "1 Acme Rd.", Some("London"), Some("Greater London"), Some("United Kingdom"),
+      "A9 9AA", Map.empty, Map.empty)
   }
 
   private def createProperties(lastModifiedDateTime: DateTime, nino: Nino, id: BSONObjectID = BSONObjectID.generate): Properties = {

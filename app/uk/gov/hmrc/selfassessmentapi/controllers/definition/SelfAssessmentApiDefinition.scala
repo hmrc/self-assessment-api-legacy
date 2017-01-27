@@ -147,7 +147,7 @@ class SelfAssessmentApiDefinition {
       Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/obligations",
         endpointName = "Retrieve UK property business obligations",
-        method = PUT,
+        method = GET,
         authType = USER,
         throttlingTier = UNLIMITED,
         scope = Some(readScope),
@@ -345,7 +345,7 @@ class SelfAssessmentApiDefinition {
 
   val liabilityEndpoints: Seq[Endpoint] = Seq(
     Endpoint(
-      uriPattern = "/ni/{nino}/liability-calculation",
+      uriPattern = "/ni/{nino}/liability-calculations",
       endpointName = "Request a liability calculation",
       method = POST,
       authType = USER,
@@ -353,7 +353,7 @@ class SelfAssessmentApiDefinition {
       scope = Some(writeScope),
       groupName = Liability),
     Endpoint(
-      uriPattern = "/ni/{nino}/liability-calculation/{liabilityCalculationId}",
+      uriPattern = "/ni/{nino}/liability-calculations/{liabilityCalculationId}",
       endpointName = "Retrieve a liability calculation result",
       method = GET,
       authType = USER,

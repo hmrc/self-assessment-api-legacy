@@ -39,6 +39,12 @@ documentation:
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        headers:
+          Content-Type:
+            description: Specifies the format of the request body, which must be JSON.
+            type: string
+            required: true
+            example: application/json
         body:
           application/json:
             type: !include schemas/SelfEmployment_Without_ID.json
@@ -156,6 +162,12 @@ documentation:
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            headers:
+              Content-Type:
+                description: Specifies the format of the request body, which must be JSON.
+                type: string
+                required: true
+                example: application/json
             body:
               application/json:
                 type: !include schemas/SE_Period_Without_ID.json
@@ -279,6 +291,12 @@ documentation:
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              headers:
+                Content-Type:
+                  description: Specifies the format of the request body, which must be JSON.
+                  type: string
+                  required: true
+                  example: application/json
               body:
                 application/json:
                   type: !include schemas/SE_UpdatePeriod.json
@@ -323,6 +341,12 @@ documentation:
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            headers:
+              Content-Type:
+                description: Specifies the format of the request body, which must be JSON.
+                type: string
+                required: true
+                example: application/json
             body:
               application/json:
                 type: !include schemas/SE_AnnualSummary.json
@@ -416,6 +440,12 @@ documentation:
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        headers:
+          Content-Type:
+            description: Specifies the format of the request body, which must be JSON.
+            type: string
+            required: true
+            example: application/json
         body:
           application/json:
             type: !include schemas/UkProperties.json
@@ -483,6 +513,12 @@ documentation:
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        headers:
+          Content-Type:
+            description: Specifies the format of the request body, which must be JSON.
+            type: string
+            required: true
+            example: application/json
         body:
           application/json:
             type: !include schemas/UkProperties.json
@@ -557,6 +593,12 @@ documentation:
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            headers:
+              Content-Type:
+                description: Specifies the format of the request body, which must be JSON.
+                type: string
+                required: true
+                example: application/json
             body:
               application/json:
                 type: !include schemas/UK_PROP_OTHER_Period_Without_ID.json
@@ -673,6 +715,12 @@ documentation:
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              headers:
+                Content-Type:
+                  description: Specifies the format of the request body, which must be JSON.
+                  type: string
+                  required: true
+                  example: application/json
               body:
                 application/json:
                   type: !include schemas/UK_PROP_OTHER_UpdatePeriod.json
@@ -714,6 +762,12 @@ documentation:
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              headers:
+                Content-Type:
+                  description: Specifies the format of the request body, which must be JSON.
+                  type: string
+                  required: true
+                  example: application/json
               body:
                 application/json:
                   type: !include schemas/UK_PROP_OTHER_AnnualSummary.json
@@ -788,6 +842,12 @@ documentation:
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            headers:
+              Content-Type:
+                description: Specifies the format of the request body, which must be JSON.
+                type: string
+                required: true
+                example: application/json
             body:
               application/json:
                 type: !include schemas/UK_PROP_FHL_Period_Without_ID.json
@@ -904,6 +964,12 @@ documentation:
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              headers:
+                Content-Type:
+                  description: Specifies the format of the request body, which must be JSON.
+                  type: string
+                  required: true
+                  example: application/json
               body:
                 application/json:
                   type: !include schemas/UK_PROP_FHL_UpdatePeriod.json
@@ -949,6 +1015,12 @@ documentation:
               is: [headers.acceptHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+              headers:
+                Content-Type:
+                  description: Specifies the format of the request body, which must be JSON.
+                  type: string
+                  required: true
+                  example: application/json
               body:
                 application/json:
                   type: !include schemas/UK_PROP_FHL_AnnualSummary.json
@@ -1032,6 +1104,12 @@ documentation:
           is: [headers.acceptHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          headers:
+            Content-Type:
+              description: Specifies the format of the request body, which must be JSON.
+              type: string
+              required: true
+              example: application/json
           body:
             application/json:
               type: !include schemas/DIV_AnnualSummary.json
@@ -1099,6 +1177,12 @@ documentation:
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        headers:
+          Content-Type:
+            description: Specifies the format of the request body, which must be JSON.
+            type: string
+            required: true
+            example: application/json
         body:
           application/json:
             type: !include schemas/SavingsAccount_Without_ID.json
@@ -1154,6 +1238,12 @@ documentation:
           is: [headers.acceptHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+          headers:
+            Content-Type:
+              description: Specifies the format of the request body, which must be JSON.
+              type: string
+              required: true
+              example: application/json
           body:
             application/json:
               type: !include schemas/SavingsAccount_Without_ID.json
@@ -1223,6 +1313,12 @@ documentation:
             is: [headers.acceptHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            headers:
+              Content-Type:
+                description: Specifies the format of the request body, which must be JSON.
+                type: string
+                required: true
+                example: application/json
             body:
               application/json:
                 type: !include schemas/SavingsAccount_AnnualSummary.json
@@ -1299,6 +1395,12 @@ documentation:
         is: [headers.acceptHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        headers:
+          Content-Type:
+            description: Specifies the format of the request body, which must be JSON.
+            type: string
+            required: true
+            example: application/json
         responses:
           202:
             headers:
@@ -1353,4 +1455,3 @@ documentation:
                       description: Invalid NINO
                       value:
                         code: NINO_INVALID
-

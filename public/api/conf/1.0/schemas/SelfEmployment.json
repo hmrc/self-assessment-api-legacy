@@ -25,11 +25,64 @@
       "description": "Business start date",
       "type": "string",
       "format": "date"
+    },
+    "cessationDate": {
+      "title": "Business cessation date",
+      "description": "Business cessation date",
+      "type": "string",
+      "format": "date"
+    },
+    "tradingName": {
+      "title": "Business trading name",
+      "description": "Business trading name",
+      "type": "string",
+      "format": "alphanumeric"
+    },
+    "businessDescription": {
+      "title": "Business description",
+      "description": "Description of business conforming to SIC 2007 standard trade classifications",
+      "type": "string",
+      "format": "alphanumeric"
+    },
+    "businessAddressLineOne": {
+      "title": "Business address line one",
+      "description": "First line of the business address",
+      "type": "string",
+      "format": "alphanumeric"
+    },
+    "businessAddressLineTwo": {
+      "title": "Business address line two",
+      "description": "Second line of the business address",
+      "type": "string",
+      "format": "alphanumeric"
+    },
+    "businessAddressLineThree": {
+      "title": "Business address line three",
+      "description": "Third line of the business address",
+      "type": "string",
+      "format": "alphanumeric"
+    },
+    "businessAddressLineFour": {
+      "title": "Business address line four",
+      "description": "Fourth line of the business address",
+      "type": "string",
+      "format": "alphanumeric"
+    },
+    "businessPostcode": {
+      "title": "Business postcode",
+      "description": "Business postcode",
+      "type": "string",
+      "format": "alphanumeric"
     }
   },
   "required": [
     "accountingPeriod",
-    "accountingType"
+    "accountingType",
+    "commencementDate",
+    "tradingName",
+    "businessDescription",
+    "businessAddressLineOne",
+    "businessPostcode"
   ],
   "additionalProperties": false
 }

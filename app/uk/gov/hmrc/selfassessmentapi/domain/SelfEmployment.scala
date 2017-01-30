@@ -32,7 +32,15 @@ case class SelfEmployment(id: BSONObjectID,
                           lastModifiedDateTime: DateTime,
                           accountingPeriod: AccountingPeriod,
                           accountingType: AccountingType,
-                          commencementDate: Option[LocalDate],
+                          commencementDate: LocalDate,
+                          cessationDate: Option[LocalDate],
+                          tradingName: String,
+                          businessDescription: String,
+                          businessAddressLineOne: String,
+                          businessAddressLineTwo: Option[String],
+                          businessAddressLineThree: Option[String],
+                          businessAddressLineFour: Option[String],
+                          businessPostcode: String,
                           annualSummaries: Map[TaxYear, SelfEmploymentAnnualSummary] = Map.empty,
                           periods: Map[PeriodId, SelfEmploymentPeriod] = Map.empty)
     extends PeriodValidator[SelfEmploymentPeriod]
@@ -40,7 +48,10 @@ case class SelfEmployment(id: BSONObjectID,
 
   def toModel(elideID: Boolean = false): selfemployment.SelfEmployment = {
     val id = if (elideID) None else Some(sourceId)
-    selfemployment.SelfEmployment(id, accountingPeriod, accountingType, commencementDate)
+    selfemployment.SelfEmployment(
+      id, accountingPeriod, accountingType, commencementDate, cessationDate,
+      tradingName, businessDescription, businessAddressLineOne, businessAddressLineTwo,
+      businessAddressLineThree, businessAddressLineFour, businessPostcode)
   }
 
   def validatePeriod(period: SelfEmploymentPeriod): Option[Error] = validatePeriod(period, accountingPeriod)

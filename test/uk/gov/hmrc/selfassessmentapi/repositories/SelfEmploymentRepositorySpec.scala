@@ -37,7 +37,9 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
     val accountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02"))
 
     SelfEmployment(id, id.stringify, nino, DateTime.now(DateTimeZone.UTC),
-      accountingPeriod, AccountingType.CASH, Some(LocalDate.now), Map.empty, Map.empty)
+      accountingPeriod, AccountingType.CASH, LocalDate.now, Some(LocalDate.now.plusDays(1)), "Acme Ltd.",
+      "Boxes made of corrugated cardboard (manufacture)", "1 Acme Rd.", Some("London"), Some("Greater London"), Some("United Kingdom"),
+      "A9 9AA", Map.empty, Map.empty)
   }
 
   "create" should {
@@ -61,7 +63,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
       val se = createSelfEmployment(nino, id)
 
       await(repo.create(se))
-      val updatedSelfEmployment = se.copy(commencementDate = Some(now.toLocalDate.plusDays(1)))
+      val updatedSelfEmployment = se.copy(commencementDate = now.toLocalDate.plusDays(1))
 
       await(repo.update(id.stringify, nino, updatedSelfEmployment)) shouldBe true
 
@@ -111,10 +113,7 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
 
     "return a sequence of self employments" in {
       val se = createSelfEmployment(nino)
-
-      val id2 = BSONObjectID.generate
-      val selfEmploymentTwo = SelfEmployment(id2, id2.stringify, nino, DateTime.now(DateTimeZone.UTC),
-        AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")), AccountingType.CASH, Some(LocalDate.now(DateTimeZone.UTC)))
+      val selfEmploymentTwo = createSelfEmployment(nino)
 
       await(repo.create(se))
       await(repo.create(selfEmploymentTwo))

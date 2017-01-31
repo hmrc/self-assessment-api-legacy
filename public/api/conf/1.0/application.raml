@@ -149,6 +149,44 @@ documentation:
                         description: Not Found
                         value:
                           code: NOT_FOUND
+        /obligations:
+          get:
+            displayName: Retrieve UK self employment business obligations
+            description: Retrieve UK self employment business obligations
+            is: [headers.acceptHeader]
+            (annotations.scope): "write:self-assessment"
+            securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+            headers:
+              X-Test-Scenario:
+                description: See the Test Data section for all available testing scenarios
+                type: string
+                required: false
+                example: NONE_MET or ALL_MET
+            (annotations.sandboxData): !include scenarios/self-employment-obligation-scenarios.md
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: !include schemas/Obligations.json
+                    example: !include examples/Obligations.json
+              400:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      invalidNino:
+                        description: Invalid NINO
+                        value:
+                          code: NINO_INVALID
+              404:
+                body:
+                  application/json:
+                    type: types.errorResponse
+                    examples:
+                      notFound:
+                        description: Not Found
+                        value:
+                          code: NOT_FOUND
         /periods:
           post:
             displayName: Create a self employment period

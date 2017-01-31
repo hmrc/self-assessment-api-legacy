@@ -44,7 +44,8 @@ object SelfEmployment {
     ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
   )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
 
-  private lazy val sicClassifications: Seq[String] = Source.fromFile("resources/SICs.txt").getLines().toIndexedSeq
+  private lazy val sicClassifications: Seq[String] =
+    Source.fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt")).getLines.toIndexedSeq
 
   private def lengthIsBetween(minLength: Int, maxLength: Int): Reads[String] =
     Reads.of[String].filter(ValidationError(s"field length must be between $minLength and $maxLength characters", ErrorCode.INVALID_FIELD_LENGTH)

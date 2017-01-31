@@ -17,7 +17,7 @@
     },
     "commencementDate": {
       "title": "Business start date",
-      "description": "Business start date",
+      "description": "Business start date, must be in the past.",
       "type": "string",
       "format": "date"
     },

@@ -59,6 +59,15 @@ class SelfAssessmentApiDefinition {
         groupName = SelfEmployments)
       ,
       Endpoint(
+        uriPattern = "/ni/{nino}/self-employments/{selfEmploymentId}/obligations",
+        endpointName = "Retrieve self employment business obligations",
+        method = GET,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(readScope),
+        groupName = SelfEmployments)
+      ,
+      Endpoint(
         uriPattern = "/ni/{nino}/self-employments/{selfEmploymentId}/periods",
         endpointName = "List all self employment periods",
         method = GET,

@@ -62,7 +62,7 @@ object SelfEmployment {
       (__ \ "accountingPeriod").read[AccountingPeriod] and
       (__ \ "accountingType").read[AccountingType] and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
-      (__ \ "cessationDate").readNullable[LocalDate] and
+      Reads.pure[Option[LocalDate]](None) and
       (__ \ "tradingName").read[String](lengthIsBetween(1, 105)) and
       (__ \ "businessDescription").read[String](validateSIC).map(_.take(35)) and // TODO: MTDSA-760 => Should this be a code instead?
       (__ \ "businessAddressLineOne").read[String](lengthIsBetween(1, 35)) and

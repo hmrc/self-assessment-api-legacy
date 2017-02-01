@@ -115,12 +115,6 @@ class SelfEmploymentSpec extends JsonSpec {
             "/accountingPeriod/end" -> Seq("error.path.missing")))
     }
 
-    "return a error when providing an non-ISO (i.e. YYYY-MM-DD) cessationDate" in {
-      val json = Jsons.SelfEmployment(cessationDate = Some("01-01-2016"))
-
-      assertValidationErrorsWithMessage[SelfEmployment](json, Map("/cessationDate" -> Seq("error.expected.jodadate.format")))
-    }
-
     "return a error when providing a trading name that is not between 1 and 105 characters in length" in {
       val jsonOne = Jsons.SelfEmployment(tradingName = "")
       val jsonTwo = Jsons.SelfEmployment(tradingName = "a" * 106)

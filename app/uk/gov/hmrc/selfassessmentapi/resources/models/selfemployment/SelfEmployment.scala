@@ -44,7 +44,8 @@ object SelfEmployment {
     ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
   )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
 
-  private lazy val sicClassifications: Seq[String] = Source.fromFile("resources/SICs.txt").getLines().toIndexedSeq
+  private lazy val sicClassifications: Seq[String] =
+    Source.fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt")).getLines.toIndexedSeq
 
   private def lengthIsBetween(minLength: Int, maxLength: Int): Reads[String] =
     Reads.of[String].filter(ValidationError(s"field length must be between $minLength and $maxLength characters", ErrorCode.INVALID_FIELD_LENGTH)
@@ -61,7 +62,7 @@ object SelfEmployment {
       (__ \ "accountingPeriod").read[AccountingPeriod] and
       (__ \ "accountingType").read[AccountingType] and
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
-      (__ \ "cessationDate").readNullable[LocalDate] and
+      Reads.pure[Option[LocalDate]](None) and
       (__ \ "tradingName").read[String](lengthIsBetween(1, 105)) and
       (__ \ "businessDescription").read[String](validateSIC).map(_.take(35)) and // TODO: MTDSA-760 => Should this be a code instead?
       (__ \ "businessAddressLineOne").read[String](lengthIsBetween(1, 35)) and

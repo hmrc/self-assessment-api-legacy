@@ -103,7 +103,7 @@ class MicroserviceMonitoringFilter @Inject()(metrics: Metrics)
 object MicroserviceEmptyResponseFilter extends Filter with MicroserviceFilterSupport {
   override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] =
     f(rh) map { res =>
-      if (res.header.status == 201 && res.body.isKnownEmpty) {
+      if ((res.header.status == 201 || res.header.status == 404 || res.header.status == 409) && res.body.isKnownEmpty) {
         val headers = res.header.headers.updated("CONTENT-TYPE", "application/json")
         res.copy(res.header.copy(headers = headers), HttpEntity.NoEntity)
       } else res

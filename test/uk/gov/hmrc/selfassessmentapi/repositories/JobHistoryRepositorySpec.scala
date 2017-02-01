@@ -17,11 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.repositories
 
 import org.joda.time.{DateTime, DateTimeUtils}
-import org.scalatest.BeforeAndAfterEach
 import reactivemongo.core.errors.DatabaseException
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobHistory
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
+import uk.gov.hmrc.selfassessmentapi.domain.JobHistory
+import uk.gov.hmrc.selfassessmentapi.domain.JobStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

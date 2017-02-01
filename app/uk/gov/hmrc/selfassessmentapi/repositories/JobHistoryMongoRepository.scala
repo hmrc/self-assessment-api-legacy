@@ -23,8 +23,8 @@ import play.modules.reactivemongo.MongoDbConnection
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
-import uk.gov.hmrc.selfassessmentapi.repositories.domain._
+import uk.gov.hmrc.selfassessmentapi.domain.JobHistory
+import uk.gov.hmrc.selfassessmentapi.domain.JobStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

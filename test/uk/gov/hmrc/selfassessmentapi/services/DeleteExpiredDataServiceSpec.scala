@@ -26,7 +26,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, NinoGenerator}
 import uk.gov.hmrc.selfassessmentapi.domain.{Bank, Dividends, Properties, SelfEmployment}
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
+import uk.gov.hmrc.selfassessmentapi.domain.JobStatus._
 import uk.gov.hmrc.selfassessmentapi.repositories._
 import uk.gov.hmrc.selfassessmentapi.resources.models
 import uk.gov.hmrc.selfassessmentapi.resources.models.banks.BankAnnualSummary

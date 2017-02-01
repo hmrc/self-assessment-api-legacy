@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.repositories.domain
+package uk.gov.hmrc.selfassessmentapi.domain
 
 import org.joda.time.DateTime
 import play.api.libs.json._
 import reactivemongo.bson.{BSON, BSONHandler, BSONString}
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.controllers.definition.EnumJson
+import uk.gov.hmrc.selfassessmentapi.domain.JobStatus.JobStatus
 
 
 object JobStatus extends Enumeration {
@@ -40,13 +41,11 @@ object JobStatus extends Enumeration {
 
 }
 
-import uk.gov.hmrc.selfassessmentapi.repositories.domain.JobStatus._
-
 case class JobHistory(jobNumber: Int, status: JobStatus, startedAt: DateTime = DateTime.now,
                       finishedAt: Option[DateTime] = None, recordsDeleted: Int = 0) {
-  val isInProgress = status == InProgress
-  val hasFailed = status == Failed
-  val hasFinished = status == Success
+  val isInProgress = status == JobStatus.InProgress
+  val hasFailed = status == JobStatus.Failed
+  val hasFinished = status == JobStatus.Success
 }
 
 object JobHistory {

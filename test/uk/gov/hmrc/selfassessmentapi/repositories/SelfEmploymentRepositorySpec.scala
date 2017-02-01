@@ -19,8 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.repositories
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, NinoGenerator}
 import uk.gov.hmrc.selfassessmentapi.domain.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._

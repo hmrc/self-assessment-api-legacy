@@ -9,9 +9,8 @@ import play.api.libs.json._
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.selfassessmentapi.TestApplication
+import uk.gov.hmrc.selfassessmentapi.{NinoGenerator, TestApplication}
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorNotImplemented
-import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
 
 import scala.collection.mutable
 import scala.util.matching.Regex

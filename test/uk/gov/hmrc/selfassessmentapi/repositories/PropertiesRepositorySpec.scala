@@ -21,8 +21,7 @@ import org.joda.time.{DateTime, DateTimeUtils, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.core.errors.{DatabaseException, GenericDriverException}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
-import uk.gov.hmrc.selfassessmentapi.util.NinoGenerator
+import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, NinoGenerator}
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType
 

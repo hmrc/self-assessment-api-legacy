@@ -17,9 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi.services
 
 import org.joda.time.LocalDate
+import play.api.libs.json.Json
+import play.api.mvc.Results._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentsRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.{BadRequest, Error}
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.{BadRequest => _}
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -28,14 +30,14 @@ import scala.concurrent.Future
 trait SelfEmploymentObligationsService {
   val repository: SelfEmploymentsRepository
 
-  def retrieveObligations(nino: Nino, id: SourceId, testScenario: Option[String]): Future[Option[Either[BadRequest, Obligations]]] = {
+  def retrieveObligations(nino: Nino, id: SourceId, testScenario: Option[String]): Future[Option[Either[ErrorBadRequest, Obligations]]] = {
     repository.retrieve(id, nino) map {
       case Some(employment) => Some(simulateResponse(testScenario)(employment.accountingPeriod))
       case None => None
     }
   }
 
-  private def simulateResponse(header: Option[String])(implicit period: AccountingPeriod): Either[BadRequest, Obligations] = {
+  private def simulateResponse(header: Option[String])(implicit period: AccountingPeriod): Either[ErrorBadRequest, Obligations] = {
     header match {
       case Some("NONE_MET") =>
         standardYearCannedResponse()
@@ -45,12 +47,12 @@ trait SelfEmploymentObligationsService {
         accountingPeriodDynamicCannedResponse({
           val sixMonthsFromStartDate = period.start.plusMonths(6).minusDays(1)
           period.end.isAfter(sixMonthsFromStartDate)
-        }, "Invalid Accounting period, should be greater than 6 months period.")
+        }, "Accounting period should be greater than 6 months.")
     }
   }
 
   private def standardYearCannedResponse(firstMet: Boolean = false, secondMet: Boolean = false, thirdMet: Boolean = false,
-                                         fourthMet: Boolean = false): Either[BadRequest, Obligations] = {
+                                         fourthMet: Boolean = false): Either[ErrorBadRequest, Obligations] = {
     Right(
       Obligations(
         Seq(
@@ -63,12 +65,12 @@ trait SelfEmploymentObligationsService {
   }
 
   private def accountingPeriodDynamicCannedResponse(validation: => Boolean, errorMessage: String)
-                                                   (implicit period: AccountingPeriod): Either[BadRequest, Obligations] = {
+                                                   (implicit period: AccountingPeriod): Either[ErrorBadRequest, Obligations] = {
     if (validation) {
       Right(Obligations(calculateDynamicObligations(period.start, period.end, Seq())))
     }
     else {
-      Left(Errors.badRequest(errorMessage))
+      Left(ErrorBadRequest(ErrorCode.INVALID_REQUEST, errorMessage))
     }
   }
 

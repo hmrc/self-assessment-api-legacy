@@ -22,6 +22,7 @@ import com.kenshoo.play.metrics.Metrics
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.{StringReader, ValueReader}
+import play.api.http.HttpEntity
 import play.api.libs.json.Json
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -49,8 +50,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.matching.Regex
 
-case class ControllerConfigParams(needsHeaderValidation: Boolean = true, needsLogging: Boolean = true,
-                                  needsAuditing: Boolean = true, needsAuth: Boolean = true, needsTaxYear: Boolean = true)
+case class ControllerConfigParams(needsHeaderValidation: Boolean = true,
+                                  needsLogging: Boolean = true,
+                                  needsAuditing: Boolean = true,
+                                  needsAuth: Boolean = true,
+                                  needsTaxYear: Boolean = true)
 
 object ControllerConfiguration {
   lazy val controllerConfigs = Play.current.configuration.underlying.as[Config]("controllers")
@@ -71,7 +75,6 @@ object ControllerConfiguration {
   }
 }
 
-
 object AuthParamsControllerConfiguration extends AuthParamsControllerConfig {
   lazy val controllerConfigs = ControllerConfiguration.controllerConfigs
 }
@@ -79,32 +82,50 @@ object AuthParamsControllerConfiguration extends AuthParamsControllerConfig {
 object MicroserviceAuditFilter extends AuditFilter with AppName with MicroserviceFilterSupport {
   override val auditConnector = MicroserviceAuditConnector
 
-  override def controllerNeedsAuditing(controllerName: String) = AppContext.auditEnabled && ControllerConfiguration.controllerParamsConfig(controllerName).needsAuditing
+  override def controllerNeedsAuditing(controllerName: String) =
+    AppContext.auditEnabled && ControllerConfiguration.controllerParamsConfig(controllerName).needsAuditing
 }
 
 object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSupport {
-  override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.controllerParamsConfig(controllerName).needsLogging
+  override def controllerNeedsLogging(controllerName: String) =
+    ControllerConfiguration.controllerParamsConfig(controllerName).needsLogging
 }
 
-
-
-class MicroserviceMonitoringFilter @Inject()(metrics: Metrics) extends MonitoringFilter with MicroserviceFilterSupport {
-  override lazy val urlPatternToNameMapping = SourceType.values.map(sourceType => s".*[/]${sourceType.toString}[/]?.*" -> SourceType.sourceTypeToDocumentationName(sourceType)).toMap
+class MicroserviceMonitoringFilter @Inject()(metrics: Metrics)
+    extends MonitoringFilter
+    with MicroserviceFilterSupport {
+  override lazy val urlPatternToNameMapping = SourceType.values
+    .map(sourceType => s".*[/]${sourceType.toString}[/]?.*" -> SourceType.sourceTypeToDocumentationName(sourceType))
+    .toMap
   override def kenshooRegistry = metrics.defaultRegistry
+}
+
+object MicroserviceEmptyResponseFilter extends Filter with MicroserviceFilterSupport {
+  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] =
+    f(rh) map { res =>
+      if ((res.header.status == 201 || res.header.status == 404 || res.header.status == 409) && res.body.isKnownEmpty) {
+        val headers = res.header.headers.updated("CONTENT-TYPE", "application/json")
+        res.copy(res.header.copy(headers = headers), HttpEntity.NoEntity)
+      } else res
+    }
 }
 
 object MicroserviceAuthFilter extends AuthorisationFilter with MicroserviceFilterSupport {
   override lazy val authParamsConfig = AuthParamsControllerConfiguration
   override lazy val authConnector = MicroserviceAuthConnector
 
-  override def extractResource(pathString: String, verb: HttpVerb, authConfig: AuthConfig): Option[ResourceToAuthorise] = {
+  override def extractResource(pathString: String,
+                               verb: HttpVerb,
+                               authConfig: AuthConfig): Option[ResourceToAuthorise] = {
     authConfig.mode match {
       case "identity" => extractIdentityResource(pathString, verb, authConfig)
       case "passcode" => super.extractResource(pathString, verb, authConfig)
     }
   }
 
-  private def extractIdentityResource(pathString: String, verb: HttpVerb, authConfig: AuthConfig): Option[ResourceToAuthorise] = {
+  private def extractIdentityResource(pathString: String,
+                                      verb: HttpVerb,
+                                      authConfig: AuthConfig): Option[ResourceToAuthorise] = {
     pathString match {
       case authConfig.pattern(nino) =>
         Some(RegimeAndIdResourceToAuthorise(verb, Regime("paye"), AccountId(nino)))
@@ -114,21 +135,22 @@ object MicroserviceAuthFilter extends AuthorisationFilter with MicroserviceFilte
 
   override def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
     super.apply(next)(rh) map { res =>
-      res.header.status
-      match {
+      res.header.status match {
         case 401 => Status(ErrorUnauthorized.httpStatusCode)(Json.toJson(ErrorUnauthorized))
         case _ => res
       }
     }
   }
 
-  override def controllerNeedsAuth(controllerName: String): Boolean = AppContext.authEnabled && ControllerConfiguration.controllerParamsConfig(controllerName).needsAuth
+  override def controllerNeedsAuth(controllerName: String): Boolean =
+    AppContext.authEnabled && ControllerConfiguration.controllerParamsConfig(controllerName).needsAuth
 }
 
 object HeaderValidatorFilter extends Filter with HeaderValidator with MicroserviceFilterSupport {
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
     val controller = rh.tags.get(Tags.ROUTE_CONTROLLER)
-    val needsHeaderValidation = controller.forall(name => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation)
+    val needsHeaderValidation =
+      controller.forall(name => ControllerConfiguration.controllerParamsConfig(name).needsHeaderValidation)
 
     if (!needsHeaderValidation || acceptHeaderValidationRules(rh.headers.get("Accept"))) next(rh)
     else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(Json.toJson(ErrorAcceptHeaderInvalid)))
@@ -141,13 +163,18 @@ trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLo
   override implicit val hc: HeaderCarrier = HeaderCarrier()
 }
 
-object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceRegistration  with RunMode with RunningOfScheduledJobs {
+object MicroserviceGlobal
+    extends DefaultMicroserviceGlobal
+    with MicroserviceRegistration
+    with RunMode
+    with RunningOfScheduledJobs {
 
-  private var application : Application = _
+  private var application: Application = _
 
   override val auditConnector = MicroserviceAuditConnector
 
-  override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig(s"$env.microservice.metrics")
+  override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] =
+    app.configuration.getConfig(s"$env.microservice.metrics")
 
   override val loggingFilter = MicroserviceLoggingFilter
 
@@ -156,7 +183,9 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
   override val authFilter = Some(MicroserviceAuthFilter)
 
   override def microserviceFilters: Seq[EssentialFilter] =
-    Seq(HeaderValidatorFilter, application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
+    Seq(HeaderValidatorFilter,
+        MicroserviceEmptyResponseFilter,
+        application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 
@@ -170,7 +199,7 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
     application = app
   }
 
-  override def onError(request : RequestHeader, ex: Throwable) = {
+  override def onError(request: RequestHeader, ex: Throwable) = {
     super.onError(request, ex).map { result =>
       ex match {
         case ex: BusinessException => Forbidden(Json.toJson(BusinessError(ex.code, ex.message)))
@@ -187,8 +216,10 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal with MicroserviceReg
     super.onBadRequest(request, error).map { result =>
       error match {
         case "ERROR_INVALID_SOURCE_TYPE" => NotFound(Json.toJson(ErrorNotFound))
-        case "ERROR_TAX_YEAR_INVALID" => BadRequest(Json.toJson(ErrorBadRequest(ErrorCode.TAX_YEAR_INVALID, "Tax year invalid")))
-        case "ERROR_NINO_INVALID" => BadRequest(Json.toJson(ErrorBadRequest(ErrorCode.NINO_INVALID, "The provided Nino is invalid")))
+        case "ERROR_TAX_YEAR_INVALID" =>
+          BadRequest(Json.toJson(ErrorBadRequest(ErrorCode.TAX_YEAR_INVALID, "Tax year invalid")))
+        case "ERROR_NINO_INVALID" =>
+          BadRequest(Json.toJson(ErrorBadRequest(ErrorCode.NINO_INVALID, "The provided Nino is invalid")))
         case "ERROR_INVALID_PROPERTY_TYPE" => NotFound(Json.toJson(ErrorNotFound))
         case _ => result
       }

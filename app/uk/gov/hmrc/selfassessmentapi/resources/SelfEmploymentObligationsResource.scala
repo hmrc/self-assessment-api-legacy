@@ -20,10 +20,9 @@ import play.api.libs.json.Json
 import play.api.mvc.Action
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.selfassessmentapi.FeatureSwitchAction
 import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource._
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.services.{SelfEmploymentObligationsService, PropertiesObligationsService}
+import uk.gov.hmrc.selfassessmentapi.services.{PropertiesObligationsService, SelfEmploymentObligationsService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

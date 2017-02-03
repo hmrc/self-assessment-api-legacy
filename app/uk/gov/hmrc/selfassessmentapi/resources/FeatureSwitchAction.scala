@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi
+package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json._
 import play.api.libs.streams.Accumulator

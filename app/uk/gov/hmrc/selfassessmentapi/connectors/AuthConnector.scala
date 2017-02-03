@@ -19,8 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.connectors
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet}
-import uk.gov.hmrc.selfassessmentapi.LoggingService
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, WSHttp}
+import uk.gov.hmrc.selfassessmentapi.services.LoggingService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

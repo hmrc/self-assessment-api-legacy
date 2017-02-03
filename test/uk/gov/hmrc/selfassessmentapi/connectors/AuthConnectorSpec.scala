@@ -23,7 +23,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.auth.microservice.connectors.ConfidenceLevel
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, Upstream5xxResponse}
 import uk.gov.hmrc.selfassessmentapi.config.WSHttp
-import uk.gov.hmrc.selfassessmentapi.{LoggingService, NinoGenerator, TestApplication, WiremockDSL}
+import uk.gov.hmrc.selfassessmentapi.services.LoggingService
+import uk.gov.hmrc.selfassessmentapi.{NinoGenerator, TestApplication, WiremockDSL}
 
 class AuthConnectorSpec extends TestApplication with WiremockDSL {
 

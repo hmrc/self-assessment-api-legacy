@@ -110,6 +110,17 @@ object MicroserviceEmptyResponseFilter extends Filter with MicroserviceFilterSup
     }
 }
 
+object MicroserviceSecurityFilter extends Filter with MicroserviceFilterSupport {
+  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] =
+    rh.headers.get("X-Test-Scenario") match {
+      case Some("AGENT_NOT_SUBSCRIBED") =>
+        Future.successful(
+          Status(ErrorAgentNotSubscribedToAgentServices.httpStatusCode)(
+            Json.toJson(ErrorAgentNotSubscribedToAgentServices)))
+      case _ => f(rh)
+    }
+}
+
 object MicroserviceAuthFilter extends AuthorisationFilter with MicroserviceFilterSupport {
   override lazy val authParamsConfig = AuthParamsControllerConfiguration
   override lazy val authConnector = MicroserviceAuthConnector
@@ -185,6 +196,7 @@ object MicroserviceGlobal
   override def microserviceFilters: Seq[EssentialFilter] =
     Seq(HeaderValidatorFilter,
         MicroserviceEmptyResponseFilter,
+      MicroserviceSecurityFilter,
         application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()

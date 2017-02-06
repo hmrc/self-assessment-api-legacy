@@ -1,10 +1,22 @@
 package uk.gov.hmrc.selfassessmentapi
 
+import play.api.test.FakeApplication
+import uk.gov.hmrc.selfassessmentapi.resources.XTestScenarioHeader
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 import uk.gov.hmrc.support.BaseFunctionalSpec
-import uk.gov.hmrc.selfassessmentapi.resources.XTestScenarioHeader
 
-class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
+class AgentSimulationFilterEnabledSpec extends BaseFunctionalSpec {
+
+  private val conf =
+    Map("Test" ->
+      Map("feature-switch" ->
+        Map("agent-simulation" ->
+          Map("enabled" -> true)
+        )
+      )
+    )
+
+  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
 
   "Request for self-employments with X-Test-Scenario = AGENT_NOT_SUBSCRIBED" should {
     "return HTTP 403 with error code informing Agent should be subscribed to Agent Services" in {

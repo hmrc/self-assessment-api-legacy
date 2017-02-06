@@ -93,7 +93,7 @@ object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSu
 }
 
 class MicroserviceMonitoringFilter @Inject()(metrics: Metrics)
-  extends MonitoringFilter
+    extends MonitoringFilter
     with MicroserviceFilterSupport {
   override lazy val urlPatternToNameMapping = SourceType.values
     .map(sourceType => s".*[/]${sourceType.toString}[/]?.*" -> SourceType.sourceTypeToDocumentationName(sourceType))
@@ -112,7 +112,7 @@ object MicroserviceEmptyResponseFilter extends Filter with MicroserviceFilterSup
     }
 }
 
-object MicroserviceSimulationFilter extends Filter with MicroserviceFilterSupport {
+object AgentSimulationFilter extends Filter with MicroserviceFilterSupport {
   override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] =
     rh.headers.get(XTestScenarioHeader) match {
       case Some("AGENT_NOT_SUBSCRIBED") =>
@@ -177,7 +177,7 @@ trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLo
 }
 
 object MicroserviceGlobal
-  extends DefaultMicroserviceGlobal
+    extends DefaultMicroserviceGlobal
     with MicroserviceRegistration
     with RunMode
     with RunningOfScheduledJobs {
@@ -195,11 +195,15 @@ object MicroserviceGlobal
 
   override val authFilter = Some(MicroserviceAuthFilter)
 
+  private def enabledFilters: Seq[EssentialFilter] = {
+    val featureSwitch = FeatureSwitch(AppContext.featureSwitch)
+    if (featureSwitch.isAgentSimulationFilterEnabled) Seq(AgentSimulationFilter)
+    else Seq.empty
+  }
+
   override def microserviceFilters: Seq[EssentialFilter] =
-    Seq(HeaderValidatorFilter,
-      MicroserviceEmptyResponseFilter,
-      MicroserviceSimulationFilter,
-      application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
+    Seq(HeaderValidatorFilter, MicroserviceEmptyResponseFilter) ++ enabledFilters ++
+      Seq(application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 

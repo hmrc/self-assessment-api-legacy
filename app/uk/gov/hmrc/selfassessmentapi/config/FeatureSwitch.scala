@@ -43,6 +43,11 @@ case class FeatureSwitch(value: Option[Configuration]) {
     }
   }
 
+  def isAgentSimulationFilterEnabled: Boolean = value match {
+    case Some(config) => config.getBoolean("agent-simulation.enabled").getOrElse(false)
+    case None => false
+  }
+
   def whiteListedApplicationIds: Seq[String] = {
     value match {
       case Some(config) => config.getStringSeq("white-list.applicationIds").getOrElse(throw new RuntimeException(s"$env.feature-switch.white-list.applicationIds is not configured"))

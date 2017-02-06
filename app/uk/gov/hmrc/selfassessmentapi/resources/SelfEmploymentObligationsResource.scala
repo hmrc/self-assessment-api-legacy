@@ -20,19 +20,17 @@ import play.api.libs.json.Json
 import play.api.mvc.Action
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource._
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.services.{PropertiesObligationsService, SelfEmploymentObligationsService}
+import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentObligationsService
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 object SelfEmploymentObligationsResource extends BaseController {
   private val featureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "obligations")
   private val service = SelfEmploymentObligationsService
 
   def retrieveObligations(nino: Nino, id: SourceId): Action[Unit] = featureSwitch.asyncEmptyFeatureSwitch { request =>
-    service.retrieveObligations(nino, id, request.headers.get("X-Test-Scenario")) map {
+    service.retrieveObligations(nino, id, request.headers.get(XTestScenarioHeader)) map {
       case Some(obligationsOrError) =>
         obligationsOrError match {
           case Left(error) => BadRequest(Json.toJson(error))

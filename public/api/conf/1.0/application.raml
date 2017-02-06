@@ -31,7 +31,27 @@ traits:
         type: string
         required: false
         example: AGENT_NOT_SUBSCRIBED
-
+    responses:
+      403:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              agentNotSubscribed:
+                description: Agent not subscribed to Agent Services
+                value:
+                  code: AGENT_NOT_SUBSCRIBED
+  overlappingPeriod:
+    responses:
+      403:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              overlappingPeriod:
+                description: A period cannot overlap with another period
+                value:
+                  code: OVERLAPPPING_PERIOD
 /self-assessment:
   /ni/{nino}:
     uriParameters:
@@ -185,7 +205,7 @@ traits:
                 description: See the Test Data section for all available testing scenarios
                 type: string
                 required: false
-                example: NONE_MET or ALL_MET
+                example: AGENT_NOT_SUBSCRIBED or NONE_MET or ALL_MET
             (annotations.sandboxData): !include scenarios/self-employment-obligation-scenarios.md
             responses:
               200:
@@ -615,7 +635,7 @@ traits:
               description: See the Test Data section for all available testing scenarios.
               type: string
               required: false
-              example: FIRST_MET or ALL_MET
+              example: AGENT_NOT_SUBSCRIBED or FIRST_MET or ALL_MET
           (annotations.sandboxData): !include scenarios/property-obligation-scenarios.md
           responses:
             200:
@@ -646,7 +666,7 @@ traits:
           post:
             displayName: Create a non FHL UK property period
             description: Create a non FHL UK property period for submission of periodic data i.e incomes and expenses
-            is: [headers.acceptHeader, agentSubscription]
+            is: [headers.acceptHeader, agentSubscription, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -690,11 +710,6 @@ traits:
                         description: income or expense is not positive amount or up to 2 decimal places
                         value:
                           code: INVALID_MONETARY_AMOUNT
-              403:
-                body:
-                  application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/errors/OVERLAPPING_PERIOD.json
               409:
                 body:
                   application/json:
@@ -895,7 +910,7 @@ traits:
           post:
             displayName: Create a FHL UK property period
             description: Create a FHL UK property period for submission of periodic data i.e incomes and expenses
-            is: [headers.acceptHeader, agentSubscription]
+            is: [headers.acceptHeader, agentSubscription, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -939,11 +954,6 @@ traits:
                         description: income or expense is not positive amount or up to 2 decimal places
                         value:
                           code: INVALID_MONETARY_AMOUNT
-              403:
-                body:
-                  application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/errors/OVERLAPPING_PERIOD.json
               409:
                 body:
                   application/json:

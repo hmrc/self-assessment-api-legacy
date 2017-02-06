@@ -2,6 +2,7 @@ package uk.gov.hmrc.selfassessmentapi
 
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 import uk.gov.hmrc.support.BaseFunctionalSpec
+import uk.gov.hmrc.selfassessmentapi.resources.XTestScenarioHeader
 
 class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
 
@@ -11,10 +12,10 @@ class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
-        .withHeaders("X-Test-Scenario", "AGENT_NOT_SUBSCRIBED")
+        .withHeaders(XTestScenarioHeader, "AGENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(403)
-        .bodyIsError(ErrorCode.AGENT_NOT_SUBSCRIBED_TO_AGENT_SERVICES.toString)
+        .bodyIsError(ErrorCode.AGENT_NOT_SUBSCRIBED.toString)
     }
   }
 
@@ -35,7 +36,7 @@ class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
-        .withHeaders("X-Test-Scenario", "FOO")
+        .withHeaders(XTestScenarioHeader, "FOO")
         .thenAssertThat()
         .statusIs(200)
     }
@@ -47,10 +48,10 @@ class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/dividends/$taxYear")
-        .withHeaders("X-Test-Scenario", "AGENT_NOT_SUBSCRIBED")
+        .withHeaders(XTestScenarioHeader, "AGENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(403)
-        .bodyIsError(ErrorCode.AGENT_NOT_SUBSCRIBED_TO_AGENT_SERVICES.toString)
+        .bodyIsError(ErrorCode.AGENT_NOT_SUBSCRIBED.toString)
     }
   }
 
@@ -71,7 +72,7 @@ class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/dividends/$taxYear")
-        .withHeaders("X-Test-Scenario", "FOO")
+        .withHeaders(XTestScenarioHeader, "FOO")
         .thenAssertThat()
         .statusIs(200)
     }

@@ -45,6 +45,7 @@ import uk.gov.hmrc.play.scheduling._
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.services.errors.{BusinessError, BusinessException}
+import uk.gov.hmrc.selfassessmentapi.resources.XTestScenarioHeader
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -111,9 +112,9 @@ object MicroserviceEmptyResponseFilter extends Filter with MicroserviceFilterSup
     }
 }
 
-object MicroserviceSecurityFilter extends Filter with MicroserviceFilterSupport {
+object MicroserviceSimulationFilter extends Filter with MicroserviceFilterSupport {
   override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] =
-    rh.headers.get("X-Test-Scenario") match {
+    rh.headers.get(XTestScenarioHeader) match {
       case Some("AGENT_NOT_SUBSCRIBED") =>
         Future.successful(
           Status(ErrorAgentNotSubscribedToAgentServices.httpStatusCode)(
@@ -197,7 +198,7 @@ object MicroserviceGlobal
   override def microserviceFilters: Seq[EssentialFilter] =
     Seq(HeaderValidatorFilter,
       MicroserviceEmptyResponseFilter,
-      MicroserviceSecurityFilter,
+      MicroserviceSimulationFilter,
       application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()

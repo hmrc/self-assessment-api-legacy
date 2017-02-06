@@ -24,7 +24,7 @@ case object ErrorNotImplemented extends ErrorResponse(501, ErrorCode.NOT_IMPLEME
 
 case object ErrorFeatureSwitched extends ErrorResponse(400, ErrorCode.INVALID_REQUEST.toString, "The provided JSON object contains disabled properties")
 
-case object ErrorAgentNotSubscribedToAgentServices extends ErrorResponse(403, ErrorCode.AGENT_NOT_SUBSCRIBED_TO_AGENT_SERVICES.toString, "The agent is not subscribed to agent services")
+case object ErrorAgentNotSubscribedToAgentServices extends ErrorResponse(403, ErrorCode.AGENT_NOT_SUBSCRIBED.toString, "The agent is not subscribed to agent services")
 
 case class ErrorBadRequest(code: ErrorCode, override val message: String)
   extends ErrorResponse(400, code.toString, message)

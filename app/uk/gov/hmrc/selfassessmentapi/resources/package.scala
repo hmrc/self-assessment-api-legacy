@@ -27,6 +27,8 @@ import scala.util.{Failure, Success, Try}
 
 package object resources {
 
+  val XTestScenarioHeader = "X-Test-Scenario"
+
   def handleValidationErrors(errorResult: ErrorResult): Result = {
     errorResult match {
       case GenericErrorResult(message) => BadRequest(Json.toJson(Errors.badRequest(message)))

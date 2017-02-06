@@ -50,9 +50,11 @@ object ErrorCode extends Enumeration {
   ALREADY_EXISTS,
   INVALID_BALANCING_CHARGE_BPRA,
   NOT_FOUND,
+  NOT_IMPLEMENTED,
   INTERNAL_ERROR,
   TAX_YEAR_INVALID,
   NINO_INVALID,
+  AGENT_NOT_SUBSCRIBED,
   INVALID_BUSINESS_DESCRIPTION = Value
 
   implicit val format: Format[ErrorCode] = EnumJson.enumFormat(ErrorCode, Some("ErrorCode is invalid"))

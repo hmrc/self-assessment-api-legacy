@@ -45,6 +45,7 @@ import uk.gov.hmrc.play.scheduling._
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.services.errors.{BusinessError, BusinessException}
+import uk.gov.hmrc.selfassessmentapi.resources.XTestScenarioHeader
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -92,11 +93,12 @@ object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSu
 }
 
 class MicroserviceMonitoringFilter @Inject()(metrics: Metrics)
-    extends MonitoringFilter
+  extends MonitoringFilter
     with MicroserviceFilterSupport {
   override lazy val urlPatternToNameMapping = SourceType.values
     .map(sourceType => s".*[/]${sourceType.toString}[/]?.*" -> SourceType.sourceTypeToDocumentationName(sourceType))
     .toMap
+
   override def kenshooRegistry = metrics.defaultRegistry
 }
 
@@ -107,6 +109,17 @@ object MicroserviceEmptyResponseFilter extends Filter with MicroserviceFilterSup
         val headers = res.header.headers.updated("CONTENT-TYPE", "application/json")
         res.copy(res.header.copy(headers = headers), HttpEntity.NoEntity)
       } else res
+    }
+}
+
+object MicroserviceSimulationFilter extends Filter with MicroserviceFilterSupport {
+  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] =
+    rh.headers.get(XTestScenarioHeader) match {
+      case Some("AGENT_NOT_SUBSCRIBED") =>
+        Future.successful(
+          Status(ErrorAgentNotSubscribedToAgentServices.httpStatusCode)(
+            Json.toJson(ErrorAgentNotSubscribedToAgentServices)))
+      case _ => f(rh)
     }
 }
 
@@ -164,7 +177,7 @@ trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLo
 }
 
 object MicroserviceGlobal
-    extends DefaultMicroserviceGlobal
+  extends DefaultMicroserviceGlobal
     with MicroserviceRegistration
     with RunMode
     with RunningOfScheduledJobs {
@@ -184,8 +197,9 @@ object MicroserviceGlobal
 
   override def microserviceFilters: Seq[EssentialFilter] =
     Seq(HeaderValidatorFilter,
-        MicroserviceEmptyResponseFilter,
-        application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
+      MicroserviceEmptyResponseFilter,
+      MicroserviceSimulationFilter,
+      application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 

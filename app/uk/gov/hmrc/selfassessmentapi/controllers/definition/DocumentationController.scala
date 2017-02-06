@@ -27,7 +27,7 @@ abstract class DocumentationController extends uk.gov.hmrc.api.controllers.Docum
     Ok(Json.toJson(SelfAssessmentApiDefinition.definition))
   }
 
-  def conf(version: String, file: String) = {
+  override def conf(version: String, file: String) = {
     super.at(s"/public/api/conf/$version", file)
   }
 }

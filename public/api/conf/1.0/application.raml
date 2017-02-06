@@ -23,12 +23,42 @@ documentation:
   - title: Error Codes
     content: !include docs/error_codes.md
 
+traits:
+  agentSubscription:
+    headers:
+      X-Test-Scenario:
+        description: Simulate agent subscription check failure
+        type: string
+        required: false
+        example: AGENT_NOT_SUBSCRIBED
+    responses:
+      403:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              agentNotSubscribed:
+                description: Agent not subscribed to Agent Services
+                value:
+                  code: AGENT_NOT_SUBSCRIBED
+  overlappingPeriod:
+    responses:
+      403:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              overlappingPeriod:
+                description: A period cannot overlap with another period
+                value:
+                  code: OVERLAPPPING_PERIOD
 /self-assessment:
   /ni/{nino}:
     uriParameters:
       nino:
         description: National Insurance Number
         type: string
+    (annotations.sandboxData): !include scenarios/self-employment-obligation-scenarios.md
     /self-employments:
       (annotations.group):
           name: Self-employment business
@@ -36,7 +66,7 @@ documentation:
       post:
         displayName: Add a self-employment business
         description: Add a self-employment business
-        is: [headers.acceptHeader]
+        is: [headers.acceptHeader, agentSubscription]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -108,7 +138,7 @@ documentation:
       get:
         displayName: List all self-employment businesses
         description: List all self-employment businesses
-        is: [headers.acceptHeader]
+        is: [headers.acceptHeader, agentSubscription]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
         responses:
@@ -136,7 +166,7 @@ documentation:
         get:
           displayName: Get a self-employment business
           description: Get a self-employment business
-          is: [headers.acceptHeader]
+          is: [headers.acceptHeader, agentSubscription]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:
@@ -167,7 +197,7 @@ documentation:
           get:
             displayName: Retrieve UK self employment business obligations
             description: Retrieve UK self employment business obligations
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -175,7 +205,7 @@ documentation:
                 description: See the Test Data section for all available testing scenarios
                 type: string
                 required: false
-                example: NONE_MET or ALL_MET
+                example: AGENT_NOT_SUBSCRIBED or NONE_MET or ALL_MET
             (annotations.sandboxData): !include scenarios/self-employment-obligation-scenarios.md
             responses:
               200:
@@ -205,7 +235,7 @@ documentation:
           post:
             displayName: Create a self-employment period
             description: Create a self-employment period for submission of periodic data i.e incomes and expenses
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -269,7 +299,7 @@ documentation:
           get:
             displayName: List all self-employment periods
             description: List all self-employment periods
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -304,7 +334,7 @@ documentation:
             get:
               displayName: Get a self-employment periodic summary
               description: Get a single self-employment periodic summary for a given identifier
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -334,7 +364,7 @@ documentation:
             put:
               displayName: Update a self-employment periodic summary
               description: Update a self-employment periodic summary
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -384,7 +414,7 @@ documentation:
           put:
             displayName: Update a self-employment annual summary
             description: Update a self-employment annual summary for a tax year
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -445,7 +475,7 @@ documentation:
           get:
             displayName: Get a self-employment annual summary
             description: Get a self-employment annual summary for a tax year
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -483,7 +513,7 @@ documentation:
       post:
         displayName: Add a UK property business
         description: Add a UK property business
-        is: [headers.acceptHeader]
+        is: [headers.acceptHeader, agentSubscription]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -526,7 +556,7 @@ documentation:
       get:
         displayName: Get a UK property business
         description: Get a UK property business
-        is: [headers.acceptHeader]
+        is: [headers.acceptHeader, agentSubscription]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
         responses:
@@ -556,7 +586,7 @@ documentation:
       put:
         displayName: Update a UK property business
         description: Update a UK property business
-        is: [headers.acceptHeader]
+        is: [headers.acceptHeader, agentSubscription]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -597,7 +627,7 @@ documentation:
         get:
           displayName: Retrieve all UK property business obligations
           description: Retrieve all UK property business obligations
-          is: [headers.acceptHeader]
+          is: [headers.acceptHeader, agentSubscription]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           headers:
@@ -605,7 +635,7 @@ documentation:
               description: See the Test Data section for all available testing scenarios.
               type: string
               required: false
-              example: FIRST_MET or ALL_MET
+              example: AGENT_NOT_SUBSCRIBED or FIRST_MET or ALL_MET
           (annotations.sandboxData): !include scenarios/property-obligation-scenarios.md
           responses:
             200:
@@ -636,7 +666,7 @@ documentation:
           post:
             displayName: Create a non FHL UK property period
             description: Create a non FHL UK property period for submission of periodic data i.e incomes and expenses
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -680,11 +710,6 @@ documentation:
                         description: income or expense is not positive amount or up to 2 decimal places
                         value:
                           code: INVALID_MONETARY_AMOUNT
-              403:
-                body:
-                  application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/errors/OVERLAPPING_PERIOD.json
               409:
                 body:
                   application/json:
@@ -693,7 +718,7 @@ documentation:
           get:
             displayName: List all non FHL UK property periods
             description: List all non FHL UK property periods
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -728,7 +753,7 @@ documentation:
             get:
               displayName: Get a non FHL UK property periodic summary
               description: Get a non FHL UK property periodic summary for a given identifier
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -758,7 +783,7 @@ documentation:
             put:
               displayName: Update a non FHL UK property periodic summary
               description: Update a non FHL UK property periodic summary
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -805,7 +830,7 @@ documentation:
             put:
               displayName: Update a non-FHL UK property business annual summary
               description: Update a non-FHL UK property business annual summary for a tax year
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -849,7 +874,7 @@ documentation:
             get:
               displayName: Get non FHL UK property business annual summary
               description: Get non FHL UK property business for a tax year
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -885,7 +910,7 @@ documentation:
           post:
             displayName: Create a FHL UK property period
             description: Create a FHL UK property period for submission of periodic data i.e incomes and expenses
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -929,11 +954,6 @@ documentation:
                         description: income or expense is not positive amount or up to 2 decimal places
                         value:
                           code: INVALID_MONETARY_AMOUNT
-              403:
-                body:
-                  application/json:
-                    type: !include schemas/Error.json
-                    example: !include examples/errors/OVERLAPPING_PERIOD.json
               409:
                 body:
                   application/json:
@@ -942,7 +962,7 @@ documentation:
           get:
             displayName: List all FHL UK property periods
             description: List all FHL UK property periods
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -977,7 +997,7 @@ documentation:
             get:
               displayName: Get a FHL UK property periodic summary
               description: Get a FHL UK property periodic summary for a given identifier
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -1007,7 +1027,7 @@ documentation:
             put:
               displayName: Update a FHL UK property periodic summary
               description: Update a FHL UK property periodic summary
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -1058,7 +1078,7 @@ documentation:
             put:
               displayName: Update a FHL UK property business annual summary
               description: Update a FHL UK property business annual summary for a tax year
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -1102,7 +1122,7 @@ documentation:
             get:
               displayName: Get a FHL UK property business annual summary
               description: Get a FHL UK property business annual summary for a tax year
-              is: [headers.acceptHeader]
+              is: [headers.acceptHeader, agentSubscription]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -1147,7 +1167,7 @@ documentation:
         put:
           displayName: Update a dividends income annual summary
           description: Update a dividends income annual summary for a tax year
-          is: [headers.acceptHeader]
+          is: [headers.acceptHeader, agentSubscription]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
           headers:
@@ -1182,7 +1202,7 @@ documentation:
         get:
           displayName: Get dividends income annual summary
           description: Get dividends income for a tax year
-          is: [headers.acceptHeader]
+          is: [headers.acceptHeader, agentSubscription]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:
@@ -1220,7 +1240,7 @@ documentation:
       post:
         displayName: Add a savings account
         description: Add a savings account
-        is: [headers.acceptHeader]
+        is: [headers.acceptHeader, agentSubscription]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -1259,7 +1279,7 @@ documentation:
       get:
         displayName: List all savings accounts
         description: List all savings accounts
-        is: [headers.acceptHeader]
+        is: [headers.acceptHeader, agentSubscription]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
         responses:
@@ -1281,7 +1301,7 @@ documentation:
         put:
           displayName: Update a savings account
           description: Update a savings account
-          is: [headers.acceptHeader]
+          is: [headers.acceptHeader, agentSubscription]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
           headers:
@@ -1325,7 +1345,7 @@ documentation:
         get:
           displayName: Get a savings account
           description: Get a savings account
-          is: [headers.acceptHeader]
+          is: [headers.acceptHeader, agentSubscription]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:
@@ -1356,7 +1376,7 @@ documentation:
           put:
             displayName: Update a savings account annual summary
             description: Update a savings account annual summary for a given tax year
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -1400,7 +1420,7 @@ documentation:
           get:
             displayName: Get a savings account annual summary
             description: Get a savings account annual summary for a given tax year
-            is: [headers.acceptHeader]
+            is: [headers.acceptHeader, agentSubscription]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -1438,7 +1458,7 @@ documentation:
       post:
         displayName: Request a liability calculation
         description: Request a liability calculation
-        is: [headers.acceptHeader]
+        is: [headers.acceptHeader, agentSubscription]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -1474,7 +1494,7 @@ documentation:
         get:
           displayName: Retrieve a liability calculation
           description: Retrieve a liability calculation
-          is: [headers.acceptHeader]
+          is: [headers.acceptHeader, agentSubscription]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:

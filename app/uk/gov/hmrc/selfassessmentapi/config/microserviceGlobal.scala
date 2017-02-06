@@ -92,11 +92,12 @@ object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSu
 }
 
 class MicroserviceMonitoringFilter @Inject()(metrics: Metrics)
-    extends MonitoringFilter
+  extends MonitoringFilter
     with MicroserviceFilterSupport {
   override lazy val urlPatternToNameMapping = SourceType.values
     .map(sourceType => s".*[/]${sourceType.toString}[/]?.*" -> SourceType.sourceTypeToDocumentationName(sourceType))
     .toMap
+
   override def kenshooRegistry = metrics.defaultRegistry
 }
 
@@ -175,7 +176,7 @@ trait MicroserviceRegistration extends ServiceLocatorRegistration with ServiceLo
 }
 
 object MicroserviceGlobal
-    extends DefaultMicroserviceGlobal
+  extends DefaultMicroserviceGlobal
     with MicroserviceRegistration
     with RunMode
     with RunningOfScheduledJobs {
@@ -195,9 +196,9 @@ object MicroserviceGlobal
 
   override def microserviceFilters: Seq[EssentialFilter] =
     Seq(HeaderValidatorFilter,
-        MicroserviceEmptyResponseFilter,
+      MicroserviceEmptyResponseFilter,
       MicroserviceSecurityFilter,
-        application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
+      application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 

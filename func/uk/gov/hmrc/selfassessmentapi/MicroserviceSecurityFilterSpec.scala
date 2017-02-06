@@ -1,5 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi
 
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
@@ -13,6 +14,7 @@ class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
         .withHeaders("X-Test-Scenario", "AGENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(403)
+        .bodyIsError(ErrorCode.AGENT_NOT_SUBSCRIBED_TO_AGENT_SERVICES.toString)
     }
   }
 
@@ -48,6 +50,7 @@ class MicroserviceSecurityFilterSpec extends BaseFunctionalSpec {
         .withHeaders("X-Test-Scenario", "AGENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(403)
+        .bodyIsError(ErrorCode.AGENT_NOT_SUBSCRIBED_TO_AGENT_SERVICES.toString)
     }
   }
 

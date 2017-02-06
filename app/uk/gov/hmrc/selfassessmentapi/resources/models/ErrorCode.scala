@@ -55,6 +55,7 @@ object ErrorCode extends Enumeration {
   TAX_YEAR_INVALID,
   NINO_INVALID,
   AGENT_NOT_SUBSCRIBED,
+  AGENT_NOT_AUTHORIZED,
   INVALID_BUSINESS_DESCRIPTION = Value
 
   implicit val format: Format[ErrorCode] = EnumJson.enumFormat(ErrorCode, Some("ErrorCode is invalid"))

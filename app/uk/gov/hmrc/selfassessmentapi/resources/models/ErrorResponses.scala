@@ -26,10 +26,14 @@ case object ErrorFeatureSwitched extends ErrorResponse(400, ErrorCode.INVALID_RE
 
 case object ErrorAgentNotSubscribedToAgentServices extends ErrorResponse(403, ErrorCode.AGENT_NOT_SUBSCRIBED.toString, "The agent is not subscribed to agent services")
 
+case object ErrorAgentNotAuthorized extends ErrorResponse(403, ErrorCode.AGENT_NOT_AUTHORIZED.toString, "The agent is not authorized")
+
+case object ErrorAgentBadRequest extends ErrorResponse(400, ErrorCode.INVALID_REQUEST.toString, "Invalid request")
+
 case class ErrorBadRequest(code: ErrorCode, override val message: String)
   extends ErrorResponse(400, code.toString, message)
 
-case class InvalidPart(code: ErrorCode, message: String, path : String)
+case class InvalidPart(code: ErrorCode, message: String, path: String)
 
 object InvalidPart {
   implicit val writes = Json.writes[InvalidPart]

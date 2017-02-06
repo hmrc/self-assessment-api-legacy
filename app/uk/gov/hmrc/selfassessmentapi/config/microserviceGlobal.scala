@@ -42,6 +42,7 @@ import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.http.{HeaderCarrier, NotImplementedException}
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.scheduling._
+import uk.gov.hmrc.selfassessmentapi.config.simulation.{AgentAuthorizationSimulation, AgentSubscriptionSimulation}
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.services.errors.{BusinessError, BusinessException}
@@ -113,14 +114,15 @@ object MicroserviceEmptyResponseFilter extends Filter with MicroserviceFilterSup
 }
 
 object AgentSimulationFilter extends Filter with MicroserviceFilterSupport {
-  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] =
+  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
+    val method = rh.method
+
     rh.headers.get(XTestScenarioHeader) match {
-      case Some("AGENT_NOT_SUBSCRIBED") =>
-        Future.successful(
-          Status(ErrorAgentNotSubscribedToAgentServices.httpStatusCode)(
-            Json.toJson(ErrorAgentNotSubscribedToAgentServices)))
+      case Some("AGENT_NOT_SUBSCRIBED") => AgentSubscriptionSimulation(f, rh, method)
+      case Some("AGENT_NOT_AUTHORIZED") => AgentAuthorizationSimulation(f, rh, method)
       case _ => f(rh)
     }
+  }
 }
 
 object MicroserviceAuthFilter extends AuthorisationFilter with MicroserviceFilterSupport {

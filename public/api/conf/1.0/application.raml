@@ -30,7 +30,7 @@ traits:
         description: See Test Data table for all header values.
         type: string
         required: false
-        example: EXAMPLE_VALUE
+        example: '-'
   agentSubscription:
     responses:
       403:
@@ -42,14 +42,25 @@ traits:
                 description: Agent not subscribed to Agent Services
                 value:
                   code: AGENT_NOT_SUBSCRIBED
-              agentNotSubscribed:
+              agentNotAuthorized:
                 description: Agent not authorized
                 value:
                   code: AGENT_NOT_AUTHORIZED
               failedRequest:
-                description: The agents request failed
+                description: The agent's request failed
                 value:
                   code: REQUEST_FAILED
+  clientSubscriptionToMTD:
+      responses:
+        403:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                clientNotSubscribedToMTD:
+                  description: Client not subscribed to MTD
+                  value:
+                    code: CLIENT_NOT_SUBSCRIBED
   overlappingPeriod:
     responses:
       403:
@@ -76,7 +87,7 @@ traits:
         displayName: Add a self-employment business
         description: Add a self-employment business
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -149,7 +160,7 @@ traits:
         displayName: List all self-employment businesses
         description: List all self-employment businesses
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
         responses:
@@ -178,7 +189,7 @@ traits:
           displayName: Get a self-employment business
           description: Get a self-employment business
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:
@@ -210,7 +221,7 @@ traits:
             displayName: Retrieve UK self employment business obligations
             description: Retrieve UK self employment business obligations
             (annotations.sandboxData): !include scenarios/self-employment-obligation-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             responses:
@@ -242,7 +253,7 @@ traits:
             displayName: Create a self-employment period
             description: Create a self-employment period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -307,7 +318,7 @@ traits:
             displayName: List all self-employment periods
             description: List all self-employment periods
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -343,7 +354,7 @@ traits:
               displayName: Get a self-employment periodic summary
               description: Get a single self-employment periodic summary for a given identifier
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -374,7 +385,7 @@ traits:
               displayName: Update a self-employment periodic summary
               description: Update a self-employment periodic summary
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -425,7 +436,7 @@ traits:
             displayName: Update a self-employment annual summary
             description: Update a self-employment annual summary for a tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -487,7 +498,7 @@ traits:
             displayName: Get a self-employment annual summary
             description: Get a self-employment annual summary for a tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -525,8 +536,7 @@ traits:
       post:
         displayName: Add a UK property business
         description: Add a UK property business
-        (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+        is: [headers.acceptHeader, clientSubscriptionToMTD, agentSubscription]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -570,7 +580,7 @@ traits:
         displayName: Get a UK property business
         description: Get a UK property business
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
         responses:
@@ -601,7 +611,7 @@ traits:
         displayName: Update a UK property business
         description: Update a UK property business
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -643,7 +653,7 @@ traits:
           displayName: Retrieve all UK property business obligations
           description: Retrieve all UK property business obligations
           (annotations.sandboxData): !include scenarios/property-obligation-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:
@@ -676,7 +686,7 @@ traits:
             displayName: Create a non FHL UK property period
             description: Create a non FHL UK property period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, overlappingPeriod]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -729,7 +739,7 @@ traits:
             displayName: List all non FHL UK property periods
             description: List all non FHL UK property periods
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -765,7 +775,7 @@ traits:
               displayName: Get a non FHL UK property periodic summary
               description: Get a non FHL UK property periodic summary for a given identifier
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -796,7 +806,7 @@ traits:
               displayName: Update a non FHL UK property periodic summary
               description: Update a non FHL UK property periodic summary
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -844,7 +854,7 @@ traits:
               displayName: Update a non-FHL UK property business annual summary
               description: Update a non-FHL UK property business annual summary for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -889,7 +899,7 @@ traits:
               displayName: Get non FHL UK property business annual summary
               description: Get non FHL UK property business for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -926,7 +936,7 @@ traits:
             displayName: Create a FHL UK property period
             description: Create a FHL UK property period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, overlappingPeriod]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -979,7 +989,7 @@ traits:
             displayName: List all FHL UK property periods
             description: List all FHL UK property periods
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -1015,7 +1025,7 @@ traits:
               displayName: Get a FHL UK property periodic summary
               description: Get a FHL UK property periodic summary for a given identifier
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -1046,7 +1056,7 @@ traits:
               displayName: Update a FHL UK property periodic summary
               description: Update a FHL UK property periodic summary
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -1098,7 +1108,7 @@ traits:
               displayName: Update a FHL UK property business annual summary
               description: Update a FHL UK property business annual summary for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
               headers:
@@ -1143,7 +1153,7 @@ traits:
               displayName: Get a FHL UK property business annual summary
               description: Get a FHL UK property business annual summary for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "read:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
               responses:
@@ -1189,7 +1199,7 @@ traits:
           displayName: Update a dividends income annual summary
           description: Update a dividends income annual summary for a tax year
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
           headers:
@@ -1225,7 +1235,7 @@ traits:
           displayName: Get dividends income annual summary
           description: Get dividends income for a tax year
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:
@@ -1264,7 +1274,7 @@ traits:
         displayName: Add a savings account
         description: Add a savings account
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -1304,7 +1314,7 @@ traits:
         displayName: List all savings accounts
         description: List all savings accounts
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "read:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
         responses:
@@ -1327,7 +1337,7 @@ traits:
           displayName: Update a savings account
           description: Update a savings account
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
           headers:
@@ -1372,7 +1382,7 @@ traits:
           displayName: Get a savings account
           description: Get a savings account
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:
@@ -1404,7 +1414,7 @@ traits:
             displayName: Update a savings account annual summary
             description: Update a savings account annual summary for a given tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
             headers:
@@ -1449,7 +1459,7 @@ traits:
             displayName: Get a savings account annual summary
             description: Get a savings account annual summary for a given tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "read:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
             responses:
@@ -1488,7 +1498,7 @@ traits:
         displayName: Request a liability calculation
         description: Request a liability calculation
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
         headers:
@@ -1525,7 +1535,7 @@ traits:
           displayName: Retrieve a liability calculation
           description: Retrieve a liability calculation
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, testScenarioHeader]
+          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "read:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "read:self-assessment" ] } ]
           responses:

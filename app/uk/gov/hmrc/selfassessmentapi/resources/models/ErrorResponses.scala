@@ -30,6 +30,8 @@ case object ErrorAgentNotAuthorized extends ErrorResponse(403, ErrorCode.AGENT_N
 
 case object ErrorAgentBadRequest extends ErrorResponse(400, ErrorCode.INVALID_REQUEST.toString, "Invalid request")
 
+case object ErrorClientNotSubscribedToMTD extends ErrorResponse(403, ErrorCode.CLIENT_NOT_SUBSCRIBED.toString, "The client is not subscribed to MTD")
+
 case class ErrorBadRequest(code: ErrorCode, override val message: String)
   extends ErrorResponse(400, code.toString, message)
 

@@ -24,7 +24,7 @@
         </tr>
         <tr>
             <td><p>AGENT_NOT_AUTHORIZED</p></td>
-            <td><p>Simulate agent authorization check failure</p></td>
+            <td><p>Simulate agent is not authorized by the client to act on their behalf</p></td>
         </tr>
         <tr>
             <td><p>CLIENT_NOT_SUBSCRIBED</p></td>

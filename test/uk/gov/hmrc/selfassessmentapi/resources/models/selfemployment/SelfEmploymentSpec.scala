@@ -27,7 +27,7 @@ class SelfEmploymentSpec extends JsonSpec {
     "round ignore the id if it is provided by the user" in {
       val input = SelfEmployment(Some("myid"), AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")),
         AccountingType.CASH, LocalDate.now.minusDays(1), None, "Acme Ltd.", "Boxes made of corrugated cardboard (manufacture)", "Acme Rd.", None, None, None, "A9 9AA")
-      val expectedOutput = input.copy(id = None, businessDescription = "Boxes made of corrugated cardboard ")
+      val expectedOutput = input.copy(id = None)
 
       assertJsonIs(input, expectedOutput)
     }
@@ -121,6 +121,12 @@ class SelfEmploymentSpec extends JsonSpec {
 
       assertValidationErrorsWithCode[SelfEmployment](jsonOne, Map("/tradingName" -> Seq(ErrorCode.INVALID_FIELD_LENGTH)))
       assertValidationErrorsWithCode[SelfEmployment](jsonTwo, Map("/tradingName" -> Seq(ErrorCode.INVALID_FIELD_LENGTH)))
+    }
+
+    "return a error when providing an empty business description" in {
+      val json = Jsons.SelfEmployment(businessDescription = "")
+
+      assertValidationErrorsWithCode[SelfEmployment](json, Map("/businessDescription" -> Seq(ErrorCode.INVALID_BUSINESS_DESCRIPTION)))
     }
 
     "return a error when providing a business description that does not conform to the UK SIC 2007 classifications" in {

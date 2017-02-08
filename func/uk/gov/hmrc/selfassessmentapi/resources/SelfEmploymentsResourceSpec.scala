@@ -45,9 +45,6 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       val updatedSelfEmployment = Jsons.SelfEmployment(accPeriodStart = "2017-04-01", accPeriodEnd = "2017-06-01",
         accountingType = "ACCRUAL", commencementDate = "2016-01-01")
 
-      val expectedSelfEmployment = Jsons.SelfEmployment(accPeriodStart = "2017-04-01", accPeriodEnd = "2017-06-01",
-        accountingType = "ACCRUAL", commencementDate = "2016-01-01", businessDescription = "Boxes made of corrugated cardboard ")
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -61,7 +58,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .when()
         .get("%sourceLocation%")
         .thenAssertThat()
-        .bodyIsLike(expectedSelfEmployment.toString)
+        .bodyIsLike(updatedSelfEmployment.toString)
     }
 
     "return code 404 when attempting to update a non-existent self-employment resource" ignore {
@@ -141,9 +138,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrieve" should {
     "return code 200 when retrieving a self-employment resource that exists" in {
-      val expectedSelfEmployment = Jsons.SelfEmployment(
-        businessDescription = "Boxes made of corrugated cardboard ",
-        cessationDate = None)
+      val expectedSelfEmployment = Jsons.SelfEmployment(cessationDate = None)
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -176,7 +171,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       val expectedBody =
         s"""
            |[
-           |  ${Jsons.SelfEmployment(businessDescription = "Boxes made of corrugated cardboard ", cessationDate = None).toString()}
+           |  ${Jsons.SelfEmployment(cessationDate = None).toString()}
            |]
          """.stripMargin
 

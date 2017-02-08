@@ -64,7 +64,7 @@ object SelfEmployment {
       (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
       Reads.pure[Option[LocalDate]](None) and
       (__ \ "tradingName").read[String](lengthIsBetween(1, 105)) and
-      (__ \ "businessDescription").read[String](validateSIC).map(_.take(35)) and // TODO: MTDSA-760 => Should this be a code instead?
+      (__ \ "businessDescription").read[String](validateSIC) and
       (__ \ "businessAddressLineOne").read[String](lengthIsBetween(1, 35)) and
       (__ \ "businessAddressLineTwo").readNullable[String](lengthIsBetween(1, 35)) and
       (__ \ "businessAddressLineThree").readNullable[String](lengthIsBetween(1, 35)) and

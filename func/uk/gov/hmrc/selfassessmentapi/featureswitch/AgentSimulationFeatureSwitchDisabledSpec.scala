@@ -9,7 +9,7 @@ class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
   private val conf =
     Map("Test" ->
       Map("feature-switch" ->
-        Map("agent-simulation" ->
+        Map("test-scenario-simulation" ->
           Map("enabled" -> false)
         )
       )

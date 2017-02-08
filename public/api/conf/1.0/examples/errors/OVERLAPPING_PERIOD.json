@@ -3,7 +3,7 @@
   "message": "Business validation error",
   "errors": [
     {
-      "code": "OVERLAPPPING_PERIOD",
+      "code": "OVERLAPPING_PERIOD",
       "message": "A period cannot overlap with another period"
     }
   ]

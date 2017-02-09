@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import org.joda.time.{DateTime, DateTimeZone, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.repositories.SelfEmploymentsRepository
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.{BusinessError, Error}
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.services.errors.BusinessException
+import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, Errors, SourceId}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,7 +32,7 @@ trait SelfEmploymentsMongoService {
 
   val mongoRepository: SelfEmploymentsRepository
 
-  def create(nino: Nino, selfEmployment: SelfEmployment): Future[Option[SourceId]] = {
+  def create(nino: Nino, selfEmployment: SelfEmployment): Future[Either[BusinessError, Option[SourceId]]] = {
     val id = BSONObjectID.generate
     val newSelfEmployment =
       domain.SelfEmployment(id, id.stringify, nino, DateTime.now(DateTimeZone.UTC),
@@ -43,11 +43,13 @@ trait SelfEmploymentsMongoService {
 
     mongoRepository.retrieveAll(nino).flatMap { selfEmployments =>
       selfEmployments.size match {
-        case count if count == 1 => throw BusinessException("TOO_MANY_SOURCES", "The maximum number of Self-Employment incomes sources is 1")
+        case count if count == 1 => Future.successful(
+          Left(Errors.businessError(Error(ErrorCode.TOO_MANY_SOURCES.toString, s"The maximum number of Self-Employment incomes sources is 1", "")))
+        )
         case _ =>
           mongoRepository.create(newSelfEmployment).map {
-            case true => Some(newSelfEmployment.sourceId)
-            case false => None
+            case true => Right(Some(newSelfEmployment.sourceId))
+            case false => Right(None)
           }
       }
     }

@@ -33,7 +33,7 @@ object AgentAuthorizationSimulation extends Simulation {
             Json.toJson(ErrorAgentNotAuthorized))
         )
       case _ => f(rh).map { res =>
-        if (res.header.status / 100 == 2) res
+        if (res.header.status / 100 == 2 || res.header.status == 400) res
         else Status(ErrorAgentBadRequest.httpStatusCode)(Json.toJson(ErrorAgentBadRequest))
       }
     }

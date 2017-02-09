@@ -49,7 +49,6 @@ import uk.gov.hmrc.selfassessmentapi.config.simulation.{
 }
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.services.errors.{BusinessError, BusinessException}
 import uk.gov.hmrc.selfassessmentapi.resources.XTestScenarioHeader
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -229,7 +228,6 @@ object MicroserviceGlobal
   override def onError(request: RequestHeader, ex: Throwable) = {
     super.onError(request, ex).map { result =>
       ex match {
-        case ex: BusinessException => Forbidden(Json.toJson(BusinessError(ex.code, ex.message)))
         case _ =>
           ex.getCause match {
             case ex: NotImplementedException => NotImplemented(Json.toJson(ErrorNotImplemented))

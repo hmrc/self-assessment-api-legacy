@@ -76,7 +76,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
 
     // END GET
 
-    "receive a HTTP 400 Bad Request when they attempt to create a self-employment using an invalid json" in {
+    "receive an unmodified HTTP 400 Bad Request when they attempt to create a self-employment using an invalid json" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -84,9 +84,10 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
+        .bodyHasString("INVALID_VALUE")
     }
 
-    "receive a HTTP 400 Bad Request when they attempt to create a periodic summary using an invalid identifier" in {
+    "receive a modified HTTP 400 Bad Request when they attempt to create a periodic summary using an invalid identifier" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -96,7 +97,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .isBadRequest
     }
 
-    "receive a HTTP 400 Bad Request when they attempt to update a periodic summary with an invalid identifier" in {
+    "receive a modified HTTP 400 Bad Request when they attempt to update a periodic summary with an invalid identifier" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -110,7 +111,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .isBadRequest
     }
 
-    "receive a HTTP 400 Bad Request when they attempt to create a periodic summary with an invalid json" in {
+    "receive an unmodified HTTP 400 Bad Request when they attempt to create a periodic summary with an invalid json" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -122,9 +123,10 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
+        .bodyHasString("INVALID_MONETARY_AMOUNT")
     }
 
-    "receive a HTTP 400 Bad Request when they attempt to update a periodic summary with an invalid json" in {
+    "receive an unmodified HTTP 400 Bad Request when they attempt to update a periodic summary with an invalid json" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -141,9 +143,10 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
+        .bodyHasString("INVALID_MONETARY_AMOUNT")
     }
 
-    "receive a HTTP 400 Bad Request when they attempt to update an annual summary with an invalid identifier" in {
+    "receive a modified HTTP 400 Bad Request when they attempt to update an annual summary with an invalid identifier" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -151,6 +154,22 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
+    }
+
+    "receive a modified HTTP 400 Bad Request when they attempt to create more than one self-employment source" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .thenAssertThat()
+        .isBadRequest
+        .bodyDoesNotHaveString("TOO_MANY_SOURCES")
     }
   }
 
@@ -258,9 +277,10 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .post(Jsons.Properties(accountingType = "NONSENSE")).to(s"/ni/$nino/uk-properties")
         .thenAssertThat()
         .isBadRequest
+        .bodyHasString("INVALID_VALUE")
     }
 
-    "receive a HTTP 400 when they attempt to update an annual summary with an invalid json" in {
+    "receive an unmodified HTTP 400 when they attempt to update an annual summary with an invalid json" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -268,14 +288,15 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Jsons.Properties.otherAnnualSummary(annualInvestmentAllowance = -100.1234))
-        .to(s"/ni/$nino/uk-properties/other/$taxYear")
+        .put(Jsons.Properties.otherAnnualSummary(annualInvestmentAllowance = -100.1234))
+        .at(s"/ni/$nino/uk-properties/other/$taxYear")
         .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
+        .bodyHasString("INVALID_MONETARY_AMOUNT")
     }
 
-    "receive a HTTP 400 when they attempt to create a periodic summary with an invalid json" in {
+    "receive an unmodified HTTP 400 when they attempt to create a periodic summary with an invalid json" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -283,19 +304,36 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Jsons.Properties.otherPeriod())
+        .post(Jsons.Properties.otherPeriod(rentIncome = -1000.123))
         .to(s"/ni/$nino/uk-properties/other/periods")
         .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
+        .bodyHasString("INVALID_MONETARY_AMOUNT")
     }
 
-    "receive a HTTP 400 when they attempt to update a periodic summary with an invalid identifier" in {
+    "receive a modified HTTP 400 when they attempt to update a periodic summary with an invalid identifier" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
         .put(Jsons.Properties.otherPeriod())
         .at(s"/ni/$nino/uk-properties/other/periods/invalid-id")
+        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .thenAssertThat()
+        .isBadRequest
+    }
+
+    "receive a modified HTTP 400 when they attempt to create more than one uk property business" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(Jsons.Properties())
+        .to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(Jsons.Properties())
+        .to(s"/ni/$nino/uk-properties")
         .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest

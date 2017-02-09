@@ -40,8 +40,15 @@ HTTP status : 400
 HTTP status : 403
 <pre class="snippet--block code_text">
 {
-  "code": "TOO_MANY_SOURCES",
-  "message": "The maximum number of Self-Employment incomes sources is 1"
+  "code": "BUSINESS_ERROR",
+  "message": "Business validation error",
+  "errors": [
+    {
+      "code": "TOO_MANY_SOURCES",
+      "message": "The maximum number of Self-Employment incomes sources is 1",
+      "path": ""
+    }
+  ]
 }
 </pre>
 

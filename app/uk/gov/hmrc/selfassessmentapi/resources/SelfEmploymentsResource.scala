@@ -21,6 +21,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.BusinessError
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
 
@@ -32,13 +33,14 @@ object SelfEmploymentsResource extends BaseController {
   private val service = SelfEmploymentsService
 
   def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[SelfEmployment, Option[SourceId]](request.body) { selfEmployment =>
+    validate[SelfEmployment, Either[BusinessError, Option[SourceId]]](request.body) { selfEmployment =>
       service.create(nino, selfEmployment)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(idOption) => idOption.map {
-        case Some(id) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/self-employments/$id")
-        case None => InternalServerError
+        case Left(err) => Conflict(Json.toJson(err))
+        case Right(Some(id)) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/self-employments/$id")
+        case Right(None) => InternalServerError
       }
     }
   }

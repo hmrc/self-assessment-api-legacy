@@ -38,6 +38,20 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .contentTypeIsJson()
         .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_VALUE", "/accountingType")))
     }
+
+    "return code 409 Conflict when attempting to create more than one self-employment source" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(409)
+        .bodyIsLike(Jsons.Errors.businessError("TOO_MANY_SOURCES" -> ""))
+    }
   }
 
   "update" should {

@@ -38,7 +38,7 @@ object SelfEmploymentsResource extends BaseController {
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(idOption) => idOption.map {
-        case Left(err) => Conflict(Json.toJson(err))
+        case Left(err) => Forbidden(Json.toJson(err))
         case Right(Some(id)) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/self-employments/$id")
         case Right(None) => InternalServerError
       }

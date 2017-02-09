@@ -39,7 +39,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_VALUE", "/accountingType")))
     }
 
-    "return code 409 Conflict when attempting to create more than one self-employment source" in {
+    "return code 403 Unauthorized when attempting to create more than one self-employment source" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -49,7 +49,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
-        .statusIs(409)
+        .statusIs(403)
         .bodyIsLike(Jsons.Errors.businessError("TOO_MANY_SOURCES" -> ""))
     }
   }

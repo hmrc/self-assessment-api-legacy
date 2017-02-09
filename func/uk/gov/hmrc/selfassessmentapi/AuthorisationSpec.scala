@@ -1,6 +1,5 @@
 package uk.gov.hmrc.selfassessmentapi
 
-import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AuthorisationSpec extends BaseFunctionalSpec {

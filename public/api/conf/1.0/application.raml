@@ -476,11 +476,6 @@ traits:
                         description: valid amount not provided where expected (for averagingAdjustment and basisAdjustment)
                         value:
                           code: INVALID_MONETARY_AMOUNT
-              403:
-                body:
-                  application/json:
-                    type: types.errorResponse
-                    examples:
                       invalidBalancingChargeBPRA:
                         description: Balancing charge on sale or cessation of business use (Box 58) can only have a value > 0 in if BPRA (Box 54) is also > 0
                         value:

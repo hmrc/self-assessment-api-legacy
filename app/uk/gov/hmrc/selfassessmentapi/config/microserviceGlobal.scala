@@ -42,7 +42,11 @@ import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.http.{HeaderCarrier, NotImplementedException}
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.scheduling._
-import uk.gov.hmrc.selfassessmentapi.config.simulation.{AgentAuthorizationSimulation, AgentSubscriptionSimulation, ClientSubscriptionSimulation}
+import uk.gov.hmrc.selfassessmentapi.config.simulation.{
+  AgentAuthorizationSimulation,
+  AgentSubscriptionSimulation,
+  ClientSubscriptionSimulation
+}
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.services.errors.{BusinessError, BusinessException}
@@ -103,11 +107,13 @@ class MicroserviceMonitoringFilter @Inject()(metrics: Metrics)
   override def kenshooRegistry = metrics.defaultRegistry
 }
 
-object MicroserviceEmptyResponseFilter extends Filter with MicroserviceFilterSupport {
+object EmptyResponseFilter extends Filter with MicroserviceFilterSupport {
   override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] =
     f(rh) map { res =>
-      if ((res.header.status == 201 || res.header.status == 404 || res.header.status == 409) && res.body.isKnownEmpty) {
-        val headers = res.header.headers.updated("CONTENT-TYPE", "application/json")
+      if ((res.header.status == 201 || res.header.status == 409) && res.body.isKnownEmpty) {
+        val headers = res.header.headers
+          .updated("Content-Type", "application/json")
+          .updated("X-Empty-Response", "true")
         res.copy(res.header.copy(headers = headers), HttpEntity.NoEntity)
       } else res
     }
@@ -205,7 +211,7 @@ object MicroserviceGlobal
   }
 
   override def microserviceFilters: Seq[EssentialFilter] =
-    Seq(HeaderValidatorFilter, MicroserviceEmptyResponseFilter) ++ enabledFilters ++
+    Seq(HeaderValidatorFilter, EmptyResponseFilter) ++ enabledFilters ++
       Seq(application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()

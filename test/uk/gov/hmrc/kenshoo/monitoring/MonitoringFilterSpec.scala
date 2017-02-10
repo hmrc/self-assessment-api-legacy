@@ -35,12 +35,12 @@ class MonitoringFilterSpec extends UnitSpec {
 
   "monitoring filter" should {
     "monitor known incoming requests" in new MonitoringFilterTestImp {
-      await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(TestRequestHeader("/agent/agentcode", "GET")))
-      assertRequestIsMonitoredAs("API-Agent-GET")
+      await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(TestRequestHeader("/ni/OM687829D/self-employments", "GET")))
+      assertRequestIsMonitoredAs("API-SelfEmployments-GET")
     }
 
     "do not monitor unknown incoming requests" in new MonitoringFilterTestImp {
-      await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(TestRequestHeader("/agent/client/empref", "GET")))
+      await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(TestRequestHeader("/foo-bar", "GET")))
       assertRequestIsNotMonitored()
     }
   }
@@ -63,7 +63,7 @@ case class TestRequestHeader(expectedUri: String, expectedMethod: String) extend
 
 
 class MonitoringFilterTestImp extends MonitoringFilter with Matchers {
-  override val urlPatternToNameMapping: Map[String, String] = Map("/agent/agentcode" -> "Agent")
+  override val urlPatternToNameMapping: Map[String, String] = Map("/ni/OM687829D/self-employments" -> "SelfEmployments")
 
   var serviceName : String = ""
 

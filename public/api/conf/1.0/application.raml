@@ -24,6 +24,13 @@ documentation:
     content: !include docs/error_codes.md
 
 traits:
+  contentType:
+    headers:
+      Content-Type:
+        description: Specifies the format of the request body, which must be JSON.
+        type: string
+        required: true
+        example: application/json
   testScenarioHeader:
     headers:
       X-Test-Scenario:
@@ -33,6 +40,15 @@ traits:
         example: '-'
   agentSubscription:
     responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              failedRequest:
+                description: Invalid POST/PUT request by an agent who is not authorized by client
+                value:
+                  code: INVALID_REQUEST
       403:
         body:
           application/json:
@@ -43,13 +59,9 @@ traits:
                 value:
                   code: AGENT_NOT_SUBSCRIBED
               agentNotAuthorized:
-                description: Agent not authorized
+                description: GET request by an agent who is not authorized by client
                 value:
                   code: AGENT_NOT_AUTHORIZED
-              failedRequest:
-                description: The agent's request failed
-                value:
-                  code: REQUEST_FAILED
   clientSubscriptionToMTD:
       responses:
         403:
@@ -87,15 +99,9 @@ traits:
         displayName: Add a self-employment business
         description: Add a self-employment business
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+        is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-        headers:
-          Content-Type:
-            description: Specifies the format of the request body, which must be JSON.
-            type: string
-            required: true
-            example: application/json
         body:
           application/json:
             type: !include schemas/SelfEmployment_Create_Without_ID.json
@@ -253,15 +259,9 @@ traits:
             displayName: Create a self-employment period
             description: Create a self-employment period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+            is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-            headers:
-              Content-Type:
-                description: Specifies the format of the request body, which must be JSON.
-                type: string
-                required: true
-                example: application/json
             body:
               application/json:
                 type: !include schemas/SE_Period_Without_ID.json
@@ -385,15 +385,9 @@ traits:
               displayName: Update a self-employment periodic summary
               description: Update a self-employment periodic summary
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+              is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              headers:
-                Content-Type:
-                  description: Specifies the format of the request body, which must be JSON.
-                  type: string
-                  required: true
-                  example: application/json
               body:
                 application/json:
                   type: !include schemas/SE_UpdatePeriod.json
@@ -436,15 +430,9 @@ traits:
             displayName: Update a self-employment annual summary
             description: Update a self-employment annual summary for a tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+            is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-            headers:
-              Content-Type:
-                description: Specifies the format of the request body, which must be JSON.
-                type: string
-                required: true
-                example: application/json
             body:
               application/json:
                 type: !include schemas/SE_AnnualSummary.json
@@ -531,15 +519,9 @@ traits:
       post:
         displayName: Add a UK property business
         description: Add a UK property business
-        is: [headers.acceptHeader, clientSubscriptionToMTD, agentSubscription]
+        is: [headers.acceptHeader, contentType, clientSubscriptionToMTD, agentSubscription]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-        headers:
-          Content-Type:
-            description: Specifies the format of the request body, which must be JSON.
-            type: string
-            required: true
-            example: application/json
         body:
           application/json:
             type: !include schemas/UkProperties.json
@@ -606,15 +588,9 @@ traits:
         displayName: Update a UK property business
         description: Update a UK property business
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+        is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-        headers:
-          Content-Type:
-            description: Specifies the format of the request body, which must be JSON.
-            type: string
-            required: true
-            example: application/json
         body:
           application/json:
             type: !include schemas/UkProperties.json
@@ -681,15 +657,9 @@ traits:
             displayName: Create a non FHL UK property period
             description: Create a non FHL UK property period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, overlappingPeriod]
+            is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-            headers:
-              Content-Type:
-                description: Specifies the format of the request body, which must be JSON.
-                type: string
-                required: true
-                example: application/json
             body:
               application/json:
                 type: !include schemas/UK_PROP_OTHER_Period_Without_ID.json
@@ -801,15 +771,9 @@ traits:
               displayName: Update a non FHL UK property periodic summary
               description: Update a non FHL UK property periodic summary
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+              is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              headers:
-                Content-Type:
-                  description: Specifies the format of the request body, which must be JSON.
-                  type: string
-                  required: true
-                  example: application/json
               body:
                 application/json:
                   type: !include schemas/UK_PROP_OTHER_UpdatePeriod.json
@@ -849,15 +813,9 @@ traits:
               displayName: Update a non-FHL UK property business annual summary
               description: Update a non-FHL UK property business annual summary for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+              is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              headers:
-                Content-Type:
-                  description: Specifies the format of the request body, which must be JSON.
-                  type: string
-                  required: true
-                  example: application/json
               body:
                 application/json:
                   type: !include schemas/UK_PROP_OTHER_AnnualSummary.json
@@ -931,15 +889,9 @@ traits:
             displayName: Create a FHL UK property period
             description: Create a FHL UK property period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, overlappingPeriod]
+            is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-            headers:
-              Content-Type:
-                description: Specifies the format of the request body, which must be JSON.
-                type: string
-                required: true
-                example: application/json
             body:
               application/json:
                 type: !include schemas/UK_PROP_FHL_Period_Without_ID.json
@@ -1051,15 +1003,9 @@ traits:
               displayName: Update a FHL UK property periodic summary
               description: Update a FHL UK property periodic summary
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+              is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              headers:
-                Content-Type:
-                  description: Specifies the format of the request body, which must be JSON.
-                  type: string
-                  required: true
-                  example: application/json
               body:
                 application/json:
                   type: !include schemas/UK_PROP_FHL_UpdatePeriod.json
@@ -1103,15 +1049,9 @@ traits:
               displayName: Update a FHL UK property business annual summary
               description: Update a FHL UK property business annual summary for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
-              is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+              is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
               securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-              headers:
-                Content-Type:
-                  description: Specifies the format of the request body, which must be JSON.
-                  type: string
-                  required: true
-                  example: application/json
               body:
                 application/json:
                   type: !include schemas/UK_PROP_FHL_AnnualSummary.json
@@ -1194,15 +1134,9 @@ traits:
           displayName: Update a dividends income annual summary
           description: Update a dividends income annual summary for a tax year
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+          is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-          headers:
-            Content-Type:
-              description: Specifies the format of the request body, which must be JSON.
-              type: string
-              required: true
-              example: application/json
           body:
             application/json:
               type: !include schemas/DIV_AnnualSummary.json
@@ -1269,15 +1203,9 @@ traits:
         displayName: Add a savings account
         description: Add a savings account
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+        is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-        headers:
-          Content-Type:
-            description: Specifies the format of the request body, which must be JSON.
-            type: string
-            required: true
-            example: application/json
         body:
           application/json:
             type: !include schemas/SavingsAccount_Without_ID.json
@@ -1332,15 +1260,9 @@ traits:
           displayName: Update a savings account
           description: Update a savings account
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
-          is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+          is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "write:self-assessment"
           securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-          headers:
-            Content-Type:
-              description: Specifies the format of the request body, which must be JSON.
-              type: string
-              required: true
-              example: application/json
           body:
             application/json:
               type: !include schemas/SavingsAccount_Without_ID.json
@@ -1409,15 +1331,9 @@ traits:
             displayName: Update a savings account annual summary
             description: Update a savings account annual summary for a given tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
-            is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+            is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "write:self-assessment"
             securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-            headers:
-              Content-Type:
-                description: Specifies the format of the request body, which must be JSON.
-                type: string
-                required: true
-                example: application/json
             body:
               application/json:
                 type: !include schemas/SavingsAccount_AnnualSummary.json
@@ -1493,15 +1409,9 @@ traits:
         displayName: Request a liability calculation
         description: Request a liability calculation
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
+        is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-        headers:
-          Content-Type:
-            description: Specifies the format of the request body, which must be JSON.
-            type: string
-            required: true
-            example: application/json
         responses:
           202:
             headers:

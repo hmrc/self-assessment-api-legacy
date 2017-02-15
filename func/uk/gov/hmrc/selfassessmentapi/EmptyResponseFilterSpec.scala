@@ -2,6 +2,7 @@ package uk.gov.hmrc.selfassessmentapi
 
 import uk.gov.hmrc.selfassessmentapi.resources.Jsons
 import uk.gov.hmrc.support.BaseFunctionalSpec
+import uk.gov.hmrc.selfassessmentapi.config.EmptyResponseFilter
 
 class EmptyResponseFilterSpec extends BaseFunctionalSpec {
 
@@ -14,7 +15,7 @@ class EmptyResponseFilterSpec extends BaseFunctionalSpec {
         .to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
-        .responseContainsHeader("X-Empty-Response", "true".r)
+        .responseContainsHeader(EmptyResponseFilter.emptyHeader, "true".r)
     }
 
     "be applied when returning an HTTP 409 e.g.: attempting to create a given self-employment more than once" in {
@@ -30,7 +31,7 @@ class EmptyResponseFilterSpec extends BaseFunctionalSpec {
         .to(s"/ni/$nino/uk-properties")
         .thenAssertThat()
         .statusIs(409)
-        .responseContainsHeader("X-Empty-Response", "true".r)
+        .responseContainsHeader(EmptyResponseFilter.emptyHeader, "true".r)
     }
 
   }

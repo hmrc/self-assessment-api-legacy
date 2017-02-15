@@ -30,7 +30,7 @@ object SelfEmploymentObligationsResource extends BaseController {
   private val service = SelfEmploymentObligationsService
 
   def retrieveObligations(nino: Nino, id: SourceId): Action[Unit] = featureSwitch.asyncEmptyFeatureSwitch { request =>
-    service.retrieveObligations(nino, id, request.headers.get(XTestScenarioHeader)) map {
+    service.retrieveObligations(nino, id, request.headers.get(GovTestScenarioHeader)) map {
       case Some(obligationsOrError) =>
         obligationsOrError match {
           case Left(error) => BadRequest(Json.toJson(error))

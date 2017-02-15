@@ -1,7 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.featureswitch
 
 import play.api.test.FakeApplication
-import uk.gov.hmrc.selfassessmentapi.resources.XTestScenarioHeader
+import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
@@ -23,7 +23,7 @@ class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_SUBSCRIBED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(200)
     }

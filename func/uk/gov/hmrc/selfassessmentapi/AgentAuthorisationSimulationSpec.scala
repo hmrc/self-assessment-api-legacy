@@ -1,6 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi
 
-import uk.gov.hmrc.selfassessmentapi.resources.{Jsons, XTestScenarioHeader}
+import uk.gov.hmrc.selfassessmentapi.resources.{Jsons, GovTestScenarioHeader}
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -13,7 +13,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -24,7 +24,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments/abc")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -35,7 +35,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments/abc/obligations")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -46,7 +46,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments/abc/$taxYear")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -57,7 +57,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments/abc/periods")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -68,7 +68,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/self-employments/abc/periods/def")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -81,7 +81,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .post(Jsons.SelfEmployment(accountingType = "NONSENSE")).to(s"/ni/$nino/self-employments")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
         .bodyHasString("INVALID_VALUE")
@@ -92,7 +92,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .post(Jsons.SelfEmployment.period()).to(s"/ni/$nino/self-employments/invalid-id/periods")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
     }
@@ -106,7 +106,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .when()
         .put(Jsons.SelfEmployment.period()).at(s"%sourceLocation%/periods/invalid-id")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
     }
@@ -120,7 +120,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .when()
         .post(Jsons.SelfEmployment.period(turnover = -100.1234)).to(s"%sourceLocation%/periods")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
         .bodyHasString("INVALID_MONETARY_AMOUNT")
@@ -140,7 +140,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .when()
         .put(Jsons.SelfEmployment.period(turnover = -100.1234)).at(s"%periodLocation%")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
         .bodyHasString("INVALID_MONETARY_AMOUNT")
@@ -151,7 +151,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/invalid-id/$taxYear")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
     }
@@ -161,12 +161,12 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(201)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
         .bodyDoesNotHaveString("TOO_MANY_SOURCES")
@@ -179,7 +179,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/uk-properties")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -190,7 +190,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/uk-properties/obligations")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -201,13 +201,13 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/uk-properties/furnished-holiday-lettings/$taxYear")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
         .when()
         .get(s"/ni/$nino/uk-properties/other/$taxYear")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -218,13 +218,13 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsAuthorisedForTheResource(nino)
         .when()
         .get(s"/ni/$nino/uk-properties/furnished-holiday-lettings/periods")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
         .when()
         .get(s"/ni/$nino/uk-properties/other/periods")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -244,7 +244,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .when()
         .get(s"%periodLocation%")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -264,7 +264,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .statusIs(201)
         .when()
         .get(s"%periodLocation%")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
@@ -290,7 +290,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .when()
         .put(Jsons.Properties.otherAnnualSummary(annualInvestmentAllowance = -100.1234))
         .at(s"/ni/$nino/uk-properties/other/$taxYear")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
         .bodyHasString("INVALID_MONETARY_AMOUNT")
@@ -306,7 +306,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .when()
         .post(Jsons.Properties.otherPeriod(rentIncome = -1000.123))
         .to(s"/ni/$nino/uk-properties/other/periods")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
         .bodyHasString("INVALID_MONETARY_AMOUNT")
@@ -318,7 +318,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .when()
         .put(Jsons.Properties.otherPeriod())
         .at(s"/ni/$nino/uk-properties/other/periods/invalid-id")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
     }
@@ -334,7 +334,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .when()
         .post(Jsons.Properties())
         .to(s"/ni/$nino/uk-properties")
-        .withHeaders(XTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
+        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
     }

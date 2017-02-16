@@ -23,13 +23,13 @@ object SourceType extends Enumeration {
   val Properties = Value("uk-properties")
   val Banks = Value("savings-accounts")
   val Dividends = Value("dividends")
-  val Liability = Value("liability-calculation")
+  val Calculation = Value("calculations")
 
   def sourceTypeToDocumentationName(sourceType: SourceType): String = sourceType match {
     case SelfEmployments => "SelfEmployments"
     case Properties => "Properties"
     case Dividends => "Dividends"
     case Banks => "SavingsAccounts"
-    case Liability => "LiabilityCalculation"
+    case Calculation => "TaxCalculation"
   }
 }

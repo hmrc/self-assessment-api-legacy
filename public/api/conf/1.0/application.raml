@@ -1401,13 +1401,13 @@ traits:
                         description: Not Found
                         value:
                           code: NOT_FOUND
-    /liability-calculations:
+    /calculations:
       (annotations.group):
-        name: Liability calculations
-        description: !include docs/tax-liability.md
+        name: Tax calculations
+        description: !include docs/tax-calculation.md
       post:
-        displayName: Request a liability calculation
-        description: Request a liability calculation
+        displayName: Trigger a tax calculation
+        description: Trigger a tax calculation
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
         is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
@@ -1416,12 +1416,12 @@ traits:
           202:
             headers:
               Location:
-                example: /self-assessment/ni/{nino}/liability-calculations/{liabilityCalculationId}
-                description: Location of the liability calculation result
+                example: /self-assessment/ni/{nino}/calculations/{calculationId}
+                description: Location of the calculation result
             body:
               application/json:
-                type: !include schemas/LiabilityCalculationETA.json
-                example: !include examples/liability/LiabilityCalculationETA.json
+                type: !include schemas/TaxCalculationETA.json
+                example: !include examples/calculation/TaxCalculationETA.json
           400:
             body:
               application/json:
@@ -1431,14 +1431,14 @@ traits:
                     description: Invalid NINO
                     value:
                       code: NINO_INVALID
-      /{liabilityCalculationId}:
+      /{taxCalculationId}:
         uriParameters:
-          liabilityCalculationId:
-            description: The ID of the liability calculation
+          taxCalculationId:
+            description: The ID of the tax calculation
             type: string
         get:
-          displayName: Retrieve a liability calculation
-          description: Retrieve a liability calculation
+          displayName: Retrieve the result of a tax calculation
+          description: Retrieve the result of a tax calculation
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
           is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
           (annotations.scope): "read:self-assessment"
@@ -1447,8 +1447,8 @@ traits:
             200:
               body:
                 application/json:
-                  type: !include schemas/Liability.json
-                  example: !include examples/liability/Liability.json
+                  type: !include schemas/TaxCalculation.json
+                  example: !include examples/calculation/TaxCalculation.json
             404:
               body:
                 application/json:

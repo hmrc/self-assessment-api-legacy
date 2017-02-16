@@ -439,7 +439,7 @@ object Jsons {
     }
   }
 
-  object CannedLiability {
+  object CannedCalculation {
     def apply(amount: BigDecimal = 100.25): JsValue = {
       Json.parse(s"""
          |{

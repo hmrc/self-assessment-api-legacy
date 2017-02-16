@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "RequestLiability",
+  "title": "RequestCalculation",
   "type": "object",
   "properties": {
     "profitFromSelfEmployment": {

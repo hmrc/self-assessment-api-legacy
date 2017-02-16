@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
@@ -24,10 +24,10 @@ import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, SourceType}
 
 import scala.concurrent.Future
 
-object CannedLiabilityResource extends BaseController {
+object CannedCalculationResource extends BaseController {
 
   private val magicId = "123abc"
-  private val featureSwitch = FeatureSwitchAction(SourceType.Liability)
+  private val featureSwitch = FeatureSwitchAction(SourceType.Calculation)
 
   private val cannedEtaResponse =
     s"""
@@ -36,7 +36,7 @@ object CannedLiabilityResource extends BaseController {
        |}
      """.stripMargin
 
-  private val cannedLiabilityResponse =
+  private val cannedCalculationResponse =
     s"""
        |{
        |  "profitFromSelfEmployment": 100.25,
@@ -122,16 +122,16 @@ object CannedLiabilityResource extends BaseController {
        |}
      """.stripMargin
 
-  def requestLiability(nino: Nino): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+  def requestCalculation(nino: Nino): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
     Future.successful {
       Accepted(Json.parse(cannedEtaResponse))
-        .withHeaders("Location" -> s"/self-assessment/ni/$nino/liability-calculations/$magicId")
+        .withHeaders("Location" -> s"/self-assessment/ni/$nino/calculations/$magicId")
     }
   }
 
-  def retrieveLiability(nino: Nino, liabilityId: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+  def retrieveCalculation(nino: Nino, calcId: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
     Future.successful {
-      if (liabilityId == magicId) Ok(Json.parse(cannedLiabilityResponse))
+      if (calcId == magicId) Ok(Json.parse(cannedCalculationResponse))
       else NotFound
     }
   }

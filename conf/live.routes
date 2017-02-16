@@ -57,10 +57,10 @@ PUT /ni/:nino/savings-accounts/:id/:taxYear  uk.gov.hmrc.selfassessmentapi.resou
 PUT /ni/:nino/dividends/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.DividendsAnnualSummaryResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 GET /ni/:nino/dividends/:taxYear   uk.gov.hmrc.selfassessmentapi.resources.DividendsAnnualSummaryResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear)
 
-####################
-#    Liabilities   #
-####################
-POST    /ni/:nino/liability-calculations       uk.gov.hmrc.selfassessmentapi.resources.CannedLiabilityResource.requestLiability(nino: uk.gov.hmrc.domain.Nino)
-GET     /ni/:nino/liability-calculations/:id   uk.gov.hmrc.selfassessmentapi.resources.CannedLiabilityResource.retrieveLiability(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.SourceId)
+##########################
+#    Tax Calculations    #
+##########################
+POST    /ni/:nino/calculations       uk.gov.hmrc.selfassessmentapi.resources.CannedCalculationResource.requestCalculation(nino: uk.gov.hmrc.domain.Nino)
+GET     /ni/:nino/calculations/:id   uk.gov.hmrc.selfassessmentapi.resources.CannedCalculationResource.retrieveCalculation(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.resources.models.SourceId)
 
 

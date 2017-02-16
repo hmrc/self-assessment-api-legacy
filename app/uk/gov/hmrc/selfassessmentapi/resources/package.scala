@@ -27,7 +27,7 @@ import scala.util.{Failure, Success, Try}
 
 package object resources {
 
-  val XTestScenarioHeader = "X-Test-Scenario"
+  val GovTestScenarioHeader = "Gov-Test-Scenario"
 
   def handleValidationErrors(errorResult: ErrorResult): Result = {
     errorResult match {

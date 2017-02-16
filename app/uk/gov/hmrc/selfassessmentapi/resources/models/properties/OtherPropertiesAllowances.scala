@@ -19,18 +19,13 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.Sum
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 
 case class OtherPropertiesAllowances(annualInvestmentAllowance: Option[Amount] = None,
                                      businessPremisesRenovationAllowance: Option[Amount] = None,
                                      otherCapitalAllowance: Option[Amount] = None,
                                      costOfReplacingDomesticItems: Option[Amount] = None,
-                                     zeroEmissionsGoodsVehicleAllowance: Option[Amount] = None) {
-
-  def total: BigDecimal =
-    Sum(annualInvestmentAllowance, businessPremisesRenovationAllowance, otherCapitalAllowance, costOfReplacingDomesticItems)
-}
+                                     zeroEmissionsGoodsVehicleAllowance: Option[Amount] = None)
 
 object OtherPropertiesAllowances {
   implicit val writes: Writes[OtherPropertiesAllowances] = Json.writes[OtherPropertiesAllowances]
@@ -41,5 +36,5 @@ object OtherPropertiesAllowances {
       (__ \ "otherCapitalAllowance").readNullable[Amount](positiveAmountValidator) and
       (__ \ "costOfReplacingDomesticItems").readNullable[Amount](positiveAmountValidator) and
       (__ \ "zeroEmissionsGoodsVehicleAllowance").readNullable[Amount](positiveAmountValidator)
-    ) (OtherPropertiesAllowances.apply _)
+  )(OtherPropertiesAllowances.apply _)
 }

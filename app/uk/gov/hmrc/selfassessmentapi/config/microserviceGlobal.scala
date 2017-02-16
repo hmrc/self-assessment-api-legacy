@@ -49,7 +49,7 @@ import uk.gov.hmrc.selfassessmentapi.config.simulation.{
 }
 import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
+import uk.gov.hmrc.selfassessmentapi.resources.XTestScenarioHeader
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -112,7 +112,7 @@ object EmptyResponseFilter extends Filter with MicroserviceFilterSupport {
       if ((res.header.status == 201 || res.header.status == 409) && res.body.isKnownEmpty) {
         val headers = res.header.headers
           .updated("Content-Type", "application/json")
-          .updated("Gov-Empty-Response", "true")
+          .updated("X-Empty-Response", "true")
         res.copy(res.header.copy(headers = headers), HttpEntity.NoEntity)
       } else res
     }
@@ -122,7 +122,7 @@ object AgentSimulationFilter extends Filter with MicroserviceFilterSupport {
   override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
     val method = rh.method
 
-    rh.headers.get(GovTestScenarioHeader) match {
+    rh.headers.get(XTestScenarioHeader) match {
       case Some("AGENT_NOT_SUBSCRIBED") => AgentSubscriptionSimulation(f, rh, method)
       case Some("AGENT_NOT_AUTHORIZED") => AgentAuthorizationSimulation(f, rh, method)
       case Some("CLIENT_NOT_SUBSCRIBED") => ClientSubscriptionSimulation(f, rh, method)

@@ -1,7 +1,7 @@
 <table>
     <thead>
         <tr>
-            <th>Header Value (Gov-Test-Scenario)</th>
+            <th>Header Value (X-Test-Scenario)</th>
             <th>Scenario</th>
         </tr>
     </thead>

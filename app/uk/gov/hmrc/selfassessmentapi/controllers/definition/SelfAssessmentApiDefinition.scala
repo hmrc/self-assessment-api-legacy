@@ -355,7 +355,7 @@ class SelfAssessmentApiDefinition {
   val calculationEndpoints: Seq[Endpoint] = Seq(
     Endpoint(
       uriPattern = "/ni/{nino}/calculations",
-      endpointName = "Request a calculation",
+      endpointName = "Trigger a tax calculation",
       method = POST,
       authType = USER,
       throttlingTier = UNLIMITED,
@@ -363,7 +363,7 @@ class SelfAssessmentApiDefinition {
       groupName = Calculation),
     Endpoint(
       uriPattern = "/ni/{nino}/calculations/{calculationId}",
-      endpointName = "Retrieve a calculation result",
+      endpointName = "Retrieve a tax calculation",
       method = GET,
       authType = USER,
       throttlingTier = UNLIMITED,

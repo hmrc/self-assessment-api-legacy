@@ -1,4 +1,4 @@
-This section allows API developer to provide data relating to the taxpayer's business(es) that is required to calculate the estimated tax liability.
+This section allows API developer to provide data relating to the taxpayer's business(es) that is required to perform a tax calculation.
 
 Here, the developer can provide the following data:
 

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/hmrc/self-assessment-api.svg?branch=master)](https://travis-ci.org/hmrc/self-assessment-api) [ ![Download](https://api.bintray.com/packages/hmrc/releases/self-assessment-api/images/download.svg) ](https://bintray.com/hmrc/releases/self-assessment-api/_latestVersion)
 
-This REST API allows clients to post information related to a taxpayer, and then get an estimated tax liability calculation for a tax period.
+This REST API allows clients to post information related to a taxpayer, and then get an estimated tax calculation for a tax period.
 
 A typical workflow would be:
 
@@ -10,7 +10,7 @@ A typical workflow would be:
 1. Access a self-assessment resource (this is implicitly created).
 1. Send details of various income **sources** (e.g. employment or property).
 1. Send details of various types of **summary** (e.g. income or expenses) for each source.
-1. Request a liability calculation.
+1. Request a tax calculation.
 1. Wait for calculation to complete (only a short time).
 1. Request calculation and display it to your user.
 

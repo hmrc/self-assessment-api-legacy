@@ -1,6 +1,6 @@
 This API allows sole traders and landlords to provide data relating to their business (self-employed, property) including but not limited to income, expense, allowances etc. as well as data for other personal income (such as interest from savings, dividends) for a specified tax year (based on the accounting period of the business).
 
-This API is usable only by those subscribed to Making Tax Digital (MTD).
+This API is usable only by those subscribed to Making Tax Digital (MTD) and only for tax years 2017/18 onwards.
 
 Who is this API useful for?
 

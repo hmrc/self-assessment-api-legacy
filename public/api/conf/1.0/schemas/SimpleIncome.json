@@ -7,6 +7,7 @@
       "title": "Amount",
       "description": "Income associated with the running of the business",
       "type": "number",
+      "multipleOf": 0.01,
       "minimum": 0
     }
   },

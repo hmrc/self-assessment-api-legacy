@@ -6,12 +6,14 @@
     "amount": {
       "title": "Amount",
       "type": "number",
+      "multipleOf": 0.01,
       "minimum": 0
     },
     "taxDeducted": {
       "title": "Tax deducted",
       "description": "Tax taken of any income",
       "type": "number",
+      "multipleOf": 0.01,
       "minimum": 0
     }
   },

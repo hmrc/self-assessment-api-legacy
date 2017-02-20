@@ -24,8 +24,8 @@ case class Expense(amount: Amount, disallowableAmount: Option[Amount])
 
 object Expense {
   implicit val reads: Reads[Expense] = (
-    (__ \ "amount").read[Amount](positiveAmountValidator) and
-    (__ \ "disallowableAmount").readNullable[Amount](positiveAmountValidator)
+    (__ \ "amount").read[Amount](nonNegativeAmountValidator) and
+    (__ \ "disallowableAmount").readNullable[Amount](nonNegativeAmountValidator)
     ) (Expense.apply _)
     .filter(ValidationError("disallowableAmount must be equal to or less than amount", ErrorCode.INVALID_DISALLOWABLE_AMOUNT)
     )(disallowableAmountValidator)

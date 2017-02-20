@@ -25,7 +25,7 @@ case class BalancingCharge(amount: Amount)
 
 object BalancingCharge {
   implicit val reads: Reads[BalancingCharge] =
-    (__ \ "amount").read[Amount](positiveAmountValidator).map(BalancingCharge.apply)
+    (__ \ "amount").read[Amount](nonNegativeAmountValidator).map(BalancingCharge.apply)
 
   implicit val writes: Writes[BalancingCharge] = Json.writes[BalancingCharge]
 }

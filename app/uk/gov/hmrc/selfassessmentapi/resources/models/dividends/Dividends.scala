@@ -17,13 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.resources.models.dividends
 
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.positiveAmountValidator
+import uk.gov.hmrc.selfassessmentapi.resources.models.nonNegativeAmountValidator
 
 case class Dividends(ukDividends: Option[BigDecimal])
 
 object Dividends {
   implicit val reads: Reads[Dividends] =
-    (__ \ "ukDividends").readNullable[BigDecimal](positiveAmountValidator).map(Dividends(_))
+    (__ \ "ukDividends").readNullable[BigDecimal](nonNegativeAmountValidator).map(Dividends(_))
 
   implicit val writes: Writes[Dividends] = Json.writes[Dividends]
 }

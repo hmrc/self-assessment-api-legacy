@@ -28,8 +28,8 @@ object OtherPropertiesAdjustments {
   implicit val writes: Writes[OtherPropertiesAdjustments] = Json.writes[OtherPropertiesAdjustments]
 
   implicit val reads: Reads[OtherPropertiesAdjustments] = (
-    (__ \ "lossBroughtForward").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "privateUseAdjustment").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "balancingCharge").readNullable[Amount](positiveAmountValidator)
+    (__ \ "lossBroughtForward").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "privateUseAdjustment").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "balancingCharge").readNullable[Amount](nonNegativeAmountValidator)
   ) (OtherPropertiesAdjustments.apply _)
 }

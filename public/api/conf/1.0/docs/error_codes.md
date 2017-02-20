@@ -23,12 +23,12 @@ HTTP status : 400
     "errors": [
     {
       "code": "INVALID_MONETARY_AMOUNT",
-      "message": "annualInvestmentAllowance should be non-negative number up to 2 decimal values",
+      "message": "amounts should be non-negative numbers with up to 2 decimal places",
       "path": "/allowances/annualInvestmentAllowance"
     },
     {
       "code": "INVALID_MONETARY_AMOUNT",
-      "message": "averagingAdjustment should be non-negative number up to 2 decimal values",
+      "message": "amounts should be non-negative numbers with up to 2 decimal places",
       "path": "/adjustments/averagingAdjustment"
     }
   ]

@@ -20,7 +20,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.BalancingChargeType.BalancingChargeType
-import uk.gov.hmrc.selfassessmentapi.resources.models.{Amount, amountValidator, positiveAmountValidator}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{Amount, amountValidator, nonNegativeAmountValidator}
 
 case class Adjustments(includedNonTaxableProfits: Option[BigDecimal] = None,
                        basisAdjustment: Option[BigDecimal] = None,
@@ -39,16 +39,16 @@ object Adjustments {
   implicit val writes: Writes[Adjustments] = Json.writes[Adjustments]
 
   implicit val reads: Reads[Adjustments] = (
-    (__ \ "includedNonTaxableProfits").readNullable[BigDecimal](positiveAmountValidator) and
+    (__ \ "includedNonTaxableProfits").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "basisAdjustment").readNullable[BigDecimal](amountValidator) and
-      (__ \ "overlapReliefUsed").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "accountingAdjustment").readNullable[BigDecimal](positiveAmountValidator) and
+      (__ \ "overlapReliefUsed").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "accountingAdjustment").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "averagingAdjustment").readNullable[BigDecimal](amountValidator) and
-      (__ \ "lossBroughtForward").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "outstandingBusinessIncome").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "balancingChargeBPRA").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "balancingChargeOther").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "goodsAndServicesOwnUse").readNullable[Amount](positiveAmountValidator)
+      (__ \ "lossBroughtForward").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "outstandingBusinessIncome").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "balancingChargeBPRA").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "balancingChargeOther").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "goodsAndServicesOwnUse").readNullable[Amount](nonNegativeAmountValidator)
     ) (
     (nonTaxableProfits, basisAdj, overlapRelief, accountingAdj, averagingAdj, lossBroughtFwd, outstandingIncome, balancingChargeBPRA,
      balancingChargeOther, goodsAndServices) =>

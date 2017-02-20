@@ -21,6 +21,6 @@ import play.api.libs.json._
 case class SimpleExpense(amount: Amount)
 
 object SimpleExpense {
-  implicit val reads: Reads[SimpleExpense] = (__ \ "amount").read[Amount](positiveAmountValidator).map(amount => SimpleExpense(amount))
+  implicit val reads: Reads[SimpleExpense] = (__ \ "amount").read[Amount](nonNegativeAmountValidator).map(amount => SimpleExpense(amount))
   implicit val writes: Writes[SimpleExpense] = Json.writes[SimpleExpense]
 }

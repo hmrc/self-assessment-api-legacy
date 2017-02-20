@@ -27,7 +27,7 @@ object FHLPropertiesAllowances {
   implicit val writes: Writes[FHLPropertiesAllowances] = Json.writes[FHLPropertiesAllowances]
 
   implicit val reads: Reads[FHLPropertiesAllowances] = (
-    (__ \ "annualInvestmentAllowance").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "otherCapitalAllowance").readNullable[Amount](positiveAmountValidator)
+    (__ \ "annualInvestmentAllowance").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "otherCapitalAllowance").readNullable[Amount](nonNegativeAmountValidator)
     ) (FHLPropertiesAllowances.apply _)
 }

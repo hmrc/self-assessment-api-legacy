@@ -28,8 +28,8 @@ object FHLPropertiesAdjustments {
   implicit val writes: Writes[FHLPropertiesAdjustments] = Json.writes[FHLPropertiesAdjustments]
 
   implicit val reads: Reads[FHLPropertiesAdjustments] = (
-    (__ \ "lossBroughtForward").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "privateUseAdjustment").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "balancingCharge").readNullable[Amount](positiveAmountValidator)
+    (__ \ "lossBroughtForward").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "privateUseAdjustment").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "balancingCharge").readNullable[Amount](nonNegativeAmountValidator)
     ) (FHLPropertiesAdjustments.apply _)
 }

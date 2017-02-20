@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.positiveAmountValidator
+import uk.gov.hmrc.selfassessmentapi.resources.models.nonNegativeAmountValidator
 
 case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
                       capitalAllowanceMainPool: Option[BigDecimal] = None,
@@ -42,12 +42,12 @@ object Allowances {
   implicit val writes = Json.writes[Allowances]
 
   implicit val reads: Reads[Allowances] = (
-    (__ \ "annualInvestmentAllowance").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "capitalAllowanceMainPool").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "allowanceOnSales").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "zeroEmissionGoodsVehicleAllowance").readNullable[BigDecimal](positiveAmountValidator)
+    (__ \ "annualInvestmentAllowance").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "capitalAllowanceMainPool").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "allowanceOnSales").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "zeroEmissionGoodsVehicleAllowance").readNullable[BigDecimal](nonNegativeAmountValidator)
   )(Allowances.apply _)
 }

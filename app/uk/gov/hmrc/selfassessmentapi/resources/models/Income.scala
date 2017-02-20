@@ -23,8 +23,8 @@ case class Income(amount: Amount, taxDeducted: Option[Amount])
 
 object Income {
   implicit val reads: Reads[Income] = (
-    (__ \ "amount").read[Amount](positiveAmountValidator) and
-      (__ \ "taxDeducted").readNullable[Amount](positiveAmountValidator)
+    (__ \ "amount").read[Amount](nonNegativeAmountValidator) and
+      (__ \ "taxDeducted").readNullable[Amount](nonNegativeAmountValidator)
     ) (Income.apply _)
 
   implicit val writes: Writes[Income] = Json.writes[Income]

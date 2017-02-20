@@ -294,7 +294,7 @@ traits:
                         value:
                           code: INVALID_PERIOD
                       invalidMonetaryAmount:
-                        description: income or expense is not positive amount or up to 2 decimal places
+                        description: income or expense is not a non-negative amount or up to 2 decimal places
                         value:
                           code: INVALID_MONETARY_AMOUNT
                       invalidDisallowableAmount:
@@ -457,7 +457,7 @@ traits:
                         value:
                           code: MANDATORY_FIELD_MISSING
                       invalidMonetaryAmount1:
-                        description: valid positive amount not provided where expected (except averagingAdjustment and basisAdjustment)
+                        description: valid non-negative amount not provided where expected (except averagingAdjustment and basisAdjustment)
                         value:
                           code: INVALID_MONETARY_AMOUNT
                       invalidMonetaryAmount2:
@@ -692,7 +692,7 @@ traits:
                         value:
                           code: INVALID_PERIOD
                       invalidMonetaryAmount:
-                        description: income or expense is not positive amount or up to 2 decimal places
+                        description: income or expense is not a non-negative amount or up to 2 decimal places
                         value:
                           code: INVALID_MONETARY_AMOUNT
               409:
@@ -790,7 +790,7 @@ traits:
                           value:
                             code: NINO_INVALID
                         invalidMonetaryAmount:
-                          description: income or expense is not positive amount or up to 2 decimal places
+                          description: income or expense is not a non-negative amount or up to 2 decimal places
                           value:
                             code: INVALID_MONETARY_AMOUNT
                 404:
@@ -836,7 +836,7 @@ traits:
                           value:
                             code: TAX_YEAR_INVALID
                         invalidMonetaryAmount:
-                          description: adjustments or allowances is not positive amount or up to 2 decimal places
+                          description: adjustments or allowances is not a non-negative amount or up to 2 decimal places
                           value:
                             code: INVALID_MONETARY_AMOUNT
                 404:
@@ -924,7 +924,7 @@ traits:
                         value:
                           code: INVALID_PERIOD
                       invalidMonetaryAmount:
-                        description: income or expense is not positive amount or up to 2 decimal places
+                        description: income or expense is not a non-negative amount or up to 2 decimal places
                         value:
                           code: INVALID_MONETARY_AMOUNT
               409:
@@ -1026,7 +1026,7 @@ traits:
                           value:
                             code: TAX_YEAR_INVALID
                         invalidMonetaryAmount:
-                          description: adjustments or allowances is not positive amount or up to 2 decimal places
+                          description: adjustments or allowances is not a non-negative amount or up to 2 decimal places
                           value:
                             code: INVALID_MONETARY_AMOUNT
                 404:
@@ -1072,7 +1072,7 @@ traits:
                           value:
                             code: TAX_YEAR_INVALID
                         invalidMonetaryAmount:
-                          description: adjustments or allowances is not positive amount or up to 2 decimal places
+                          description: adjustments or allowances is not a non-negative amount or up to 2 decimal places
                           value:
                             code: INVALID_MONETARY_AMOUNT
                 404:
@@ -1157,7 +1157,7 @@ traits:
                       value:
                         code: TAX_YEAR_INVALID
                     invalidMonetaryAmount:
-                      description: ukDividends is not positive amount or up to 2 decimal places
+                      description: ukDividends is not a non-negative amount or up to 2 decimal places
                       value:
                         code: INVALID_MONETARY_AMOUNT
         get:
@@ -1354,7 +1354,7 @@ traits:
                         value:
                           code: TAX_YEAR_INVALID
                       invalidAmount:
-                        description: taxedUkInterest is not positive amount or up to 2 decimal places
+                        description: taxedUkInterest is not a non-negative amount or up to 2 decimal places
                         value:
                           code: INVALID_MONETARY_AMOUNT
               404:

@@ -31,10 +31,10 @@ object OtherPropertiesAllowances {
   implicit val writes: Writes[OtherPropertiesAllowances] = Json.writes[OtherPropertiesAllowances]
 
   implicit val reads: Reads[OtherPropertiesAllowances] = (
-    (__ \ "annualInvestmentAllowance").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "businessPremisesRenovationAllowance").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "otherCapitalAllowance").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "costOfReplacingDomesticItems").readNullable[Amount](positiveAmountValidator) and
-      (__ \ "zeroEmissionsGoodsVehicleAllowance").readNullable[Amount](positiveAmountValidator)
+    (__ \ "annualInvestmentAllowance").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "businessPremisesRenovationAllowance").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "otherCapitalAllowance").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "costOfReplacingDomesticItems").readNullable[Amount](nonNegativeAmountValidator) and
+      (__ \ "zeroEmissionsGoodsVehicleAllowance").readNullable[Amount](nonNegativeAmountValidator)
   )(OtherPropertiesAllowances.apply _)
 }

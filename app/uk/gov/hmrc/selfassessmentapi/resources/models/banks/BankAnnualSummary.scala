@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.models.banks
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.positiveAmountValidator
+import uk.gov.hmrc.selfassessmentapi.resources.models.nonNegativeAmountValidator
 
 case class BankAnnualSummary(taxedUkInterest: Option[BigDecimal], untaxedUkInterest: Option[BigDecimal])
 
@@ -26,7 +26,7 @@ object BankAnnualSummary {
   implicit val writes: Writes[BankAnnualSummary] = Json.writes[BankAnnualSummary]
 
   implicit val reads: Reads[BankAnnualSummary] = (
-    (__ \ "taxedUkInterest").readNullable[BigDecimal](positiveAmountValidator) and
-      (__ \ "untaxedUkInterest").readNullable[BigDecimal](positiveAmountValidator)
+    (__ \ "taxedUkInterest").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "untaxedUkInterest").readNullable[BigDecimal](nonNegativeAmountValidator)
   ) (BankAnnualSummary.apply _)
 }

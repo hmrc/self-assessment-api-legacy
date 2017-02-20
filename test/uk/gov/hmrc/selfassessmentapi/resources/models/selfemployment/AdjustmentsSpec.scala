@@ -40,7 +40,7 @@ class AdjustmentsSpec extends JsonSpec {
   }
 
   "validate" should {
-    def validatePositiveAmount(model: Adjustments, path: String) = {
+    def validateNonNegativeAmount(model: Adjustments, path: String) = {
       assertValidationErrorWithCode(model, path,
         INVALID_MONETARY_AMOUNT)
     }
@@ -52,12 +52,12 @@ class AdjustmentsSpec extends JsonSpec {
 
     "reject negative includedNonTaxableProfits" in {
       val se = Adjustments(includedNonTaxableProfits = Some(BigDecimal(-10.00)))
-      validatePositiveAmount(se, "/includedNonTaxableProfits")
+      validateNonNegativeAmount(se, "/includedNonTaxableProfits")
     }
 
     "reject includedNonTaxableProfits with more than two decimal places" in {
       val se = Adjustments(includedNonTaxableProfits = Some(BigDecimal(10.123)))
-      validatePositiveAmount(se, "/includedNonTaxableProfits")
+      validateNonNegativeAmount(se, "/includedNonTaxableProfits")
     }
 
     "reject basisAdjustment with more than two decimal places" in {
@@ -67,22 +67,22 @@ class AdjustmentsSpec extends JsonSpec {
 
     "reject negative overlapReliefUsed" in {
       val se = Adjustments(overlapReliefUsed = Some(BigDecimal(-10.00)))
-     validatePositiveAmount(se, "/overlapReliefUsed")
+     validateNonNegativeAmount(se, "/overlapReliefUsed")
     }
 
     "reject overlapReliefUsed with more than two decimal places" in {
       val se = Adjustments(overlapReliefUsed = Some(BigDecimal(10.123)))
-      validatePositiveAmount(se, "/overlapReliefUsed")
+      validateNonNegativeAmount(se, "/overlapReliefUsed")
     }
 
     "reject negative accountingAdjustment" in {
       val se = Adjustments(accountingAdjustment = Some(BigDecimal(-10.00)))
-      validatePositiveAmount(se, "/accountingAdjustment")
+      validateNonNegativeAmount(se, "/accountingAdjustment")
     }
 
     "reject accountingAdjustment with more than two decimal places" in {
       val se = Adjustments(accountingAdjustment = Some(BigDecimal(10.123)))
-      validatePositiveAmount(se, "/accountingAdjustment")
+      validateNonNegativeAmount(se, "/accountingAdjustment")
     }
 
     "reject averagingAdjustment with more than two decimal places" in {
@@ -92,22 +92,22 @@ class AdjustmentsSpec extends JsonSpec {
 
     "reject negative lossBroughtForward" in {
       val se = Adjustments(lossBroughtForward = Some(BigDecimal(-10.00)))
-      validatePositiveAmount(se, "/lossBroughtForward")
+      validateNonNegativeAmount(se, "/lossBroughtForward")
     }
 
     "reject lossBroughtForward with more than two decimal places" in {
       val se = Adjustments(lossBroughtForward = Some(BigDecimal(10.123)))
-      validatePositiveAmount(se, "/lossBroughtForward")
+      validateNonNegativeAmount(se, "/lossBroughtForward")
     }
 
     "reject negative outstandingBusinessIncome" in {
       val se = Adjustments(outstandingBusinessIncome = Some(BigDecimal(-10.00)))
-      validatePositiveAmount(se, "/outstandingBusinessIncome")
+      validateNonNegativeAmount(se, "/outstandingBusinessIncome")
     }
 
     "reject outstandingBusinessIncome with more than two decimal places" in {
       val se = Adjustments(outstandingBusinessIncome = Some(BigDecimal(10.123)))
-      validatePositiveAmount(se, "/outstandingBusinessIncome")
+      validateNonNegativeAmount(se, "/outstandingBusinessIncome")
     }
 
     "return a INVALID_MONETARY_AMOUNT error when balancingCharge amount is negative" in {

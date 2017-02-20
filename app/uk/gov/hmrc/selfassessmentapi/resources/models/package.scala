@@ -31,13 +31,13 @@ package object models {
   /**
     * Asserts that amounts must have a maximum of two decimal places
     */
-  val amountValidator = Reads.of[Amount]
+  val amountValidator: Reads[Amount] = Reads.of[Amount]
     .filter(ValidationError("amount should be a number with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT))(_.scale < 3)
 
   /**
-    * Asserts that amounts must be positive and have a maximum of two decimal places
+    * Asserts that amounts must be non-negative and have a maximum of two decimal places
     */
-  val positiveAmountValidator = Reads.of[Amount]
-    .filter(ValidationError("amounts should be positive numbers with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT)
+  val nonNegativeAmountValidator: Reads[Amount] = Reads.of[Amount]
+    .filter(ValidationError("amounts should be non-negative numbers with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT)
     )(amount => amount >= 0 && amount.scale < 3)
 }

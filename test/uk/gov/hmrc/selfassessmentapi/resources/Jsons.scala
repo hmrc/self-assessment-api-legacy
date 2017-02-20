@@ -544,15 +544,6 @@ object Jsons {
           |}
          """.stripMargin)
     }
-
-    def emptyRequest() : JsValue = {
-      Json.parse(
-        s"""
-          |{
-          |
-          |}
-         """.stripMargin)
-    }
   }
 
   object Obligations {

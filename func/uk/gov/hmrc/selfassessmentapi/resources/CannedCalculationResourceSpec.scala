@@ -1,5 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class CannedCalculationResourceSpec extends BaseFunctionalSpec {
@@ -20,7 +21,7 @@ class CannedCalculationResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(Jsons.CannedCalculation.emptyRequest()).to(s"/ni/$nino/calculations")
+        .post(Json.obj()).to(s"/ni/$nino/calculations")
         .thenAssertThat()
         .statusIs(400)
     }

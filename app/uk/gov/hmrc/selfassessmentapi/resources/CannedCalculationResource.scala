@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.selfassessmentapi.resources.models.calculation.CalculationRequest
 import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, SourceType}
 
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object CannedCalculationResource extends BaseController {
@@ -122,10 +125,13 @@ object CannedCalculationResource extends BaseController {
        |}
      """.stripMargin
 
-  def requestCalculation(nino: Nino): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    Future.successful {
-      Accepted(Json.parse(cannedEtaResponse))
-        .withHeaders("Location" -> s"/self-assessment/ni/$nino/calculations/$magicId")
+  def requestCalculation(nino: Nino): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
+    validate[CalculationRequest, Unit](request.body) {
+      _ => Future.successful(Unit)
+    } match {
+      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
+      case Right(result) => result.map ( _ => Accepted(Json.parse(cannedEtaResponse))
+                                                  .withHeaders("Location" -> s"/self-assessment/ni/$nino/calculations/$magicId"))
     }
   }
 

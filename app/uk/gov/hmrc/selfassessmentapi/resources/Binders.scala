@@ -43,9 +43,9 @@ object Binders {
     def unbind(key: String, taxYear: TaxYear): String = stringBinder.unbind(key, taxYear.value)
 
     def bind(key: String, value: String): Either[String, TaxYear] = {
-      AppContext.supportedTaxYears.contains(value) match {
-        case true => Right(TaxYear(value))
-        case false => Left("ERROR_TAX_YEAR_INVALID")
+      TaxYear.createTaxYear(value) match {
+        case Some(taxYear) => Right(taxYear)
+        case None => Left("ERROR_TAX_YEAR_INVALID")
       }
     }
   }

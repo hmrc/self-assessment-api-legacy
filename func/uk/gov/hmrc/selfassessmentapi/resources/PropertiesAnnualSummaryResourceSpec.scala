@@ -165,5 +165,21 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(404)
     }
+
+    "return code 400 when retrieving properties annual summary for a non MTD year" in {
+      val property = Jsons.Properties()
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(property).to(s"/ni/$nino/uk-properties")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .get(s"/ni/$nino/uk-properties/other/2015-16")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("TAX_YEAR_INVALID")
+    }
   }
 }

@@ -29,4 +29,26 @@ case class TaxYear(taxYear: String) extends SimpleName {
 object TaxYear extends (String => TaxYear) {
   implicit val taxYearWrite: Writes[TaxYear] = new SimpleObjectWrites[TaxYear](_.value)
   implicit val taxYearRead: Reads[TaxYear] = new SimpleObjectReads[TaxYear]("taxYear", TaxYear.apply)
+
+  private val taxYearFormat = "20[1-9][0-9]\\-[1-9][0-9]"
+
+  def createTaxYear(taxYear: String): Option[TaxYear] = {
+    for {
+      a <- hasValidFormat(taxYear)
+      b <- isAfterYear(2016, a)
+    } yield TaxYear(b)
+  }
+
+  private def hasValidFormat(taxYear: String): Option[String] = {
+    taxYear match {
+      case x if x.matches(taxYearFormat) => Some(taxYear)
+      case _ => None
+    }
+  }
+
+  private def isAfterYear(year: Int, taxYear: String): Option[String] = {
+    taxYear.split("-") match {
+      case Array(f, s) => if (f.toInt >= year && (s.toInt + 2000) == f.toInt + 1) Some(taxYear) else None
+    }
+  }
 }

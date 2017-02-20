@@ -100,6 +100,20 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(404)
     }
+
+    "return code 400 when retrieving annual summary for a non MTD year" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .get(s"%sourceLocation%/2015-16")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("TAX_YEAR_INVALID")
+    }
   }
 
 }

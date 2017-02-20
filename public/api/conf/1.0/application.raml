@@ -1412,6 +1412,10 @@ traits:
         is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
         (annotations.scope): "write:self-assessment"
         securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+        body:
+          application/json:
+            type: !include schemas/TaxCalculationYear.json
+            example: !include examples/calculation/TaxCalculationYear.json
         responses:
           202:
             headers:
@@ -1431,6 +1435,10 @@ traits:
                     description: Invalid NINO
                     value:
                       code: NINO_INVALID
+                  mandatoryField:
+                    description: Mandatory field missing
+                    value:
+                      code: MANDATORY_FIELD_MISSING
       /{taxCalculationId}:
         uriParameters:
           taxCalculationId:

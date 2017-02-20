@@ -535,6 +535,24 @@ object Jsons {
            |}
          """.stripMargin)
     }
+
+    def request() : JsValue = {
+      Json.parse(
+        s"""
+          |{
+          |  "taxYear": "2016-17"
+          |}
+         """.stripMargin)
+    }
+
+    def emptyRequest() : JsValue = {
+      Json.parse(
+        s"""
+          |{
+          |
+          |}
+         """.stripMargin)
+    }
   }
 
   object Obligations {

@@ -24,7 +24,7 @@ class CalculationRequestSpec extends JsonSpec {
   "CalculationRequest JSON" should {
 
     "round trip" in {
-      roundTripJson(CalculationRequest(TaxYear("2016-17")))
+      roundTripJson(CalculationRequest(TaxYear("2017-18")))
     }
 
     "return a TAX_YEAR_INVALID error when account name is too long" in {

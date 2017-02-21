@@ -24,7 +24,7 @@ case class CalculationRequest(taxYear: TaxYear)
 
 object CalculationRequest {
   private val taxYearValidator: Reads[TaxYear] = Reads.of[TaxYear].filter(
-            ValidationError("Tax Year must be in the form of YYYY-YY and equal or after 2016-17",
+            ValidationError("Tax Year must be in the form of YYYY-YY and equal or after 2017-18",
             ErrorCode.TAX_YEAR_INVALID))(taxYear => TaxYear.createTaxYear(taxYear.taxYear).isDefined)
 
   implicit val reads: Reads[CalculationRequest] =

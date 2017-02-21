@@ -48,7 +48,7 @@ object TaxYear extends (String => TaxYear) {
 
   private def isAfterYear(year: Int, taxYear: String): Option[String] = {
     taxYear.split("-") match {
-      case Array(f, s) => if (f.toInt >= year && (s.toInt + 2000) == f.toInt + 1) Some(taxYear) else None
+      case Array(f, s) => if (f.toInt > year && (s.toInt + 2000) == f.toInt + 1) Some(taxYear) else None
     }
   }
 }

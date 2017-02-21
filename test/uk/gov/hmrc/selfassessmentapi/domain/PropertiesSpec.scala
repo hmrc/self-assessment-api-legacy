@@ -49,24 +49,24 @@ class PropertiesSpec extends UnitSpec {
     AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
     FHLPropertiesBucket(
       Map("fhl" -> fhlPeriod),
-      Map(TaxYear("2016-17") -> FHLPropertiesAnnualSummary(Some(fhlAllowances), Some(fhlAdjustments)))),
+      Map(TaxYear("2017-18") -> FHLPropertiesAnnualSummary(Some(fhlAllowances), Some(fhlAdjustments)))),
     OtherPropertiesBucket(
       Map("other" -> otherPeriod),
-      Map(TaxYear("2016-17") -> OtherPropertiesAnnualSummary(Some(otherAllowances), Some(otherAdjustments)))))
+      Map(TaxYear("2017-18") -> OtherPropertiesAnnualSummary(Some(otherAllowances), Some(otherAdjustments)))))
 
   "annualSummary" should {
     "return an empty annual summary when no annual summary exists for the provided tax year" in {
       val properties = Properties(BSONObjectID.generate, NinoGenerator().nextNino(), AccountingType.CASH)
 
-      properties.annualSummary(PropertyType.OTHER, TaxYear("2016-17")) shouldBe OtherPropertiesAnnualSummary(None,
+      properties.annualSummary(PropertyType.OTHER, TaxYear("2017-18")) shouldBe OtherPropertiesAnnualSummary(None,
                                                                                                              None)
-      properties.annualSummary(PropertyType.FHL, TaxYear("2016-17")) shouldBe FHLPropertiesAnnualSummary(None, None)
+      properties.annualSummary(PropertyType.FHL, TaxYear("2017-18")) shouldBe FHLPropertiesAnnualSummary(None, None)
     }
 
     "return an annual summary matching the tax year" in {
-      properties.annualSummary(PropertyType.OTHER, TaxYear("2016-17")) shouldBe
+      properties.annualSummary(PropertyType.OTHER, TaxYear("2017-18")) shouldBe
         OtherPropertiesAnnualSummary(Some(otherAllowances), Some(otherAdjustments))
-      properties.annualSummary(PropertyType.FHL, TaxYear("2016-17")) shouldBe
+      properties.annualSummary(PropertyType.FHL, TaxYear("2017-18")) shouldBe
         FHLPropertiesAnnualSummary(Some(fhlAllowances), Some(fhlAdjustments))
     }
   }

@@ -32,7 +32,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase {
   private val nino = NinoGenerator().nextNino()
 
   def createDividend(nino: Nino, id: BSONObjectID = BSONObjectID.generate): Dividends = {
-    Dividends(BSONObjectID.generate, nino, Map(TaxYear("2016-17") -> models.dividends.Dividends(Some(500.25))))
+    Dividends(BSONObjectID.generate, nino, Map(TaxYear("2017-18") -> models.dividends.Dividends(Some(500.25))))
   }
 
   "create" should {
@@ -41,7 +41,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase {
 
       val result = await(repo.retrieve(nino))
       result.isDefined shouldBe true
-      result.get.dividends.get(TaxYear("2016-17")) shouldBe Some(models.dividends.Dividends(Some(500.25)))
+      result.get.dividends.get(TaxYear("2017-18")) shouldBe Some(models.dividends.Dividends(Some(500.25)))
     }
   }
 
@@ -49,14 +49,14 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase {
     "overwrite an existing dividend" in {
       val originalDividend = createDividend(nino)
       val updatedDividend = originalDividend.copy(dividends =
-        originalDividend.dividends.updated(TaxYear("2016-17"), models.dividends.Dividends(None)))
+        originalDividend.dividends.updated(TaxYear("2017-18"), models.dividends.Dividends(None)))
 
       await(repo.create(originalDividend)) shouldBe true
       await(repo.update(nino, updatedDividend)) shouldBe true
 
       val result = await(repo.retrieve(nino))
       result.isDefined shouldBe true
-      result.get.dividends.get(TaxYear("2016-17")) shouldBe Some(models.dividends.Dividends(None))
+      result.get.dividends.get(TaxYear("2017-18")) shouldBe Some(models.dividends.Dividends(None))
     }
 
     "update the lastModifiedDateTime on the persisted object" in {
@@ -68,7 +68,7 @@ class DividendsRepositorySpec extends MongoEmbeddedDatabase {
       DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusDays(1).getMillis)
 
       await(repo.update(nino, dividend.copy(dividends =
-        dividend.dividends.updated(TaxYear("2016-17"), models.dividends.Dividends(None)))))
+        dividend.dividends.updated(TaxYear("2017-18"), models.dividends.Dividends(None)))))
 
       val lastModifiedDateTime = await(repo.retrieve(nino)).get.lastModifiedDateTime
 

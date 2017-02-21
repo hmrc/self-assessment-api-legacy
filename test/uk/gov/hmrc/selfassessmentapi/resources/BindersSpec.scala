@@ -44,7 +44,7 @@ class BindersSpec extends UnitSpec {
   "taxYear.bind" should {
 
     "return Right with a TaxYear instance for a valid tax year string" in {
-      val taxYear = "2016-17"
+      val taxYear = "2017-18"
       implicit val pathBindable = PathBindable.bindableString
 
       val result = Binders.taxYearBinder.bind("taxYear", taxYear)

@@ -34,7 +34,7 @@ trait TestUtils {
 
   def now = DateTime.now(DateTimeZone.UTC)
 
-  val taxYear = TaxYear("2016-17")
+  val taxYear = TaxYear("2017-18")
 
   implicit def taxYearToString(taxYear: TaxYear): String = taxYear.value
 }

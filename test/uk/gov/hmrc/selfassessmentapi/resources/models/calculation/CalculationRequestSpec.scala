@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.calculation
 
-import play.api.data.validation.ValidationError
-import play.api.libs.json.{Reads, _}
+import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, TaxYear}
 
-case class CalculationRequest(taxYear: TaxYear)
+class CalculationRequestSpec extends JsonSpec {
 
-object CalculationRequest {
-  private val taxYearValidator: Reads[TaxYear] = Reads.of[TaxYear].filter(
-            ValidationError("Tax Year must be in the form of YYYY-YY and equal or after 2016-17",
-            ErrorCode.TAX_YEAR_INVALID))(taxYear => TaxYear.createTaxYear(taxYear.taxYear).isDefined)
+  "CalculationRequest JSON" should {
 
-  implicit val reads: Reads[CalculationRequest] =
-    (__ \ "taxYear").read[TaxYear](taxYearValidator).map(taxYear => CalculationRequest(taxYear))
+    "round trip" in {
+      roundTripJson(CalculationRequest(TaxYear("2016-17")))
+    }
 
-  implicit val writes :Writes[CalculationRequest] = Json.writes[CalculationRequest]
+    "return a TAX_YEAR_INVALID error when account name is too long" in {
+      val input = CalculationRequest(TaxYear("2013-14"))
+      assertValidationErrorWithCode(input, "/taxYear", ErrorCode.TAX_YEAR_INVALID)
+    }
+  }
 }

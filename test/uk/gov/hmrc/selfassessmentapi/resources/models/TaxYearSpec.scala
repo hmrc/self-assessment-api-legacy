@@ -28,19 +28,21 @@ class TaxYearSpec extends UnitSpec {
       TaxYear.createTaxYear("2099-00") shouldBe None
     }
 
-    "accept a tax year with a valid format" in {
-      TaxYear.createTaxYear("2016-17") shouldBe Some(TaxYear("2016-17"))
-      TaxYear.createTaxYear("2017-18") shouldBe Some(TaxYear("2017-18"))
-      TaxYear.createTaxYear("2098-99") shouldBe Some(TaxYear("2098-99"))
-    }
-
     "reject a tax year where the gap between the start and end of a tax year is not equal to one year" in {
       TaxYear.createTaxYear("2017-19") shouldBe None
+    }
 
+    "reject a tax year before 2017-18" in {
+      TaxYear.createTaxYear("2016-17") shouldBe None
     }
 
     "accept a tax year where the the start is before the end" in {
       TaxYear.createTaxYear("2018-17") shouldBe None
+    }
+
+    "accept a tax year with a valid format" in {
+      TaxYear.createTaxYear("2017-18") shouldBe Some(TaxYear("2017-18"))
+      TaxYear.createTaxYear("2098-99") shouldBe Some(TaxYear("2098-99"))
     }
   }
 }

@@ -78,11 +78,11 @@ class SelfEmploymentRepositorySpec extends MongoEmbeddedDatabase {
 
       await(repo.create(se))
 
-      await(repo.update(id.stringify, nino, se.copy(annualSummaries = Map(TaxYear("2016-17") -> summary)))) shouldBe true
+      await(repo.update(id.stringify, nino, se.copy(annualSummaries = Map(TaxYear("2017-18") -> summary)))) shouldBe true
       val updatedSelfEmployment = await(repo.retrieve(id.stringify, nino)).get
 
       updatedSelfEmployment.annualSummaries.size shouldBe 1
-      updatedSelfEmployment.annualSummary(TaxYear("2016-17")) shouldBe summary
+      updatedSelfEmployment.annualSummary(TaxYear("2017-18")) shouldBe summary
     }
 
     "return true when updating periods" in {

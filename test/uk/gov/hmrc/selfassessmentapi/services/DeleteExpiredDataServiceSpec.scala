@@ -76,7 +76,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   }
 
   private def createDividend(lastModifiedDateTime: DateTime, nino: Nino, id: BSONObjectID = BSONObjectID.generate): Dividends = {
-    Dividends(BSONObjectID.generate, nino, Map(TaxYear("2016-17") -> models.dividends.Dividends(Some(500.25))), lastModifiedDateTime)
+    Dividends(BSONObjectID.generate, nino, Map(TaxYear("2017-18") -> models.dividends.Dividends(Some(500.25))), lastModifiedDateTime)
   }
 
   private def createBank(lastModifiedDateTime: DateTime, nino: Nino, id: BSONObjectID = BSONObjectID.generate): Bank = {

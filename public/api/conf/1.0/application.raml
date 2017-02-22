@@ -96,7 +96,7 @@ traits:
           name: Self-employment business
           description: !include docs/self-employment.md
       post:
-        displayName: Add a self-employment business
+        displayName: Add a self-employment business [test only]
         description: Add a self-employment business
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
         is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -315,7 +315,7 @@ traits:
                         value:
                           code: INVALID_PERIOD
           get:
-            displayName: List all self-employment periods
+            displayName: List all self-employment periods [test only]
             description: List all self-employment periods
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -351,7 +351,7 @@ traits:
                 description: An identifier for the period
                 type: string
             get:
-              displayName: Get a self-employment periodic summary
+              displayName: Get a self-employment periodic summary [test only]
               description: Get a single self-employment periodic summary for a given identifier
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -382,7 +382,7 @@ traits:
                           value:
                             code: NOT_FOUND
             put:
-              displayName: Update a self-employment periodic summary
+              displayName: Update a self-employment periodic summary [test only]
               description: Update a self-employment periodic summary
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -427,7 +427,7 @@ traits:
               type: string
               example: 2017-18
           put:
-            displayName: Update a self-employment annual summary
+            displayName: Update a self-employment annual summary [test only]
             description: Update a self-employment annual summary for a tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -478,7 +478,7 @@ traits:
                         value:
                           code: NOT_FOUND
           get:
-            displayName: Get a self-employment annual summary
+            displayName: Get a self-employment annual summary [test only]
             description: Get a self-employment annual summary for a tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -517,7 +517,7 @@ traits:
         name: UK property business
         description: !include docs/uk-property.md
       post:
-        displayName: Add a UK property business
+        displayName: Add a UK property business [test only]
         description: Add a UK property business
         is: [headers.acceptHeader, contentType, clientSubscriptionToMTD, agentSubscription]
         (annotations.scope): "write:self-assessment"
@@ -701,7 +701,7 @@ traits:
                     type: !include schemas/Error.json
                     example: !include examples/errors/CONFLICT.json
           get:
-            displayName: List all non FHL UK property periods
+            displayName: List all non FHL UK property periods [test only]
             description: List all non FHL UK property periods
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -737,7 +737,7 @@ traits:
                 displayName: Period ID
                 type: string
             get:
-              displayName: Get a non FHL UK property periodic summary
+              displayName: Get a non FHL UK property periodic summary [test only]
               description: Get a non FHL UK property periodic summary for a given identifier
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -768,7 +768,7 @@ traits:
                           value:
                             code: NOT_FOUND
             put:
-              displayName: Update a non FHL UK property periodic summary
+              displayName: Update a non FHL UK property periodic summary [test only]
               description: Update a non FHL UK property periodic summary
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -810,7 +810,7 @@ traits:
                 type: string
                 example: 2017-18
             put:
-              displayName: Update a non-FHL UK property business annual summary
+              displayName: Update a non-FHL UK property business annual summary [test only]
               description: Update a non-FHL UK property business annual summary for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -849,7 +849,7 @@ traits:
                           value:
                             code: NOT_FOUND
             get:
-              displayName: Get non FHL UK property business annual summary
+              displayName: Get non FHL UK property business annual summary [test only]
               description: Get non FHL UK property business for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -933,7 +933,7 @@ traits:
                     type: !include schemas/Error.json
                     example: !include examples/errors/CONFLICT.json
           get:
-            displayName: List all FHL UK property periods
+            displayName: List all FHL UK property periods [test only]
             description: List all FHL UK property periods
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -969,7 +969,7 @@ traits:
                 displayName: Period ID
                 type: string
             get:
-              displayName: Get a FHL UK property periodic summary
+              displayName: Get a FHL UK property periodic summary [test only]
               description: Get a FHL UK property periodic summary for a given identifier
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1046,7 +1046,7 @@ traits:
                 type: string
                 example: 2017-18
             put:
-              displayName: Update a FHL UK property business annual summary
+              displayName: Update a FHL UK property business annual summary [test only]
               description: Update a FHL UK property business annual summary for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1085,7 +1085,7 @@ traits:
                           value:
                             code: NOT_FOUND
             get:
-              displayName: Get a FHL UK property business annual summary
+              displayName: Get a FHL UK property business annual summary [test only]
               description: Get a FHL UK property business annual summary for a tax year
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1131,7 +1131,7 @@ traits:
             type: string
             example: 2017-18
         put:
-          displayName: Update a dividends income annual summary
+          displayName: Update a dividends income annual summary [test only]
           description: Update a dividends income annual summary for a tax year
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
           is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1161,7 +1161,7 @@ traits:
                       value:
                         code: INVALID_MONETARY_AMOUNT
         get:
-          displayName: Get dividends income annual summary
+          displayName: Get dividends income annual summary [test only]
           description: Get dividends income for a tax year
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
           is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1200,7 +1200,7 @@ traits:
         name: Savings accounts
         description: !include docs/savings-accounts.md
       post:
-        displayName: Add a savings account
+        displayName: Add a savings account [test only]
         description: Add a savings account
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
         is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1234,7 +1234,7 @@ traits:
                     value:
                       code: INVALID_VALUE
       get:
-        displayName: List all savings accounts
+        displayName: List all savings accounts [test only]
         description: List all savings accounts
         (annotations.sandboxData): !include scenarios/agent-scenarios.md
         is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1257,7 +1257,7 @@ traits:
                       code: NINO_INVALID
       /{savingsAccountId}:
         put:
-          displayName: Update a savings account
+          displayName: Update a savings account [test only]
           description: Update a savings account
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
           is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1296,7 +1296,7 @@ traits:
                       value:
                         code: NOT_FOUND
         get:
-          displayName: Get a savings account
+          displayName: Get a savings account [test only]
           description: Get a savings account
           (annotations.sandboxData): !include scenarios/agent-scenarios.md
           is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1328,7 +1328,7 @@ traits:
                         code: NOT_FOUND
         /{taxYear}:
           put:
-            displayName: Update a savings account annual summary
+            displayName: Update a savings account annual summary [test only]
             description: Update a savings account annual summary for a given tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
@@ -1367,7 +1367,7 @@ traits:
                         value:
                           code: NOT_FOUND
           get:
-            displayName: Get a savings account annual summary
+            displayName: Get a savings account annual summary [test only]
             description: Get a savings account annual summary for a given tax year
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]

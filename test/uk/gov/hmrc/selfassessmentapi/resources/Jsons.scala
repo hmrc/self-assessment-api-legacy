@@ -536,11 +536,11 @@ object Jsons {
          """.stripMargin)
     }
 
-    def request() : JsValue = {
+    def request(taxYear: String = "2017-18") : JsValue = {
       Json.parse(
         s"""
           |{
-          |  "taxYear": "2017-18"
+          |  "taxYear": "$taxYear"
           |}
          """.stripMargin)
     }

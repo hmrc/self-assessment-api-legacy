@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.properties
 
-import play.api.libs.json.{Json, Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType.AccountingType
+import play.api.libs.json._
 
-case class Properties(accountingType: AccountingType)
+case class Properties()
 
 object Properties {
-  implicit val reads: Reads[Properties] = Json.reads[Properties]
-  implicit val writes: Writes[Properties] = Json.writes[Properties]
+  implicit val reads: Reads[Properties] = new Reads[Properties] {
+    override def reads(json: JsValue) = JsSuccess(Properties())
+  }
+  implicit val writes: Writes[Properties] = new Writes[Properties] {
+    override def writes(o: Properties) = JsObject(Seq())
+  }
 }

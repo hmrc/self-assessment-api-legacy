@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.selfassessmentapi.repositories
 
-import org.scalatest.Assertions._
-import org.joda.time.{DateTime, DateTimeUtils, DateTimeZone}
+import org.joda.time.{DateTime, DateTimeZone}
 import reactivemongo.bson.BSONObjectID
-import reactivemongo.core.errors.{DatabaseException, GenericDriverException}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, NinoGenerator}
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType
+import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, NinoGenerator}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -33,7 +30,7 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
   private val nino = NinoGenerator().nextNino()
 
   def createProperties(nino: Nino, id: BSONObjectID = BSONObjectID.generate): Properties = {
-    Properties(id, nino, AccountingType.CASH)
+    Properties(id, nino)
   }
 
   "create" should {
@@ -43,39 +40,6 @@ class PropertiesRepositorySpec extends MongoEmbeddedDatabase {
       val result = await(repo.retrieve(nino)).get
       result.nino shouldBe nino
       result.lastModifiedDateTime should not be null
-    }
-  }
-
-  "update" should {
-    "update a persisted object" in {
-      val properties = createProperties(nino)
-
-      await(repo.create(properties))
-
-      await(repo.update(nino, properties.copy(accountingType = AccountingType.ACCRUAL)))
-
-      val updatedProperties = await(repo.retrieve(nino)).get
-
-      updatedProperties.accountingType shouldBe AccountingType.ACCRUAL
-
-    }
-
-    "update the lastModifiedDateTime on the persisted object" in {
-      val properties = createProperties(nino)
-      await(repo.create(properties))
-
-      val creationDateTime = await(repo.retrieve(nino)).get.lastModifiedDateTime
-
-      DateTimeUtils.setCurrentMillisFixed(DateTime.now().plusDays(1).getMillis)
-
-      await(repo.update(nino, properties.copy(accountingType = AccountingType.ACCRUAL)))
-
-      val lastModifiedDateTime = await(repo.retrieve(nino)).get.lastModifiedDateTime
-
-      lastModifiedDateTime.isAfter(creationDateTime) shouldBe true
-
-      DateTimeUtils.setCurrentMillisSystem()
-
     }
   }
 

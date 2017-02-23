@@ -18,9 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.services
 
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.Properties
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.resources.models.properties.Properties
 
 class PropertiesServiceSpec extends MongoEmbeddedDatabase {
 
@@ -29,7 +28,7 @@ class PropertiesServiceSpec extends MongoEmbeddedDatabase {
 
   "create" should {
     "return an error when a customer attempts to create more than one property business" in {
-      val properties = Properties(AccountingType.CASH)
+      val properties = Properties()
 
       await(service.create(nino, properties)) shouldBe Right(true)
       await(service.create(nino, properties)) shouldBe Left(Error("ALREADY_EXISTS", "A property business already exists", ""))

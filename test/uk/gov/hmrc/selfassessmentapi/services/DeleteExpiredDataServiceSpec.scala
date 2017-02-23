@@ -72,7 +72,7 @@ class DeleteExpiredDataServiceSpec extends MongoEmbeddedDatabase with MockitoSug
   }
 
   private def createProperties(lastModifiedDateTime: DateTime, nino: Nino, id: BSONObjectID = BSONObjectID.generate): Properties = {
-    Properties(id, nino, AccountingType.CASH, lastModifiedDateTime)
+    Properties(id, nino, lastModifiedDateTime)
   }
 
   private def createDividend(lastModifiedDateTime: DateTime, nino: Nino, id: BSONObjectID = BSONObjectID.generate): Dividends = {

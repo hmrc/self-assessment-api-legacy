@@ -22,7 +22,6 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors._
 import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.Properties
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -53,18 +52,6 @@ object PropertiesResource extends BaseController {
     service.retrieve(nino).map {
       case Some(properties) => Ok(Json.toJson(properties))
       case None => NotFound
-    }
-  }
-
-  def update(nino: Nino): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[Properties, Boolean](request.body) { properties =>
-      service.update(nino, properties)
-    } match {
-      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
-      case Right(result) => result.map {
-        case true => NoContent
-        case false => NotFound
-      }
     }
   }
 }

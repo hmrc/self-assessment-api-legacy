@@ -21,8 +21,13 @@ import play.api.libs.json._
 case class Properties()
 
 object Properties {
+  // these odd choices are a workaround to the fact that you cannot use Json.reads[Properties] on an case class with
+  // new properties
   implicit val reads: Reads[Properties] = new Reads[Properties] {
-    override def reads(json: JsValue) = JsSuccess(Properties())
+    override def reads(json: JsValue) = json match {
+      case JsObject(_) => JsSuccess (Properties ())
+      case _ => JsError()
+    }
   }
   implicit val writes: Writes[Properties] = new Writes[Properties] {
     override def writes(o: Properties) = JsObject(Seq())

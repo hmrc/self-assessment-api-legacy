@@ -1,5 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.libs.json.JsString
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class PropertiesResourceSpec extends BaseFunctionalSpec {
@@ -38,53 +39,9 @@ class PropertiesResourceSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(Jsons.Properties("OOPS")).to(s"/ni/$nino/uk-properties")
+        .post(JsString("OOPS")).to(s"/ni/$nino/uk-properties")
         .thenAssertThat()
         .statusIs(400)
-        .bodyIsLike(Jsons.Errors.invalidRequest("INVALID_VALUE" -> "/accountingType"))
-    }
-  }
-
-  "amending a property business" should {
-    "return code 204 when updating property business information" in {
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Jsons.Properties("ACCRUAL")).at(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(204)
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(200)
-        .bodyIsLike(Jsons.Properties("ACCRUAL").toString())
-    }
-
-    "return code 400 when updating a property business with invalid information" in {
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Jsons.Properties("OOPS")).at(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(400)
-        .bodyIsLike(Jsons.Errors.invalidRequest("INVALID_VALUE" -> "/accountingType").toString)
-    }
-
-    "return code 404 when updating a property business that does not exist" in {
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .put(Jsons.Properties()).at(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(404)
     }
   }
 

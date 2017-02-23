@@ -2,6 +2,8 @@ Below are some example errors, for specific errors refer to the individual resou
 
 
 HTTP status : 400
+
+Example error responses returned if invalid values are present in the url. 
 <pre class="snippet--block code_text">
 {
   "code": "NINO_INVALID",
@@ -16,6 +18,7 @@ HTTP status : 400
 }
 </pre>
 
+Example error response returned if invalid values are present in the body of POST/PUT.
 <pre class="snippet--block code_text">
 {
   "code": "INVALID_REQUEST",

@@ -6,12 +6,14 @@
     "annualInvestmentAllowance": {
       "title": "Annual investment allowance",
       "type": "number",
+      "multipleOf": 0.01,
       "minimum": 0
     },
     "otherCapitalAllowance": {
       "title": "Other Capital allowance",
       "description": "All other capital allowances",
       "type": "number",
+      "multipleOf": 0.01,
       "minimum": 0
     }
   },

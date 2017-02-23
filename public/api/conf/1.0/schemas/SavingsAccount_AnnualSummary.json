@@ -7,13 +7,15 @@
       "title": "Taxed UK interest",
       "description": "Tax UK interest income",
       "type": "number",
-      "format": "money"
+      "multipleOf": 0.01,
+      "minimum": 0
     },
     "untaxedUkInterest": {
       "title": "Untaxed UK interest",
       "description": "Untaxed UK interest income",
       "type": "number",
-      "format": "money"
+      "multipleOf": 0.01,
+      "minimum": 0
     }
   },
   "additionalProperties": false

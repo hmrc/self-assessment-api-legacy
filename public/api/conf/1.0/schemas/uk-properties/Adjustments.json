@@ -7,16 +7,19 @@
       "title": "Loss brought forward",
       "description": "Loss brought forward from earlier years set off against this year’s profits",
       "type": "number",
+      "multipleOf": 0.01,
       "minimum": 0
     },
     "privateUseAdjustment": {
       "title": "Private use adjustment",
       "type": "number",
+      "multipleOf": 0.01,
       "minimum": 0
     },
     "balancingCharge": {
       "title": "Balancing charge",
       "type": "number",
+      "multipleOf": 0.01,
       "minimum": 0
     }
   },

@@ -7,7 +7,9 @@
       "title": "Account name",
       "description": "Friendly account name",
       "type": "string",
-      "format": "alphanumeric"
+      "pattern": "^([a-zA-Z0-9]+\\s?)+$",
+      "minLength": 1,
+      "maxLength": 32
     }
   },
   "additionalProperties": false

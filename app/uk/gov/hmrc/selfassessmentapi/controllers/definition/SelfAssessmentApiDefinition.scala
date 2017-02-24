@@ -391,7 +391,7 @@ class SelfAssessmentApiDefinition {
         )
       ),
       api = APIDefinition(
-        name = "Self Assessment",
+        name = "Self Assessment (MTD)",
         description = "An API for providing self assessment data and obtaining tax calculations",
         context = AppContext.apiGatewayRegistrationContext,
         versions = Seq(

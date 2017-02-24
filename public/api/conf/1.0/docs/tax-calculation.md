@@ -5,7 +5,9 @@ When a tax calculation is triggered, a check will also be performed to see wheth
 met their obligations. If you wish to retrieve the status of the taxpayers updated obligations, you can use the 
 provided obligation APIs.
 
+Please note that this API will return pre-defined responses that are representative of what may be returned in a future version of this API.
+
 Here, the developer can:
 
-* Trigger a tax calculation.
-* Retrieve the result of a previously triggered tax calculation.
+* Trigger a tax calculation
+* Retrieve the result of a previously triggered tax calculation

@@ -1,5 +1,7 @@
 This section allows an API developer to provide data relating to the taxpayer's UK dividends income.
 
-Here, the developer can provide the following data:
+This API is not available in production.
 
-* UK Dividends Income
+Here, the developer can provide:
+
+* Total UK dividend income for a tax year

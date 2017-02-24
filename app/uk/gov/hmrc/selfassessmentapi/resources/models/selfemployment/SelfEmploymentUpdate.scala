@@ -16,33 +16,23 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
-import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
+
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, ErrorCode, SourceId}
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
+import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 
 import scala.io.Source
 
-case class SelfEmployment(id: Option[SourceId] = None,
-                          accountingPeriod: AccountingPeriod,
-                          accountingType: AccountingType,
-                          commencementDate: LocalDate,
-                          cessationDate: Option[LocalDate],
-                          tradingName: String,
-                          businessDescription: String,
-                          businessAddressLineOne: String,
-                          businessAddressLineTwo: Option[String],
-                          businessAddressLineThree: Option[String],
-                          businessAddressLineFour: Option[String],
-                          businessPostcode: String)
+case class SelfEmploymentUpdate(tradingName: String,
+                                businessDescription: String,
+                                businessAddressLineOne: String,
+                                businessAddressLineTwo: Option[String],
+                                businessAddressLineThree: Option[String],
+                                businessAddressLineFour: Option[String],
+                                businessPostcode: String)
 
-object SelfEmployment {
-
-  val commencementDateValidator: Reads[LocalDate] = Reads.of[LocalDate].filter(
-    ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
-  )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
+object SelfEmploymentUpdate {
 
   private lazy val sicClassifications: Seq[String] =
     Source.fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt")).getLines.toIndexedSeq
@@ -55,20 +45,15 @@ object SelfEmployment {
     Reads.of[String].filter(ValidationError(s"business description must be a 5-digit number that conforms to the UK SIC 2007 classifications", ErrorCode.INVALID_BUSINESS_DESCRIPTION)
     )(name => sicClassifications.contains(name))
 
-  implicit val writes: Writes[SelfEmployment] = Json.writes[SelfEmployment]
+  implicit val writes: Writes[SelfEmploymentUpdate] = Json.writes[SelfEmploymentUpdate]
 
-  implicit val reads: Reads[SelfEmployment] = (
-    Reads.pure(None) and
-      (__ \ "accountingPeriod").read[AccountingPeriod] and
-      (__ \ "accountingType").read[AccountingType] and
-      (__ \ "commencementDate").read[LocalDate](commencementDateValidator) and
-      Reads.pure[Option[LocalDate]](None) and
-      (__ \ "tradingName").read[String](lengthIsBetween(1, 105)) and
+  implicit val reads: Reads[SelfEmploymentUpdate] = (
+    (__ \ "tradingName").read[String](lengthIsBetween(1, 105)) and
       (__ \ "businessDescription").read[String](validateSIC) and
       (__ \ "businessAddressLineOne").read[String](lengthIsBetween(1, 35)) and
       (__ \ "businessAddressLineTwo").readNullable[String](lengthIsBetween(1, 35)) and
       (__ \ "businessAddressLineThree").readNullable[String](lengthIsBetween(1, 35)) and
       (__ \ "businessAddressLineFour").readNullable[String](lengthIsBetween(1, 35)) and
       (__ \ "businessPostcode").read[String](lengthIsBetween(1, 10))
-    ) (SelfEmployment.apply _)
+    ) (SelfEmploymentUpdate.apply _)
 }

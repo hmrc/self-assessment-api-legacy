@@ -55,9 +55,15 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
   }
 
   "update" should {
-    "return code 204 when successfully updating a self-employment resource" ignore {
-      val updatedSelfEmployment = Jsons.SelfEmployment(accPeriodStart = "2017-04-01", accPeriodEnd = "2017-06-01",
-        accountingType = "ACCRUAL", commencementDate = "2016-01-01")
+    "return code 204 when successfully updating a self-employment resource" in {
+      val updatedSelfEmployment = Jsons.SelfEmployment.update(
+        tradingName = "MyUpdatedBusiness",
+        businessDescription = "13200",
+        businessAddressLineOne = "2 Acme Rd.",
+        businessAddressLineTwo = "Manchester",
+        businessAddressLineThree = "England",
+        businessAddressLineFour = "U.K.",
+        businessPostcode = "A0 0AA")
 
       given()
         .userIsAuthorisedForTheResource(nino)
@@ -75,7 +81,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(updatedSelfEmployment.toString)
     }
 
-    "return code 404 when attempting to update a non-existent self-employment resource" ignore {
+    "return code 404 when attempting to update a non-existent self-employment resource" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -88,37 +94,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .statusIs(404)
     }
 
-    "return code 400 (INVALID_DATE) when attempting to update a self-employment with a non-ISO (i.e. YYYY-MM-DD) date" ignore {
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Jsons.SelfEmployment(commencementDate = "22-10-2016")).at(s"%sourceLocation%")
-        .thenAssertThat()
-        .statusIs(400)
-        .contentTypeIsJson()
-        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_DATE", "/commencementDate")))
-    }
-
-    "return code 400 (INVALID_DATE) when attempting to update a self-employment with an empty date" ignore {
-      given()
-        .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Jsons.SelfEmployment(commencementDate = "")).at(s"%sourceLocation%")
-        .thenAssertThat()
-        .statusIs(400)
-        .contentTypeIsJson()
-        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_DATE", "/commencementDate")))
-    }
-
-    "return code 400 (MANDATORY_FIELD_MISSING) when attempting to update a self-employment with an empty body" ignore {
+    "return code 400 (MANDATORY_FIELD_MISSING) when attempting to update a self-employment with an empty body" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -130,11 +106,16 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(Jsons.Errors.invalidRequest(("MANDATORY_FIELD_MISSING", "/accountingPeriod"),
-          ("MANDATORY_FIELD_MISSING", "/accountingType"), ("MANDATORY_FIELD_MISSING", "/commencementDate")))
+        .bodyIsLike(Jsons.Errors.invalidRequest(
+          ("MANDATORY_FIELD_MISSING", "/tradingName"),
+          ("MANDATORY_FIELD_MISSING", "/businessDescription"),
+          ("MANDATORY_FIELD_MISSING", "/businessAddressLineOne"),
+          ("MANDATORY_FIELD_MISSING", "/businessPostcode")))
     }
 
-    "return code 400 (INVALID_VALUE) when attempting to update a self-employment with an invalid accounting type" ignore {
+    "return code 400 (INVALID_BUSINESS_DESCRIPTION) when attempting to update a self-employment with an invalid business description" in {
+      val updatedSelfEmployment = Jsons.SelfEmployment.update(businessDescription = "invalid")
+
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -142,11 +123,12 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Jsons.SelfEmployment(accountingType = "INVALID")).at(s"%sourceLocation%")
+        .put(updatedSelfEmployment).at(s"%sourceLocation%")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
-        .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_VALUE", "/accountingType")))
+        .bodyIsLike(Jsons.Errors.invalidRequest(
+          ("INVALID_BUSINESS_DESCRIPTION", "/businessDescription")))
     }
   }
 

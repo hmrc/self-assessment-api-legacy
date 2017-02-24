@@ -22,7 +22,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.BusinessError
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmployment
+import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, SelfEmploymentUpdate}
 import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
 
 import scala.concurrent.ExecutionContext.Implicits._
@@ -46,7 +46,7 @@ object SelfEmploymentsResource extends BaseController {
   }
 
   def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[SelfEmployment, Boolean](request.body) { selfEmployment =>
+    validate[SelfEmploymentUpdate, Boolean](request.body) { selfEmployment =>
       service.update(nino, selfEmployment, id)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))

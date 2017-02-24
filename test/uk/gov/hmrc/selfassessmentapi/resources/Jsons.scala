@@ -286,7 +286,7 @@ object Jsons {
               commencementDate: String = s"${LocalDate.now.minusDays(1)}",
               cessationDate: Option[String] = Some(s"${LocalDate.now.plusDays(1)}"),
               tradingName: String = "Acme Ltd",
-              businessDescription: String = "Boxes made of corrugated cardboard (manufacture)",
+              businessDescription: String = "69201",
               businessAddressLineOne: String = "1 Acme Rd.",
               businessAddressLineTwo: String = "London",
               businessAddressLineThree: String = "Greater London",
@@ -315,6 +315,27 @@ object Jsons {
            |  "businessAddressLineFour": "$businessAddressLineFour",
            |  "businessPostcode": "$businessPostcode"
            |}
+         """.stripMargin)
+    }
+
+    def update(tradingName: String = "Acme Ltd",
+               businessDescription: String = "69201",
+               businessAddressLineOne: String = "1 Acme Rd.",
+               businessAddressLineTwo: String = "London",
+               businessAddressLineThree: String = "Greater London",
+               businessAddressLineFour: String = "United Kingdom",
+               businessPostcode: String = "A9 9AA"): JsValue = {
+
+      Json.parse(s"""
+                    |{
+                    |  "tradingName": "$tradingName",
+                    |  "businessDescription": "$businessDescription",
+                    |  "businessAddressLineOne": "$businessAddressLineOne",
+                    |  "businessAddressLineTwo": "$businessAddressLineTwo",
+                    |  "businessAddressLineThree": "$businessAddressLineThree",
+                    |  "businessAddressLineFour": "$businessAddressLineFour",
+                    |  "businessPostcode": "$businessPostcode"
+                    |}
          """.stripMargin)
     }
 

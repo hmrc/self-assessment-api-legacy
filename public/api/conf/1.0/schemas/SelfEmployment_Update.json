@@ -6,38 +6,52 @@
     "tradingName": {
       "title": "Business trading name",
       "description": "Business trading name",
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 105
     },
     "businessDescription": {
       "title": "Business description",
       "description": "A 5 digit code that conforms to the SIC 2007 standard trade classifications",
       "type": "string",
-      "pattern": "^[0-9]{5}$"
+      "pattern": "^[0-9]{5}$",
+      "minLength": 5,
+      "maxLength": 5
     },
     "businessAddressLineOne": {
       "title": "Business address line one",
       "description": "First line of the business address",
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 35
     },
     "businessAddressLineTwo": {
       "title": "Business address line two",
       "description": "Second line of the business address",
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 35
     },
     "businessAddressLineThree": {
       "title": "Business address line three",
       "description": "Third line of the business address",
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 35
     },
     "businessAddressLineFour": {
       "title": "Business address line four",
       "description": "Fourth line of the business address",
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 35
     },
     "businessPostcode": {
       "title": "Business postcode",
       "description": "Business postcode",
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10
     }
   },
   "required": [

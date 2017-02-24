@@ -1,5 +1,9 @@
-This section allows API developer to provide data relating to the taxpayer's savings accounts.
+This section allows API developer to provide data relating to any interest-bearing accounts a taxpayer may have.
 
-Here, the developer can provide the following data:
+This API is not available in production.
 
-* Friendly account name.
+Here, the developer can provide:
+
+* Friendly account name
+* Taxed UK savings interest
+* Untaxed UK savings interest

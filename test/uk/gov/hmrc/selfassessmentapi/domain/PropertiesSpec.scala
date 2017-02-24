@@ -44,7 +44,6 @@ class PropertiesSpec extends UnitSpec {
   val properties: Properties = Properties(
     BSONObjectID.generate,
     NinoGenerator().nextNino(),
-    AccountingType.CASH,
     DateTime.now(DateTimeZone.UTC),
     AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
     FHLPropertiesBucket(
@@ -56,7 +55,7 @@ class PropertiesSpec extends UnitSpec {
 
   "annualSummary" should {
     "return an empty annual summary when no annual summary exists for the provided tax year" in {
-      val properties = Properties(BSONObjectID.generate, NinoGenerator().nextNino(), AccountingType.CASH)
+      val properties = Properties(BSONObjectID.generate, NinoGenerator().nextNino())
 
       properties.annualSummary(PropertyType.OTHER, TaxYear("2017-18")) shouldBe OtherPropertiesAnnualSummary(None,
                                                                                                              None)

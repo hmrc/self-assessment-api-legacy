@@ -23,7 +23,6 @@ GET /ni/:nino/self-employments/:id/:taxYear    uk.gov.hmrc.selfassessmentapi.res
 ####################
 POST /ni/:nino/uk-properties   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.create(nino: uk.gov.hmrc.domain.Nino)
 GET  /ni/:nino/uk-properties   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrieve(nino: uk.gov.hmrc.domain.Nino)
-PUT /ni/:nino/uk-properties   uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.update(nino: uk.gov.hmrc.domain.Nino)
 
 # Obligations
 GET /ni/:nino/uk-properties/obligations   uk.gov.hmrc.selfassessmentapi.resources.PropertiesObligationsResource.retrieveObligations(nino: uk.gov.hmrc.domain.Nino)

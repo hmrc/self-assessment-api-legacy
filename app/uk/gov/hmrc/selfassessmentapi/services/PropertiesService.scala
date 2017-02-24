@@ -28,13 +28,6 @@ import scala.concurrent.Future
 
 class PropertiesService(repository: PropertiesRepository) {
 
-  def update(nino: Nino, prop: properties.Properties): Future[Boolean] =
-    repository.retrieve(nino).flatMap {
-      case Some(persistedProperties) =>
-        repository.update(nino, persistedProperties.copy(accountingType = prop.accountingType))
-      case None => Future.successful(false)
-    }
-
   def retrieve(nino: Nino): Future[Option[properties.Properties]] = {
     repository.retrieve(nino).map {
       case Some(properties) => Some(properties.toModel)
@@ -43,7 +36,7 @@ class PropertiesService(repository: PropertiesRepository) {
   }
 
   def create(nino: Nino, props: properties.Properties): Future[Either[Error, Boolean]] = {
-    val properties = Properties(BSONObjectID.generate, nino, props.accountingType)
+    val properties = Properties(BSONObjectID.generate, nino)
 
     repository.retrieve(nino) flatMap {
       case Some(_) => Future.successful(Left(Error(ErrorCode.ALREADY_EXISTS.toString, s"A property business already exists", "")))

@@ -21,23 +21,20 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType.AccountingType
 import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models._
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, TaxYear, _}
 
 case class Properties(id: BSONObjectID,
                       nino: Nino,
-                      accountingType: AccountingType,
                       lastModifiedDateTime: DateTime = DateTime.now(DateTimeZone.UTC),
                       accountingPeriod: AccountingPeriod = AccountingPeriod(LocalDate.parse("2017-04-06"), LocalDate.parse("2018-04-05")),
                       fhlBucket: FHLPropertiesBucket = FHLPropertiesBucket(Map.empty, Map.empty),
                       otherBucket: OtherPropertiesBucket = OtherPropertiesBucket(Map.empty, Map.empty))
     extends LastModifiedDateTime {
 
-  def toModel = properties.Properties(accountingType = accountingType)
+  def toModel = properties.Properties()
 
   def annualSummary(propertyType: PropertyType, key: TaxYear): PropertiesAnnualSummary = propertyType match {
     case PropertyType.OTHER => otherBucket.annualSummaries.getOrElse(key, new OtherPropertiesAnnualSummary(None, None))

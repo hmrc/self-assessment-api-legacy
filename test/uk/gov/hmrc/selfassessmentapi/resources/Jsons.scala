@@ -103,13 +103,7 @@ object Jsons {
   }
 
   object Properties {
-    def apply(accountingType: String = "CASH"): JsValue = {
-      Json.parse(s"""
-           |{
-           |  "accountingType": "$accountingType"
-           |}
-         """.stripMargin)
-    }
+    def apply(): JsValue = Json.obj()
 
     def fhlPeriod(fromDate: Option[String] = None,
                   toDate: Option[String] = None,

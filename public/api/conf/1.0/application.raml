@@ -586,41 +586,6 @@ traits:
                     description: Not Found
                     value:
                       code: NOT_FOUND
-      put:
-        displayName: Update a UK property business [test only]
-        description: Update a UK property business. This API is not available in production.
-        (annotations.sandboxData): !include scenarios/agent-scenarios.md
-        is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
-        (annotations.scope): "write:self-assessment"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
-        body:
-          application/json:
-            type: !include schemas/UkProperties.json
-            example: !include examples/uk-properties/UkProperties.json
-        responses:
-          204:
-          400:
-            body:
-              application/json:
-                type: types.errorResponse
-                examples:
-                  invalidNino:
-                    description: Invalid NINO
-                    value:
-                      code: NINO_INVALID
-                  invalidValue:
-                    description: Invalid accounting type
-                    value:
-                      code: INVALID_VALUE
-          404:
-            body:
-              application/json:
-                type: types.errorResponse
-                examples:
-                  notFound:
-                    description: Not Found
-                    value:
-                      code: NOT_FOUND
       /obligations:
         get:
           displayName: Retrieve all UK property business obligations

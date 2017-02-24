@@ -1,6 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi
 
-import uk.gov.hmrc.selfassessmentapi.resources.{Jsons, GovTestScenarioHeader}
+import play.api.libs.json.JsString
+import uk.gov.hmrc.selfassessmentapi.resources.{GovTestScenarioHeader, Jsons}
 import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -274,10 +275,9 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(Jsons.Properties(accountingType = "NONSENSE")).to(s"/ni/$nino/uk-properties")
+        .post(JsString("NONSENSE")).to(s"/ni/$nino/uk-properties")
         .thenAssertThat()
         .isBadRequest
-        .bodyHasString("INVALID_VALUE")
     }
 
     "receive an unmodified HTTP 400 when they attempt to update an annual summary with an invalid json" in {

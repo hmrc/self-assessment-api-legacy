@@ -1,6 +1,6 @@
 This section allows API developer to provide and retrieve data relating to the taxpayer's
 UK Property business that is required to perform a tax calculation. 
-The taxpayer's property business may already be known to HMRC as per the subscription process.
+The taxpayer's property business must already be known to HMRC as per the subscription process.
 
 Furnished Holiday Lettings (FHL) are short term (e.g. 1-2 weeks) lets where the property is furnished. Other is used 
 for any normal rented property. 

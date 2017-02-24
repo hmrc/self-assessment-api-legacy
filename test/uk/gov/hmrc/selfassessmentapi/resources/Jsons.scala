@@ -103,7 +103,7 @@ object Jsons {
   }
 
   object Properties {
-    def apply(): JsValue = Json.parse("{}")
+    def apply(): JsValue = Json.obj()
 
     def fhlPeriod(fromDate: Option[String] = None,
                   toDate: Option[String] = None,

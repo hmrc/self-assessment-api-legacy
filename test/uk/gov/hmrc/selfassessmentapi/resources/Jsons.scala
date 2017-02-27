@@ -280,7 +280,7 @@ object Jsons {
               commencementDate: String = s"${LocalDate.now.minusDays(1)}",
               cessationDate: Option[String] = Some(s"${LocalDate.now.plusDays(1)}"),
               tradingName: String = "Acme Ltd",
-              businessDescription: String = "69201",
+              businessDescription: String = "Accountancy services",
               businessAddressLineOne: String = "1 Acme Rd.",
               businessAddressLineTwo: String = "London",
               businessAddressLineThree: String = "Greater London",
@@ -313,7 +313,7 @@ object Jsons {
     }
 
     def update(tradingName: String = "Acme Ltd",
-               businessDescription: String = "69201",
+               businessDescription: String = "Accountancy services",
                businessAddressLineOne: String = "1 Acme Rd.",
                businessAddressLineTwo: String = "London",
                businessAddressLineThree: String = "Greater London",

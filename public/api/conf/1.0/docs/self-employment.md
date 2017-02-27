@@ -1,7 +1,8 @@
-This section allows API developer to provide data relating to the taxpayer's business(es) that is required to perform a tax calculation.
-The taxpayer's businesses may already be known to HMRC as per the subscription process.
+This section allows software packages to provide sole trader's financial data for each of their self-employment businesses, 
+including but not limited to income, expense, allowances etc. for a specified tax year (based on the accounting period 
+of the business) so that the taxpayer can meet their self-employment obligations and/or retrieve their obligations.
 
-Here, the developer can provide:
+Here, a software package can provide:
 
 * Business Income (e.g. turnover)
 * Business Expenses (total & disallowable by type of expense, e.g. travel costs)
@@ -10,4 +11,4 @@ Here, the developer can provide:
 * Balancing charges
 * Goods & Services for own use
 
-The developer may also retrieve business obligations.
+Please note that the taxpayer's self-employment businesses must already be known to HMRC as per the subscription process.

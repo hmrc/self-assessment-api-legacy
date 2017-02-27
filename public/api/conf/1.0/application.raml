@@ -301,8 +301,8 @@ traits:
                           code: NOT_FOUND
         /periods:
           post:
-            displayName: Create a self-employment period
-            description: Create a self-employment period for submission of periodic data i.e incomes and expenses
+            displayName: Create a self-employment update period
+            description: Create a self-employment update period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "write:self-assessment"
@@ -356,12 +356,12 @@ traits:
                     type: types.errorResponse
                     examples:
                       invalidPeriod:
-                        description: If periods are not contiguous
+                        description: If update periods are not contiguous
                         value:
                           code: INVALID_PERIOD
           get:
-            displayName: List all self-employment periods [test only]
-            description: List all self-employment periods. This API is not available in production.
+            displayName: List all self-employment update periods [test only]
+            description: List all self-employment update periods. This API is not available in production.
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "read:self-assessment"
@@ -393,11 +393,11 @@ traits:
           /{periodId}:
             uriParameters:
               periodId:
-                description: An identifier for the period
+                description: Update period ID
                 type: string
             get:
-              displayName: Get a self-employment periodic summary [test only]
-              description: Get a single self-employment periodic summary for a given identifier. This API is not available in production.
+              displayName: Get a self-employment update period [test only]
+              description: Get a single self-employment update period for a given identifier. This API is not available in production.
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "read:self-assessment"
@@ -427,8 +427,8 @@ traits:
                           value:
                             code: NOT_FOUND
             put:
-              displayName: Update a self-employment periodic summary [test only]
-              description: Update a self-employment periodic summary. This API is not available in production.
+              displayName: Update a self-employment update period [test only]
+              description: Update a self-employment update period. This API is not available in production.
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
@@ -664,8 +664,8 @@ traits:
       /other:
         /periods:
           post:
-            displayName: Create a non FHL UK property period
-            description: Create a non FHL UK property period for submission of periodic data i.e incomes and expenses
+            displayName: Create a non FHL UK property update period
+            description: Create a non FHL UK property update period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
@@ -711,8 +711,8 @@ traits:
                     type: !include schemas/Error.json
                     example: !include examples/errors/CONFLICT.json
           get:
-            displayName: List all non FHL UK property periods [test only]
-            description: List all non FHL UK property periods. This API is not available in production.
+            displayName: List all non FHL UK property update periods [test only]
+            description: List all non FHL UK property update periods. This API is not available in production.
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "read:self-assessment"
@@ -744,11 +744,11 @@ traits:
           /{periodId}:
             uriParameters:
               periodId:
-                displayName: Period ID
+                displayName: Update period ID
                 type: string
             get:
-              displayName: Get a non FHL UK property periodic summary [test only]
-              description: Get a non FHL UK property periodic summary for a given identifier. This API is not available in production.
+              displayName: Get a non FHL UK property update period [test only]
+              description: Get a non FHL UK property update period for a given identifier. This API is not available in production.
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "read:self-assessment"
@@ -778,8 +778,8 @@ traits:
                           value:
                             code: NOT_FOUND
             put:
-              displayName: Update a non FHL UK property periodic summary [test only]
-              description: Update a non FHL UK property periodic summary. This API is not available in production.
+              displayName: Update a non FHL UK property update period [test only]
+              description: Update a non FHL UK property update period. This API is not available in production.
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"
@@ -896,8 +896,8 @@ traits:
       /furnished-holiday-lettings:
         /periods:
           post:
-            displayName: Create a FHL UK property period
-            description: Create a FHL UK property period for submission of periodic data i.e incomes and expenses
+            displayName: Create a FHL UK property update period
+            description: Create a FHL UK property update period for submission of periodic data i.e incomes and expenses
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, overlappingPeriod]
             (annotations.scope): "write:self-assessment"
@@ -943,8 +943,8 @@ traits:
                     type: !include schemas/Error.json
                     example: !include examples/errors/CONFLICT.json
           get:
-            displayName: List all FHL UK property periods [test only]
-            description: List all FHL UK property periods. This API is not available in production.
+            displayName: List all FHL UK property update periods [test only]
+            description: List all FHL UK property update periods. This API is not available in production.
             (annotations.sandboxData): !include scenarios/agent-scenarios.md
             is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
             (annotations.scope): "read:self-assessment"
@@ -976,11 +976,11 @@ traits:
           /{periodId}:
             uriParameters:
               periodId:
-                displayName: Period ID
+                displayName: Update period ID
                 type: string
             get:
-              displayName: Get a FHL UK property periodic summary [test only]
-              description: Get a FHL UK property periodic summary for a given identifier. This API is not available in production.
+              displayName: Get a FHL UK property update period [test only]
+              description: Get a FHL UK property update period for a given identifier. This API is not available in production.
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "read:self-assessment"
@@ -1010,8 +1010,8 @@ traits:
                           value:
                             code: NOT_FOUND
             put:
-              displayName: Update a FHL UK property periodic summary [test only]
-              description: Update a FHL UK property periodic summary. This API is not available in production.
+              displayName: Update a FHL UK property update period [test only]
+              description: Update a FHL UK property update period. This API is not available in production.
               (annotations.sandboxData): !include scenarios/agent-scenarios.md
               is: [headers.acceptHeader, contentType, agentSubscription, clientSubscriptionToMTD, testScenarioHeader]
               (annotations.scope): "write:self-assessment"

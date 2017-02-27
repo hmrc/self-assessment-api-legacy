@@ -55,13 +55,17 @@ trait SelfEmploymentsMongoService {
     }
   }
 
-  def update(nino: Nino, selfEmployment: SelfEmployment, id: SourceId): Future[Boolean] = {
+  def update(nino: Nino, selfEmployment: SelfEmploymentUpdate, id: SourceId): Future[Boolean] = {
     mongoRepository.retrieve(id, nino).flatMap {
       case Some(oldSelfEmployment) =>
         mongoRepository.update(id, nino, oldSelfEmployment.copy(
-          accountingPeriod = selfEmployment.accountingPeriod,
-          accountingType = selfEmployment.accountingType,
-          commencementDate = selfEmployment.commencementDate))
+          tradingName = selfEmployment.tradingName,
+          businessDescription = selfEmployment.businessDescription,
+          businessAddressLineOne = selfEmployment.businessAddressLineOne,
+          businessAddressLineTwo = selfEmployment.businessAddressLineTwo,
+          businessAddressLineThree = selfEmployment.businessAddressLineThree,
+          businessAddressLineFour = selfEmployment.businessAddressLineFour,
+          businessPostcode = selfEmployment.businessPostcode))
       case None => Future.successful(false)
     }
   }

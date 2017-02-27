@@ -58,7 +58,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 204 when successfully updating a self-employment resource" in {
       val updatedSelfEmployment = Jsons.SelfEmployment.update(
         tradingName = "MyUpdatedBusiness",
-        businessDescription = "13200",
+        businessDescription = "Accounting activities",
         businessAddressLineOne = "2 Acme Rd.",
         businessAddressLineTwo = "Manchester",
         businessAddressLineThree = "England",

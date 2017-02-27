@@ -42,7 +42,7 @@ object SelfEmploymentUpdate {
     )(name => name.length <= maxLength && name.length >= minLength)
 
   private val validateSIC: Reads[String] =
-    Reads.of[String].filter(ValidationError(s"business description must be a 5-digit number that conforms to the UK SIC 2007 classifications", ErrorCode.INVALID_BUSINESS_DESCRIPTION)
+    Reads.of[String].filter(ValidationError("business description must be a string that conforms to the UK SIC 2007 classifications", ErrorCode.INVALID_BUSINESS_DESCRIPTION)
     )(name => sicClassifications.contains(name))
 
   implicit val writes: Writes[SelfEmploymentUpdate] = Json.writes[SelfEmploymentUpdate]

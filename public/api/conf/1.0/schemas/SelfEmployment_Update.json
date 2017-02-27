@@ -12,11 +12,8 @@
     },
     "businessDescription": {
       "title": "Business description",
-      "description": "A 5 digit code that conforms to the SIC 2007 standard trade classifications",
-      "type": "string",
-      "pattern": "^[0-9]{5}$",
-      "minLength": 5,
-      "maxLength": 5
+      "description": "A description that conforms to the SIC 2007 standard trade classifications",
+      "type": "string"
     },
     "businessAddressLineOne": {
       "title": "Business address line one",

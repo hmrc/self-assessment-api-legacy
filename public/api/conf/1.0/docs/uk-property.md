@@ -1,7 +1,5 @@
-This section allows software packages to provide sole trader's financial data for their UK property business, 
-including but not limited to income, expense, allowances etc. for a specified tax year (based on the accounting 
-period of the business) so that the taxpayer can meet their UK property business obligations and/or retrieve their 
-obligations.
+This section allows software packages to provide a taxpayer's financial data for their UK property business. 
+This data includes income, expenses, adjustments and allowances for their UK property business.
 
 Here, the developer can provide:
 

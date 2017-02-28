@@ -1,6 +1,5 @@
-This section allows software packages to provide sole trader's financial data for each of their self-employment businesses, 
-including but not limited to income, expense, allowances etc. for a specified tax year (based on the accounting period 
-of the business) so that the taxpayer can meet their self-employment obligations and/or retrieve their obligations.
+This section allows software packages to provide a taxpayer's financial data for their self-employment businesses. 
+This data includes income, expenses, adjustments and allowances for each self-employment business.
 
 Here, a software package can provide:
 

@@ -1,4 +1,4 @@
-This section allows an API developer to provide data relating to the taxpayer's UK dividends income.
+These resources allow software packages to provide data relating to the taxpayer's UK dividends income.
 
 This API is not available in production.
 

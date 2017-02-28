@@ -1,11 +1,12 @@
-This section allows an API developer to trigger a year-to-date tax calculation for a taxpayer. A calculation may only 
-be triggered when data about the taxpayers income, expenses etc. has been provided. 
+These resources allow software packages to trigger a year-to-date tax calculation for a taxpayer. A calculation may only 
+be triggered when an update has been provided. 
 
 When a tax calculation is triggered, a check will also be performed to see whether or not the taxpayer has 
 met their obligations. If you wish to retrieve the status of the taxpayers updated obligations, you can use the 
 provided obligation APIs.
 
-Please note that this API will return pre-defined responses that are representative of what may be returned in a future version of this API.
+In test, this API will return pre-defined representative responses. These may include fields that are not yet possible
+to populate via the API.
 
 Here, the developer can:
 

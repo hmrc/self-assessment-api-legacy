@@ -1,5 +1,5 @@
-This section allows software packages to provide a taxpayer's financial data for their self-employment businesses. 
-This data includes income, expenses, adjustments and allowances for each self-employment business.
+These resources allow software packages to provide a taxpayer's financial data for their self-employment businesses. 
+This data includes income, expenses, allowances and adjustments for each self-employment business.
 
 Here, a software package can provide:
 

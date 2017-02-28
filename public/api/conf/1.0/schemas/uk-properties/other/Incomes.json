@@ -11,6 +11,7 @@
     },
     "premiumsOfLeaseGrant": {
       "title": "Premiums of lease grant",
+      "description": "Premiums received for the grant of a lease and other lump sums to possess a property",
       "$ref": "../../SimpleIncome.json"
     },
     "reversePremiums": {

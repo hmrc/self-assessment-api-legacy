@@ -5,11 +5,13 @@
     "properties": {
         "from": {
             "title": "From date",
+            "description": "Start date for the period",
             "type": "string",
             "format": "date"
         },
         "to": {
             "title": "To date",
+            "description": "end date for the period",
             "type": "string",
             "format": "date"
         },

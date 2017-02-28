@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "title": "Expenses",
+  "description": "Expenses",
   "properties": {
     "costOfGoodsBought": {
       "title": "Cost of goods bought",
@@ -10,6 +11,7 @@
     },
     "cisPaymentsToSubcontractors": {
       "title": "Construction industry - payments to subcontractors",
+      "description": "Payments to subcontractors - Construction Industry Scheme (CIS)",
       "$ref": "../Expense.json"
     },
     "staffCosts": {

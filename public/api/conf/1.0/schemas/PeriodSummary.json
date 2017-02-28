@@ -9,11 +9,13 @@
       "type": "string"
     },
     "from": {
+      "description" : "The start date of this obligation period",
       "title": "From date",
       "type": "string",
       "format": "date"
     },
     "to": {
+      "description" : "The end date of this obligation period",
       "title": "To date",
       "type": "string",
       "format": "date"

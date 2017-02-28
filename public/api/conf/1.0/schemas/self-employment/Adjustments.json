@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Adjustments",
+  "description": "Adjustments",
   "type": "object",
   "properties": {
     "includedNonTaxableProfits": {
@@ -66,6 +67,7 @@
     },
     "goodsAndServicesOwnUse": {
       "title": "Goods and services own use",
+      "description": "Value of the normal sale price of goods or stock have been taken out of the business.",
       "type": "number",
       "multipleOf": 0.01,
       "minimum": 0

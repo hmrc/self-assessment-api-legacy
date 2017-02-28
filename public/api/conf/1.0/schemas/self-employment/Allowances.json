@@ -1,10 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Allowances",
+  "description": "Allowances",
   "type": "object",
   "properties": {
     "annualInvestmentAllowance": {
       "title": "Annual investment allowance",
+      "description": "Annual investment allowance on items that qualify up to the AIA amount",
       "type": "number",
       "multipleOf": 0.01,
       "minimum": 0
@@ -18,6 +20,7 @@
     },
     "zeroEmissionGoodsVehicleAllowance": {
       "title": "Zero emission goods vehicle allowance",
+      "description": "Zero emission goods vehicle allowance for goods vehicles purchased for business use",
       "type": "number",
       "multipleOf": 0.01,
       "minimum": 0
@@ -31,6 +34,7 @@
     },
     "businessPremisesRenovationAllowance": {
       "title": "Business Premises Renovation Allowance",
+      "description": "Business Premises Renovation Allowance if converting or renovating unused qualifying business premises",
       "type": "number",
       "multipleOf": 0.01,
       "minimum": 0

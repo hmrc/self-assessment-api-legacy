@@ -1,7 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title": "UpdatePeriod",
+  "title": "Update period",
+  "description": "Update period",
   "properties": {
     "incomes": {
       "$ref": "self-employment/Incomes.json"

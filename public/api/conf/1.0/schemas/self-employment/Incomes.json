@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "title": "Incomes",
+  "description": "Incomes",
   "properties": {
     "turnover": {
       "title": "Turnover",

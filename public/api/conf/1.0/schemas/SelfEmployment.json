@@ -41,7 +41,7 @@
     },
     "businessDescription": {
       "title": "Business description",
-      "description": "Description of business conforming to SIC 2007 standard trade classifications",
+      "description": "A description that conforms to the SIC 2007 standard trade classifications",
       "type": "string"
     },
     "businessAddressLineOne": {

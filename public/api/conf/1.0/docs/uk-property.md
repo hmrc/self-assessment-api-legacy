@@ -1,18 +1,19 @@
-This section allows API developer to provide and retrieve data relating to the taxpayer's
-UK Property business that is required to perform a tax calculation. 
-The taxpayer's property business must already be known to HMRC as per the subscription process.
-
-Furnished Holiday Lettings (FHL) are short term (e.g. 1-2 weeks) lets where the property is furnished. Other is used 
-for any normal rented property. 
-Please see [here](https://www.gov.uk/government/publications/furnished-holiday-lettings-hs253-self-assessment-helpsheet) for further guidance
-regarding FHL properties.
+This section allows software packages to provide sole trader's financial data for their UK property business, 
+including but not limited to income, expense, allowances etc. for a specified tax year (based on the accounting 
+period of the business) so that the taxpayer can meet their UK property business obligations and/or retrieve their 
+obligations.
 
 Here, the developer can provide:
 
-* UK Property Income for both Furnished Holiday Lettings and Other rentals (e.g. rent income)
-* UK Property Expenses (total by type of expense, e.g. premises running costs)
+* UK property business income for both Furnished Holiday Lettings (FHL) and Other rentals (e.g. rent income)
+* UK property business expenses (total by type of expense, e.g. premises running costs)
 * Allowances (e.g. annual investment allowance)
 * Adjustments (e.g. loss brought forward)
 * Balancing charges
 
-The developer may also retrieve business obligations.
+Furnished Holiday Lettings (FHL) are short term (e.g. 1-2 weeks) lets of a furnished property. Other is used 
+for any normal rented property. 
+Please see [here](https://www.gov.uk/government/publications/furnished-holiday-lettings-hs253-self-assessment-helpsheet) for further guidance
+regarding FHL properties.
+
+Please note that the taxpayer's UK property business must already be known to HMRC as per the subscription process.

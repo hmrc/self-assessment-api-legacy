@@ -5,7 +5,7 @@ date for. Each obligation has a start and date which define the _obligation peri
 each business has a multiple obligations which are based on their accounting period. 
 Please read below for more detail.
 
-### Period ###
+### Update Period ###
 An _update period_ is defined as a set of summarised income and expenses for a period of 
 time within an obligation, covering from 1 day to the whole obligation. Typically they 
 contain total income and expenses broken down by category. Please read below for more detail.

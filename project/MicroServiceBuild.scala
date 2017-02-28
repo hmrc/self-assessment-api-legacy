@@ -24,19 +24,19 @@ private object AppDependencies {
   import play.core.PlayVersion
 
   val compile = Seq(
-    "uk.gov.hmrc" %% "play-reactivemongo" % "5.1.0",
+    "uk.gov.hmrc" %% "play-reactivemongo" % "5.2.0",
     ws exclude("org.apache.httpcomponents", "httpclient") exclude("org.apache.httpcomponents", "httpcore"),
-    "uk.gov.hmrc" %% "play-graphite" % "3.1.0",
-    "uk.gov.hmrc" %% "microservice-bootstrap" % "5.8.0",
-    "uk.gov.hmrc" %% "play-authorisation" % "4.2.0",
-    "uk.gov.hmrc" %% "play-health" % "2.0.0",
-    "uk.gov.hmrc" %% "play-url-binders" % "2.0.0",
-    "uk.gov.hmrc" %% "play-config" % "3.0.0",
+    "uk.gov.hmrc" %% "play-graphite" % "3.2.0",
+    "uk.gov.hmrc" %% "microservice-bootstrap" % "5.12.0",
+    "uk.gov.hmrc" %% "play-authorisation" % "4.3.0",
+    "uk.gov.hmrc" %% "play-health" % "2.1.0",
+    "uk.gov.hmrc" %% "play-url-binders" % "2.1.0",
+    "uk.gov.hmrc" %% "play-config" % "4.2.0",
     "uk.gov.hmrc" %% "logback-json-logger" % "3.1.0",
-    "uk.gov.hmrc" %% "domain" % "4.0.0",
+    "uk.gov.hmrc" %% "domain" % "4.1.0",
     "uk.gov.hmrc" %% "play-hmrc-api" % "1.3.0",
-    "uk.gov.hmrc" %% "play-hal" % "1.1.0",
-    "uk.gov.hmrc" %% "play-scheduling" % "3.0.0"
+    "uk.gov.hmrc" %% "play-hal" % "1.2.0",
+    "uk.gov.hmrc" %% "play-scheduling" % "4.0.0"
   )
 
   trait TestDependencies {
@@ -47,13 +47,13 @@ private object AppDependencies {
   object Test {
     def apply() = new TestDependencies {
       override lazy val test = Seq(
-        "uk.gov.hmrc" %% "hmrctest" % "2.0.0" % scope,
+        "uk.gov.hmrc" %% "hmrctest" % "2.3.0" % scope,
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % scope,
         "com.github.tomakehurst" % "wiremock" % "2.2.2" % scope,
-        "uk.gov.hmrc" %% "reactivemongo-test"   % "1.6.0" % scope,
+        "uk.gov.hmrc" %% "reactivemongo-test"   % "2.0.0" % scope,
         "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.50.5" % scope,
         "org.mongodb" %% "casbah" % "3.1.1" % scope,
         "org.scalacheck" %% "scalacheck" % "1.12.6" % scope,

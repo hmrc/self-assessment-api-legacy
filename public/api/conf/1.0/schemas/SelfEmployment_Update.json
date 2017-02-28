@@ -3,24 +3,6 @@
   "title": "Self-employment source of income",
   "type": "object",
   "properties": {
-    "accountingPeriod": {
-      "$ref": "AccountingPeriod.json"
-    },
-    "accountingType": {
-      "title": "Accounting type",
-      "description": "CASH if you used the cash basis, money actually received and paid out, to calculate your income and expenses. Otherwise ACCRUAL.",
-      "type": "string",
-      "enum": [
-        "CASH",
-        "ACCRUAL"
-      ]
-    },
-    "commencementDate": {
-      "title": "Business start date",
-      "description": "Business start date, must be in the past.",
-      "type": "string",
-      "format": "date"
-    },
     "tradingName": {
       "title": "Business trading name",
       "description": "Business trading name",
@@ -70,9 +52,6 @@
     }
   },
   "required": [
-    "accountingPeriod",
-    "accountingType",
-    "commencementDate",
     "tradingName",
     "businessDescription",
     "businessAddressLineOne",

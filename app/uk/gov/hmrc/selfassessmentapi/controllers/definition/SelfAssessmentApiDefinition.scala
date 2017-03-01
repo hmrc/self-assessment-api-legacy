@@ -154,15 +154,6 @@ class SelfAssessmentApiDefinition {
         groupName = UKProperties)
       ,
       Endpoint(
-        uriPattern = "/ni/{nino}/uk-properties",
-        endpointName = "Update UK property business",
-        method = PUT,
-        authType = USER,
-        throttlingTier = UNLIMITED,
-        scope = Some(writeScope),
-        groupName = UKProperties)
-      ,
-      Endpoint(
         uriPattern = "/ni/{nino}/uk-properties/obligations",
         endpointName = "Retrieve UK property business obligations",
         method = GET,

@@ -51,6 +51,15 @@ class SelfAssessmentApiDefinition {
       ,
       Endpoint(
         uriPattern = "/ni/{nino}/self-employments/{selfEmploymentId}",
+        endpointName = "Update a self employment business",
+        method = PUT,
+        authType = USER,
+        throttlingTier = UNLIMITED,
+        scope = Some(writeScope),
+        groupName = SelfEmployments)
+      ,
+      Endpoint(
+        uriPattern = "/ni/{nino}/self-employments/{selfEmploymentId}",
         endpointName = "Get self employment business",
         method = GET,
         authType = USER,

@@ -32,5 +32,5 @@ must be recorded on creation, or obtained from a source that does have access, e
 
 ### Notes ###
 * This API is usable only for taxpayers subscribed to Making Tax Digital (MTD) and only for tax years 2017/18 onwards.
-* Self-employment and UK property businesses will be known to HMRC as part of the MTD subscription process.
+* Self-employment and UK property businesses will be known to HMRC  as part of the MTD subscription process.
 * Some APIs may be marked "test only"; this means that they are not available for use in production.

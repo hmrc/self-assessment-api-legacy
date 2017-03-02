@@ -21,8 +21,8 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.{MongoEmbeddedDatabase, NinoGenerator}
 import uk.gov.hmrc.selfassessmentapi.domain.Dividends
-import uk.gov.hmrc.selfassessmentapi.resources.models
-import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
+import uk.gov.hmrc.selfassessmentapi.models
+import uk.gov.hmrc.selfassessmentapi.models.TaxYear
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

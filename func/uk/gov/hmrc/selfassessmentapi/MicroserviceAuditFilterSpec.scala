@@ -14,9 +14,9 @@ class MicroserviceAuditFilterSpec extends BaseFunctionalSpec {
     "be applied when a POST request is made" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment())
-        .to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
 

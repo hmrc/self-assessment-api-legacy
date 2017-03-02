@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.{SourceType, TaxYear}
 
 class BindersSpec extends UnitSpec {
 

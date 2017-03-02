@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.services
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.{Obligation, Obligations}
+import uk.gov.hmrc.selfassessmentapi.models.{Obligation, Obligations}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -21,10 +21,10 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, TaxYear, _}
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType
+import uk.gov.hmrc.selfassessmentapi.models.properties._
+import uk.gov.hmrc.selfassessmentapi.models.{AccountingPeriod, TaxYear, _}
 
 case class Properties(id: BSONObjectID,
                       nino: Nino,

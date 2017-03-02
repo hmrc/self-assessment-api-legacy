@@ -1,7 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class ClientSubscriptionSimulationSpec extends BaseFunctionalSpec {

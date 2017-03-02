@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import org.joda.time.LocalDate
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
-import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, ErrorCode, Period, PeriodId}
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models.{AccountingPeriod, ErrorCode, Period, PeriodId}
 
 class PeriodValidatorSpec extends UnitSpec {
   case class TestPeriod(from: LocalDate, to: LocalDate) extends Period

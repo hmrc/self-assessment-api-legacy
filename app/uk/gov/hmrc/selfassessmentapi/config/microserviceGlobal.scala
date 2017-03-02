@@ -47,8 +47,7 @@ import uk.gov.hmrc.selfassessmentapi.config.simulation.{
   AgentSubscriptionSimulation,
   ClientSubscriptionSimulation
 }
-import uk.gov.hmrc.selfassessmentapi.jobs.DeleteExpiredDataJob
-import uk.gov.hmrc.selfassessmentapi.resources.models._
+import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -216,10 +215,7 @@ object MicroserviceGlobal
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 
-  def createScheduledJobs(): Seq[ExclusiveScheduledJob] = {
-    val expiredJobEnabled = AppContext.deleteExpiredDataJob.getBoolean("enabled").getOrElse(false)
-    if (expiredJobEnabled) Seq(DeleteExpiredDataJob) else Seq.empty
-  }
+  def createScheduledJobs(): Seq[ExclusiveScheduledJob] = Seq.empty
 
   override def onStart(app: Application): Unit = {
     super.onStart(app)

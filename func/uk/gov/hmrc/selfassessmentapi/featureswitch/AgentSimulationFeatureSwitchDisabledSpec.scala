@@ -6,14 +6,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
 
-  private val conf =
-    Map("Test" ->
-      Map("feature-switch" ->
-        Map("test-scenario-simulation" ->
-          Map("enabled" -> false)
-        )
-      )
-    )
+  private val conf = Map("Test.feature-switch.test-scenario-simulation.enabled" -> false)
 
   override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
 
@@ -21,6 +14,7 @@ class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
     "not be applied if feature is switched off" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_SUBSCRIBED")

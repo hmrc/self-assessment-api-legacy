@@ -9,6 +9,8 @@ class MicroserviceMonitoringFilterSpec extends BaseFunctionalSpec {
     "be applied when requests are made" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .post(Jsons.SelfEmployment())
         .to(s"/ni/$nino/self-employments")

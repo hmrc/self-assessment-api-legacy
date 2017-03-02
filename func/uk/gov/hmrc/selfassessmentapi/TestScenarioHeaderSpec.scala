@@ -8,6 +8,7 @@ class TestScenarioHeaderSpec extends BaseFunctionalSpec {
     "return HTTP 200" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -19,6 +20,7 @@ class TestScenarioHeaderSpec extends BaseFunctionalSpec {
     "return HTTP 200" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
         .withHeaders(GovTestScenarioHeader, "FOO")
@@ -31,6 +33,7 @@ class TestScenarioHeaderSpec extends BaseFunctionalSpec {
     "return HTTP 200" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .get(s"/ni/$nino/dividends/$taxYear")
         .thenAssertThat()
@@ -42,6 +45,7 @@ class TestScenarioHeaderSpec extends BaseFunctionalSpec {
     "return HTTP 200" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .get(s"/ni/$nino/dividends/$taxYear")
         .withHeaders(GovTestScenarioHeader, "FOO")

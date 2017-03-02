@@ -18,8 +18,10 @@ package uk.gov.hmrc.selfassessmentapi
 
 import play.api.libs.json._
 import play.api.mvc.Result
-import uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.BadRequest
-import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorResult, Errors, GenericErrorResult, ValidationErrorResult}
+import play.api.mvc.Results.BadRequest
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.models.{ErrorResult, Errors, GenericErrorResult, ValidationErrorResult}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -50,4 +52,9 @@ package object resources {
       case Failure(e) => Left(GenericErrorResult(s"could not parse body due to ${e.getMessage}"))
     }
   }
+
+  implicit val desHeaderCarrier = HeaderCarrier(otherHeaders = Seq(
+    "Authorization" -> AppContext.desToken,
+    "Environment" -> AppContext.desEnv,
+    "Accept" -> "application/vnd.hmrc.1.0+json"))
 }

@@ -21,7 +21,7 @@ import play.api.libs.streams.Accumulator
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.resources.models.SourceType.SourceType
+import uk.gov.hmrc.selfassessmentapi.models.SourceType.SourceType
 
 import scala.concurrent.Future
 
@@ -51,6 +51,10 @@ class FeatureSwitchAction(source: SourceType, summary: String) extends ActionBui
     else async(notFound)
   }
 
+  def asyncFeatureSwitch(block: RequestHeader => Future[Result]): Action[AnyContent] = {
+    if (isFeatureEnabled) async(block)
+    else async(notFound)
+  }
 }
 
 object FeatureSwitchAction {

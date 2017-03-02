@@ -21,7 +21,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.domain.Bank
-import uk.gov.hmrc.selfassessmentapi.resources.models.banks.BankAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.models.banks.BankAnnualSummary
 
 class BanksRepositorySpec extends MongoEmbeddedDatabase {
   private val repo = new BanksRepository

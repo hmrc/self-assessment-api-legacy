@@ -3,7 +3,7 @@ package uk.gov.hmrc.selfassessmentapi.featureswitch
 import play.api.libs.json.Json
 import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.resources.Jsons
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmploymentAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentAnnualSummaryFeatureSwitchSpec extends BaseFunctionalSpec {
@@ -20,12 +20,9 @@ class SelfEmploymentAnnualSummaryFeatureSwitchSpec extends BaseFunctionalSpec {
 
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Json.toJson(SelfEmploymentAnnualSummary(None, None))).at(s"%sourceLocation%/$taxYear")
+        .put(Json.toJson(SelfEmploymentAnnualSummary(None, None))).at(s"/ni/$nino/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }

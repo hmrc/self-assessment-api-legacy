@@ -21,8 +21,8 @@ import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi._
 import uk.gov.hmrc.selfassessmentapi.repositories.BanksRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.SourceId
-import uk.gov.hmrc.selfassessmentapi.resources.models.banks.Bank
+import uk.gov.hmrc.selfassessmentapi.models.SourceId
+import uk.gov.hmrc.selfassessmentapi.models.banks.Bank
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

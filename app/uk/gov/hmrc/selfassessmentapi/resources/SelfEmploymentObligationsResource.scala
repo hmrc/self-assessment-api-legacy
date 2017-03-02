@@ -16,27 +16,32 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.Json
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent, RequestHeader}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentObligationsService
+import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentObligationsConnector
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object SelfEmploymentObligationsResource extends BaseController {
   private val featureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "obligations")
-  private val service = SelfEmploymentObligationsService
+  private val connector = SelfEmploymentObligationsConnector
 
-  def retrieveObligations(nino: Nino, id: SourceId): Action[Unit] = featureSwitch.asyncEmptyFeatureSwitch { request =>
-    service.retrieveObligations(nino, id, request.headers.get(GovTestScenarioHeader)) map {
-      case Some(obligationsOrError) =>
-        obligationsOrError match {
-          case Left(error) => BadRequest(Json.toJson(error))
-          case Right(obligations) => Ok(Json.toJson(obligations))
-        }
-      case None => NotFound
+  private def obligationHeaders(request: RequestHeader): HeaderCarrier = {
+    request.headers.get(GovTestScenarioHeader).map { value =>
+      desHeaderCarrier.withExtraHeaders(GovTestScenarioHeader -> value)
+    }.getOrElse(desHeaderCarrier)
+  }
+
+  // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
+  def retrieveObligations(nino: Nino, id: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch { headers =>
+    connector.get(nino, id)(obligationHeaders(headers)).map { response =>
+      if (response.status == 200) Ok(response.json)
+      else if (response.status == 404) NotFound
+      else Status(response.status)(Error.from(response.json))
     }
   }
 }

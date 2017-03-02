@@ -1,6 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi
 
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
 import uk.gov.hmrc.support.BaseFunctionalSpec
 import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 

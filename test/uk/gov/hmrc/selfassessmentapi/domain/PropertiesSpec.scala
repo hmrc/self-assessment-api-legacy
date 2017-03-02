@@ -19,8 +19,8 @@ package uk.gov.hmrc.selfassessmentapi.domain
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.selfassessmentapi.{NinoGenerator, UnitSpec}
-import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
+import uk.gov.hmrc.selfassessmentapi.models._
+import uk.gov.hmrc.selfassessmentapi.models.properties._
 import PropertyPeriodOps._
 
 class PropertiesSpec extends UnitSpec {

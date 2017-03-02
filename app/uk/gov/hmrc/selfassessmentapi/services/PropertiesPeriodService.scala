@@ -24,10 +24,10 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.domain.PropertyPeriodOps
 import uk.gov.hmrc.selfassessmentapi.domain.PropertyPeriodOps._
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPeriodicData, FHLProperties, OtherPeriodicData, OtherProperties}
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models._
+import uk.gov.hmrc.selfassessmentapi.models.properties.{FHLPeriodicData, FHLProperties, OtherPeriodicData, OtherProperties}
 
 
 trait PropertiesPeriodService[T <: Period, P <: PeriodicData] {

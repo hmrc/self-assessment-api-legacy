@@ -50,15 +50,15 @@ package object models {
                             ErrorCode.INVALID_MONETARY_AMOUNT))(amount => amount >= 0 && amount.scale < 3)
 
   val sicClassifications: Try[Seq[String]] =
-    Try(
-      Source
-        .fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt"))(Codec.UTF8)
-        .getLines()
-        .toIndexedSeq)
-    .recover {
-      case ex =>
-        Logger.error(s"Error loading SIC classifications file SICs.txt: ${ex.getMessage}")
-        throw ex
-    }
+    for {
+      lines <- {
+        Try(Source.fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt"))(Codec.UTF8))
+          .recover {
+            case ex =>
+              Logger.error(s"Error loading SIC classifications file SICs.txt: ${ex.getMessage}")
+              throw ex
+          }
+      }
+    } yield lines.getLines().toIndexedSeq
 
 }

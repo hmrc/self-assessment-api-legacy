@@ -20,10 +20,8 @@ import org.joda.time.LocalDate
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, ErrorCode, SourceId}
 import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
-
-import scala.io.Source
+import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, ErrorCode, SourceId, sicClassifications}
 
 case class SelfEmployment(id: Option[SourceId] = None,
                           accountingPeriod: AccountingPeriod,
@@ -44,16 +42,13 @@ object SelfEmployment {
     ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
   )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
 
-  private lazy val sicClassifications: Seq[String] =
-    Source.fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt")).getLines.toIndexedSeq
-
   private def lengthIsBetween(minLength: Int, maxLength: Int): Reads[String] =
     Reads.of[String].filter(ValidationError(s"field length must be between $minLength and $maxLength characters", ErrorCode.INVALID_FIELD_LENGTH)
     )(name => name.length <= maxLength && name.length >= minLength)
 
   private val validateSIC: Reads[String] =
     Reads.of[String].filter(ValidationError("business description must be a string that conforms to the UK SIC 2007 classifications", ErrorCode.INVALID_BUSINESS_DESCRIPTION)
-    )(name => sicClassifications.contains(name))
+    )(name => sicClassifications.get.contains(name))
 
   implicit val writes: Writes[SelfEmployment] = Json.writes[SelfEmployment]
 

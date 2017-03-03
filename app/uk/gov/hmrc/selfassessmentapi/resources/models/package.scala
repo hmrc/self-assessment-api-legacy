@@ -16,8 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.Logger
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Reads}
+
+import scala.io.{Codec, Source}
+import scala.util.Try
 
 package object models {
 
@@ -31,13 +35,30 @@ package object models {
   /**
     * Asserts that amounts must have a maximum of two decimal places
     */
-  val amountValidator: Reads[Amount] = Reads.of[Amount]
-    .filter(ValidationError("amount should be a number with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT))(_.scale < 3)
+  val amountValidator: Reads[Amount] = Reads
+    .of[Amount]
+    .filter(
+      ValidationError("amount should be a number with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT))(
+      _.scale < 3)
 
   /**
     * Asserts that amounts must be non-negative and have a maximum of two decimal places
     */
-  val nonNegativeAmountValidator: Reads[Amount] = Reads.of[Amount]
-    .filter(ValidationError("amounts should be non-negative numbers with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT)
-    )(amount => amount >= 0 && amount.scale < 3)
+  val nonNegativeAmountValidator: Reads[Amount] = Reads
+    .of[Amount]
+    .filter(ValidationError("amounts should be non-negative numbers with up to 2 decimal places",
+                            ErrorCode.INVALID_MONETARY_AMOUNT))(amount => amount >= 0 && amount.scale < 3)
+
+  val sicClassifications: Try[Seq[String]] =
+    Try(
+      Source
+        .fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt"))(Codec.UTF8)
+        .getLines()
+        .toIndexedSeq)
+    .recover {
+      case ex =>
+        Logger.error(s"Error loading SIC classifications file SICs.txt: ${ex.getMessage}")
+        throw ex
+    }
+
 }

@@ -17,12 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment
 
 import play.api.data.validation.ValidationError
-
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
-
-import scala.io.Source
+import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorCode, sicClassifications}
 
 case class SelfEmploymentUpdate(tradingName: String,
                                 businessDescription: String,
@@ -34,16 +31,13 @@ case class SelfEmploymentUpdate(tradingName: String,
 
 object SelfEmploymentUpdate {
 
-  private lazy val sicClassifications: Seq[String] =
-    Source.fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt")).getLines.toIndexedSeq
-
   private def lengthIsBetween(minLength: Int, maxLength: Int): Reads[String] =
     Reads.of[String].filter(ValidationError(s"field length must be between $minLength and $maxLength characters", ErrorCode.INVALID_FIELD_LENGTH)
     )(name => name.length <= maxLength && name.length >= minLength)
 
   private val validateSIC: Reads[String] =
     Reads.of[String].filter(ValidationError("business description must be a string that conforms to the UK SIC 2007 classifications", ErrorCode.INVALID_BUSINESS_DESCRIPTION)
-    )(name => sicClassifications.contains(name))
+    )(name => sicClassifications.get.contains(name))
 
   implicit val writes: Writes[SelfEmploymentUpdate] = Json.writes[SelfEmploymentUpdate]
 

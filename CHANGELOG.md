@@ -1,3 +1,16 @@
+## [0.99.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.99.0) 02-Mar-2017
+
+* Rename Liability end-points as Tax calculation
+* Remove field 'accountingType' from UK Properties API's
+* Documentation
+  * Title and Overview updated to state this API is for Making Tax Digital (MTD)
+  * New terminology section to explain obligations, periods and annual summary
+  * Mark non-production end-points as test-only
+* Ability to simulate responses for following scenarios when API calls are made by
+  * a taxpayer who is not subscribed to MTD
+  * an Agent who is not subscribed to Agent Services
+  * an Agent who is subscribed to Agent Services but has not been authorised by the client on act on their behalf
+    
 
 ## [0.85.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.85.0) 24-Jan-2017
 

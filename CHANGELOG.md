@@ -2,6 +2,7 @@
 
 * Use UTF8 for reading SICs.txt file
 
+
 ## [0.99.0] (https://github.com/hmrc/self-assessment-api/releases/tag/v0.99.0) 02-Mar-2017
 
 * Rename Liability end-points as Tax calculation

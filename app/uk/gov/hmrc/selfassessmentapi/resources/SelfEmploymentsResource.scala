@@ -73,7 +73,7 @@ object SelfEmploymentsResource extends BaseController {
   def retrieveAll(nino: Nino): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
     connector.get(nino).map { response =>
       if (response.status == 200) Ok(Json.toJson(response.listSelfEmployment))
-      else Status(response.status)(Error.from(response.json))
+      else NotFound
     }
   }
 

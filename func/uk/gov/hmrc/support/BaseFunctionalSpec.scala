@@ -433,6 +433,18 @@ trait BaseFunctionalSpec extends TestApplication {
 
 
     class Des(givens: Givens) {
+      def invalidOriginatorIdFor(nino: Nino): Givens = {
+        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+          .willReturn(
+            aResponse()
+              .withStatus(400)
+              .withHeader("Content-Type", "application/json")
+              .withBody(DesJsons.Errors.invalidOriginatorId)
+          ))
+
+        givens
+      }
+
       def serviceUnavailableFor(nino: Nino): Givens = {
         stubFor(any(urlMatching(s".*/nino/$nino.*"))
           .willReturn(
@@ -480,7 +492,7 @@ trait BaseFunctionalSpec extends TestApplication {
       }
 
       def payloadFailsValidationFor(nino: Nino): Givens = {
-        stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+        stubFor(any(urlMatching(s".*/nino/$nino/.*"))
           .willReturn(
             aResponse()
               .withStatus(400)
@@ -625,8 +637,8 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
 
-        def annualSummaryWillBeUpdatedFor(nino: Nino, id: String = "abc", taxYear: String = "2017-18"): Givens = {
-          stubFor(put(urlEqualTo(s"/ni/$nino/self-employments/$id/$taxYear"))
+        def annualSummaryWillBeUpdatedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
                 .withStatus(200)))
@@ -634,8 +646,8 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
 
-        def annualSummaryWillBeReturnedFor(nino: Nino, id: String = "abc", taxYear: String = "2017-18"): Givens = {
-          stubFor(get(urlEqualTo(s"/ni/$nino/self-employments/$id/$taxYear"))
+        def annualSummaryWillBeReturnedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -645,8 +657,8 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
 
-        def noAnnualSummaryFor(nino: Nino, id: String = "abc", taxYear: String = "2017-18"): Givens = {
-          stubFor(get(urlEqualTo(s"/ni/$nino/self-employments/$id/$taxYear"))
+        def noAnnualSummaryFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
                 .withStatus(200)

@@ -57,7 +57,8 @@ object SelfEmploymentPeriodResource extends BaseController {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
         if (response.status == 204) NoContent
-        else NotFound
+        else if (response.status == 404) NotFound
+        else Status(response.status)(response.json)
       }
     }
   }
@@ -68,9 +69,7 @@ object SelfEmploymentPeriodResource extends BaseController {
       if (response.status == 200) response.period match {
         case Some(period) => Ok(Json.toJson(period))
         case None => NotFound
-      } else {
-        Status(response.status)(Error.from(response.json))
-      }
+      } else NotFound
     }
   }
 

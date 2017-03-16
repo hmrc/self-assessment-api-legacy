@@ -49,6 +49,7 @@ object Jsons {
     val notFound: String = errorWithMessage("NOT_FOUND", "Resource was not found")
     val invalidPeriod: String = errorWithMessage("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
     val invalidObligation: String = errorWithMessage("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
+    val invalidOriginatorId: String = errorWithMessage("INVALID_ORIGINATOR_ID", "Submission has not passed validation. Invalid header Originator-Id.")
 
     def invalidRequest(errors: (String, String)*): String = {
       s"""

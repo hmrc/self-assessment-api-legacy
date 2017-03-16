@@ -45,6 +45,55 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
     }
+
+    "return code 400 when provided with an invalid Originator-Id header" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().invalidOriginatorIdFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(400)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.invalidOriginatorId)
+    }
+
+    "return code 400 when provided with an invalid payload" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().payloadFailsValidationFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(400)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.invalidPayload)
+    }
+
+    "return code 500 when DES is experiencing problems" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serverErrorFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(500)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.serverError)
+    }
+
+    "return code 503 when a dependent system is not responding" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serviceUnavailableFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(503)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.serviceUnavailable)
+    }
+
   }
 
   "retrieveAnnualSummary" should {

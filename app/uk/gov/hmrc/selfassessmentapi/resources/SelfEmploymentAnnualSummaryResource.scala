@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentAnnualSummaryConnector
 import uk.gov.hmrc.selfassessmentapi.models._
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentAnnualSummaryResponse
 
@@ -35,13 +36,14 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[SelfEmploymentAnnualSummary, SelfEmploymentAnnualSummaryResponse](request.body) {
-      connector.update(nino, id, taxYear, _)
+    validate[SelfEmploymentAnnualSummary, SelfEmploymentAnnualSummaryResponse](request.body) { summary =>
+      connector.update(nino, id, taxYear, des.SelfEmploymentAnnualSummary.from(summary))
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
         if (response.status == 200) NoContent
-        else NotFound
+        else if (response.status == 404) NotFound
+        else Status(response.status)(Error.from(response.json))
       }
     }
   }
@@ -49,7 +51,10 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
   def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch {
     connector.get(nino, id, taxYear).map { response =>
-      if (response.status == 200) Ok(response.json)
+      if (response.status == 200) response.annualSummary match {
+        case Some(summary) => Ok(Json.toJson(summary))
+        case None => NotFound
+      }
       else NotFound
     }
   }

@@ -20,8 +20,8 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.selfassessmentapi.resources.models.banks.BankAnnualSummary
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.banks.BankAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.models.{SourceId, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.BanksAnnualSummaryService
 
 import scala.concurrent.Future

@@ -27,7 +27,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import uk.gov.hmrc.selfassessmentapi.domain.Properties
-import uk.gov.hmrc.selfassessmentapi.resources.models.PropertyId
+import uk.gov.hmrc.selfassessmentapi.models.PropertyId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

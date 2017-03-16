@@ -20,53 +20,60 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.BusinessError
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmployment, SelfEmploymentUpdate}
-import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentsService
+import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentConnector
+import uk.gov.hmrc.selfassessmentapi.models._
+import uk.gov.hmrc.selfassessmentapi.models.Errors
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{SelfEmployment, SelfEmploymentUpdate}
+import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentResponse
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
 object SelfEmploymentsResource extends BaseController {
   private lazy val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
-  private val service = SelfEmploymentsService
+  private val connector = SelfEmploymentConnector
 
   def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[SelfEmployment, Either[BusinessError, Option[SourceId]]](request.body) { selfEmployment =>
-      service.create(nino, selfEmployment)
+    validate[SelfEmployment, SelfEmploymentResponse](request.body) { selfEmployment =>
+      connector.create(nino, des.Business.from(selfEmployment))
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
-      case Right(idOption) => idOption.map {
-        case Left(err) => Forbidden(Json.toJson(err))
-        case Right(Some(id)) => Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/self-employments/$id")
-        case Right(None) => InternalServerError
+      case Right(response) => response.map { res =>
+        if (res.status == 200) Created.withHeaders(LOCATION -> res.createLocationHeader(nino).getOrElse(""))
+        else if (res.status == 403) Forbidden(Json.toJson(Errors.businessError(Error(ErrorCode.TOO_MANY_SOURCES.toString, s"The maximum number of Self-Employment incomes sources is 1", ""))))
+        else Status(res.status)(Error.from(res.json))
       }
     }
   }
 
+  // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
   def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[SelfEmploymentUpdate, Boolean](request.body) { selfEmployment =>
-      service.update(nino, selfEmployment, id)
+    validate[SelfEmploymentUpdate, SelfEmploymentResponse](request.body) { selfEmployment =>
+      connector.update(nino, des.SelfEmploymentUpdate.from(selfEmployment), id)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
-      case Right(result) => result.map {
-        case true => NoContent
-        case false => NotFound
+      case Right(result) => result.map { res =>
+        if (res.status == 204) NoContent
+        else NotFound
       }
     }
   }
 
   def retrieve(nino: Nino, id: SourceId): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
-    service.retrieve(nino, id) map {
-      case Some(selfEmployment) => Ok(Json.toJson(selfEmployment))
-      case None => NotFound
+    connector.get(nino).map { response =>
+      if (response.status == 200) response.selfEmployment(id) match {
+        case Some(se) => Ok(Json.toJson(se))
+        case None => NotFound
+      }
+      else Status(response.status)(Error.from(response.json))
     }
   }
 
   def retrieveAll(nino: Nino): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
-    service.retrieveAll(nino) map { seq =>
-      Ok(Json.toJson(seq))
+    connector.get(nino).map { response =>
+      if (response.status == 200) Ok(Json.toJson(response.listSelfEmployment))
+      else Status(response.status)(Error.from(response.json))
     }
   }
 

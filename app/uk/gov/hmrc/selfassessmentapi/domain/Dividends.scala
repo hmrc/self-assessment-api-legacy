@@ -21,8 +21,8 @@ import play.api.libs.json.{Format, Json}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.resources.models
+import uk.gov.hmrc.selfassessmentapi.models.TaxYear
+import uk.gov.hmrc.selfassessmentapi.models
 
 case class Dividends(id: BSONObjectID,
                      nino: Nino,

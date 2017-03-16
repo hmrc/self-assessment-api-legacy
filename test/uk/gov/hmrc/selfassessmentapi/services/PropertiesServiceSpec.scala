@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.services
 
 import uk.gov.hmrc.selfassessmentapi.MongoEmbeddedDatabase
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.Properties
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models.properties.Properties
 
 class PropertiesServiceSpec extends MongoEmbeddedDatabase {
 

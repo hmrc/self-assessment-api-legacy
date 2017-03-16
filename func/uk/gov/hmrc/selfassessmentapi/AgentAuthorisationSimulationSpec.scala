@@ -2,7 +2,7 @@ package uk.gov.hmrc.selfassessmentapi
 
 import play.api.libs.json.JsString
 import uk.gov.hmrc.selfassessmentapi.resources.{GovTestScenarioHeader, Jsons}
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
@@ -101,6 +101,8 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
     "receive a modified HTTP 400 Bad Request when they attempt to update a periodic summary with an invalid identifier" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -115,6 +117,8 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
     "receive an unmodified HTTP 400 Bad Request when they attempt to create a periodic summary with an invalid json" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -130,6 +134,9 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
     "receive an unmodified HTTP 400 Bad Request when they attempt to update a periodic summary with an invalid json" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
+        .des().selfEmployment.periodWillBeCreatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -140,7 +147,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Jsons.SelfEmployment.period(turnover = -100.1234)).at(s"%periodLocation%")
+        .put(Jsons.SelfEmployment.period(turnover = -100.1234)).at(s"/ni/$nino/self-employments/abc/periods/def")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
@@ -160,11 +167,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
     "receive a modified HTTP 400 Bad Request when they attempt to create more than one self-employment source" in {
       given()
         .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
-        .thenAssertThat()
-        .statusIs(201)
+        .des().selfEmployment.tooManySourcesFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")

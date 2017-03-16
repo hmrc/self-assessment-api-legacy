@@ -17,8 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Json, Reads, Writes}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{Period, PeriodId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties._
+import uk.gov.hmrc.selfassessmentapi.models.{Period, PeriodId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.properties._
 
 trait PropertiesBucket[T <: Period] extends PeriodValidator[T] {
   val periods: Map[PeriodId, T]

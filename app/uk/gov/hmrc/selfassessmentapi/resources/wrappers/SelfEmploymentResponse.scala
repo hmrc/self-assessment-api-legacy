@@ -1,0 +1,71 @@
+/*
+ * Copyright 2017 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package uk.gov.hmrc.selfassessmentapi.resources.wrappers
+
+import play.api.Logger
+import play.api.libs.json.JsValue
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.http.HttpResponse
+import uk.gov.hmrc.selfassessmentapi.models.{SourceId, des}
+import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmployment
+
+
+class SelfEmploymentResponse(underlying: HttpResponse) {
+
+  private val logger: Logger = Logger(classOf[SelfEmploymentResponse])
+
+  val status: Int = underlying.status
+  def json: JsValue = underlying.json
+
+  def createLocationHeader(nino: Nino): Option[String] = {
+    (json \ "incomeSources" \\ "incomeSourceId").map(_.asOpt[String]) match {
+      case Some(id) +: _ => Some(s"/self-assessment/ni/$nino/self-employments/$id")
+      case _ => {
+        logger.error("The 'incomeSourceId' field was not found in the response from DES.")
+        None
+      }
+    }
+  }
+
+  def selfEmployment(id: SourceId): Option[SelfEmployment] = {
+    (json \ "businessData").asOpt[Seq[des.SelfEmployment]] match {
+      case Some(selfEmployments) =>
+        selfEmployments.find(_.incomeSourceId.exists(_ == id)).flatMap { se =>
+          SelfEmployment.from(se, withId = false)
+        }
+      case None => {
+        logger.error("The 'businessData' field was not found in the response from DES")
+        None
+      }
+    }
+  }
+
+  def listSelfEmployment: Seq[SelfEmployment] = {
+    (json \ "businessData").asOpt[Seq[des.SelfEmployment]] match {
+      case Some(selfEmployments) =>
+        selfEmployments.flatMap(SelfEmployment.from(_))
+      case None => {
+        logger.error("The 'businessData' field was not found in the response from DES")
+        Seq.empty
+      }
+    }
+  }
+}
+
+object SelfEmploymentResponse {
+  def apply(response: HttpResponse): SelfEmploymentResponse = new SelfEmploymentResponse(response)
+}

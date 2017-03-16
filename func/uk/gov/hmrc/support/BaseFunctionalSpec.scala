@@ -10,7 +10,8 @@ import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.{NinoGenerator, TestApplication}
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorNotImplemented
+import uk.gov.hmrc.selfassessmentapi.models.{ErrorNotImplemented, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.DesJsons
 
 import scala.collection.mutable
 import scala.util.matching.Regex
@@ -20,7 +21,7 @@ trait BaseFunctionalSpec extends TestApplication {
   protected val nino = NinoGenerator().nextNino()
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
-      extends UrlInterpolation {
+    extends UrlInterpolation {
     def jsonBodyIsEmptyObject() = response.json shouldBe Json.obj()
 
     def jsonBodyIsEmptyArray() = response.json shouldBe JsArray()
@@ -44,7 +45,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def butResponseHasNo(sourceName: String, summaryName: String = "") = {
       val jsvOpt =
-        // FIXME: use \\
+      // FIXME: use \\
         if (summaryName.isEmpty) (response.json \ "_embedded" \ sourceName).toOption
         else (response.json \ "_embedded" \ sourceName \ summaryName).toOption
 
@@ -163,6 +164,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     private def extractPathElement[T](path: String)(implicit reads: Reads[T]): Option[T] = {
       val pathSeq = path.filter(!_.isWhitespace).split('\\').toSeq.filter(!_.isEmpty)
+
       def op(js: Option[JsValue], pathElement: String) = {
         val pattern = """(.*)\((\d+)\)""".r
         js match {
@@ -171,7 +173,7 @@ trait BaseFunctionalSpec extends TestApplication {
               case pattern(arrayName, index) =>
                 js match {
                   case Some(v) =>
-                    if (arrayName.isEmpty) v(index.toInt).toOption else (v \ arrayName)(index.toInt).toOption
+                    if (arrayName.isEmpty) v(index.toInt).toOption else (v \ arrayName) (index.toInt).toOption
                   case None => None
                 }
               case _ => (v \ pathElement).toOption
@@ -179,6 +181,7 @@ trait BaseFunctionalSpec extends TestApplication {
           case None => None
         }
       }
+
       pathSeq.foldLeft(Some(response.json): Option[JsValue])(op).map(jsValue => jsValue.asOpt[T]).getOrElse(None)
     }
 
@@ -288,11 +291,12 @@ trait BaseFunctionalSpec extends TestApplication {
         assertions
       }
     }
+
   }
 
   class HttpRequest(method: String, path: String, body: Option[JsValue], hc: HeaderCarrier = HeaderCarrier())(
-      implicit urlPathVariables: mutable.Map[String, String])
-      extends UrlInterpolation {
+    implicit urlPathVariables: mutable.Map[String, String])
+    extends UrlInterpolation {
 
     private val interpolatedPath: String = interpolated(path)
     assert(interpolatedPath.startsWith("/"), "please provide only a path starting with '/'")
@@ -336,12 +340,12 @@ trait BaseFunctionalSpec extends TestApplication {
   }
 
   class HttpPostBodyWrapper(method: String, body: Option[JsValue])(
-      implicit urlPathVariables: mutable.Map[String, String]) {
+    implicit urlPathVariables: mutable.Map[String, String]) {
     def to(url: String) = new HttpRequest(method, url, body)
   }
 
   class HttpPutBodyWrapper(method: String, body: Option[JsValue])(
-      implicit urlPathVariables: mutable.Map[String, String]) {
+    implicit urlPathVariables: mutable.Map[String, String]) {
     def at(url: String) = new HttpRequest(method, url, body)
   }
 
@@ -379,19 +383,19 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def when() = new HttpVerbs()
 
-    def userIsNotAuthorisedForTheResource(nino: Nino) = {
+    def userIsNotAuthorisedForTheResource(nino: Nino): Givens = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/paye/$nino")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
       stubFor(get(urlPathEqualTo(s"/authorise/write/paye/$nino")).willReturn(aResponse().withStatus(401).withHeader("Content-Length", "0")))
       this
     }
 
-    def userIsAuthorisedForTheResource(nino: Nino) = {
+    def userIsAuthorisedForTheResource(nino: Nino): Givens = {
       stubFor(get(urlPathEqualTo(s"/authorise/read/paye/$nino")).willReturn(aResponse().withStatus(200)))
       stubFor(get(urlPathEqualTo(s"/authorise/write/paye/$nino")).willReturn(aResponse().withStatus(200)))
       this
     }
 
-    def userIsEnrolledInSa(nino: Nino) = {
+    def userIsEnrolledInSa(nino: Nino): Givens = {
       val json =
         s"""
            |{
@@ -411,7 +415,7 @@ trait BaseFunctionalSpec extends TestApplication {
       this
     }
 
-    def userIsNotEnrolledInSa = {
+    def userIsNotEnrolledInSa: Givens = {
       val json =
         s"""
            |{
@@ -426,6 +430,324 @@ trait BaseFunctionalSpec extends TestApplication {
           .willReturn(aResponse().withBody(json).withStatus(200).withHeader("Content-Type", "application/json")))
       this
     }
+
+
+    class Des(givens: Givens) {
+      def serviceUnavailableFor(nino: Nino): Givens = {
+        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+          .willReturn(
+            aResponse()
+              .withStatus(503)
+              .withHeader("Content-Type", "application/json")
+              .withBody(DesJsons.Errors.serviceUnavailable)
+          ))
+
+        givens
+      }
+
+      def serverErrorFor(nino: Nino): Givens = {
+        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+          .willReturn(
+            aResponse()
+              .withStatus(500)
+              .withHeader("Content-Type", "application/json")
+              .withBody(DesJsons.Errors.serverError)
+          ))
+
+        givens
+      }
+
+      def ninoNotFoundFor(nino: Nino): Givens = {
+        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+          .willReturn(
+            aResponse()
+              .withStatus(404)
+              .withHeader("Content-Type", "application/json")
+              .withBody(DesJsons.Errors.ninoNotFound)))
+
+        givens
+      }
+
+      def invalidNinoFor(nino: Nino): Givens = {
+        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+          .willReturn(
+            aResponse()
+              .withStatus(400)
+              .withHeader("Content-Type", "application/json")
+              .withBody(DesJsons.Errors.invalidNino)))
+
+        givens
+      }
+
+      def payloadFailsValidationFor(nino: Nino): Givens = {
+        stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+          .willReturn(
+            aResponse()
+              .withStatus(400)
+              .withHeader("Content-Type", "application/json")
+              .withBody(DesJsons.Errors.invalidPayload)))
+
+        givens
+      }
+
+      object selfEmployment {
+
+        def tooManySourcesFor(nino: Nino): Givens = {
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+            .willReturn(
+              aResponse()
+                .withStatus(403)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.tooManySources)
+            ))
+
+          givens
+        }
+
+        def failsTradingName(nino: Nino): Givens = {
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+            .willReturn(
+              aResponse()
+                .withStatus(409)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.tradingNameConflict)
+            ))
+
+          givens
+        }
+
+        def willBeCreatedFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.SelfEmployment.createResponse(id))))
+          givens
+        }
+
+        def willBeReturnedFor(nino: Nino, id: String = "abc", accPeriodStart: String = "2017-04-06", accPeriodEnd: String = "2018-04-05"): Givens = {
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.SelfEmployment(nino, id, accPeriodStart = accPeriodStart, accPeriodEnd = accPeriodEnd))))
+
+          givens
+        }
+
+        def periodWillBeCreatedFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.SelfEmployment.Period.createResponse())))
+
+          givens
+        }
+
+        def periodsWillBeReturnedFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.SelfEmployment.Period.periods)))
+
+          givens
+        }
+
+
+        def periodWillBeReturnedFor(nino: Nino, id: String = "abc", periodId: String = "def"): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries/$periodId"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.SelfEmployment.Period())))
+
+          givens
+        }
+
+        def periodWillBeUpdatedFor(nino: Nino, id: String = "abc", periodId: String = "def"): Givens = {
+          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries/$periodId"))
+            .willReturn(
+              aResponse()
+                .withStatus(204)))
+
+          givens
+        }
+
+        def periodWillNotBeUpdatedFor(nino: Nino, id: String = "abc", periodId: String = "def"): Givens = {
+          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries/$periodId"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.ninoNotFound)))
+
+          givens
+        }
+
+
+        def noPeriodFor(nino: Nino, id: String = "abc", periodId: String = "def"): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries/$periodId"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.ninoNotFound)))
+
+          givens
+        }
+
+        def noPeriodsFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(Json.arr().toString)))
+
+          givens
+        }
+
+        def invalidPeriodFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.invalidPeriod)))
+
+          givens
+        }
+
+        def annualSummaryWillBeUpdatedFor(nino: Nino, id: String = "abc", taxYear: String = "2017-18"): Givens = {
+          stubFor(put(urlEqualTo(s"/ni/$nino/self-employments/$id/$taxYear"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)))
+
+          givens
+        }
+
+        def annualSummaryWillBeReturnedFor(nino: Nino, id: String = "abc", taxYear: String = "2017-18"): Givens = {
+          stubFor(get(urlEqualTo(s"/ni/$nino/self-employments/$id/$taxYear"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.SelfEmployment.AnnualSummary())))
+
+          givens
+        }
+
+        def noAnnualSummaryFor(nino: Nino, id: String = "abc", taxYear: String = "2017-18"): Givens = {
+          stubFor(get(urlEqualTo(s"/ni/$nino/self-employments/$id/$taxYear"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(Json.obj().toString)))
+
+          givens
+        }
+
+        def willBeUpdatedFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(put(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business/$id"))
+            .willReturn(
+              aResponse()
+                .withStatus(204)))
+
+          givens
+        }
+
+        def willNotBeUpdatedFor(nino: Nino): Givens = {
+          stubFor(put(urlMatching(s"/income-tax-self-assessment/nino/$nino/business/.*"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.ninoNotFound)))
+
+          givens
+        }
+
+        def doesNotExistPeriodFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.ninoNotFound)))
+
+          givens
+        }
+
+        def obligationNotFoundFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(get(urlEqualTo(s"/ni/$nino/self-employments/$id/obligations"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.ninoNotFound)))
+
+          givens
+        }
+
+        def obligationTaxYearTooShort(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(get(urlEqualTo(s"/ni/$nino/self-employments/$id/obligations"))
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.invalidObligation)))
+
+          givens
+        }
+
+        def returnObligationsFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(get(urlEqualTo(s"/ni/$nino/self-employments/$id/obligations"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Obligations())))
+
+          givens
+        }
+
+        def receivesObligationsTestHeader(nino: Nino, headerValue: String, id: String = "abc"): Givens = {
+          stubFor(
+            get(urlEqualTo(s"/ni/$nino/self-employments/$id/obligations"))
+              .withHeader("Gov-Test-Scenario", matching(headerValue))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Obligations())))
+
+          givens
+        }
+
+        def noneFor(nino: Nino): Givens = {
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.SelfEmployment.emptySelfEmployment(nino))))
+
+          givens
+        }
+      }
+
+    }
+
+    def des() = new Des(this)
 
   }
 

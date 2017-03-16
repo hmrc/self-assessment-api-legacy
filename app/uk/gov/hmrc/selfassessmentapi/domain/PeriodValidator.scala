@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import com.github.nscala_time.time.OrderingImplicits.LocalDateOrdering
 import org.joda.time.{DateTimeZone, Duration, Interval}
-import uk.gov.hmrc.selfassessmentapi.resources.models.{AccountingPeriod, Errors, Period, PeriodId}
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode._
-import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models.{AccountingPeriod, Errors, Period, PeriodId}
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
 
 trait PeriodValidator[P <: Period] {
 

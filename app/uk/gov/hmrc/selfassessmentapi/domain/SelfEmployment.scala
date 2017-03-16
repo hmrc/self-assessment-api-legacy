@@ -21,10 +21,10 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.resources.models.AccountingType._
-import uk.gov.hmrc.selfassessmentapi.resources.models.Errors.Error
-import uk.gov.hmrc.selfassessmentapi.resources.models.{selfemployment, _}
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.{SelfEmploymentAnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
+import uk.gov.hmrc.selfassessmentapi.models.AccountingType._
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models.{selfemployment, _}
+import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{SelfEmploymentAnnualSummary, SelfEmploymentPeriod, SelfEmploymentPeriodicData}
 
 case class SelfEmployment(id: BSONObjectID,
                           sourceId: String,

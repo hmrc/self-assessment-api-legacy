@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.config.simulation
 import play.api.libs.json.Json
 import play.api.mvc.{RequestHeader, Result}
 import play.api.mvc.Results.Status
-import uk.gov.hmrc.selfassessmentapi.resources.models.{ErrorAgentNotAuthorized, ErrorAgentBadRequest}
+import uk.gov.hmrc.selfassessmentapi.models.{ErrorAgentNotAuthorized, ErrorAgentBadRequest}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

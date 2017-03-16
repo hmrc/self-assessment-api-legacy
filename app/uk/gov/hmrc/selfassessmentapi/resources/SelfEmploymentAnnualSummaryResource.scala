@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.Results._
+import play.api.libs.json.JsValue
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.selfassessmentapi.resources.models._
-import uk.gov.hmrc.selfassessmentapi.resources.models.selfemployment.SelfEmploymentAnnualSummary
-import uk.gov.hmrc.selfassessmentapi.services.SelfEmploymentAnnualSummaryService
+import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentAnnualSummaryConnector
+import uk.gov.hmrc.selfassessmentapi.models._
+import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentAnnualSummaryResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,24 +31,26 @@ import scala.concurrent.Future
 object SelfEmploymentAnnualSummaryResource extends BaseController {
 
   private lazy val annualSummaryFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
-  private val annualSummaryService = SelfEmploymentAnnualSummaryService
+  private val connector = SelfEmploymentAnnualSummaryConnector
 
+  // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[SelfEmploymentAnnualSummary, Boolean](request.body) {
-      annualSummaryService.updateAnnualSummary(nino, id, taxYear, _)
+    validate[SelfEmploymentAnnualSummary, SelfEmploymentAnnualSummaryResponse](request.body) {
+      connector.update(nino, id, taxYear, _)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
-      case Right(result) => result.map {
-        case true => NoContent
-        case false => NotFound
+      case Right(result) => result.map { response =>
+        if (response.status == 200) NoContent
+        else NotFound
       }
     }
   }
 
+  // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
   def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch {
-    annualSummaryService.retrieveAnnualSummary(id, taxYear, nino).map {
-      case Some(summary) => Ok(Json.toJson(summary))
-      case None => NotFound
+    connector.get(nino, id, taxYear).map { response =>
+      if (response.status == 200) Ok(response.json)
+      else NotFound
     }
   }
 }

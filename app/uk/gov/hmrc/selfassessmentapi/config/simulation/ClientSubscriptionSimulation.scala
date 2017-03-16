@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.config.simulation
 import play.api.libs.json.Json
 import play.api.mvc.Results.Status
 import play.api.mvc.{RequestHeader, Result}
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorClientNotSubscribedToMTD
+import uk.gov.hmrc.selfassessmentapi.models.ErrorClientNotSubscribedToMTD
 
 import scala.concurrent.Future
 

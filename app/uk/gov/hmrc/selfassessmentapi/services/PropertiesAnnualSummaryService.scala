@@ -19,9 +19,9 @@ package uk.gov.hmrc.selfassessmentapi.services
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.repositories.PropertiesRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary, PropertiesAnnualSummary, PropertyType}
-import uk.gov.hmrc.selfassessmentapi.resources.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.resources.models.properties.PropertyType.PropertyType
+import uk.gov.hmrc.selfassessmentapi.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary, PropertiesAnnualSummary, PropertyType}
+import uk.gov.hmrc.selfassessmentapi.models.TaxYear
+import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

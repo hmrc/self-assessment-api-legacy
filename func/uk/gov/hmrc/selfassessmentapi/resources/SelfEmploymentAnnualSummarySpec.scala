@@ -8,12 +8,9 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
     "return code 204 when updating an annual summary for a valid self-employment source" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.annualSummaryWillBeUpdatedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"%sourceLocation%/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(204)
     }
@@ -21,6 +18,7 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
     "return code 404 when updating an annual summary for an invalid self-employment source" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().ninoNotFoundFor(nino)
         .when()
         .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/sillysource/$taxYear")
         .thenAssertThat()
@@ -41,11 +39,7 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(annualSummaries).at(s"%sourceLocation%/$taxYear")
+        .put(annualSummaries).at(s"/ni/$nino/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
@@ -55,21 +49,31 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
 
   "retrieveAnnualSummary" should {
     "return code 200 when retrieving an annual summary that exists" in {
-      val annualSummaries = Jsons.SelfEmployment.annualSummary()
-      val expectedJson = annualSummaries.toString()
+      val expectedJson = Jsons.SelfEmployment.annualSummary(
+        annualInvestmentAllowance = 200,
+        capitalAllowanceMainPool = 200,
+        capitalAllowanceSpecialRatePool = 200,
+        businessPremisesRenovationAllowance = 200,
+        enhancedCapitalAllowance = 200,
+        allowanceOnSales = 200,
+        zeroEmissionGoodsVehicleAllowance = 200,
+        includedNonTaxableProfits = 200,
+        basisAdjustment = 200,
+        overlapReliefUsed = 200,
+        accountingAdjustment = 200,
+        averagingAdjustment = 200,
+        lossBroughtForward = 200,
+        outstandingBusinessIncome = 200,
+        balancingChargeBPRA = 200,
+        balancingChargeOther = 200,
+        goodsAndServicesOwnUse = 200
+      ).toString
 
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.annualSummaryWillBeReturnedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(annualSummaries).at(s"%sourceLocation%/$taxYear")
-        .thenAssertThat()
-        .statusIs(204)
-        .when()
-        .get(s"%sourceLocation%/$taxYear")
+        .get(s"/ni/$nino/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
@@ -80,12 +84,9 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
 
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.noAnnualSummaryFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .get(s"%sourceLocation%/$taxYear")
+        .get(s"/ni/$nino/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
@@ -105,11 +106,7 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .get(s"%sourceLocation%/2015-16")
+        .get(s"/ni/$nino/self-employments/abc/2015-16")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("TAX_YEAR_INVALID")

@@ -21,8 +21,8 @@ import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
-import uk.gov.hmrc.selfassessmentapi.resources.models.banks.BankAnnualSummary
-import uk.gov.hmrc.selfassessmentapi.resources.models.{TaxYear, banks}
+import uk.gov.hmrc.selfassessmentapi.models.banks.BankAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.models.{TaxYear, banks}
 
 case class Bank(id: BSONObjectID,
                 sourceId: String,

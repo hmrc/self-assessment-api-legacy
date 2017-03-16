@@ -1,7 +1,7 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.resources.models.{PeriodId, SourceId}
+import uk.gov.hmrc.selfassessmentapi.models.SourceId
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
@@ -10,6 +10,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 201 containing a location header when creating a valid a self-employment source of income" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -39,13 +40,65 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(Jsons.Errors.invalidRequest(("INVALID_VALUE", "/accountingType")))
     }
 
-    "return code 403 Unauthorized when attempting to create more than one self-employment source" in {
+    "return code 400 when attempting to create a self-employment that fails DES validation" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().payloadFailsValidationFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
-        .statusIs(201)
+        .statusIs(400)
+        .bodyIsLike(Jsons.Errors.invalidPayload)
+    }
+
+    "return code 404 when attempting to create a self-employment that fails DES nino validation" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().ninoNotFoundFor(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(404)
+        .bodyIsLike(Jsons.Errors.ninoNotFound)
+    }
+
+    "return code 409 when attempting to create a self-employment that fails DES duplicated trading name validaiton" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.failsTradingName(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(409)
+        .bodyIsLike(Jsons.Errors.duplicateTradingName)
+    }
+
+    "return code 500 when DES is experiencing issues" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serverErrorFor(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(500)
+        .bodyIsLike(Jsons.Errors.serverError)
+    }
+
+    "return code 503 when systems that DES is dependant on are experiencing issues" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serviceUnavailableFor(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(503)
+        .bodyIsLike(Jsons.Errors.serviceUnavailable)
+    }
+
+    "return code 403 Unauthorized when attempting to create more than one self-employment source" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.tooManySourcesFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -56,40 +109,26 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "update" should {
     "return code 204 when successfully updating a self-employment resource" in {
-      val updatedSelfEmployment = Jsons.SelfEmployment.update(
-        tradingName = "MyUpdatedBusiness",
-        businessDescription = "Accounting activities",
-        businessAddressLineOne = "2 Acme Rd.",
-        businessAddressLineTwo = "Manchester",
-        businessAddressLineThree = "England",
-        businessAddressLineFour = "U.K.",
-        businessPostcode = "A0 0AA")
-
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
+        .des().selfEmployment.willBeUpdatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(updatedSelfEmployment).at("%sourceLocation%")
+        .put(Jsons.SelfEmployment.update()).at("%sourceLocation%")
         .thenAssertThat()
         .statusIs(204)
-        .when()
-        .get("%sourceLocation%")
-        .thenAssertThat()
-        .bodyIsLike(updatedSelfEmployment.toString)
     }
 
     "return code 404 when attempting to update a non-existent self-employment resource" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willNotBeUpdatedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Jsons.SelfEmployment()).at(s"/ni/$nino/self-employments/invalidSourceId")
+        .put(Jsons.SelfEmployment.update()).at(s"/ni/$nino/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -97,6 +136,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 400 (MANDATORY_FIELD_MISSING) when attempting to update a self-employment with an empty body" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -118,6 +158,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -134,16 +175,13 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
 
   "retrieve" should {
     "return code 200 when retrieving a self-employment resource that exists" in {
-      val expectedSelfEmployment = Jsons.SelfEmployment(cessationDate = None)
+      val expectedSelfEmployment = Jsons.SelfEmployment(cessationDate = None, businessDescription = "")
 
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .get(s"%sourceLocation%")
+        .get(s"/ni/$nino/self-employments/abc")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
@@ -151,13 +189,70 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .bodyDoesNotHavePath[SourceId]("id")
     }
 
+    "return code 400 when attempting to retrieve a self-employment that fails DES nino validation" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().invalidNinoFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/sourceId")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsLike(Jsons.Errors.invalidNino)
+    }
+
     "return code 404 when retrieving a self-employment resource that does not exist" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().ninoNotFoundFor(nino)
         .when()
         .get(s"/ni/$nino/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
+        .bodyIsLike(Jsons.Errors.ninoNotFound)
+    }
+
+    "return code 400 when retrieving a self-employment that fails nino validation" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().invalidNinoFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsLike(Jsons.Errors.invalidNino)
+    }
+
+    "return code 404 when retrieving a self-employment for a nino that does not exist" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().ninoNotFoundFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .thenAssertThat()
+        .statusIs(404)
+        .bodyIsLike(Jsons.Errors.ninoNotFound)
+    }
+
+    "return code 500 when DES is experiencing issues" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serverErrorFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .thenAssertThat()
+        .statusIs(500)
+        .bodyIsLike(Jsons.Errors.serverError)
+    }
+
+    "return code 503 when systems that DES is dependant on are experiencing issues" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serviceUnavailableFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .thenAssertThat()
+        .statusIs(503)
+        .bodyIsLike(Jsons.Errors.serviceUnavailable)
     }
   }
 
@@ -167,16 +262,13 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
       val expectedBody =
         s"""
            |[
-           |  ${Jsons.SelfEmployment(cessationDate = None).toString()}
+           |  ${Jsons.SelfEmployment(cessationDate = None, businessDescription = "").toString()}
            |]
          """.stripMargin
 
       given()
         .userIsAuthorisedForTheResource(nino)
-        .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
+        .des().selfEmployment.willBeReturnedFor(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
         .thenAssertThat()
@@ -189,11 +281,12 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
     "return code 200 with an empty body when the user has no self-employment sources" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.noneFor(nino)
         .when()
         .get(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(200)
-        .jsonBodyIsEmptyArray
+        .jsonBodyIsEmptyArray()
     }
   }
 

@@ -1,0 +1,240 @@
+package uk.gov.hmrc.selfassessmentapi.resources
+
+import play.api.libs.json.Json
+import uk.gov.hmrc.selfassessmentapi.models.PeriodId
+import uk.gov.hmrc.support.BaseFunctionalSpec
+
+class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
+
+  "createPeriod" should {
+    "return code 201 containing a location header when creating a period" in {
+
+      val period = Jsons.SelfEmployment.period(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
+        .des().selfEmployment.periodWillBeCreatedFor(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(period).to(s"%sourceLocation%/periods")
+        .thenAssertThat()
+        .statusIs(201)
+        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+/periods/\\w+".r)
+    }
+
+    "return code 400 when attempting to create a period with the 'from' and 'to' dates are in the incorrect order" in {
+      val periodOne =
+        s"""
+           |{
+           |  "from": "2017-04-01",
+           |  "to": "2017-03-31"
+           |}
+         """.stripMargin
+
+      val expectedBody = Jsons.Errors.invalidRequest(("INVALID_PERIOD", ""))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(Json.parse(periodOne)).to(s"%sourceLocation%/periods")
+        .thenAssertThat()
+        .statusIs(400)
+        .contentTypeIsJson()
+        .bodyIsLike(expectedBody)
+    }
+
+    "return code 403 when attempting to create a period whose date range overlaps" in {
+      val overlappingPeriod = Jsons.SelfEmployment.period(fromDate = Some("2017-08-04"), toDate = Some("2017-09-04"))
+
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
+        .des().selfEmployment.invalidPeriodFor(nino)
+        .when()
+        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(overlappingPeriod).to(s"%sourceLocation%/periods")
+        .thenAssertThat()
+        .statusIs(403)
+        .bodyIsLike(Jsons.Errors.invalidPeriod)
+    }
+
+    "return code 500 when DES is experiencing issues" in {
+      val period = Jsons.SelfEmployment.period(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serverErrorFor(nino)
+        .when()
+        .post(period).to(s"/ni/$nino/self-employments/abc/periods")
+        .thenAssertThat()
+        .statusIs(500)
+        .bodyIsLike(Jsons.Errors.serverError)
+    }
+
+    "return code 503 when dependent systems are not available" in {
+      val period = Jsons.SelfEmployment.period(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serviceUnavailableFor(nino)
+        .when()
+        .post(period).to(s"/ni/$nino/self-employments/abc/periods")
+        .thenAssertThat()
+        .statusIs(503)
+        .bodyIsLike(Jsons.Errors.serviceUnavailable)
+    }
+  }
+
+  "updatePeriod" should {
+    "return code 204 when updating a period that exists" in {
+      val updatePeriod = Jsons.SelfEmployment.period(
+        turnover = 200.25,
+        otherIncome = 100.25,
+        costOfGoodsBought = (200.25, 50.25),
+        cisPaymentsToSubcontractors = (100.25, 55.25))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.periodWillBeUpdatedFor(nino)
+        .when()
+        .put(updatePeriod).at(s"/ni/$nino/self-employments/abc/periods/def")
+        .thenAssertThat()
+        .statusIs(204)
+    }
+
+    "return code 404 when attempting to update a non-existent period" in {
+      val period = Jsons.SelfEmployment.period(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"),
+        turnover = 100.25,
+        otherIncome = 100.25,
+        costOfGoodsBought = (100.25, 50.25),
+        cisPaymentsToSubcontractors = (100.25, 50.25))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.periodWillNotBeUpdatedFor(nino)
+        .when()
+        .put(Json.toJson(period)).at(s"/ni/$nino/self-employments/abc/periods/def")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+  }
+
+  "retrievePeriod" should {
+    "return code 200 when retrieving a period that exists" in {
+      val expectedBody = Jsons.SelfEmployment.period(
+        fromDate = Some("2017-04-05"),
+        toDate = Some("2018-04-04"),
+        turnover = 200,
+        otherIncome = 200,
+        costOfGoodsBought = (200, 200),
+        cisPaymentsToSubcontractors = (200, 200),
+        staffCosts = (200, 200),
+        travelCosts = (200, 200),
+        premisesRunningCosts = (200, 200),
+        maintenanceCosts = (200, 200),
+        adminCosts = (200, 200),
+        advertisingCosts = (200, 200),
+        interest = (200, 200),
+        financialCharges = (200, 200),
+        badDebt = (200, 200),
+        professionalFees = (200, 200),
+        depreciation = (200, 200),
+        otherExpenses = (200, 200))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.periodWillBeReturnedFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods/def")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyIsLike(expectedBody.toString)
+        .bodyDoesNotHavePath[PeriodId]("id")
+    }
+
+    "return code 404 when retrieving a period that does not exist" in {
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.noPeriodFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods/def")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+  }
+
+  "retrieveAllPeriods" should {
+    "return code 200 when retrieving all periods where periods.size > 0, sorted by from date" in {
+      val expectedBody =
+        s"""
+           |[
+           |  {
+           |    "from": "2017-04-06",
+           |    "to": "2017-07-04"
+           |  },
+           |  {
+           |    "from": "2017-07-05",
+           |    "to": "2017-08-04"
+           |  }
+           |]
+         """.stripMargin
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.periodsWillBeReturnedFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyIsLike(expectedBody)
+        .selectFields(_ \\ "id").isLength(2).matches("\\w+".r)
+    }
+
+    "return code 200 containing an empty json body when retrieving all periods where periods.size == 0" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.noPeriodsFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods")
+        .thenAssertThat()
+        .statusIs(200)
+        .jsonBodyIsEmptyArray
+    }
+
+    "return code 404 when retrieving all periods for a non-existent self-employment source" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.doesNotExistPeriodFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods")
+        .thenAssertThat()
+        .statusIs(404)
+    }
+  }
+
+
+}

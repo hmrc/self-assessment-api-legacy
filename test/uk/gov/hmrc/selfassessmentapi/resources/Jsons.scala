@@ -32,13 +32,23 @@ object Jsons {
          """.stripMargin
     }
 
-    val notFound: String =
+    private def errorWithMessage(code: String, message: String) =
       s"""
          |{
-         |  "code": "NOT_FOUND",
-         |  "message": "Resource was not found"
+         |  "code": "$code",
+         |  "message": "$message"
          |}
        """.stripMargin
+
+    val invalidNino: String = errorWithMessage("INVALID_NINO", "Submission has not passed validation. Invalid parameter NINO.")
+    val invalidPayload: String = errorWithMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid PAYLOAD.")
+    val ninoNotFound: String = errorWithMessage("NOT_FOUND_NINO", "The remote endpoint has indicated that no data can be found.")
+    val duplicateTradingName: String = errorWithMessage("CONFLICT", "Duplicated trading name.")
+    val serverError: String = errorWithMessage("SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")
+    val serviceUnavailable: String = errorWithMessage("SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")
+    val notFound: String = errorWithMessage("NOT_FOUND", "Resource was not found")
+    val invalidPeriod: String = errorWithMessage("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
+    val invalidObligation: String = errorWithMessage("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
 
     def invalidRequest(errors: (String, String)*): String = {
       s"""
@@ -277,8 +287,8 @@ object Jsons {
     def apply(accPeriodStart: String = "2017-04-06",
               accPeriodEnd: String = "2018-04-05",
               accountingType: String = "CASH",
-              commencementDate: String = s"${LocalDate.now.minusDays(1)}",
-              cessationDate: Option[String] = Some(s"${LocalDate.now.plusDays(1)}"),
+              commencementDate: String = "2017-01-01",
+              cessationDate: Option[String] = Some("2017-01-02"),
               tradingName: String = "Acme Ltd",
               businessDescription: String = "Accountancy services",
               businessAddressLineOne: String = "1 Acme Rd.",

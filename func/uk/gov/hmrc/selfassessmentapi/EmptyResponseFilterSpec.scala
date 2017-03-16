@@ -10,6 +10,7 @@ class EmptyResponseFilterSpec extends BaseFunctionalSpec {
     "be applied when returning an HTTP 201 e.g.: creating a self-employment" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.willBeCreatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment())
         .to(s"/ni/$nino/self-employments")
@@ -18,7 +19,7 @@ class EmptyResponseFilterSpec extends BaseFunctionalSpec {
         .responseContainsHeader(EmptyResponseFilter.emptyHeader, "true".r)
     }
 
-    "be applied when returning an HTTP 409 e.g.: attempting to create a given self-employment more than once" in {
+    "be applied when returning an HTTP 409 e.g.: attempting to create a properties business more than once" in {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()

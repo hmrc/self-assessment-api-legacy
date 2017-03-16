@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.controllers.definition
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.resources.models.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
 
 object EnumJson {
 

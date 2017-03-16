@@ -18,8 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.services
 
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.repositories.BanksRepository
-import uk.gov.hmrc.selfassessmentapi.resources.models.{SourceId, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.resources.models.banks.BankAnnualSummary
+import uk.gov.hmrc.selfassessmentapi.models.{SourceId, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.banks.BankAnnualSummary
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

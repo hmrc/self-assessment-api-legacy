@@ -21,7 +21,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
 class ErrorSpec extends JsonSpec {
   "from" should {
-    "transform a DES error into our error representation" in {
+    "transform a single DES error into our error representation" in {
       val desError =
         Json.parse(
           s"""
@@ -38,6 +38,48 @@ class ErrorSpec extends JsonSpec {
              |  "code": "SERVICE_UNAVAILABLE",
              |  "message": "Dependent systems are currently not responding",
              |  "path": ""
+             |}
+           """.stripMargin)
+
+      Errors.Error.from(desError) shouldBe expected
+    }
+
+    "transform multiple DES errors into our error representation" in {
+      val desError =
+        Json.parse(
+          s"""
+             |{
+             |  "failures": [
+             |    {
+             |      "code": "INVALID_BUSINESSID",
+             |      "reason": "Submission has not passed validation. Invalid parameter businessId."
+             |    },
+             |    {
+             |      "code": "INVALID_PAYLOAD",
+             |      "reason": "Submission has not passed validation. Invalid Payload."
+             |    }
+             |  ]
+             |}
+            """.stripMargin)
+
+      val expected =
+        Json.parse(
+          s"""
+             |{
+             |  "code": "BUSINESS_ERROR",
+             |  "message": "Business validation error",
+             |  "errors": [
+             |      {
+             |        "code": "INVALID_BUSINESSID",
+             |        "message": "Submission has not passed validation. Invalid parameter businessId.",
+             |        "path": ""
+             |      },
+             |      {
+             |        "code": "INVALID_PAYLOAD",
+             |        "message": "Submission has not passed validation. Invalid Payload.",
+             |        "path": ""
+             |      }
+             |  ]
              |}
            """.stripMargin)
 

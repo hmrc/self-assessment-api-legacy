@@ -20,7 +20,7 @@ import play.api.Logger
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsValue, Json, Writes}
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.models.des.DesError
+import uk.gov.hmrc.selfassessmentapi.models.des.{DesError, MultiDesError}
 
 object Errors {
 
@@ -30,6 +30,7 @@ object Errors {
       Json.obj("code" -> req.code, "message" -> req.message, "errors" -> req.errors)
     }
   }
+
   implicit val businessErrorWrites: Writes[BusinessError] = new Writes[BusinessError] {
     override def writes(req: BusinessError) =
       Json.obj("code" -> req.code, "message" -> req.message, "errors" -> req.errors)
@@ -42,11 +43,19 @@ object Errors {
 
     def from(json: JsValue): JsValue = {
       json.asOpt[DesError].map { err =>
-        Json.toJson(Error(err.code.toString, err.reason, ""))
+        Json.toJson(fromDesError(err))
+      }.orElse {
+        json.asOpt[MultiDesError].map { err =>
+          Json.toJson(businessError(err.failures.map(fromDesError)))
+        }
       }.getOrElse {
         logger.error(s"Error received from DES does not match what we are expecting.")
         Json.toJson(Error("UNKNOWN_ERROR", "Unknown error", ""))
       }
+    }
+
+    private def fromDesError(err: DesError): Error = {
+      Error(err.code.toString, err.reason, "")
     }
   }
 

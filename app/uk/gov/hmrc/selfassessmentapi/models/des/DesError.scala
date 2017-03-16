@@ -20,6 +20,12 @@ import play.api.libs.json.{Format, Json, Reads}
 import uk.gov.hmrc.selfassessmentapi.models.EnumJson
 import uk.gov.hmrc.selfassessmentapi.models.des.DesErrorCode.DesErrorCode
 
+case class MultiDesError(failures: Seq[DesError])
+
+object MultiDesError {
+  implicit val reads: Reads[MultiDesError] = Json.reads[MultiDesError]
+}
+
 case class DesError(code: DesErrorCode, reason: String)
 
 object DesError {
@@ -37,7 +43,8 @@ object DesErrorCode extends Enumeration {
   SERVICE_UNAVAILABLE,
   INVALID_PERIOD,
   INVALID_ORIGINATOR_ID,
-  INVALID_REQUEST = Value
+  INVALID_REQUEST,
+  INVALID_BUSINESSID = Value
 
   implicit val format: Format[DesErrorCode] = EnumJson.enumFormat(DesErrorCode, Some("DesErrorCode is invalid"))
 }

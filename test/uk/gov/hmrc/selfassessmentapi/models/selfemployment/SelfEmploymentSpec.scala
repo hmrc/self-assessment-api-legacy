@@ -172,8 +172,16 @@ class SelfEmploymentSpec extends JsonSpec {
       val jsonOne = Jsons.SelfEmployment(businessPostcode = "")
       val jsonTwo = Jsons.SelfEmployment(businessPostcode = "a" * 11)
 
-      assertValidationErrorsWithCode[SelfEmployment](jsonOne, Map("/businessPostcode" -> Seq(ErrorCode.INVALID_FIELD_LENGTH)))
-      assertValidationErrorsWithCode[SelfEmployment](jsonTwo, Map("/businessPostcode" -> Seq(ErrorCode.INVALID_FIELD_LENGTH)))
+      assertValidationErrorsWithCode[SelfEmployment](jsonOne, Map("/businessPostcode" -> Seq(ErrorCode.INVALID_POSTCODE, ErrorCode.INVALID_FIELD_LENGTH)))
+      assertValidationErrorsWithCode[SelfEmployment](jsonTwo, Map("/businessPostcode" -> Seq(ErrorCode.INVALID_POSTCODE, ErrorCode.INVALID_FIELD_LENGTH)))
+    }
+
+    "return an error when providing a postcode with an invalid format" in {
+      val jsonOne = Jsons.SelfEmployment(businessPostcode = "!?")
+      val jsonTwo = Jsons.SelfEmployment(businessPostcode = "a" * 9)
+
+      assertValidationErrorsWithCode[SelfEmployment](jsonOne, Map("/businessPostcode" -> Seq(ErrorCode.INVALID_POSTCODE)))
+      assertValidationErrorsWithCode[SelfEmployment](jsonTwo, Map("/businessPostcode" -> Seq(ErrorCode.INVALID_POSTCODE)))
     }
   }
 

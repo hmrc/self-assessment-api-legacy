@@ -73,6 +73,9 @@ object SelfEmployment {
     Reads.of[String].filter(ValidationError("business description must be a string that conforms to the UK SIC 2007 classifications", ErrorCode.INVALID_BUSINESS_DESCRIPTION)
     )(name => sicClassifications.get.contains(name))
 
+  private val validatePostcode: Reads[String] = Reads.of[String].filter(ValidationError("postcode must match \"^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$\"", ErrorCode.INVALID_POSTCODE)
+    )(postcode => postcode.matches("^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"))
+
   implicit val writes: Writes[SelfEmployment] = Json.writes[SelfEmployment]
 
   implicit val reads: Reads[SelfEmployment] = (
@@ -87,6 +90,6 @@ object SelfEmployment {
       (__ \ "businessAddressLineTwo").readNullable[String](lengthIsBetween(1, 35)) and
       (__ \ "businessAddressLineThree").readNullable[String](lengthIsBetween(1, 35)) and
       (__ \ "businessAddressLineFour").readNullable[String](lengthIsBetween(1, 35)) and
-      (__ \ "businessPostcode").read[String](lengthIsBetween(1, 10))
+      (__ \ "businessPostcode").read[String](lengthIsBetween(1, 10) keepAnd validatePostcode)
     ) (SelfEmployment.apply _)
 }

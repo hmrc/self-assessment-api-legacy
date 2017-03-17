@@ -57,7 +57,6 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
     "return code 403 when attempting to create a period whose date range overlaps" in {
       val overlappingPeriod = Jsons.SelfEmployment.period(fromDate = Some("2017-08-04"), toDate = Some("2017-09-04"))
 
-
       given()
         .userIsAuthorisedForTheResource(nino)
         .des().selfEmployment.willBeCreatedFor(nino)
@@ -73,6 +72,21 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(Jsons.Errors.invalidPeriod)
     }
 
+    "return code 404 when attempting to create a period for a self-employment that does not exist" in {
+      val period = Jsons.SelfEmployment.period(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.periodWillBeNotBeCreatedFor(nino)
+        .when()
+        .post(period).to(s"/ni/$nino/self-employments/abc/periods")
+        .thenAssertThat()
+        .statusIs(404)
+        .bodyIsLike(Jsons.Errors.desNotFound)
+    }
+
     "return code 500 when DES is experiencing issues" in {
       val period = Jsons.SelfEmployment.period(
         fromDate = Some("2017-04-06"),
@@ -85,10 +99,10 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .post(period).to(s"/ni/$nino/self-employments/abc/periods")
         .thenAssertThat()
         .statusIs(500)
-        .bodyIsLike(Jsons.Errors.serverError)
+        .bodyIsLike(Jsons.Errors.internalServerError)
     }
 
-    "return code 503 when dependent systems are not available" in {
+    "return code 500 when dependent systems are not available" in {
       val period = Jsons.SelfEmployment.period(
         fromDate = Some("2017-04-06"),
         toDate = Some("2017-07-04"))
@@ -99,8 +113,18 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .when()
         .post(period).to(s"/ni/$nino/self-employments/abc/periods")
         .thenAssertThat()
-        .statusIs(503)
-        .bodyIsLike(Jsons.Errors.serviceUnavailable)
+        .statusIs(500)
+        .bodyIsLike(Jsons.Errors.internalServerError)
+    }
+
+    "return code 500 when we receive a status code from DES that we do not handle" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().isATeapotFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods")
+        .thenAssertThat()
+        .statusIs(500)
     }
   }
 
@@ -137,6 +161,24 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .put(Json.toJson(period)).at(s"/ni/$nino/self-employments/abc/periods/def")
         .thenAssertThat()
         .statusIs(404)
+    }
+
+    "return code 500 when we receive a status code from DES that we do not handle" in {
+      val period = Jsons.SelfEmployment.period(
+        fromDate = Some("2017-04-06"),
+        toDate = Some("2017-07-04"),
+        turnover = 100.25,
+        otherIncome = 100.25,
+        costOfGoodsBought = (100.25, 50.25),
+        cisPaymentsToSubcontractors = (100.25, 50.25))
+
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().isATeapotFor(nino)
+        .when()
+        .put(Json.toJson(period)).at(s"/ni/$nino/self-employments/abc/periods/def")
+        .thenAssertThat()
+        .statusIs(500)
     }
   }
 
@@ -183,6 +225,16 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments/abc/periods/def")
         .thenAssertThat()
         .statusIs(404)
+    }
+
+    "return code 500 when we receive a status code from DES that we do not handle" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().isATeapotFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods/def")
+        .thenAssertThat()
+        .statusIs(500)
     }
   }
 
@@ -233,6 +285,16 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments/abc/periods")
         .thenAssertThat()
         .statusIs(404)
+    }
+
+    "return code 500 when we receive a status code from DES that we do not handle" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().isATeapotFor(nino)
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods")
+        .thenAssertThat()
+        .statusIs(500)
     }
   }
 

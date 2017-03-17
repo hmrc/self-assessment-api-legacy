@@ -16,13 +16,28 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.wrappers
 
+import play.api.Logger
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.http.HttpResponse
+import uk.gov.hmrc.selfassessmentapi.models.des
+import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary
 
 class SelfEmploymentAnnualSummaryResponse(underlying: HttpResponse) {
 
+  private val logger = Logger(classOf[SelfEmploymentAnnualSummaryResponse])
+
   val status: Int = underlying.status
   def json: JsValue = underlying.json
+
+  def annualSummary: Option[SelfEmploymentAnnualSummary] = {
+    json.asOpt[des.SelfEmploymentAnnualSummary] match {
+      case Some(desSummary) => Some(SelfEmploymentAnnualSummary.from(desSummary))
+      case None => {
+        logger.error("The response from DES does not match the expected self-employment annual summary format.")
+        None
+      }
+    }
+  }
 }
 
 object SelfEmploymentAnnualSummaryResponse {

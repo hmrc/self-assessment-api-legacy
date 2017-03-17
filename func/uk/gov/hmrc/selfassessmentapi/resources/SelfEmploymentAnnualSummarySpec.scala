@@ -45,6 +45,64 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .contentTypeIsJson()
         .bodyIsLike(expectedBody)
     }
+
+    "return code 400 when provided with an invalid Originator-Id header" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().invalidOriginatorIdFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(400)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.invalidOriginatorId)
+    }
+
+    "return code 400 when provided with an invalid payload" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().payloadFailsValidationFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(400)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.invalidPayload)
+    }
+
+    "return code 500 when DES is experiencing problems" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serverErrorFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(500)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.internalServerError)
+    }
+
+    "return code 500 when a dependent system is not responding" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().serviceUnavailableFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(500)
+        .contentTypeIsJson()
+        .bodyIsLike(Jsons.Errors.internalServerError)
+    }
+
+    "return code 500 when we receive a status code from DES that we do not handle" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().isATeapotFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.update()).at(s"/ni/$nino/self-employments/$taxYear")
+        .thenAssertThat()
+        .statusIs(500)
+    }
   }
 
   "retrieveAnnualSummary" should {
@@ -96,10 +154,12 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
     "return code 404 when retrieving an annual summary for a non-existent self-employment" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.annualSummaryWillNotBeReturnedFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/sillyid/$taxYear")
+        .get(s"/ni/$nino/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(404)
+        .bodyIsLike(Jsons.Errors.ninoNotFound)
     }
 
     "return code 400 when retrieving annual summary for a non MTD year" in {
@@ -110,6 +170,16 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("TAX_YEAR_INVALID")
+    }
+
+    "return code 500 when we receive a status code from DES that we do not handle" in {
+      given()
+        .userIsAuthorisedForTheResource(nino)
+        .des().isATeapotFor(nino)
+        .when()
+        .put(Jsons.SelfEmployment.update()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(500)
     }
   }
 

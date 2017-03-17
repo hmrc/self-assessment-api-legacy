@@ -18,12 +18,14 @@ object DesJsons {
     val invalidNino: String = error("INVALID_NINO", "Submission has not passed validation. Invalid parameter NINO.")
     val invalidPayload: String = error("INVALID_PAYLOAD", "Submission has not passed validation. Invalid PAYLOAD.")
     val ninoNotFound: String = error("NOT_FOUND_NINO", "The remote endpoint has indicated that no data can be found.")
+    val notFound: String = error("NOT_FOUND", "The remote endpoint has indicated that no data can be found.")
     val tradingNameConflict: String = error("CONFLICT", "Duplicated trading name.")
     val serverError: String = error("SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")
     val serviceUnavailable: String = error("SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")
     val tooManySources: String = error("TOO_MANY_SOURCES", "You may only have a maximum of one self-employment source.")
     val invalidPeriod: String = error("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
     val invalidObligation: String = error("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
+    val invalidOriginatorId: String = error("INVALID_ORIGINATOR_ID", "Submission has not passed validation. Invalid header Originator-Id.")
   }
 
   object SelfEmployment {
@@ -199,27 +201,32 @@ object DesJsons {
       def apply(): String = {
         s"""
            |{
-           |  "allowances": {
-           |    "annualInvestmentAllowance": 200.00,
-           |    "capitalAllowanceMainPool": 200.00,
-           |    "capitalAllowanceSpecialRatePool": 200.00,
-           |    "businessPremisesRenovationAllowance": 200.00,
-           |    "enhancedCapitalAllowance": 200.00,
-           |    "allowanceOnSales": 200.00,
-           |    "zeroEmissionGoodsVehicleAllowance": 200.00
-           |  },
-           |  "adjustments": {
-           |    "includedNonTaxableProfits": 200.00,
-           |    "basisAdjustment": 200.00,
-           |    "overlapReliefUsed": 200.00,
-           |    "accountingAdjustment": 200.00,
-           |    "averagingAdjustment": 200.00,
-           |    "lossBroughtForward": 200.00,
-           |    "outstandingBusinessIncome": 200.00,
-           |    "balancingChargeBPRA": 200.00,
-           |    "balancingChargeOther": 200.00,
-           |    "goodsAndServicesOwnUse": 200.00
-           |  }
+           |   "annualAdjustments": {
+           |      "includedNonTaxableProfits": 200.00,
+           |      "basisAdjustment": 200.00,
+           |      "overlapReliefUsed": 200.00,
+           |      "accountingAdjustment": 200.00,
+           |      "averagingAdjustment": 200.00,
+           |      "lossBroughtForward": 200.00,
+           |      "outstandingBusinessIncome": 200.00,
+           |      "balancingChargeBpra": 200.00,
+           |      "balancingChargeOther": 200.00,
+           |      "goodsAndServicesOwnUse": 200.00
+           |   },
+           |   "annualAllowances": {
+           |      "annualInvestmentAllowance": 200.00,
+           |      "capitalAllowanceMainPool": 200.00,
+           |      "capitalAllowanceSpecialRatePool": 200.00,
+           |      "zeroEmissionGoodsVehicleAllowance": 200.00,
+           |      "businessPremisesRenovationAllowance": 200.00,
+           |      "enhanceCapitalAllowance": 200.00,
+           |      "allowanceOnSales": 200.00
+           |   },
+           |   "annualNonFinancials": {
+           |      "businessDetailsChangedRecently": 200.00,
+           |      "payClass2Nics": 200.00,
+           |      "exemptFromPayingClass2Nics": 200.00
+           |   }
            |}
        """.stripMargin
       }
@@ -258,4 +265,5 @@ object DesJsons {
          """.stripMargin
     }
   }
+
 }

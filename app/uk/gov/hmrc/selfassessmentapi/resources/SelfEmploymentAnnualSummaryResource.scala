@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
@@ -30,11 +31,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object SelfEmploymentAnnualSummaryResource extends BaseController {
-
+  private val logger = Logger(SelfEmploymentAnnualSummaryResource.getClass)
   private lazy val annualSummaryFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
   private val connector = SelfEmploymentAnnualSummaryConnector
 
-  // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmploymentAnnualSummary, SelfEmploymentAnnualSummaryResponse](request.body) { summary =>
       connector.update(nino, id, taxYear, des.SelfEmploymentAnnualSummary.from(summary))
@@ -42,8 +42,9 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
         if (response.status == 200) NoContent
-        else if (response.status == 404) NotFound
-        else Status(response.status)(Error.from(response.json))
+        else if (response.status == 404) NotFound(Error.from(response.json))
+        else if (response.status == 400) BadRequest(Error.from(response.json))
+        else unhandledResponse(response.status, logger)
       }
     }
   }
@@ -55,7 +56,8 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
         case Some(summary) => Ok(Json.toJson(summary))
         case None => NotFound
       }
-      else NotFound
+      else if (response.status == 404) NotFound(Error.from(response.json))
+      else unhandledResponse(response.status, logger)
     }
   }
 }

@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
+import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.Result
-import play.api.mvc.Results.BadRequest
+import play.api.mvc.Results.{BadRequest, InternalServerError}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.models.{ErrorResult, Errors, GenericErrorResult, ValidationErrorResult}
@@ -29,6 +30,11 @@ import scala.util.{Failure, Success, Try}
 package object resources {
 
   val GovTestScenarioHeader = "Gov-Test-Scenario"
+
+  def unhandledResponse(status: Int, logger: Logger): Result = {
+    logger.warn(s"Unhandled response from DES. Status code: $status. Returning 500 to client.")
+    InternalServerError(Json.toJson(Errors.InternalServerError("An internal server error occurred")))
+  }
 
   def handleValidationErrors(errorResult: ErrorResult): Result = {
     errorResult match {

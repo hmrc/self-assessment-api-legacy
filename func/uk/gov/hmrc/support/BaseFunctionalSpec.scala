@@ -433,6 +433,15 @@ trait BaseFunctionalSpec extends TestApplication {
 
 
     class Des(givens: Givens) {
+      def isATeapotFor(nino: Nino): Givens = {
+        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+          .willReturn(
+            aResponse()
+              .withStatus(418)))
+
+        givens
+      }
+
       def invalidOriginatorIdFor(nino: Nino): Givens = {
         stubFor(any(urlMatching(s".*/nino/$nino.*"))
           .willReturn(
@@ -517,7 +526,7 @@ trait BaseFunctionalSpec extends TestApplication {
         }
 
         def failsTradingName(nino: Nino): Givens = {
-          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+          stubFor(any(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
             .willReturn(
               aResponse()
                 .withStatus(409)
@@ -556,6 +565,17 @@ trait BaseFunctionalSpec extends TestApplication {
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.Period.createResponse())))
+
+          givens
+        }
+
+        def periodWillBeNotBeCreatedFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.notFound)))
 
           givens
         }
@@ -642,6 +662,28 @@ trait BaseFunctionalSpec extends TestApplication {
             .willReturn(
               aResponse()
                 .withStatus(200)))
+
+          givens
+        }
+
+        def annualSummaryWillNotBeUpdatedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.ninoNotFound)))
+
+          givens
+        }
+
+        def annualSummaryWillNotBeReturnedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.ninoNotFound)))
 
           givens
         }
@@ -736,11 +778,11 @@ trait BaseFunctionalSpec extends TestApplication {
           stubFor(
             get(urlEqualTo(s"/ni/$nino/self-employments/$id/obligations"))
               .withHeader("Gov-Test-Scenario", matching(headerValue))
-            .willReturn(
-              aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(DesJsons.Obligations())))
+              .willReturn(
+                aResponse()
+                  .withStatus(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(DesJsons.Obligations())))
 
           givens
         }

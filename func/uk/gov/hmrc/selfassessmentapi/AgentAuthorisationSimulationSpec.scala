@@ -101,14 +101,9 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
     "receive a modified HTTP 400 Bad Request when they attempt to update a periodic summary with an invalid identifier" in {
       given()
         .userIsAuthorisedForTheResource(nino)
-        .des().selfEmployment.willBeCreatedFor(nino)
-        .des().selfEmployment.willBeReturnedFor(nino)
+        .des().selfEmployment.periodWillNotBeUpdatedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Jsons.SelfEmployment.period()).at(s"%sourceLocation%/periods/invalid-id")
+        .put(Jsons.SelfEmployment.period()).at(s"/ni/$nino/self-employments/abc/periods/def")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
@@ -157,8 +152,9 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
     "receive a modified HTTP 400 Bad Request when they attempt to update an annual summary with an invalid identifier" in {
       given()
         .userIsAuthorisedForTheResource(nino)
+        .des().selfEmployment.annualSummaryWillNotBeUpdatedFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/invalid-id/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest

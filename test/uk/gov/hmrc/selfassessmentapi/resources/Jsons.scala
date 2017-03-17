@@ -41,15 +41,16 @@ object Jsons {
        """.stripMargin
 
     val invalidNino: String = errorWithMessage("INVALID_NINO", "Submission has not passed validation. Invalid parameter NINO.")
+    val ninoInvalid: String = errorWithMessage("NINO_INVALID", "The provided Nino is invalid")
     val invalidPayload: String = errorWithMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid PAYLOAD.")
     val ninoNotFound: String = errorWithMessage("NOT_FOUND_NINO", "The remote endpoint has indicated that no data can be found.")
+    val desNotFound: String = errorWithMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found.")
     val duplicateTradingName: String = errorWithMessage("CONFLICT", "Duplicated trading name.")
-    val serverError: String = errorWithMessage("SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")
-    val serviceUnavailable: String = errorWithMessage("SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")
     val notFound: String = errorWithMessage("NOT_FOUND", "Resource was not found")
     val invalidPeriod: String = errorWithMessage("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
     val invalidObligation: String = errorWithMessage("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
     val invalidOriginatorId: String = errorWithMessage("INVALID_ORIGINATOR_ID", "Submission has not passed validation. Invalid header Originator-Id.")
+    val internalServerError: String = errorWithMessage("INTERNAL_SERVER_ERROR", "An internal server error occurred")
 
     def invalidRequest(errors: (String, String)*): String = {
       s"""

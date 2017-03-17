@@ -18,6 +18,7 @@ object DesJsons {
     val invalidNino: String = error("INVALID_NINO", "Submission has not passed validation. Invalid parameter NINO.")
     val invalidPayload: String = error("INVALID_PAYLOAD", "Submission has not passed validation. Invalid PAYLOAD.")
     val ninoNotFound: String = error("NOT_FOUND_NINO", "The remote endpoint has indicated that no data can be found.")
+    val notFound: String = error("NOT_FOUND", "The remote endpoint has indicated that no data can be found.")
     val tradingNameConflict: String = error("CONFLICT", "Duplicated trading name.")
     val serverError: String = error("SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")
     val serviceUnavailable: String = error("SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")

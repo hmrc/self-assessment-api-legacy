@@ -38,6 +38,7 @@ object DesErrorCode extends Enumeration {
   val INVALID_NINO,
   INVALID_PAYLOAD,
   NOT_FOUND_NINO,
+  NOT_FOUND,
   CONFLICT,
   SERVER_ERROR,
   SERVICE_UNAVAILABLE,

@@ -37,42 +37,47 @@ object SelfEmploymentPeriodResource extends BaseController {
 
   def createPeriod(nino: Nino, sourceId: SourceId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmploymentPeriod, SelfEmploymentPeriodResponse](request.body) { period =>
-      connector.create(nino, sourceId, des.SelfEmploymentPeriod.from(period))
+      connector.create(nino, sourceId, Mapper[SelfEmploymentPeriod, des.SelfEmploymentPeriod].from(period))
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
-      case Right(result) => result.map { response =>
-        if (response.status == 200) Created.withHeaders(LOCATION -> response.createLocationHeader(nino, sourceId).getOrElse(""))
-        else if (response.status == 404) NotFound
-        else if (response.containsOverlappingPeriod) Forbidden(Json.toJson(Error.from(response.json)))
-        else Status(response.status)(Error.from(response.json))
-      }
+      case Right(result) =>
+        result.map { response =>
+          if (response.status == 200)
+            Created.withHeaders(LOCATION -> response.createLocationHeader(nino, sourceId).getOrElse(""))
+          else if (response.status == 404) NotFound
+          else if (response.containsOverlappingPeriod) Forbidden(Json.toJson(Error.from(response.json)))
+          else Status(response.status)(Error.from(response.json))
+        }
     }
   }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
-  def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[SelfEmploymentPeriodicData, SelfEmploymentPeriodResponse](request.body) { period =>
-      connector.update(nino, id, periodId, Financials.from(period))
-    } match {
-      case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
-      case Right(result) => result.map { response =>
-        if (response.status == 204) NoContent
-        else NotFound
+  def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[JsValue] =
+    featureSwitch.asyncJsonFeatureSwitch { request =>
+      validate[SelfEmploymentPeriodicData, SelfEmploymentPeriodResponse](request.body) { period =>
+        connector.update(nino, id, periodId, Mapper[SelfEmploymentPeriodicData, Financials].from(period))
+      } match {
+        case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
+        case Right(result) =>
+          result.map { response =>
+            if (response.status == 204) NoContent
+            else NotFound
+          }
       }
     }
-  }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
-  def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
-    connector.get(nino, id, periodId).map { response =>
-      if (response.status == 200) response.period match {
-        case Some(period) => Ok(Json.toJson(period))
-        case None => NotFound
-      } else {
-        Status(response.status)(Error.from(response.json))
+  def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[AnyContent] =
+    featureSwitch.asyncFeatureSwitch {
+      connector.get(nino, id, periodId).map { response =>
+        if (response.status == 200) response.period match {
+          case Some(period) => Ok(Json.toJson(period))
+          case None => NotFound
+        } else {
+          Status(response.status)(Error.from(response.json))
+        }
       }
     }
-  }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
   def retrievePeriods(nino: Nino, id: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {

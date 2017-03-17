@@ -25,24 +25,30 @@ import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, _}
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.ExpenseType.ExpenseType
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.IncomeType.IncomeType
 
-case class SelfEmploymentPeriod(id: Option[String], from: LocalDate, to: LocalDate, data: SelfEmploymentPeriodicData) extends Period {
+case class SelfEmploymentPeriod(id: Option[String], from: LocalDate, to: LocalDate, data: SelfEmploymentPeriodicData)
+    extends Period {
   def asSummary: PeriodSummary = PeriodSummary(id.getOrElse(""), from, to)
 }
 
 object SelfEmploymentPeriod extends PeriodValidator[SelfEmploymentPeriod] {
 
-  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.{expenseTypeFormat, incomeTypeFormat}
+  import uk.gov.hmrc.selfassessmentapi.domain.JsonFormatters.SelfEmploymentFormatters.{
+    expenseTypeFormat,
+    incomeTypeFormat
+  }
 
-  def from(desPeriod: des.SelfEmploymentPeriod): SelfEmploymentPeriod = {
-    SelfEmploymentPeriod(
-      id = desPeriod.id,
-      from = LocalDate.parse(desPeriod.from),
-      to = LocalDate.parse(desPeriod.to),
-      data = SelfEmploymentPeriodicData(
-        incomes = incomes2Map(desPeriod),
-        expenses = expenses2Map(desPeriod)
+  implicit object MapperInstance extends Mapper[des.SelfEmploymentPeriod, SelfEmploymentPeriod] {
+    override def from(desPeriod: des.SelfEmploymentPeriod): SelfEmploymentPeriod = {
+      SelfEmploymentPeriod(
+        id = desPeriod.id,
+        from = LocalDate.parse(desPeriod.from),
+        to = LocalDate.parse(desPeriod.to),
+        data = SelfEmploymentPeriodicData(
+          incomes = incomes2Map(desPeriod),
+          expenses = expenses2Map(desPeriod)
+        )
       )
-    )
+    }
   }
 
   private def incomes2Map(desPeriod: des.SelfEmploymentPeriod): Map[IncomeType, Income] = {
@@ -95,13 +101,19 @@ object SelfEmploymentPeriod extends PeriodValidator[SelfEmploymentPeriod] {
       (__ \ "to").read[LocalDate] and
       (__ \ "incomes").readNullable[Map[IncomeType, Income]] and
       (__ \ "expenses").readNullable[Map[ExpenseType, Expense]](depreciationValidator)
-    ) (
-    (from, to, income, expense) => {
-      SelfEmploymentPeriod(None, from, to, SelfEmploymentPeriodicData(income.getOrElse(Map.empty), expense.getOrElse(Map.empty)))
-    })
-    .filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(periodDateValidator)
+  )((from, to, income, expense) => {
+    SelfEmploymentPeriod(None,
+                         from,
+                         to,
+                         SelfEmploymentPeriodicData(income.getOrElse(Map.empty), expense.getOrElse(Map.empty)))
+  }).filter(ValidationError("the period 'from' date should come before the 'to' date", ErrorCode.INVALID_PERIOD))(
+    periodDateValidator)
 
-  private def depreciationValidator = Reads.of[Map[ExpenseType, Expense]].filter(
-    ValidationError("the disallowableAmount for depreciation expenses must be the same as the amount", ErrorCode.DEPRECIATION_DISALLOWABLE_AMOUNT)
-  )(_.get(ExpenseType.Depreciation).forall(e => e.amount == e.disallowableAmount.getOrElse(false)))
+  private def depreciationValidator =
+    Reads
+      .of[Map[ExpenseType, Expense]]
+      .filter(
+        ValidationError("the disallowableAmount for depreciation expenses must be the same as the amount",
+                        ErrorCode.DEPRECIATION_DISALLOWABLE_AMOUNT)
+      )(_.get(ExpenseType.Depreciation).forall(e => e.amount == e.disallowableAmount.getOrElse(false)))
 }

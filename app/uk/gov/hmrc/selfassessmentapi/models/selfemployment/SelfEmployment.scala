@@ -38,40 +38,49 @@ case class SelfEmployment(id: Option[SourceId] = None,
                           businessPostcode: String)
 
 object SelfEmployment {
-  def from(desSelfEmployment: des.SelfEmployment, withId: Boolean = true): Option[SelfEmployment] = {
-    for {
-      accountingType <- AccountingType.fromDes(desSelfEmployment.cashOrAccruals)
-      commencementDate <- desSelfEmployment.tradingStartDate
-      address <- desSelfEmployment.addressDetails
-      addressPostcode <- address.postalCode
-    } yield SelfEmployment(
-      id = if (withId) desSelfEmployment.incomeSourceId else None,
-      accountingPeriod = AccountingPeriod(
-        start = LocalDate.parse(desSelfEmployment.accountingPeriodStartDate),
-        end = LocalDate.parse(desSelfEmployment.accountingPeriodEndDate)),
-      accountingType = accountingType,
-      commencementDate = LocalDate.parse(commencementDate),
-      cessationDate = None,
-      tradingName = desSelfEmployment.tradingName,
-      businessDescription = desSelfEmployment.typeOfBusiness.getOrElse(""), // FIXME: Not returned in DES response, it should be there...
-      businessAddressLineOne = address.addressLine1,
-      businessAddressLineTwo = address.addressLine2,
-      businessAddressLineThree = address.addressLine3,
-      businessAddressLineFour = address.addressLine4,
-      businessPostcode = addressPostcode)
+  implicit object MapperInstance extends Mapper[des.SelfEmployment, Option[SelfEmployment]] {
+    override def from(desSelfEmployment: des.SelfEmployment): Option[SelfEmployment] = {
+      for {
+        accountingType <- AccountingType.fromDes(desSelfEmployment.cashOrAccruals)
+        commencementDate <- desSelfEmployment.tradingStartDate
+        address <- desSelfEmployment.addressDetails
+        addressPostcode <- address.postalCode
+      } yield
+        SelfEmployment(
+          id = desSelfEmployment.incomeSourceId,
+          accountingPeriod = AccountingPeriod(start = LocalDate.parse(desSelfEmployment.accountingPeriodStartDate),
+                                              end = LocalDate.parse(desSelfEmployment.accountingPeriodEndDate)),
+          accountingType = accountingType,
+          commencementDate = LocalDate.parse(commencementDate),
+          cessationDate = None,
+          tradingName = desSelfEmployment.tradingName,
+          businessDescription = desSelfEmployment.typeOfBusiness.getOrElse(""), // FIXME: Not returned in DES response, it should be there...
+          businessAddressLineOne = address.addressLine1,
+          businessAddressLineTwo = address.addressLine2,
+          businessAddressLineThree = address.addressLine3,
+          businessAddressLineFour = address.addressLine4,
+          businessPostcode = addressPostcode)
+    }
   }
 
-  val commencementDateValidator: Reads[LocalDate] = Reads.of[LocalDate].filter(
-    ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
-  )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
+  val commencementDateValidator: Reads[LocalDate] = Reads
+    .of[LocalDate]
+    .filter(
+      ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
+    )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
 
   private def lengthIsBetween(minLength: Int, maxLength: Int): Reads[String] =
-    Reads.of[String].filter(ValidationError(s"field length must be between $minLength and $maxLength characters", ErrorCode.INVALID_FIELD_LENGTH)
-    )(name => name.length <= maxLength && name.length >= minLength)
+    Reads
+      .of[String]
+      .filter(
+        ValidationError(s"field length must be between $minLength and $maxLength characters",
+                        ErrorCode.INVALID_FIELD_LENGTH))(name => name.length <= maxLength && name.length >= minLength)
 
   private val validateSIC: Reads[String] =
-    Reads.of[String].filter(ValidationError("business description must be a string that conforms to the UK SIC 2007 classifications", ErrorCode.INVALID_BUSINESS_DESCRIPTION)
-    )(name => sicClassifications.get.contains(name))
+    Reads
+      .of[String]
+      .filter(ValidationError("business description must be a string that conforms to the UK SIC 2007 classifications",
+                              ErrorCode.INVALID_BUSINESS_DESCRIPTION))(name => sicClassifications.get.contains(name))
 
   implicit val writes: Writes[SelfEmployment] = Json.writes[SelfEmployment]
 
@@ -88,5 +97,5 @@ object SelfEmployment {
       (__ \ "businessAddressLineThree").readNullable[String](lengthIsBetween(1, 35)) and
       (__ \ "businessAddressLineFour").readNullable[String](lengthIsBetween(1, 35)) and
       (__ \ "businessPostcode").read[String](lengthIsBetween(1, 10))
-    ) (SelfEmployment.apply _)
+  )(SelfEmployment.apply _)
 }

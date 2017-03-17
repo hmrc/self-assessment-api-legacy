@@ -18,9 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
+import uk.gov.hmrc.selfassessmentapi.models
+import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.resources.{JsonSpec, Jsons}
-import uk.gov.hmrc.selfassessmentapi.models.{AccountingPeriod, AccountingType, ErrorCode}
-import uk.gov.hmrc.selfassessmentapi.models.des
 
 class SelfEmploymentSpec extends JsonSpec {
 
@@ -197,7 +197,7 @@ class SelfEmploymentSpec extends JsonSpec {
 
   "constructing a API SelfEmployment using the DES SelfEmployment" should {
     "correctly map fields" in {
-      val selfEmployment = SelfEmployment.from(createDesSelfEmployment()).get
+      val selfEmployment = Mapper[des.SelfEmployment, Option[models.selfemployment.SelfEmployment]].from(createDesSelfEmployment()).get
 
       selfEmployment.id shouldBe Some("abc")
       selfEmployment.accountingPeriod shouldBe AccountingPeriod(LocalDate.parse("2017-01-04"), LocalDate.parse("2017-01-05"))
@@ -214,7 +214,7 @@ class SelfEmploymentSpec extends JsonSpec {
     }
 
     "correctly map the accrual accounting type" in {
-      val selfEmployment = SelfEmployment.from(createDesSelfEmployment(accountingType = "accruals")).get
+      val selfEmployment = Mapper[des.SelfEmployment, Option[models.selfemployment.SelfEmployment]].from(createDesSelfEmployment(accountingType = "accruals")).get
 
       selfEmployment.accountingType shouldBe AccountingType.ACCRUAL
     }

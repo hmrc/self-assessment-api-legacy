@@ -20,7 +20,7 @@ import play.api.Logger
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.HttpResponse
-import uk.gov.hmrc.selfassessmentapi.models.{SourceId, des}
+import uk.gov.hmrc.selfassessmentapi.models.{Mapper, SourceId, des}
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmployment
 
 
@@ -44,9 +44,10 @@ class SelfEmploymentResponse(underlying: HttpResponse) {
   def selfEmployment(id: SourceId): Option[SelfEmployment] = {
     (json \ "businessData").asOpt[Seq[des.SelfEmployment]] match {
       case Some(selfEmployments) =>
-        selfEmployments.find(_.incomeSourceId.exists(_ == id)).flatMap { se =>
-          SelfEmployment.from(se, withId = false)
-        }
+        for {
+          desSe <- selfEmployments.find(_.incomeSourceId.exists(_ == id))
+          se <- Mapper[des.SelfEmployment, Option[SelfEmployment]].from(desSe)
+        } yield se.copy(id = None)
       case None => {
         logger.error("The 'businessData' field was not found in the response from DES")
         None
@@ -57,7 +58,7 @@ class SelfEmploymentResponse(underlying: HttpResponse) {
   def listSelfEmployment: Seq[SelfEmployment] = {
     (json \ "businessData").asOpt[Seq[des.SelfEmployment]] match {
       case Some(selfEmployments) =>
-        selfEmployments.flatMap(SelfEmployment.from(_))
+        selfEmployments.flatMap(Mapper[des.SelfEmployment, Option[SelfEmployment]].from(_))
       case None => {
         logger.error("The 'businessData' field was not found in the response from DES")
         Seq.empty

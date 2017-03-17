@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.models.properties
+package uk.gov.hmrc.selfassessmentapi.models.des
 
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.models.{Mapper, des}
+import uk.gov.hmrc.selfassessmentapi.models.{Mapper, properties}
 
 case class Properties()
 
 object Properties {
-  // these odd choices are a workaround to the fact that you cannot use Json.reads[Properties] on an case class with
-  // new properties
   implicit val reads: Reads[Properties] = new Reads[Properties] {
     override def reads(json: JsValue) = json match {
       case JsObject(_) => JsSuccess(Properties())
       case _ => JsError()
     }
   }
-
   implicit val writes: Writes[Properties] = new Writes[Properties] {
     override def writes(o: Properties) = JsObject(Seq())
   }
 
-  implicit object MapperInstance extends Mapper[des.Properties, Properties] {
-    override def from(desProperties: des.Properties): Properties = Properties()
+  implicit object MapperInstance extends Mapper[properties.Properties, Properties] {
+    override def from(apiProperties: properties.Properties): Properties = Properties()
   }
 
 }

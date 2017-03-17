@@ -24,6 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentConnector
 import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.Errors
 import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models.des.Business
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{SelfEmployment, SelfEmploymentUpdate}
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentResponse
 
@@ -31,32 +32,40 @@ import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
 object SelfEmploymentsResource extends BaseController {
+
   private lazy val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
   private val connector = SelfEmploymentConnector
 
   def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmployment, SelfEmploymentResponse](request.body) { selfEmployment =>
-      connector.create(nino, des.Business.from(selfEmployment))
+      connector.create(nino, Mapper[SelfEmployment, Business].from(selfEmployment))
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
-      case Right(response) => response.map { res =>
-        if (res.status == 200) Created.withHeaders(LOCATION -> res.createLocationHeader(nino).getOrElse(""))
-        else if (res.status == 403) Forbidden(Json.toJson(Errors.businessError(Error(ErrorCode.TOO_MANY_SOURCES.toString, s"The maximum number of Self-Employment incomes sources is 1", ""))))
-        else Status(res.status)(Error.from(res.json))
-      }
+      case Right(response) =>
+        response.map { res =>
+          if (res.status == 200) Created.withHeaders(LOCATION -> res.createLocationHeader(nino).getOrElse(""))
+          else if (res.status == 403)
+            Forbidden(
+              Json.toJson(
+                Errors.businessError(Error(ErrorCode.TOO_MANY_SOURCES.toString,
+                                           s"The maximum number of Self-Employment incomes sources is 1",
+                                           ""))))
+          else Status(res.status)(Error.from(res.json))
+        }
     }
   }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
   def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
     validate[SelfEmploymentUpdate, SelfEmploymentResponse](request.body) { selfEmployment =>
-      connector.update(nino, des.SelfEmploymentUpdate.from(selfEmployment), id)
+      connector.update(nino, Mapper[SelfEmploymentUpdate, des.SelfEmploymentUpdate].from(selfEmployment), id)
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
-      case Right(result) => result.map { res =>
-        if (res.status == 204) NoContent
-        else NotFound
-      }
+      case Right(result) =>
+        result.map { res =>
+          if (res.status == 204) NoContent
+          else NotFound
+        }
     }
   }
 
@@ -65,8 +74,7 @@ object SelfEmploymentsResource extends BaseController {
       if (response.status == 200) response.selfEmployment(id) match {
         case Some(se) => Ok(Json.toJson(se))
         case None => NotFound
-      }
-      else Status(response.status)(Error.from(response.json))
+      } else Status(response.status)(Error.from(response.json))
     }
   }
 

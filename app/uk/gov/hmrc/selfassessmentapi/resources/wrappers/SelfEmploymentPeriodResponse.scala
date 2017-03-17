@@ -20,7 +20,7 @@ import play.api.Logger
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.HttpResponse
-import uk.gov.hmrc.selfassessmentapi.models.{PeriodSummary, SourceId, SourceType, des}
+import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.des.{DesError, DesErrorCode}
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmploymentPeriod
 
@@ -54,7 +54,7 @@ class SelfEmploymentPeriodResponse(underlying: HttpResponse) {
 
   def period: Option[SelfEmploymentPeriod] = {
     json.asOpt[des.SelfEmploymentPeriod] match {
-      case Some(desPeriod) => Some(SelfEmploymentPeriod.from(desPeriod))
+      case Some(desPeriod) => Some(Mapper[des.SelfEmploymentPeriod, SelfEmploymentPeriod].from(desPeriod))
       case None => {
         logger.error("The response from DES does not match the expected self-employment period format.")
         None
@@ -64,7 +64,8 @@ class SelfEmploymentPeriodResponse(underlying: HttpResponse) {
 
   def allPeriods: Seq[PeriodSummary] = {
     json.asOpt[Seq[des.SelfEmploymentPeriod]] match {
-      case Some(desPeriods) => desPeriods.map(period => SelfEmploymentPeriod.from(period).asSummary)
+      case Some(desPeriods) =>
+        desPeriods.map(period => Mapper[des.SelfEmploymentPeriod, SelfEmploymentPeriod].from(period).asSummary)
       case None => {
         logger.error("The response from DES does not match the expected self-employment period format.")
         Seq.empty

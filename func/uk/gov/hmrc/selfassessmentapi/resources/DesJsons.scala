@@ -26,6 +26,7 @@ object DesJsons {
     val invalidPeriod: String = error("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
     val invalidObligation: String = error("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
     val invalidOriginatorId: String = error("INVALID_ORIGINATOR_ID", "Submission has not passed validation. Invalid header Originator-Id.")
+    val propertyConflict: String = error("CONFLICT", "Property already exists.")
   }
 
   object SelfEmployment {
@@ -232,6 +233,49 @@ object DesJsons {
       }
     }
 
+  }
+
+  object Properties {
+    def createResponse: String = {
+      s"""
+         |{
+         |  "safeId": "XA0001234567890",
+         |  "mtditId": "mdtitId001",
+         |  "incomeSource":
+         |    {
+         |      "incomeSourceId": "1234567"
+         |    }
+         |}
+      """.stripMargin
+    }
+
+
+  def retrieveProperty: String = {
+      s"""
+         {
+         |   "safeId": "XE00001234567890",
+         |   "nino": "AA123456A",
+         |   "mtdbsa": "123456789012345",
+         |   "propertyIncome": false,
+         |   "propertyData": {
+         |      "incomeSourceId": "123456789012345",
+         |      "accountingPeriodStartDate": "2001-01-01",
+         |      "accountingPeriodEndDate": "2001-01-01"
+         |    }
+         |}
+      """.stripMargin
+    }
+
+    def retrieveNoProperty: String = {
+      s"""
+         {
+         |   "safeId": "XE00001234567890",
+         |   "nino": "AA123456A",
+         |   "mtdbsa": "123456789012345",
+         |   "propertyIncome": false
+         |}
+      """.stripMargin
+    }
   }
 
   object Obligations {

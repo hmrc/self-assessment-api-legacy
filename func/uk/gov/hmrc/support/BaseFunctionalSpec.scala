@@ -799,6 +799,53 @@ trait BaseFunctionalSpec extends TestApplication {
         }
       }
 
+      object properties {
+
+        def willBeCreatedFor(nino: Nino): Givens = {
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/properties"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Properties.createResponse)))
+          givens
+        }
+
+        def willConflict(nino: Nino): Givens = {
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/properties"))
+            .willReturn(
+              aResponse()
+                .withStatus(403)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.propertyConflict)
+            ))
+
+          givens
+        }
+
+        def willBeReturnedFor(nino: Nino): Givens = {
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Properties.retrieveProperty)))
+          givens
+        }
+
+
+        def willReturnNone (nino: Nino): Givens = {
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Properties.retrieveNoProperty)))
+          givens
+        }
+
+      }
+
     }
 
     def des() = new Des(this)

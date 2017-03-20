@@ -36,6 +36,11 @@ object Errors {
       Json.obj("code" -> req.code, "message" -> req.message, "errors" -> req.errors)
   }
 
+  implicit val internalServerErrorWrites: Writes[InternalServerError] = new Writes[InternalServerError] {
+    override def writes(req: InternalServerError): JsValue =
+      Json.obj("code" -> req.code, "message" -> req.message)
+  }
+
   case class Error(code: String, message: String, path: String)
 
   object Error {
@@ -65,6 +70,10 @@ object Errors {
 
   case class BusinessError(errors: Seq[Error], message: String) {
     val code = "BUSINESS_ERROR"
+  }
+
+  case class InternalServerError(message: String) {
+    val code = "INTERNAL_SERVER_ERROR"
   }
 
   def badRequest(validationErrors: ValidationErrors) = BadRequest(flattenValidationErrors(validationErrors), "Invalid request")

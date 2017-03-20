@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent, RequestHeader}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -27,7 +28,8 @@ import uk.gov.hmrc.selfassessmentapi.models._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object SelfEmploymentObligationsResource extends BaseController {
-  private val featureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "obligations")
+  private val logger = Logger(SelfEmploymentObligationsResource.getClass)
+  private lazy val featureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "obligations")
   private val connector = SelfEmploymentObligationsConnector
 
   private def obligationHeaders(request: RequestHeader): HeaderCarrier = {
@@ -41,7 +43,8 @@ object SelfEmploymentObligationsResource extends BaseController {
     connector.get(nino, id)(obligationHeaders(headers)).map { response =>
       if (response.status == 200) Ok(response.json)
       else if (response.status == 404) NotFound
-      else Status(response.status)(Error.from(response.json))
+      else if (response.status == 400) BadRequest(Error.from(response.json))
+      else unhandledResponse(response.status, logger)
     }
   }
 }

@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.models.des
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
 
 case class SelfEmploymentAnnualSummary(allowances: Option[Allowances], adjustments: Option[Adjustments])
@@ -40,5 +41,36 @@ object SelfEmploymentAnnualSummary {
         annualSummary.allowances.exists(_.businessPremisesRenovationAllowance.exists(_ > 0))
       }
     }
+  }
+
+  def from(desSummary: des.SelfEmploymentAnnualSummary): SelfEmploymentAnnualSummary = {
+    val adjustments = desSummary.annualAdjustments.map { adj =>
+      Adjustments(
+        includedNonTaxableProfits = adj.includedNonTaxableProfits,
+        basisAdjustment = adj.basisAdjustment,
+        overlapReliefUsed = adj.overlapReliefUsed,
+        accountingAdjustment = adj.accountingAdjustment,
+        averagingAdjustment = adj.averagingAdjustment,
+        lossBroughtForward = adj.lossBroughtForward,
+        outstandingBusinessIncome = adj.outstandingBusinessIncome,
+        balancingChargeBPRA = adj.balancingChargeBpra,
+        balancingChargeOther = adj.balancingChargeOther,
+        goodsAndServicesOwnUse = adj.goodsAndServicesOwnUse
+      )
+    }
+
+    val allowances = desSummary.annualAllowances.map { allow =>
+      Allowances(
+        annualInvestmentAllowance = allow.annualInvestmentAllowance,
+        capitalAllowanceMainPool = allow.capitalAllowanceMainPool,
+        capitalAllowanceSpecialRatePool = allow.capitalAllowanceSpecialRatePool,
+        businessPremisesRenovationAllowance = allow.businessPremisesRenovationAllowance,
+        enhancedCapitalAllowance = allow.enhanceCapitalAllowance,
+        allowanceOnSales = allow.allowanceOnSales,
+        zeroEmissionGoodsVehicleAllowance = allow.zeroEmissionGoodsVehicleAllowance
+      )
+    }
+
+    SelfEmploymentAnnualSummary(allowances, adjustments)
   }
 }

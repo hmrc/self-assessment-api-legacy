@@ -17,6 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.models
 
 import uk.gov.hmrc.selfassessmentapi.models
+import uk.gov.hmrc.selfassessmentapi.models.selfemployment.Allowances
 
 package object des {
   def expense2Deduction(expense: models.Expense): Deduction =

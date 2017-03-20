@@ -17,7 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
+import uk.gov.hmrc.selfassessmentapi.models.des
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.models.des.{AnnualAdjustments, AnnualAllowances}
 
 class SelfEmploymentAnnualSummarySpec extends JsonSpec {
   "format" should {
@@ -71,4 +73,56 @@ class SelfEmploymentAnnualSummarySpec extends JsonSpec {
     }
   }
 
+
+  "from" should {
+    "correctly map a DES self-employment to an API self-employment" in {
+      val desSelfEmployment = des.SelfEmploymentAnnualSummary(
+        annualAdjustments = Some(AnnualAdjustments(
+          includedNonTaxableProfits = Some(200.25),
+          basisAdjustment = Some(200.25),
+          overlapReliefUsed = Some(200.25),
+          accountingAdjustment = Some(200.25),
+          averagingAdjustment = Some(200.25),
+          lossBroughtForward = Some(200.25),
+          outstandingBusinessIncome = Some(200.25),
+          balancingChargeBpra = Some(200.25),
+          balancingChargeOther = Some(200.25),
+          goodsAndServicesOwnUse = Some(200.25)
+        )),
+        annualAllowances = Some(AnnualAllowances(
+          annualInvestmentAllowance = Some(200.25),
+          capitalAllowanceMainPool = Some(200.25),
+          capitalAllowanceSpecialRatePool = Some(200.25),
+          businessPremisesRenovationAllowance = Some(200.25),
+          enhanceCapitalAllowance = Some(200.25),
+          allowanceOnSales = Some(200.25),
+          zeroEmissionGoodsVehicleAllowance = Some(200.25)
+        )),
+        annualNonFinancials = None
+      )
+
+      val apiSummary = SelfEmploymentAnnualSummary.from(desSelfEmployment)
+      val adjustments = apiSummary.adjustments.get
+      val allowances = apiSummary.allowances.get
+
+      adjustments.includedNonTaxableProfits shouldBe Some(200.25)
+      adjustments.basisAdjustment shouldBe Some(200.25)
+      adjustments.overlapReliefUsed shouldBe Some(200.25)
+      adjustments.accountingAdjustment shouldBe Some(200.25)
+      adjustments.averagingAdjustment shouldBe Some(200.25)
+      adjustments.lossBroughtForward shouldBe Some(200.25)
+      adjustments.outstandingBusinessIncome shouldBe Some(200.25)
+      adjustments.balancingChargeBPRA shouldBe Some(200.25)
+      adjustments.balancingChargeOther shouldBe Some(200.25)
+      adjustments.goodsAndServicesOwnUse shouldBe Some(200.25)
+
+      allowances.annualInvestmentAllowance shouldBe Some(200.25)
+      allowances.capitalAllowanceMainPool shouldBe Some(200.25)
+      allowances.capitalAllowanceSpecialRatePool shouldBe Some(200.25)
+      allowances.businessPremisesRenovationAllowance shouldBe Some(200.25)
+      allowances.enhancedCapitalAllowance shouldBe Some(200.25)
+      allowances.allowanceOnSales shouldBe Some(200.25)
+      allowances.zeroEmissionGoodsVehicleAllowance shouldBe Some(200.25)
+    }
+  }
 }

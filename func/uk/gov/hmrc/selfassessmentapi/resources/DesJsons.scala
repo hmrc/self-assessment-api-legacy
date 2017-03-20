@@ -26,6 +26,7 @@ object DesJsons {
     val invalidPeriod: String = error("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
     val invalidObligation: String = error("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
     val invalidOriginatorId: String = error("INVALID_ORIGINATOR_ID", "Submission has not passed validation. Invalid header Originator-Id.")
+    val propertyConflict: String = error("CONFLICT", "Property already exists.")
   }
 
   object SelfEmployment {
@@ -232,6 +233,21 @@ object DesJsons {
       }
     }
 
+  }
+
+  object Properties {
+    def createResponse(id: String): String = {
+      s"""
+         |{
+         |  "safeId": "XA0001234567890",
+         |  "mtditId": "mdtitId001",
+         |  "incomeSource":
+         |    {
+         |      "incomeSourceId": "$id"
+         |    }
+         |}
+      """.stripMargin
+    }
   }
 
   object Obligations {

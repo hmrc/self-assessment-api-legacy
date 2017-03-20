@@ -16,35 +16,42 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.selfassessmentapi.connectors.PropertiesConnector
 import uk.gov.hmrc.selfassessmentapi.models.Errors._
 import uk.gov.hmrc.selfassessmentapi.models._
+import uk.gov.hmrc.selfassessmentapi.models.des.Properties
+import uk.gov.hmrc.selfassessmentapi.resources.wrappers.PropertiesResponse
 import uk.gov.hmrc.selfassessmentapi.services.PropertiesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object PropertiesResource extends BaseController {
-
+  private val logger = Logger(PropertiesResource.getClass)
   lazy val featureSwitch: FeatureSwitchAction = FeatureSwitchAction(SourceType.Properties)
 
+  private val connector = PropertiesConnector
   private val service = PropertiesService()
 
   def create(nino: Nino): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
-    validate[properties.Properties, Either[Error, Boolean]](request.body) {
-      service.create(nino, _)
+    validate[properties.Properties, PropertiesResponse](request.body) { props =>
+      connector.create(nino, Mapper[properties.Properties, Properties].from(props))
     } match {
       case Left(errorResult) =>
         Future.successful(handleValidationErrors(errorResult))
-      case Right(result) => result.map {
-        case Right(successful) =>
-          if (successful) Created.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
-          else InternalServerError
-        case Left(_) => Conflict.withHeaders(LOCATION ->  s"/self-assessment/ni/$nino/uk-properties")
-      }
+      case Right(response) =>
+        response.map { response =>
+          if (response.status == 200) Created.withHeaders(LOCATION -> response.createLocationHeader(nino))
+          else if (response.status == 409) Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
+          else if (response.status == 400) BadRequest(Error.from(response.json))
+          else if (response.status == 404) NotFound(Error.from(response.json))
+          else unhandledResponse(response.status, logger)
+        }
     }
   }
 

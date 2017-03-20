@@ -799,6 +799,32 @@ trait BaseFunctionalSpec extends TestApplication {
         }
       }
 
+      object properties {
+
+        def willBeCreatedFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/properties"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Properties.createResponse(id))))
+          givens
+        }
+
+        def willConflict(nino: Nino): Givens = {
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/properties"))
+            .willReturn(
+              aResponse()
+                .withStatus(409)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.propertyConflict)
+            ))
+
+          givens
+        }
+
+      }
+
     }
 
     def des() = new Des(this)

@@ -1,7 +1,6 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.resources.Jsons.CannedCalculation.eta
 import uk.gov.hmrc.selfassessmentapi.resources.Jsons.Errors.invalidRequest
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -16,7 +15,7 @@ class CannedCalculationResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(202)
         .responseContainsHeader("Location", s"/self-assessment/ni/$nino/calculations/\\w+".r)
-        .bodyIsLike(eta(5).toString())
+        .bodyIsLike(Jsons.CannedCalculation.eta(5).toString())
     }
 
     "return 400 when attempting to request calculation without specifying a tax year" in {

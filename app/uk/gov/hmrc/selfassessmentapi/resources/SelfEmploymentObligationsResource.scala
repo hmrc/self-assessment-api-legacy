@@ -17,7 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.Logger
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, RequestHeader}
+import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.microservice.controller.BaseController
@@ -42,7 +44,7 @@ object SelfEmploymentObligationsResource extends BaseController {
   def retrieveObligations(nino: Nino, id: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch { headers =>
     connector.get(nino, id)(obligationHeaders(headers)).map { response =>
       if (response.status == 200) Ok(response.json)
-      else if (response.status == 404) NotFound
+      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else unhandledResponse(response.status, logger)
     }

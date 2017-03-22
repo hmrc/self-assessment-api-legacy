@@ -18,7 +18,9 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.Results.NotFound
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentConnector
@@ -45,7 +47,7 @@ object SelfEmploymentsResource extends BaseController {
         if (response.status == 200) Created.withHeaders(LOCATION -> response.createLocationHeader(nino).getOrElse(""))
         else if (response.status == 403) Forbidden(Json.toJson(Errors.businessError(Error(ErrorCode.TOO_MANY_SOURCES.toString, s"The maximum number of Self-Employment incomes sources is 1", ""))))
         else if (response.status == 400 || response.status == 409) BadRequest(Error.from(response.json))
-        else if (response.status == 404) NotFound(Error.from(response.json))
+        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
         else unhandledResponse(response.status, logger)
       }
     }
@@ -60,7 +62,7 @@ object SelfEmploymentsResource extends BaseController {
       case Right(result) => result.map { response =>
         if (response.status == 204) NoContent
         else if (response.status == 400) BadRequest(Error.from(response.json))
-        else if (response.status == 404) NotFound(Error.from(response.json))
+        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
         else unhandledResponse(response.status, logger)
       }
     }
@@ -72,7 +74,7 @@ object SelfEmploymentsResource extends BaseController {
         case Some(se) => Ok(Json.toJson(se))
         case None => NotFound
       }
-      else if (response.status == 404) NotFound(Error.from(response.json))
+      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else unhandledResponse(response.status, logger)
     }
@@ -81,7 +83,7 @@ object SelfEmploymentsResource extends BaseController {
   def retrieveAll(nino: Nino): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
     connector.get(nino).map { response =>
       if (response.status == 200) Ok(Json.toJson(response.listSelfEmployment))
-      else if (response.status == 404) NotFound(Error.from(response.json))
+      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else unhandledResponse(response.status, logger)
     }

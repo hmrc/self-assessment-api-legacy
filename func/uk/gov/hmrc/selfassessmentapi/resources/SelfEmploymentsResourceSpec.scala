@@ -59,7 +59,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.ninoNotFound)
+        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 400 when attempting to create a self-employment that fails DES duplicated trading name validaton" in {
@@ -141,6 +141,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .put(Jsons.SelfEmployment.update()).at(s"/ni/$nino/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
+        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 400 (MANDATORY_FIELD_MISSING) when attempting to update a self-employment with an empty body" in {
@@ -228,7 +229,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.ninoNotFound)
+        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 400 when retrieving a self-employment that fails nino validation" in {
@@ -249,7 +250,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.ninoNotFound)
+        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 500 when DES is experiencing issues" in {
@@ -337,7 +338,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.ninoNotFound)
+        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 500 when we receive a status code from DES that we do not handle" in {

@@ -45,7 +45,7 @@ object Jsons {
     val invalidPayload: String = errorWithMessage("INVALID_PAYLOAD", "Submission has not passed validation. Invalid PAYLOAD.")
     val duplicateTradingName: String = errorWithMessage("CONFLICT", "Duplicated trading name.")
     val notFound: String = errorWithMessage("NOT_FOUND", "Resource was not found")
-    val invalidPeriod: String = errorWithMessage("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
+    val invalidPeriod: String = businessErrorWithMessage("INVALID_PERIOD" -> "The remote endpoint has indicated that a overlapping period was submitted.")
     val invalidObligation: String = errorWithMessage("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
     val invalidOriginatorId: String = errorWithMessage("INVALID_ORIGINATOR_ID", "Submission has not passed validation. Invalid header Originator-Id.")
     val internalServerError: String = errorWithMessage("INTERNAL_SERVER_ERROR", "An internal server error occurred")
@@ -75,6 +75,22 @@ object Jsons {
          |    ${
         errors.map {
           error
+        }.mkString(",")
+      }
+         |  ]
+         |}
+         """.stripMargin
+    }
+
+    def businessErrorWithMessage(errors: (String, String)*): String = {
+      s"""
+         |{
+         |  "code": "BUSINESS_ERROR",
+         |  "message": "Business validation error",
+         |  "errors": [
+         |    ${
+        errors.map {
+          case (code, msg) => errorWithMessage(code, msg)
         }.mkString(",")
       }
          |  ]

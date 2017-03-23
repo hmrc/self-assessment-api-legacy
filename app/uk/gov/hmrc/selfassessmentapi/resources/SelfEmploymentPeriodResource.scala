@@ -23,7 +23,7 @@ import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentPeriodConnector
-import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
+import uk.gov.hmrc.selfassessmentapi.models.Errors.{BusinessError, Error}
 import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.des.Financials
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{SelfEmploymentPeriod, SelfEmploymentPeriodicData}
@@ -45,7 +45,7 @@ object SelfEmploymentPeriodResource extends BaseController {
       case Right(result) => result.map { response =>
         if (response.status == 200) Created.withHeaders(LOCATION -> response.createLocationHeader(nino, sourceId).getOrElse(""))
         else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
-        else if (response.containsOverlappingPeriod) Forbidden(Error.from(response.json))
+        else if (response.containsOverlappingPeriod) Forbidden(Error.asBusinessError(response.json))
         else if (response.status == 400) BadRequest(Error.from(response.json))
         else unhandledResponse(response.status, logger)
       }

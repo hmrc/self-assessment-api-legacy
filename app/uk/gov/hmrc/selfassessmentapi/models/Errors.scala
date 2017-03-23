@@ -46,6 +46,15 @@ object Errors {
   object Error {
     private val logger = Logger(classOf[Error])
 
+    def asBusinessError(json: JsValue): JsValue = {
+      json.asOpt[DesError].map { err =>
+        Json.toJson(businessError(fromDesError(err)))
+      }.getOrElse {
+        logger.error(s"Error received from DES does not match what we are expecting.")
+        Json.toJson(businessError(Error("UNKNOWN_ERROR", "Unknown error", "")))
+      }
+    }
+
     def from(json: JsValue): JsValue = {
       json.asOpt[DesError].map { err =>
         Json.toJson(fromDesError(err))

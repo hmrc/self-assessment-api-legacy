@@ -2,7 +2,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
-class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
+class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
 
   "updateAnnualSummary" should {
     "return code 204 when updating an annual summary for a valid self-employment source" in {
@@ -23,6 +23,7 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/sillysource/$taxYear")
         .thenAssertThat()
         .statusIs(404)
+        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 400 when updating an annual summary providing an invalid adjustment & allowance" in {
@@ -159,7 +160,7 @@ class SelfEmploymentAnnualSummarySpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.ninoNotFound)
+        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 400 when retrieving annual summary for a non MTD year" in {

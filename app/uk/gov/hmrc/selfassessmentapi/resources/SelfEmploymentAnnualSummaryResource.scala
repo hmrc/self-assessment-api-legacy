@@ -19,6 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
+import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentAnnualSummaryConnector
@@ -42,7 +43,7 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
         if (response.status == 200) NoContent
-        else if (response.status == 404) NotFound(Error.from(response.json))
+        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
         else if (response.status == 400) BadRequest(Error.from(response.json))
         else unhandledResponse(response.status, logger)
       }
@@ -56,7 +57,7 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
         case Some(summary) => Ok(Json.toJson(summary))
         case None => NotFound
       }
-      else if (response.status == 404) NotFound(Error.from(response.json))
+      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
       else unhandledResponse(response.status, logger)
     }
   }

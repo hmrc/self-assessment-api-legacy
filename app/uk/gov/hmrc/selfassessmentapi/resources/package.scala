@@ -60,7 +60,7 @@ package object resources {
   }
 
   implicit val desHeaderCarrier = HeaderCarrier(otherHeaders = Seq(
-    "Authorization" -> AppContext.desToken,
+    "Authorization" -> s"Bearer ${AppContext.desToken}",
     "Environment" -> AppContext.desEnv,
     "Accept" -> "application/vnd.hmrc.1.0+json",
     "Originator-Id" -> "DA_SDI"))

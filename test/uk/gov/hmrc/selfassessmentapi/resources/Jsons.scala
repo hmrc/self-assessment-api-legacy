@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import org.joda.time.LocalDate
 import play.api.libs.json.{JsValue, Json}
 
 object Jsons {
@@ -48,10 +47,11 @@ object Jsons {
     val desNotFound: String = errorWithMessage("NOT_FOUND", "The remote endpoint has indicated that no data can be found.")
     val duplicateTradingName: String = errorWithMessage("CONFLICT", "Duplicated trading name.")
     val notFound: String = errorWithMessage("NOT_FOUND", "Resource was not found")
-    val invalidPeriod: String = errorWithMessage("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
+    val invalidPeriod: String = businessErrorWithMessage("INVALID_PERIOD" -> "The remote endpoint has indicated that a overlapping period was submitted.")
     val invalidObligation: String = errorWithMessage("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
     val invalidOriginatorId: String = errorWithMessage("INVALID_ORIGINATOR_ID", "Submission has not passed validation. Invalid header Originator-Id.")
     val internalServerError: String = errorWithMessage("INTERNAL_SERVER_ERROR", "An internal server error occurred")
+    val invalidCalcId: String = errorWithMessage("INVALID_CALCID", "Submission has not passed validation")
 
     def invalidRequest(errors: (String, String)*): String = {
       s"""
@@ -71,7 +71,23 @@ object Jsons {
          |  "code": "BUSINESS_ERROR",
          |  "message": "Business validation error",
          |  "errors": [
-         |    ${errors.map { error }.mkString(",")}
+         |    ${ errors.map { error }.mkString(",") }
+         |  ]
+         |}
+         """.stripMargin
+    }
+
+    def businessErrorWithMessage(errors: (String, String)*): String = {
+      s"""
+         |{
+         |  "code": "BUSINESS_ERROR",
+         |  "message": "Business validation error",
+         |  "errors": [
+         |    ${
+        errors.map {
+          case (code, msg) => errorWithMessage(code, msg)
+        }.mkString(",")
+      }
          |  ]
          |}
          """.stripMargin
@@ -107,10 +123,10 @@ object Jsons {
 
       Json.parse(
         s"""
-         |{
-         |  ${taxed.getOrElse("")}
-         |  ${untaxed.getOrElse("")}
-         |}
+           |{
+           |  ${taxed.getOrElse("")}
+           |  ${untaxed.getOrElse("")}
+           |}
        """.stripMargin)
     }
   }
@@ -131,7 +147,7 @@ object Jsons {
         fromDate
           .map { date =>
             s"""
-             | "from": "$date",
+               | "from": "$date",
          """.stripMargin
           }
           .getOrElse("")
@@ -140,12 +156,13 @@ object Jsons {
         toDate
           .map { date =>
             s"""
-             | "to": "$date",
+               | "to": "$date",
          """.stripMargin
           }
           .getOrElse("")
 
-      Json.parse(s"""
+      Json.parse(
+        s"""
            |{
            |  $from
            |  $to
@@ -180,7 +197,7 @@ object Jsons {
         fromDate
           .map { date =>
             s"""
-             | "from": "$date",
+               | "from": "$date",
          """.stripMargin
           }
           .getOrElse("")
@@ -189,20 +206,23 @@ object Jsons {
         toDate
           .map { date =>
             s"""
-             | "to": "$date",
+               | "to": "$date",
          """.stripMargin
           }
           .getOrElse("")
 
-      Json.parse(s"""
+      Json.parse(
+        s"""
            |{
            |  $from
            |  $to
            |  "incomes": {
            |    "rentIncome": { "amount": $rentIncome, "taxDeducted": $rentIncomeTaxDeducted },
-           |    ${premiumsOfLeaseGrant
-                      .map(income => s""" "premiumsOfLeaseGrant": { "amount": $income },""")
-                      .getOrElse("")}
+           |    ${
+          premiumsOfLeaseGrant
+            .map(income => s""" "premiumsOfLeaseGrant": { "amount": $income },""")
+            .getOrElse("")
+        }
            |    "reversePremiums": { "amount": $reversePremiums }
            |  },
            |  "expenses": {
@@ -221,10 +241,10 @@ object Jsons {
       val nestedDates = dates
         .map { date =>
           s"""
-           |{
-           |  "from": "${date._1}",
-           |  "to": "${date._2}"
-           |}
+             |{
+             |  "from": "${date._1}",
+             |  "to": "${date._2}"
+             |}
            """.stripMargin
         }
         .mkString(",")
@@ -243,18 +263,19 @@ object Jsons {
                          lossBroughtForward: BigDecimal = 0.0,
                          privateUseAdjustment: BigDecimal = 0.0,
                          balancingCharge: BigDecimal = 0.0): JsValue = {
-      Json.parse(s"""
-                    |{
-                    |  "allowances": {
-                    |    "annualInvestmentAllowance": $annualInvestmentAllowance,
-                    |    "otherCapitalAllowance": $otherCapitalAllowance
-                    |  },
-                    |  "adjustments": {
-                    |   "lossBroughtForward": $lossBroughtForward,
-                    |   "privateUseAdjustment": $privateUseAdjustment,
-                    |   "balancingCharge": $balancingCharge
-                    |  }
-                    |}
+      Json.parse(
+        s"""
+           |{
+           |  "allowances": {
+           |    "annualInvestmentAllowance": $annualInvestmentAllowance,
+           |    "otherCapitalAllowance": $otherCapitalAllowance
+           |  },
+           |  "adjustments": {
+           |   "lossBroughtForward": $lossBroughtForward,
+           |   "privateUseAdjustment": $privateUseAdjustment,
+           |   "balancingCharge": $balancingCharge
+           |  }
+           |}
     """.stripMargin)
     }
 
@@ -266,21 +287,22 @@ object Jsons {
                            lossBroughtForward: BigDecimal = 0.0,
                            privateUseAdjustment: BigDecimal = 0.0,
                            balancingCharge: BigDecimal = 0.0): JsValue = {
-      Json.parse(s"""
-                    |{
-                    |  "allowances": {
-                    |    "annualInvestmentAllowance": $annualInvestmentAllowance,
-                    |    "businessPremisesRenovationAllowance": $businessPremisesRenovationAllowance,
-                    |    "otherCapitalAllowance": $otherCapitalAllowance,
-                    |    "costOfReplacingDomesticItems": $costOfReplacingDomesticItems,
-                    |    "zeroEmissionsGoodsVehicleAllowance": $zeroEmissionsGoodsVehicleAllowance
-                    |  },
-                    |  "adjustments": {
-                    |   "lossBroughtForward": $lossBroughtForward,
-                    |   "privateUseAdjustment": $privateUseAdjustment,
-                    |   "balancingCharge": $balancingCharge
-                    |  }
-                    |}
+      Json.parse(
+        s"""
+           |{
+           |  "allowances": {
+           |    "annualInvestmentAllowance": $annualInvestmentAllowance,
+           |    "businessPremisesRenovationAllowance": $businessPremisesRenovationAllowance,
+           |    "otherCapitalAllowance": $otherCapitalAllowance,
+           |    "costOfReplacingDomesticItems": $costOfReplacingDomesticItems,
+           |    "zeroEmissionsGoodsVehicleAllowance": $zeroEmissionsGoodsVehicleAllowance
+           |  },
+           |  "adjustments": {
+           |   "lossBroughtForward": $lossBroughtForward,
+           |   "privateUseAdjustment": $privateUseAdjustment,
+           |   "balancingCharge": $balancingCharge
+           |  }
+           |}
     """.stripMargin)
     }
 
@@ -305,7 +327,8 @@ object Jsons {
            |  "cessationDate": "$date",
          """.stripMargin).getOrElse("")
 
-      Json.parse(s"""
+      Json.parse(
+        s"""
            |{
            |  "accountingPeriod": {
            |    "start": "$accPeriodStart",
@@ -333,16 +356,17 @@ object Jsons {
                businessAddressLineFour: String = "United Kingdom",
                businessPostcode: String = "A9 9AA"): JsValue = {
 
-      Json.parse(s"""
-                    |{
-                    |  "tradingName": "$tradingName",
-                    |  "businessDescription": "$businessDescription",
-                    |  "businessAddressLineOne": "$businessAddressLineOne",
-                    |  "businessAddressLineTwo": "$businessAddressLineTwo",
-                    |  "businessAddressLineThree": "$businessAddressLineThree",
-                    |  "businessAddressLineFour": "$businessAddressLineFour",
-                    |  "businessPostcode": "$businessPostcode"
-                    |}
+      Json.parse(
+        s"""
+           |{
+           |  "tradingName": "$tradingName",
+           |  "businessDescription": "$businessDescription",
+           |  "businessAddressLineOne": "$businessAddressLineOne",
+           |  "businessAddressLineTwo": "$businessAddressLineTwo",
+           |  "businessAddressLineThree": "$businessAddressLineThree",
+           |  "businessAddressLineFour": "$businessAddressLineFour",
+           |  "businessPostcode": "$businessPostcode"
+           |}
          """.stripMargin)
     }
 
@@ -363,7 +387,8 @@ object Jsons {
                       balancingChargeBPRA: BigDecimal = 500.25,
                       balancingChargeOther: BigDecimal = 500.25,
                       goodsAndServicesOwnUse: BigDecimal = 500.25): JsValue = {
-      Json.parse(s"""
+      Json.parse(
+        s"""
            |{
            |  "allowances": {
            |    "annualInvestmentAllowance": $annualInvestmentAllowance,
@@ -413,7 +438,7 @@ object Jsons {
         fromDate
           .map { date =>
             s"""
-             | "from": "$date",
+               | "from": "$date",
          """.stripMargin
           }
           .getOrElse("")
@@ -422,12 +447,13 @@ object Jsons {
         toDate
           .map { date =>
             s"""
-             | "to": "$date",
+               | "to": "$date",
          """.stripMargin
           }
           .getOrElse("")
 
-      Json.parse(s"""
+      Json.parse(
+        s"""
            |{
            |  $from
            |  $to
@@ -459,7 +485,8 @@ object Jsons {
 
   object Dividends {
     def apply(amount: BigDecimal): JsValue = {
-      Json.parse(s"""
+      Json.parse(
+        s"""
            |{
            |  "ukDividends": $amount
            |}
@@ -467,92 +494,93 @@ object Jsons {
     }
   }
 
-  object CannedCalculation {
-    def apply(amount: BigDecimal = 100.25): JsValue = {
-      Json.parse(s"""
-         |{
-         |  "profitFromSelfEmployment": $amount,
-         |  "profitFromUkLandAndProperty": $amount,
-         |  "interestReceivedFromUkBanksAndBuildingSocieties": $amount,
-         |  "dividendsFromUkCompanies": $amount,
-         |  "totalIncomeReceived": $amount,
-         |  "personalAllowance": $amount,
-         |  "totalIncomeOnWhichTaxIsDue": $amount,
-         |  "payPensionsProfitAtBRT": $amount,
-         |  "incomeTaxOnPayPensionsProfitAtBRT": $amount,
-         |  "payPensionsProfitAtHRT": $amount,
-         |  "incomeTaxOnPayPensionsProfitAtHRT": $amount,
-         |  "payPensionsProfitAtART": $amount,
-         |  "incomeTaxOnPayPensionsProfitAtART": $amount,
-         |  "interestReceivedAtStartingRate": $amount,
-         |  "incomeTaxOnInterestReceivedAtStartingRate": $amount,
-         |  "interestReceivedAtZeroRate": $amount,
-         |  "incomeTaxOnInterestReceivedAtZeroRate": $amount,
-         |  "interestReceivedAtBRT": $amount,
-         |  "incomeTaxOnInterestReceivedAtBRT": $amount,
-         |  "interestReceivedAtHRT": $amount,
-         |  "incomeTaxOnInterestReceivedAtHRT": $amount,
-         |  "interestReceivedAtART": $amount,
-         |  "incomeTaxOnInterestReceivedAtART": $amount,
-         |  "dividendsAtZeroRate": $amount,
-         |  "incomeTaxOnDividendsAtZeroRate": $amount,
-         |  "dividendsAtBRT": $amount,
-         |  "incomeTaxOnDividendsAtBRT": $amount,
-         |  "dividendsAtHRT": $amount,
-         |  "incomeTaxOnDividendsAtHRT": $amount,
-         |  "dividendsAtART": $amount,
-         |  "incomeTaxOnDividendsAtART": $amount,
-         |  "totalIncomeOnWhichTaxHasBeenCharged": $amount,
-         |  "incomeTaxDue": $amount,
-         |  "incomeTaxCharged": $amount,
-         |  "taxCreditsOnDividendsFromUkCompanies": $amount,
-         |  "incomeTaxDueAfterDividendTaxCredits": $amount,
-         |  "incomeTaxOverPaid": $amount,
-         |  "allowance": $amount,
-         |  "limitBRT": $amount,
-         |  "limitHRT": $amount,
-         |  "rateBRT": $amount,
-         |  "rateHRT": $amount,
-         |  "rateART": $amount,
-         |  "limitAIA": $amount,
-         |  "allowanceBRT": $amount,
-         |  "interestAllowanceHRT": $amount,
-         |  "interestAllowanceBRT": $amount,
-         |  "dividendAllowance": $amount,
-         |  "dividendBRT": $amount,
-         |  "dividendHRT": $amount,
-         |  "dividendART": $amount,
-         |  "proportionAllowance": $amount,
-         |  "proportionLimitBRT": $amount,
-         |  "proportionLimitHRT": $amount,
-         |  "proportionalTaxDue": $amount,
-         |  "proportionInterestAllowanceBRT": $amount,
-         |  "proportionInterestAllowanceHRT": $amount,
-         |  "proportionDividendAllowance": $amount,
-         |  "proportionPayPensionsProfitAtART": $amount,
-         |  "proportionIncomeTaxOnPayPensionsProfitAtART": $amount,
-         |  "proportionPayPensionsProfitAtBRT": $amount,
-         |  "proportionIncomeTaxOnPayPensionsProfitAtBRT": $amount,
-         |  "proportionPayPensionsProfitAtHRT": $amount,
-         |  "proportionIncomeTaxOnPayPensionsProfitAtHRT": $amount,
-         |  "proportionInterestReceivedAtZeroRate": $amount,
-         |  "proportionIncomeTaxOnInterestReceivedAtZeroRate": $amount,
-         |  "proportionInterestReceivedAtBRT": $amount,
-         |  "proportionIncomeTaxOnInterestReceivedAtBRT": $amount,
-         |  "proportionInterestReceivedAtHRT": $amount,
-         |  "proportionIncomeTaxOnInterestReceivedAtHRT": $amount,
-         |  "proportionInterestReceivedAtART": $amount,
-         |  "proportionIncomeTaxOnInterestReceivedAtART": $amount,
-         |  "proportionDividendsAtZeroRate": $amount,
-         |  "proportionIncomeTaxOnDividendsAtZeroRate": $amount,
-         |  "proportionDividendsAtBRT": $amount,
-         |  "proportionIncomeTaxOnDividendsAtBRT": $amount,
-         |  "proportionDividendsAtHRT": $amount,
-         |  "proportionIncomeTaxOnDividendsAtHRT": $amount,
-         |  "proportionDividendsAtART": $amount,
-         |  "proportionIncomeTaxOnDividendsAtART": $amount
-         |}
-       """.stripMargin)
+  object TaxCalculation {
+    def apply(): JsValue = {
+      Json.parse(
+        s"""
+           |{
+           |            "profitFromSelfEmployment": 200.00,
+           |            "profitFromUkLandAndProperty": 200.00,
+           |            "interestReceivedFromUkBanksAndBuildingSocieties": 200.00,
+           |            "dividendsFromUkCompanies": 200.00,
+           |            "totalIncomeReceived": 200.00,
+           |            "personalAllowance": 200.00,
+           |            "totalIncomeOnWhichTaxIsDue": 200.00,
+           |            "payPensionsProfitAtBRT": 200.00,
+           |            "incomeTaxOnPayPensionsProfitAtBRT": 200.00,
+           |            "payPensionsProfitAtHRT": 200.00,
+           |            "incomeTaxOnPayPensionsProfitAtHRT": 200.00,
+           |            "payPensionsProfitAtART": 200.00,
+           |            "incomeTaxOnPayPensionsProfitAtART": 200.00,
+           |            "interestReceivedAtStartingRate": 200.00,
+           |            "incomeTaxOnInterestReceivedAtStartingRate": 200.00,
+           |            "interestReceivedAtZeroRate": 200.00,
+           |            "incomeTaxOnInterestReceivedAtZeroRate": 200.00,
+           |            "interestReceivedAtBRT": 200.00,
+           |            "incomeTaxOnInterestReceivedAtBRT": 200.00,
+           |            "interestReceivedAtHRT": 200.00,
+           |            "incomeTaxOnInterestReceivedAtHRT": 200.00,
+           |            "interestReceivedAtART": 200.00,
+           |            "incomeTaxOnInterestReceivedAtART": 200.00,
+           |            "dividendsAtZeroRate": 200.00,
+           |            "incomeTaxOnDividendsAtZeroRate": 200.00,
+           |            "dividendsAtBRT": 200.00,
+           |            "incomeTaxOnDividendsAtBRT": 200.00,
+           |            "dividendsAtHRT": 200.00,
+           |            "incomeTaxOnDividendsAtHRT": 200.00,
+           |            "dividendsAtART": 200.00,
+           |            "incomeTaxOnDividendsAtART": 200.00,
+           |            "totalIncomeOnWhichTaxHasBeenCharged": 200.00,
+           |            "incomeTaxDue": 200.00,
+           |            "incomeTaxCharged": 200.00,
+           |            "taxCreditsOnDividendsFromUkCompanies": 200.00,
+           |            "incomeTaxDueAfterDividendTaxCredits": 200.00,
+           |            "allowance": 200.00,
+           |            "limitBRT": 200.00,
+           |            "limitHRT": 200.00,
+           |            "rateBRT": 200.00,
+           |            "rateHRT": 200.00,
+           |            "rateART": 200.00,
+           |            "limitAIA": 200.00,
+           |            "allowanceBRT": 200.00,
+           |            "interestAllowanceHRT": 200.00,
+           |            "interestAllowanceBRT": 200.00,
+           |            "dividendAllowance": 200.00,
+           |            "dividendBRT": 200.00,
+           |            "dividendHRT": 200.00,
+           |            "dividendART": 200.00,
+           |            "proportionAllowance": 200.00,
+           |            "proportionLimitBRT": 200.00,
+           |            "proportionLimitHRT": 200.00,
+           |            "proportionalTaxDue": 200.00,
+           |            "proportionInterestAllowanceBRT": 200.00,
+           |            "proportionInterestAllowanceHRT": 200.00,
+           |            "proportionDividendAllowance": 200.00,
+           |            "proportionPayPensionsProfitAtART": 200.00,
+           |            "proportionIncomeTaxOnPayPensionsProfitAtART": 200.00,
+           |            "proportionPayPensionsProfitAtBRT": 200.00,
+           |            "proportionIncomeTaxOnPayPensionsProfitAtBRT": 200.00,
+           |            "proportionPayPensionsProfitAtHRT": 200.00,
+           |            "proportionIncomeTaxOnPayPensionsProfitAtHRT": 200.00,
+           |            "proportionInterestReceivedAtZeroRate": 200.00,
+           |            "proportionIncomeTaxOnInterestReceivedAtZeroRate": 200.00,
+           |            "proportionInterestReceivedAtBRT": 200.00,
+           |            "proportionIncomeTaxOnInterestReceivedAtBRT": 200.00,
+           |            "proportionInterestReceivedAtHRT": 200.00,
+           |            "proportionIncomeTaxOnInterestReceivedAtHRT": 200.00,
+           |            "proportionInterestReceivedAtART": 200.00,
+           |            "proportionIncomeTaxOnInterestReceivedAtART": 200.00,
+           |            "proportionDividendsAtZeroRate": 200.00,
+           |            "proportionIncomeTaxOnDividendsAtZeroRate": 200.00,
+           |            "proportionDividendsAtBRT": 200.00,
+           |            "proportionIncomeTaxOnDividendsAtBRT": 200.00,
+           |            "proportionDividendsAtHRT": 200.00,
+           |            "proportionIncomeTaxOnDividendsAtHRT": 200.00,
+           |            "proportionDividendsAtART": 200.00,
+           |            "proportionIncomeTaxOnDividendsAtART": 200.00
+           |        }
+         """.stripMargin
+      )
     }
 
     def eta(seconds: Int): JsValue = {
@@ -564,12 +592,12 @@ object Jsons {
          """.stripMargin)
     }
 
-    def request(taxYear: String = "2017-18") : JsValue = {
+    def request(taxYear: String = "2017-18"): JsValue = {
       Json.parse(
         s"""
-          |{
-          |  "taxYear": "$taxYear"
-          |}
+           |{
+           |  "taxYear": "$taxYear"
+           |}
          """.stripMargin)
     }
   }

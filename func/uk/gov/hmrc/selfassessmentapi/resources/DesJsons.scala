@@ -26,6 +26,7 @@ object DesJsons {
     val invalidPeriod: String = error("INVALID_PERIOD", "The remote endpoint has indicated that a overlapping period was submitted.")
     val invalidObligation: String = error("INVALID_REQUEST", "Accounting period should be greater than 6 months.")
     val invalidOriginatorId: String = error("INVALID_ORIGINATOR_ID", "Submission has not passed validation. Invalid header Originator-Id.")
+    val invalidCalcId: String = error("INVALID_CALCID", "Submission has not passed validation")
     val propertyConflict: String = error("CONFLICT", "Property already exists.")
   }
 
@@ -307,6 +308,125 @@ object DesJsons {
          |  ]
          |}
          """.stripMargin
+    }
+  }
+
+  object TaxCalculation {
+    def apply(id: String = "abc"): String = {
+      s"""
+         |{
+         |    "calcName": "abcdefghijklmnopqr",
+         |    "calcVersion": "abcdef",
+         |    "calcVersionDate": "2016-01-01",
+         |    "calcID": "$id",
+         |    "sourceName": "abcdefghijklmno",
+         |    "sourceRef": "abcdefghijklmnopqrs",
+         |    "identifier": "abcdefghijklm",
+         |    "year": 2016,
+         |    "periodFrom": "2016-01-01",
+         |    "periodTo": "2016-01-01",
+         |    "calcAmount": 200.00,
+         |    "calcTimestamp": "4498-07-06T21:42:24.294Z",
+         |    "calcResult": {
+         |        "incomeTaxYTD": 200.00,
+         |        "incomeTaxThisPeriod": 200.00,
+         |        "calcDetail": {
+         |            "profitFromSelfEmployment": 200.00,
+         |            "profitFromUkLandAndProperty": 200.00,
+         |            "interestReceivedFromUkBanksAndBuildingSocieties": 200.00,
+         |            "dividendsFromUkCompanies": 200.00,
+         |            "totalIncomeReceived": 200.00,
+         |            "personalAllowance": 200.00,
+         |            "totalIncomeOnWhichTaxIsDue": 200.00,
+         |            "payPensionsProfitAtBRT": 200.00,
+         |            "incomeTaxOnPayPensionsProfitAtBRT": 200.00,
+         |            "payPensionsProfitAtHRT": 200.00,
+         |            "incomeTaxOnPayPensionsProfitAtHRT": 200.00,
+         |            "payPensionsProfitAtART": 200.00,
+         |            "incomeTaxOnPayPensionsProfitAtART": 200.00,
+         |            "interestReceivedAtStartingRate": 200.00,
+         |            "incomeTaxOnInterestReceivedAtStartingRate": 200.00,
+         |            "interestReceivedAtZeroRate": 200.00,
+         |            "incomeTaxOnInterestReceivedAtZeroRate": 200.00,
+         |            "interestReceivedAtBRT": 200.00,
+         |            "incomeTaxOnInterestReceivedAtBRT": 200.00,
+         |            "interestReceivedAtHRT": 200.00,
+         |            "incomeTaxOnInterestReceivedAtHRT": 200.00,
+         |            "interestReceivedAtART": 200.00,
+         |            "incomeTaxOnInterestReceivedAtART": 200.00,
+         |            "dividendsAtZeroRate": 200.00,
+         |            "incomeTaxOnDividendsAtZeroRate": 200.00,
+         |            "dividendsAtBRT": 200.00,
+         |            "incomeTaxOnDividendsAtBRT": 200.00,
+         |            "dividendsAtHRT": 200.00,
+         |            "incomeTaxOnDividendsAtHRT": 200.00,
+         |            "dividendsAtART": 200.00,
+         |            "incomeTaxOnDividendsAtART": 200.00,
+         |            "totalIncomeOnWhichTaxHasBeenCharged": 200.00,
+         |            "incomeTaxDue": 200.00,
+         |            "incomeTaxCharged": 200.00,
+         |            "taxCreditsOnDividendsFromUkCompanies": 200.00,
+         |            "incomeTaxDueAfterDividendTaxCredits": 200.00,
+         |            "allowance": 200.00,
+         |            "limitBRT": 200.00,
+         |            "limitHRT": 200.00,
+         |            "rateBRT": 200.00,
+         |            "rateHRT": 200.00,
+         |            "rateART": 200.00,
+         |            "limitAIA": 200.00,
+         |            "allowanceBRT": 200.00,
+         |            "interestAllowanceHRT": 200.00,
+         |            "interestAllowanceBRT": 200.00,
+         |            "dividendAllowance": 200.00,
+         |            "dividendBRT": 200.00,
+         |            "dividendHRT": 200.00,
+         |            "dividendART": 200.00,
+         |            "proportionAllowance": 200.00,
+         |            "proportionLimitBRT": 200.00,
+         |            "proportionLimitHRT": 200.00,
+         |            "proportionalTaxDue": 200.00,
+         |            "proportionInterestAllowanceBRT": 200.00,
+         |            "proportionInterestAllowanceHRT": 200.00,
+         |            "proportionDividendAllowance": 200.00,
+         |            "proportionPayPensionsProfitAtART": 200.00,
+         |            "proportionIncomeTaxOnPayPensionsProfitAtART": 200.00,
+         |            "proportionPayPensionsProfitAtBRT": 200.00,
+         |            "proportionIncomeTaxOnPayPensionsProfitAtBRT": 200.00,
+         |            "proportionPayPensionsProfitAtHRT": 200.00,
+         |            "proportionIncomeTaxOnPayPensionsProfitAtHRT": 200.00,
+         |            "proportionInterestReceivedAtZeroRate": 200.00,
+         |            "proportionIncomeTaxOnInterestReceivedAtZeroRate": 200.00,
+         |            "proportionInterestReceivedAtBRT": 200.00,
+         |            "proportionIncomeTaxOnInterestReceivedAtBRT": 200.00,
+         |            "proportionInterestReceivedAtHRT": 200.00,
+         |            "proportionIncomeTaxOnInterestReceivedAtHRT": 200.00,
+         |            "proportionInterestReceivedAtART": 200.00,
+         |            "proportionIncomeTaxOnInterestReceivedAtART": 200.00,
+         |            "proportionDividendsAtZeroRate": 200.00,
+         |            "proportionIncomeTaxOnDividendsAtZeroRate": 200.00,
+         |            "proportionDividendsAtBRT": 200.00,
+         |            "proportionIncomeTaxOnDividendsAtBRT": 200.00,
+         |            "proportionDividendsAtHRT": 200.00,
+         |            "proportionIncomeTaxOnDividendsAtHRT": 200.00,
+         |            "proportionDividendsAtART": 200.00,
+         |            "proportionIncomeTaxOnDividendsAtART": 200.00
+         |        },
+         |        "previousCalc": {
+         |            "calcTimestamp": "4498-07-06T21:42:24.294Z",
+         |            "calcID": "12345678",
+         |            "calcAmount": 200.00
+         |        }
+         |    }
+         |}
+       """.stripMargin
+    }
+
+    def createResponse(id: String = "abc"): String = {
+      s"""
+         |{
+         |  "id": "$id"
+         |}
+       """.stripMargin
     }
   }
 

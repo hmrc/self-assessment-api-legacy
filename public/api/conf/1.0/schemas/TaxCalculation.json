@@ -31,28 +31,6 @@
       "multipleOf": 0.01,
       "minimum": 0
     },
-
-    "foreignIncome": {
-      "title": "Foreign income",
-      "description": "Foreign income",
-      "type": "number",
-      "multipleOf": 0.01,
-      "minimum": 0
-    },
-    "dividendsFromForeignCompanies": {
-      "title": "Dividends from foreign companies",
-      "description": "Dividends from foreign companies",
-      "type": "number",
-      "multipleOf": 0.01,
-      "minimum": 0
-    },
-    "trustsAndEstates": {
-      "title": "Trusts and estates",
-      "description": "Trusts and estates",
-      "type": "number",
-      "multipleOf": 0.01,
-      "minimum": 0
-    },
     "totalIncomeReceived": {
       "title": "Total income received",
       "description": "Total income received",
@@ -273,13 +251,6 @@
     "incomeTaxDueAfterDividendTaxCredits": {
       "title": "Income Tax due after dividend tax credits",
       "description": "Income Tax due after dividend tax credits",
-      "type": "number",
-      "multipleOf": 0.01,
-      "minimum": 0
-    },
-    "incomeTaxOverPaid": {
-      "title": "Income Tax overpaid",
-      "description": "Income Tax overpaid",
       "type": "number",
       "multipleOf": 0.01,
       "minimum": 0

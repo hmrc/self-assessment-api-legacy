@@ -48,7 +48,8 @@ object DesErrorCode extends Enumeration {
   INVALID_BUSINESSID,
   TAX_YEAR_INVALID,
   NOT_FOUND_TAX_YEAR,
-  NOT_FOUND_BUSINESS_ID = Value
+  NOT_FOUND_BUSINESS_ID,
+  INVALID_CALCID = Value
 
   implicit val format: Format[DesErrorCode] = EnumJson.enumFormat(DesErrorCode, Some("DesErrorCode is invalid"))
 }

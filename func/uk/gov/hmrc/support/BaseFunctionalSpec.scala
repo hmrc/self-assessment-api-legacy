@@ -799,6 +799,61 @@ trait BaseFunctionalSpec extends TestApplication {
         }
       }
 
+      object taxCalculation {
+        def isReadyFor(nino: Nino, calcId: String = "abc"): Givens = {
+          stubFor(get(urlMatching(s"/calculation-store/calculation-data/$nino/calcId/$calcId"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.TaxCalculation())))
+
+          givens
+        }
+
+        def isAcceptedFor(nino: Nino, taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(post(urlMatching(s"/income-tax-self-assessment/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation"))
+            .willReturn(
+              aResponse()
+                .withStatus(202)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.TaxCalculation.createResponse())))
+
+          givens
+        }
+
+        def isNotReadyFor(nino: Nino, calcId: String = "abc"): Givens = {
+          stubFor(get(urlMatching(s"/calculation-store/calculation-data/$nino/calcId/$calcId"))
+            .willReturn(
+              aResponse()
+                .withStatus(204)))
+
+          givens
+        }
+
+        def doesNotExistFor(nino: Nino, calcId: String = "abc"): Givens = {
+          stubFor(get(urlMatching(s"/calculation-store/calculation-data/$nino/calcId/$calcId"))
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.notFound)))
+
+          givens
+        }
+
+        def invalidCalculationIdFor(nino: Nino, calcId: String = "abc"): Givens = {
+          stubFor(get(urlMatching(s"/calculation-store/calculation-data/$nino/calcId/$calcId"))
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.invalidCalcId)))
+
+          givens
+        }
+      }
+
       object properties {
 
         def willBeCreatedFor(nino: Nino): Givens = {

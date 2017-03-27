@@ -19,11 +19,10 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentPeriodConnector
-import uk.gov.hmrc.selfassessmentapi.models.Errors.{BusinessError, Error}
+import uk.gov.hmrc.selfassessmentapi.models.Errors.Error
 import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.des.Financials
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{SelfEmploymentPeriod, SelfEmploymentPeriodicData}
@@ -37,7 +36,7 @@ object SelfEmploymentPeriodResource extends BaseController {
   private lazy val featureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "periods")
   private val connector = SelfEmploymentPeriodConnector
 
-  def createPeriod(nino: Nino, sourceId: SourceId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
+  def createPeriod(nino: Nino, sourceId: SourceId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { implicit request =>
     validate[SelfEmploymentPeriod, SelfEmploymentPeriodResponse](request.body) { period =>
       connector.create(nino, sourceId, des.SelfEmploymentPeriod.from(period))
     } match {
@@ -53,7 +52,7 @@ object SelfEmploymentPeriodResource extends BaseController {
   }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
-  def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
+  def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { implicit request =>
     validate[SelfEmploymentPeriodicData, SelfEmploymentPeriodResponse](request.body) { period =>
       connector.update(nino, id, periodId, Financials.from(period))
     } match {
@@ -68,7 +67,7 @@ object SelfEmploymentPeriodResource extends BaseController {
   }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
-  def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+  def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch { implicit request =>
     connector.get(nino, id, periodId).map { response =>
       if (response.status == 200) response.period match {
         case Some(period) => Ok(Json.toJson(period))
@@ -81,7 +80,7 @@ object SelfEmploymentPeriodResource extends BaseController {
   }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
-  def retrievePeriods(nino: Nino, id: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+  def retrievePeriods(nino: Nino, id: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch { implicit request =>
     connector.getAll(nino, id).map { response =>
       if (response.status == 200) Ok(Json.toJson(response.allPeriods))
       else if (response.status == 404) NotFound

@@ -38,7 +38,7 @@ object SelfEmploymentsResource extends BaseController {
   private lazy val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
   private val connector = SelfEmploymentConnector
 
-  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
+  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { implicit request =>
     validate[SelfEmployment, SelfEmploymentResponse](request.body) { selfEmployment =>
       connector.create(nino, des.Business.from(selfEmployment))
     } match {
@@ -54,7 +54,7 @@ object SelfEmploymentsResource extends BaseController {
   }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
-  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
+  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { implicit request =>
     validate[SelfEmploymentUpdate, SelfEmploymentResponse](request.body) { selfEmployment =>
       connector.update(nino, des.SelfEmploymentUpdate.from(selfEmployment), id)
     } match {
@@ -68,7 +68,7 @@ object SelfEmploymentsResource extends BaseController {
     }
   }
 
-  def retrieve(nino: Nino, id: SourceId): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
+  def retrieve(nino: Nino, id: SourceId): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch { implicit request =>
     connector.get(nino).map { response =>
       if (response.status == 200) response.selfEmployment(id) match {
         case Some(se) => Ok(Json.toJson(se))
@@ -80,7 +80,7 @@ object SelfEmploymentsResource extends BaseController {
     }
   }
 
-  def retrieveAll(nino: Nino): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
+  def retrieveAll(nino: Nino): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch { implicit request =>
     connector.get(nino).map { response =>
       if (response.status == 200) Ok(Json.toJson(response.listSelfEmployment))
       else if (response.status == 404) NotFound

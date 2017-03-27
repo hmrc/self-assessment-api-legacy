@@ -434,7 +434,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     class Des(givens: Givens) {
       def isATeapotFor(nino: Nino): Givens = {
-        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+        stubFor(any(urlMatching(s".*/(calculation-data|nino)/$nino.*"))
           .willReturn(
             aResponse()
               .withStatus(418)))
@@ -896,6 +896,18 @@ trait BaseFunctionalSpec extends TestApplication {
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Properties.retrieveNoProperty)))
+          givens
+        }
+
+
+        def returnObligationsFor(nino: Nino, id: String = "abc"): Givens = {
+          stubFor(get(urlEqualTo(s"/ni/$nino/self-employments/$id/obligations"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Obligations())))
+
           givens
         }
 

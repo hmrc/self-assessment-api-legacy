@@ -230,7 +230,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
     }
 
-    "receive a HTTP 403 Unauthorized when they attempt to retrieve specific 'other' property periods" in {
+    "receive a HTTP 403 Unauthorized when they attempt to retrieve specific 'other' property periods" ignore {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -250,7 +250,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
     }
 
-    "receive a HTTP 403 Unauthorized when they attempt to retrieve specific 'fhl' property periods" in {
+    "receive a HTTP 403 Unauthorized when they attempt to retrieve specific 'fhl' property periods" ignore {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -279,7 +279,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .isBadRequest
     }
 
-    "receive an unmodified HTTP 400 when they attempt to update an annual summary with an invalid json" in {
+    "receive an unmodified HTTP 400 when they attempt to update an annual summary with an invalid json" ignore {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -295,7 +295,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .bodyHasString("INVALID_MONETARY_AMOUNT")
     }
 
-    "receive an unmodified HTTP 400 when they attempt to create a periodic summary with an invalid json" in {
+    "receive an unmodified HTTP 400 when they attempt to create a periodic summary with an invalid json" ignore {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()
@@ -322,7 +322,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .isBadRequest
     }
 
-    "receive a modified HTTP 400 when they attempt to create more than one uk property business" in {
+    "receive a modified HTTP 400 when they attempt to create more than one uk property business" ignore {
       given()
         .userIsAuthorisedForTheResource(nino)
         .when()

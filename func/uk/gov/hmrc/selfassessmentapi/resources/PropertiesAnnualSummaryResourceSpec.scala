@@ -4,7 +4,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
 
-  "amending annual summaries" should {
+  "amending annual summaries" ignore {
     "return code 204 when amending annual summaries" in {
       val property = Jsons.Properties()
 
@@ -108,7 +108,7 @@ class PropertiesAnnualSummaryResourceSpec extends BaseFunctionalSpec {
     }
   }
 
-  "retrieving annual summaries" should {
+  "retrieving annual summaries" ignore {
     "return code 200 containing annual summary information" in {
       val property = Jsons.Properties()
 

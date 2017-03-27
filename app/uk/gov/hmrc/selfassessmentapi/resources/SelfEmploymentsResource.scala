@@ -39,7 +39,7 @@ object SelfEmploymentsResource extends BaseController {
   private lazy val seFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments)
   private val connector = SelfEmploymentConnector
 
-  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
+  def create(nino: Nino): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { implicit request =>
     validate[SelfEmployment, SelfEmploymentResponse](request.body) { selfEmployment =>
       connector.create(nino, Mapper[SelfEmployment, Business].from(selfEmployment))
     } match {
@@ -48,14 +48,14 @@ object SelfEmploymentsResource extends BaseController {
         if (response.status == 200) Created.withHeaders(LOCATION -> response.createLocationHeader(nino).getOrElse(""))
         else if (response.status == 403) Forbidden(Json.toJson(Errors.businessError(Error(ErrorCode.TOO_MANY_SOURCES.toString, s"The maximum number of Self-Employment incomes sources is 1", ""))))
         else if (response.status == 400 || response.status == 409) BadRequest(Error.from(response.json))
-        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+        else if (response.status == 404) NotFound
         else unhandledResponse(response.status, logger)
       }
     }
   }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
-  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { request =>
+  def update(nino: Nino, id: SourceId): Action[JsValue] = seFeatureSwitch.asyncJsonFeatureSwitch { implicit request =>
     validate[SelfEmploymentUpdate, SelfEmploymentResponse](request.body) { selfEmployment =>
       connector.update(nino, Mapper[SelfEmploymentUpdate, des.SelfEmploymentUpdate].from(selfEmployment), id)
     } match {
@@ -63,28 +63,28 @@ object SelfEmploymentsResource extends BaseController {
       case Right(result) => result.map { response =>
         if (response.status == 204) NoContent
         else if (response.status == 400) BadRequest(Error.from(response.json))
-        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+        else if (response.status == 404) NotFound
         else unhandledResponse(response.status, logger)
       }
     }
   }
 
-  def retrieve(nino: Nino, id: SourceId): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
+  def retrieve(nino: Nino, id: SourceId): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch { implicit request =>
     connector.get(nino).map { response =>
       if (response.status == 200) response.selfEmployment(id) match {
         case Some(se) => Ok(Json.toJson(se))
         case None => NotFound
       }
-      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+      else if (response.status == 404) NotFound
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else unhandledResponse(response.status, logger)
     }
   }
 
-  def retrieveAll(nino: Nino): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch {
+  def retrieveAll(nino: Nino): Action[AnyContent] = seFeatureSwitch.asyncFeatureSwitch { implicit request =>
     connector.get(nino).map { response =>
       if (response.status == 200) Ok(Json.toJson(response.listSelfEmployment))
-      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+      else if (response.status == 404) NotFound
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else unhandledResponse(response.status, logger)
     }

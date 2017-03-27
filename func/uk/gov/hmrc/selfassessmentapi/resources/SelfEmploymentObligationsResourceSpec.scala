@@ -22,7 +22,6 @@ class SelfEmploymentObligationsResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments/abc/obligations")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 400 when the user has a non-standard tax year with a duration of less than 3 periods" in {

@@ -36,14 +36,14 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
   private lazy val annualSummaryFeatureSwitch = FeatureSwitchAction(SourceType.SelfEmployments, "annual")
   private val connector = SelfEmploymentAnnualSummaryConnector
 
-  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncJsonFeatureSwitch { request =>
+  def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] = annualSummaryFeatureSwitch.asyncJsonFeatureSwitch { implicit request =>
     validate[SelfEmploymentAnnualSummary, SelfEmploymentAnnualSummaryResponse](request.body) { summary =>
       connector.update(nino, id, taxYear, des.SelfEmploymentAnnualSummary.from(summary))
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
         if (response.status == 200) NoContent
-        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+        else if (response.status == 404) NotFound
         else if (response.status == 400) BadRequest(Error.from(response.json))
         else unhandledResponse(response.status, logger)
       }
@@ -51,13 +51,13 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
   }
 
   // TODO: DES spec for this method is currently unavailable. This method should be updated once it is available.
-  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch {
+  def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] = annualSummaryFeatureSwitch.asyncFeatureSwitch { implicit request =>
     connector.get(nino, id, taxYear).map { response =>
       if (response.status == 200) response.annualSummary match {
         case Some(summary) => Ok(Json.toJson(summary))
         case None => NotFound
       }
-      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+      else if (response.status == 404) NotFound
       else unhandledResponse(response.status, logger)
     }
   }

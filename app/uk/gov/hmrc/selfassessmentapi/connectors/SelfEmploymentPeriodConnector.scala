@@ -18,32 +18,31 @@ package uk.gov.hmrc.selfassessmentapi.connectors
 
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.selfassessmentapi.config.{AppContext, WSHttp}
-import uk.gov.hmrc.selfassessmentapi.models.{PeriodId, SourceId}
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.models.des.{Financials, SelfEmploymentPeriod}
+import uk.gov.hmrc.selfassessmentapi.models.{PeriodId, SourceId}
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentPeriodResponse
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object SelfEmploymentPeriodConnector {
 
   private lazy val baseUrl: String = AppContext.desUrl
-  private val http = WSHttp
 
   private implicit def httpResponse2SeResponse(fut: Future[HttpResponse]): Future[SelfEmploymentPeriodResponse] =
     fut.map(SelfEmploymentPeriodResponse(_))
 
   def create(nino: Nino, id: SourceId, selfEmploymentPeriod: SelfEmploymentPeriod)(implicit hc: HeaderCarrier): Future[SelfEmploymentPeriodResponse] =
-    http.doPost(baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries", selfEmploymentPeriod, hc.headers)
+    httpPost(baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries", selfEmploymentPeriod)
 
   def get(nino: Nino, id: SourceId, periodId: PeriodId)(implicit hc: HeaderCarrier): Future[SelfEmploymentPeriodResponse] =
-    http.doGet(baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries/$periodId")
+    httpGet(baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries/$periodId")
 
   def getAll(nino: Nino, id: SourceId)(implicit hc: HeaderCarrier): Future[SelfEmploymentPeriodResponse] =
-    http.doGet(baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries")
+    httpGet(baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries")
 
   def update(nino: Nino, id: SourceId, periodId: PeriodId, update: Financials)(implicit hc: HeaderCarrier): Future[SelfEmploymentPeriodResponse] =
-    http.doPut(baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries/$periodId", update)
+    httpPut(baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries/$periodId", update)
 
 }

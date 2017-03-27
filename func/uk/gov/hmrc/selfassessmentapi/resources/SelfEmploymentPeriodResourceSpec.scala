@@ -84,7 +84,6 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .post(period).to(s"/ni/$nino/self-employments/abc/periods")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 500 when DES is experiencing issues" in {
@@ -161,7 +160,6 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .put(Json.toJson(period)).at(s"/ni/$nino/self-employments/abc/periods/def")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 500 when we receive a status code from DES that we do not handle" in {
@@ -226,7 +224,6 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments/abc/periods/def")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 500 when we receive a status code from DES that we do not handle" in {

@@ -44,7 +44,7 @@ object TaxCalculationResource extends BaseController {
        |}
      """.stripMargin
 
-  def requestCalculation(nino: Nino): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { request =>
+  def requestCalculation(nino: Nino): Action[JsValue] = featureSwitch.asyncJsonFeatureSwitch { implicit request =>
     validate[CalculationRequest, TaxCalculationResponse](request.body) { req =>
       connector.requestCalculation(nino, req.taxYear)
     } match {
@@ -58,12 +58,12 @@ object TaxCalculationResource extends BaseController {
     }
   }
 
-  def retrieveCalculation(nino: Nino, calcId: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
+  def retrieveCalculation(nino: Nino, calcId: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch { implicit request =>
     connector.retrieveCalculation(nino, calcId).map { response =>
       if (response.status == 200) Ok(Json.toJson(response.calculation))
       else if (response.status == 204) NoContent
       else if (response.status == 400) BadRequest(Error.from(response.json))
-      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+      else if (response.status == 404) NotFound
       else unhandledResponse(response.status, logger)
     }
   }

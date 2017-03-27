@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.connectors
 
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.selfassessmentapi.config.{AppContext, WSHttp}
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.models.{SourceId, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.TaxCalculationResponse
 
@@ -28,14 +28,13 @@ import scala.concurrent.Future
 object TaxCalculationConnector {
 
   private lazy val baseUrl: String = AppContext.desUrl
-  private val http = WSHttp
 
   private implicit def httpResponse2CalcResponse(fut: Future[HttpResponse]): Future[TaxCalculationResponse] =
     fut.map(TaxCalculationResponse(_))
 
   def requestCalculation(nino: Nino, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[TaxCalculationResponse] =
-    http.doEmptyPost(baseUrl + s"/income-tax-self-assessment/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation")
+    httpEmptyPost(baseUrl + s"/income-tax-self-assessment/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation")
 
   def retrieveCalculation(nino: Nino, calcId: SourceId)(implicit hc: HeaderCarrier): Future[TaxCalculationResponse] =
-    http.doGet(baseUrl + s"/calculation-store/calculation-data/$nino/calcId/$calcId")
+    httpGet(baseUrl + s"/calculation-store/calculation-data/$nino/calcId/$calcId")
 }

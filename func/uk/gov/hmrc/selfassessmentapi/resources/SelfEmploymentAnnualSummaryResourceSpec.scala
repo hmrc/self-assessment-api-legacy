@@ -23,7 +23,6 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/sillysource/$taxYear")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 400 when updating an annual summary providing an invalid adjustment & allowance" in {
@@ -160,7 +159,6 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 400 when retrieving annual summary for a non MTD year" in {

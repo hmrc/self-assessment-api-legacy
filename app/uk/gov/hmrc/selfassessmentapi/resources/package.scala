@@ -20,8 +20,6 @@ import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results.{BadRequest, InternalServerError}
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.models.{ErrorResult, Errors, GenericErrorResult, ValidationErrorResult}
 
 import scala.concurrent.Future
@@ -59,9 +57,4 @@ package object resources {
     }
   }
 
-  implicit val desHeaderCarrier = HeaderCarrier(otherHeaders = Seq(
-    "Authorization" -> s"Bearer ${AppContext.desToken}",
-    "Environment" -> AppContext.desEnv,
-    "Accept" -> "application/vnd.hmrc.1.0+json",
-    "Originator-Id" -> "DA_SDI"))
 }

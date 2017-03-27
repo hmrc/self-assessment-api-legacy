@@ -44,7 +44,7 @@ object SelfEmploymentObligationsResource extends BaseController {
   def retrieveObligations(nino: Nino, id: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch { headers =>
     connector.get(nino, id)(obligationHeaders(headers)).map { response =>
       if (response.status == 200) Ok(response.json)
-      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+      else if (response.status == 404) NotFound
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else unhandledResponse(response.status, logger)
     }

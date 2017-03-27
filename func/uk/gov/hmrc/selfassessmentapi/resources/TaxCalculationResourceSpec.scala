@@ -93,7 +93,6 @@ class TaxCalculationResourceSpec extends BaseFunctionalSpec {
         .get(s"/ni/$nino/calculations/abc")
         .thenAssertThat()
         .statusIs(404)
-        .bodyIsLike(Jsons.Errors.notFound)
     }
 
     "return code 500 when we receive a status code from DES that we do not handle" in {

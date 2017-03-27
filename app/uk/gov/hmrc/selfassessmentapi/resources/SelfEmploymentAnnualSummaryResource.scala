@@ -43,7 +43,7 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
         if (response.status == 200) NoContent
-        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+        else if (response.status == 404) NotFound
         else if (response.status == 400) BadRequest(Error.from(response.json))
         else unhandledResponse(response.status, logger)
       }
@@ -57,7 +57,7 @@ object SelfEmploymentAnnualSummaryResource extends BaseController {
         case Some(summary) => Ok(Json.toJson(summary))
         case None => NotFound
       }
-      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+      else if (response.status == 404) NotFound
       else unhandledResponse(response.status, logger)
     }
   }

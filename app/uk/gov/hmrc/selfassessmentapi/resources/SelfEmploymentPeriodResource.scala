@@ -44,7 +44,7 @@ object SelfEmploymentPeriodResource extends BaseController {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
         if (response.status == 200) Created.withHeaders(LOCATION -> response.createLocationHeader(nino, sourceId).getOrElse(""))
-        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+        else if (response.status == 404) NotFound
         else if (response.containsOverlappingPeriod) Forbidden(Error.asBusinessError(response.json))
         else if (response.status == 400) BadRequest(Error.from(response.json))
         else unhandledResponse(response.status, logger)
@@ -60,7 +60,7 @@ object SelfEmploymentPeriodResource extends BaseController {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
         if (response.status == 204) NoContent
-        else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+        else if (response.status == 404) NotFound
         else if (response.status == 400) BadRequest(Error.from(response.json))
         else unhandledResponse(response.status, logger)
       }
@@ -74,7 +74,7 @@ object SelfEmploymentPeriodResource extends BaseController {
         case Some(period) => Ok(Json.toJson(period))
         case None => NotFound
       }
-      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+      else if (response.status == 404) NotFound
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else unhandledResponse(response.status, logger)
     }
@@ -84,7 +84,7 @@ object SelfEmploymentPeriodResource extends BaseController {
   def retrievePeriods(nino: Nino, id: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch {
     connector.getAll(nino, id).map { response =>
       if (response.status == 200) Ok(Json.toJson(response.allPeriods))
-      else if (response.status == 404) NotFound(Json.toJson(ErrorNotFound))
+      else if (response.status == 404) NotFound
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else unhandledResponse(response.status, logger)
     }

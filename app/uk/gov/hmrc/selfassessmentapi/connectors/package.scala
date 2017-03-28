@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
+import play.api.Logger
 import play.api.libs.json.Writes
 import uk.gov.hmrc.play.http.logging.Authorization
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpReads, HttpResponse}
@@ -25,8 +26,12 @@ import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 import scala.concurrent.Future
 
 package object connectors {
+
+  private val logger = Logger(SelfEmploymentConnector.getClass)
+
   private def withDesHeaders(hc: HeaderCarrier): HeaderCarrier = {
-    val newHc = hc.copy(authorization = Some(Authorization(AppContext.desToken))).withExtraHeaders(
+    val newHc = hc.copy(authorization = Some(Authorization(AppContext.desToken)))
+      .withExtraHeaders(
       "Environment" -> AppContext.desEnv,
       "Accept" -> "application/vnd.hmrc.1.0+json",
       "Originator-Id" -> "DA_SDI"
@@ -47,15 +52,32 @@ package object connectors {
     override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
   }
 
-  def httpGet(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    WSHttp.GET(url)(NoExceptReads, withDesHeaders(hc))
+  def httpGet(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val desHeaders: HeaderCarrier = withDesHeaders(hc)
+    logRequest(url, desHeaders)
+    WSHttp.GET(url)(NoExceptReads, desHeaders)
+  }
 
-  def httpPost[T: Writes](url: String, elem: T)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    WSHttp.POST(url, elem)(implicitly[Writes[T]], NoExceptReads, withDesHeaders(hc))
+  def httpPost[T: Writes](url: String, elem: T)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val desHeaders: HeaderCarrier = withDesHeaders(hc)
+    logRequest(url, desHeaders)
+    WSHttp.POST(url, elem)(implicitly[Writes[T]], NoExceptReads, desHeaders)
+  }
 
-  def httpEmptyPost(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    WSHttp.POSTEmpty(url)(NoExceptReads, withDesHeaders(hc))
 
-  def httpPut[T: Writes](url: String, elem: T)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    WSHttp.PUT(url, elem)(implicitly[Writes[T]], NoExceptReads, withDesHeaders(hc))
+  def httpEmptyPost(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val desHeaders: HeaderCarrier = withDesHeaders(hc)
+    logRequest(url, desHeaders)
+    WSHttp.POSTEmpty(url)(NoExceptReads, desHeaders)
+  }
+
+  def httpPut[T: Writes](url: String, elem: T)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val desHeaders: HeaderCarrier = withDesHeaders(hc)
+    logRequest(url, desHeaders)
+    WSHttp.PUT(url, elem)(implicitly[Writes[T]], NoExceptReads, desHeaders)
+  }
+
+  private def logRequest(url: String, headers: HeaderCarrier) = {
+    logger.debug(s"Request url: $url, \nExtra headers: ${headers.extraHeaders}, \nAuthorisationHeader: ${headers.authorization.get}")
+  }
 }

@@ -46,9 +46,9 @@ package object connectors {
 
   private def withAdditionalHeaders(url: String)(f: HeaderCarrier => Future[HttpResponse])
                                    (implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val headers = withDesHeaders(hc)
-    logger.debug(s"URL:[$url] Headers:[${headers.headers}]")
-    f(headers)
+    val newHc = withDesHeaders(hc)
+    logger.debug(s"URL:[$url] Headers:[${newHc.headers}]")
+    f(newHc)
   }
 
   // http-verbs converts non-2xx statuses into exceptions. We don't want this, so here we define
@@ -58,22 +58,14 @@ package object connectors {
   }
 
   def httpGet(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    withAdditionalHeaders(url) { headers =>
-      WSHttp.GET(url)(NoExceptReads, headers)
-    }
+    withAdditionalHeaders(url) { WSHttp.GET(url)(NoExceptReads, _) }
 
   def httpPost[T: Writes](url: String, elem: T)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    withAdditionalHeaders(url) { headers =>
-      WSHttp.POST(url, elem)(implicitly[Writes[T]], NoExceptReads, headers)
-    }
+    withAdditionalHeaders(url) { WSHttp.POST(url, elem)(implicitly[Writes[T]], NoExceptReads, _) }
 
   def httpEmptyPost(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    withAdditionalHeaders(url) { headers =>
-      WSHttp.POSTEmpty(url)(NoExceptReads, headers)
-    }
+    withAdditionalHeaders(url) { WSHttp.POSTEmpty(url)(NoExceptReads, _) }
 
   def httpPut[T: Writes](url: String, elem: T)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    withAdditionalHeaders(url) { headers =>
-      WSHttp.PUT(url, elem)(implicitly[Writes[T]], NoExceptReads, headers)
-    }
+    withAdditionalHeaders(url) { WSHttp.PUT(url, elem)(implicitly[Writes[T]], NoExceptReads, _) }
 }

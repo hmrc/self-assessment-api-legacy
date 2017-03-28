@@ -50,22 +50,27 @@ object TaxCalculationResource extends BaseController {
     } match {
       case Left(errorResult) => Future.successful(handleValidationErrors(errorResult))
       case Right(result) => result.map { response =>
-        if (response.status == 202) Accepted(Json.parse(cannedEtaResponse))
-          .withHeaders(LOCATION -> response.calcId.map(id => s"/self-assessment/ni/$nino/calculations/$id").getOrElse(""))
-        else if (response.status == 400) BadRequest(Error.from(response.json))
-        else unhandledResponse(response.status, logger)
+        response.status match {
+          case 202 =>
+            Accepted(Json.parse(cannedEtaResponse))
+              .withHeaders(LOCATION -> response.calcId.map(id => s"/self-assessment/ni/$nino/calculations/$id").getOrElse(""))
+          case 400 => BadRequest(Error.from(response.json))
+          case _ => unhandledResponse(response.status, logger)
+        }
       }
     }
   }
 
   def retrieveCalculation(nino: Nino, calcId: SourceId): Action[AnyContent] = featureSwitch.asyncFeatureSwitch { implicit request =>
     connector.retrieveCalculation(nino, calcId).map { response =>
-      if (response.status == 200) Ok(Json.toJson(response.calculation))
-      else if (response.status == 204) NoContent
-      else if (response.isInvalidCalcId) NotFound
-      else if (response.status == 400) BadRequest(Error.from(response.json))
-      else if (response.status == 404) NotFound
-      else unhandledResponse(response.status, logger)
+      response.status match {
+        case 200 => Ok(Json.toJson(response.calculation))
+        case 204 => NoContent
+        case 400 if response.isInvalidCalcId => NotFound
+        case 400 => BadRequest(Error.from(response.json))
+        case 404 => NotFound
+        case _ => unhandledResponse(response.status, logger)
+      }
     }
   }
 }

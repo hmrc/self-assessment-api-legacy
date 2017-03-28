@@ -50,10 +50,10 @@ class TaxCalculationResponse(underlying: HttpResponse) {
   }
 
   def isInvalidCalcId: Boolean = {
-    status == 400 && (json.asOpt[DesError] match {
+    json.asOpt[DesError] match {
       case Some(x) if x.code == DesErrorCode.INVALID_CALCID => true
       case _ => false
-    })
+    }
   }
 }
 

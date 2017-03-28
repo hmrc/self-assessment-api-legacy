@@ -21,9 +21,9 @@ import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.http.HttpResponse
 import uk.gov.hmrc.selfassessmentapi.models.des
 import uk.gov.hmrc.selfassessmentapi.models.calculation.TaxCalculation
+import uk.gov.hmrc.selfassessmentapi.models.des.{DesError, DesErrorCode}
 
 class TaxCalculationResponse(underlying: HttpResponse) {
-
   private val logger: Logger = Logger(classOf[TaxCalculationResponse])
 
   val status: Int = underlying.status
@@ -47,6 +47,13 @@ class TaxCalculationResponse(underlying: HttpResponse) {
         None
       }
     }
+  }
+
+  def isInvalidCalcId: Boolean = {
+    status == 400 && (json.asOpt[DesError] match {
+      case Some(x) if x.code == DesErrorCode.INVALID_CALCID => true
+      case _ => false
+    })
   }
 }
 

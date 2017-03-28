@@ -62,6 +62,7 @@ object TaxCalculationResource extends BaseController {
     connector.retrieveCalculation(nino, calcId).map { response =>
       if (response.status == 200) Ok(Json.toJson(response.calculation))
       else if (response.status == 204) NoContent
+      else if (response.isInvalidCalcId) NotFound
       else if (response.status == 400) BadRequest(Error.from(response.json))
       else if (response.status == 404) NotFound
       else unhandledResponse(response.status, logger)

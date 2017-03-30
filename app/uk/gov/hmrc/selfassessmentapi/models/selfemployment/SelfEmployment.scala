@@ -38,29 +38,6 @@ case class SelfEmployment(id: Option[SourceId] = None,
                           businessPostcode: String)
 
 object SelfEmployment {
-  def from(desSelfEmployment: des.SelfEmployment, withId: Boolean = true): Option[SelfEmployment] = {
-    for {
-      accountingType <- AccountingType.fromDes(desSelfEmployment.cashOrAccruals)
-      commencementDate <- desSelfEmployment.tradingStartDate
-      address <- desSelfEmployment.addressDetails
-      addressPostcode <- address.postalCode
-    } yield SelfEmployment(
-      id = if (withId) desSelfEmployment.incomeSourceId else None,
-      accountingPeriod = AccountingPeriod(
-        start = LocalDate.parse(desSelfEmployment.accountingPeriodStartDate),
-        end = LocalDate.parse(desSelfEmployment.accountingPeriodEndDate)),
-      accountingType = accountingType,
-      commencementDate = LocalDate.parse(commencementDate),
-      cessationDate = None,
-      tradingName = desSelfEmployment.tradingName,
-      businessDescription = desSelfEmployment.typeOfBusiness.getOrElse(""), // FIXME: Not returned in DES response, it should be there...
-      businessAddressLineOne = address.addressLine1,
-      businessAddressLineTwo = address.addressLine2,
-      businessAddressLineThree = address.addressLine3,
-      businessAddressLineFour = address.addressLine4,
-      businessPostcode = addressPostcode)
-  }
-
   val commencementDateValidator: Reads[LocalDate] = Reads.of[LocalDate].filter(
     ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
   )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))

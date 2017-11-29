@@ -298,7 +298,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
   }
 
-  class HttpRequest(method: String, path: String, body: Option[JsValue], hc: HeaderCarrier = HeaderCarrier())(
+  class HttpRequest(method: String, path: String, body: Option[JsValue], hc: HeaderCarrier = HeaderCarrier(), apiVersion: String = "1.0")(
     implicit urlPathVariables: mutable.Map[String, String])
     extends UrlInterpolation {
 
@@ -310,7 +310,7 @@ trait BaseFunctionalSpec extends TestApplication {
 
     def thenAssertThat(): Assertions = {
       implicit val carrier =
-        if (addAcceptHeader) hc.withExtraHeaders("Accept" -> "application/vnd.hmrc.1.0+json") else hc
+        if (addAcceptHeader) hc.withExtraHeaders("Accept" -> s"application/vnd.hmrc.$apiVersion+json") else hc
 
       withClue(s"Request $method $url") {
         method match {
@@ -339,40 +339,40 @@ trait BaseFunctionalSpec extends TestApplication {
     }
 
     def withHeaders(header: String, value: String): HttpRequest = {
-      new HttpRequest(method, path, body, hc.withExtraHeaders(header -> value))
+      new HttpRequest(method, path, body, hc.withExtraHeaders(header -> value), apiVersion = apiVersion)
     }
   }
 
-  class HttpPostBodyWrapper(method: String, body: Option[JsValue])(
+  class HttpPostBodyWrapper(method: String, body: Option[JsValue], version: String = "1.0")(
     implicit urlPathVariables: mutable.Map[String, String]) {
-    def to(url: String) = new HttpRequest(method, url, body)
+    def to(url: String) = new HttpRequest(method, url, body, apiVersion = version)
   }
 
-  class HttpPutBodyWrapper(method: String, body: Option[JsValue])(
+  class HttpPutBodyWrapper(method: String, body: Option[JsValue], version: String = "1.0")(
     implicit urlPathVariables: mutable.Map[String, String]) {
-    def at(url: String) = new HttpRequest(method, url, body)
+    def at(url: String) = new HttpRequest(method, url, body, apiVersion = version)
   }
 
   class HttpVerbs()(implicit urlPathVariables: mutable.Map[String, String] = mutable.Map()) {
 
-    def post(body: JsValue) = {
-      new HttpPostBodyWrapper("POST", Some(body))
+    def post(body: JsValue, version: String = "1.0") = {
+      new HttpPostBodyWrapper("POST", Some(body), version)
     }
 
-    def put(body: JsValue) = {
-      new HttpPutBodyWrapper("PUT", Some(body))
+    def put(body: JsValue, version: String = "1.0") = {
+      new HttpPutBodyWrapper("PUT", Some(body), version)
     }
 
-    def get(path: String) = {
-      new HttpRequest("GET", path, None)
+    def get(path: String, version: String = "1.0") = {
+      new HttpRequest("GET", path, None, apiVersion = version)
     }
 
     def delete(path: String) = {
       new HttpRequest("DELETE", path, None)
     }
 
-    def post(path: String, body: Option[JsValue] = None) = {
-      new HttpRequest("POST", path, body)
+    def postEmpty(path: String) = {
+      new HttpRequest("POST", path, None)
     }
 
     def put(path: String, body: Option[JsValue]) = {

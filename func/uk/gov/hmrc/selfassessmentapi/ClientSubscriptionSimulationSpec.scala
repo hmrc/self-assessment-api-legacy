@@ -26,7 +26,7 @@ class ClientSubscriptionSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .post(s"/ni/$nino/dividends/$taxYear")
+        .postEmpty(s"/ni/$nino/dividends/$taxYear")
         .withHeaders(GovTestScenarioHeader, "CLIENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(403)

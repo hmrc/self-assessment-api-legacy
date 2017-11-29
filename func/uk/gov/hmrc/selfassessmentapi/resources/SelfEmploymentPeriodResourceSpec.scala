@@ -26,7 +26,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period)
+        .post(period, version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
@@ -62,7 +62,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period)
+        .post(period, version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
@@ -88,7 +88,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period)
+        .post(period, version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(400)
@@ -114,7 +114,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(period)
+        .post(period, version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(400)
@@ -146,7 +146,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.parse(period))
+        .post(Json.parse(period), version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(400)
@@ -178,7 +178,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Json.parse(period))
+        .post(Json.parse(period), version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(400)
@@ -204,7 +204,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(nonContiguousPeriod)
+        .post(nonContiguousPeriod, version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(403)
@@ -229,7 +229,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(overlappingPeriod)
+        .post(overlappingPeriod, version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(403)
@@ -254,7 +254,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(misalignedPeriod)
+        .post(misalignedPeriod, version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(403)
@@ -271,7 +271,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .selfEmployment
         .periodWillBeNotBeCreatedFor(nino)
         .when()
-        .post(period)
+        .post(period, version = "1.1")
         .to(s"/ni/$nino/self-employments/abc/periods")
         .thenAssertThat()
         .statusIs(404)
@@ -286,7 +286,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .des()
         .serverErrorFor(nino)
         .when()
-        .post(period)
+        .post(period, version = "1.1")
         .to(s"/ni/$nino/self-employments/abc/periods")
         .thenAssertThat()
         .statusIs(500)
@@ -302,7 +302,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .des()
         .serviceUnavailableFor(nino)
         .when()
-        .post(period)
+        .post(period, version = "1.1")
         .to(s"/ni/$nino/self-employments/abc/periods")
         .thenAssertThat()
         .statusIs(500)
@@ -326,8 +326,8 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
     "return code 204 when updating a period that exists" in {
       val updatePeriod = Jsons.SelfEmployment.period(turnover = 200.25,
                                                      otherIncome = 100.25,
-                                                     costOfGoodsBought = (200.25, 50.25),
-                                                     cisPaymentsToSubcontractors = (100.25, 55.25))
+                                                     costOfGoodsBought = 200.25,
+                                                     cisPaymentsToSubcontractors = 100.25)
 
       given()
         .userIsSubscribedToMtdFor(nino)
@@ -336,7 +336,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .selfEmployment
         .periodWillBeUpdatedFor(nino, from = "2017-04-05", to = "2018-04-04")
         .when()
-        .put(updatePeriod)
+        .put(updatePeriod, version = "1.1")
         .at(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
         .thenAssertThat()
         .statusIs(204)
@@ -348,8 +348,8 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         toDate = Some("2017-07-04"),
         turnover = 100.25,
         otherIncome = 100.25,
-        costOfGoodsBought = (100.25, 50.25),
-        cisPaymentsToSubcontractors = (100.25, 50.25)
+        costOfGoodsBought = 100.25,
+        cisPaymentsToSubcontractors = 100.25
       )
 
       given()
@@ -359,7 +359,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .selfEmployment
         .periodWillNotBeUpdatedFor(nino, from = "2017-04-05", to = "2018-04-04")
         .when()
-        .put(Json.toJson(period))
+        .put(Json.toJson(period), version = "1.1")
         .at(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
         .thenAssertThat()
         .statusIs(404)
@@ -381,7 +381,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .put(Json.parse(period))
+        .put(Json.parse(period), version = "1.1")
         .at(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
         .thenAssertThat()
         .statusIs(400)
@@ -395,8 +395,8 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         toDate = Some("2017-07-04"),
         turnover = 100.25,
         otherIncome = 100.25,
-        costOfGoodsBought = (100.25, 50.25),
-        cisPaymentsToSubcontractors = (100.25, 50.25)
+        costOfGoodsBought = 100.25,
+        cisPaymentsToSubcontractors = 100.25
       )
 
       given()
@@ -405,7 +405,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .des()
         .isATeapotFor(nino)
         .when()
-        .put(Json.toJson(period))
+        .put(Json.toJson(period), version = "1.1")
         .at(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
         .thenAssertThat()
         .statusIs(500)
@@ -419,20 +419,20 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         toDate = Some("2018-04-04"),
         turnover = 200,
         otherIncome = 200,
-        costOfGoodsBought = (200, 200),
-        cisPaymentsToSubcontractors = (200, 200),
-        staffCosts = (200, 200),
-        travelCosts = (200, 200),
-        premisesRunningCosts = (200, 200),
-        maintenanceCosts = (200, 200),
-        adminCosts = (200, 200),
-        advertisingCosts = (200, 200),
-        interest = (200, 200),
-        financialCharges = (200, 200),
-        badDebt = (200, 200),
-        professionalFees = (200, 200),
-        depreciation = (200, 200),
-        otherExpenses = (200, 200)
+        costOfGoodsBought = 200,
+        cisPaymentsToSubcontractors = 200,
+        staffCosts = 200,
+        travelCosts = 200,
+        premisesRunningCosts = 200,
+        maintenanceCosts = 200,
+        adminCosts = 200,
+        advertisingCosts = 200,
+        interest = 200,
+        financialCharges = 200,
+        badDebt = 200,
+        professionalFees = 200,
+        depreciation = 200,
+        otherExpenses = 200
       )
 
       given()
@@ -442,7 +442,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .selfEmployment
         .periodWillBeReturnedFor(nino, from = "2017-04-05", to = "2018-04-04")
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
+        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04", version = "1.1")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
@@ -460,7 +460,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .des()
         .invalidNinoFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
+        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04", version = "1.1")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Jsons.Errors.ninoInvalid)
@@ -473,7 +473,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .des()
         .invalidBusinessIdFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/def")
+        .get(s"/ni/$nino/self-employments/abc/periods/def", version = "1.1")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -486,7 +486,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .selfEmployment
         .noPeriodFor(nino, from = "2017-04-06", to = "2018-04-05")
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05")
+        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05", version = "1.1")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -499,7 +499,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .selfEmployment
         .periodWillBeReturnedFor(nino, from = "2017-05-04", to = "2018-06-31")
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/2017-05-04_2017-06-31")
+        .get(s"/ni/$nino/self-employments/abc/periods/2017-05-04_2017-06-31", version = "1.1")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -512,7 +512,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .selfEmployment
         .invalidDateFrom(nino, from = "2017-04-06", to = "2018-04-05")
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05")
+        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05", version = "1.1")
         .thenAssertThat()
         .statusIs(500)
     }
@@ -525,7 +525,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .selfEmployment
         .invalidDateTo(nino, from = "2017-04-06", to = "2018-04-05")
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05")
+        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05", version = "1.1")
         .thenAssertThat()
         .statusIs(500)
     }
@@ -537,7 +537,7 @@ class SelfEmploymentPeriodResourceSpec extends BaseFunctionalSpec {
         .des()
         .isATeapotFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
+        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04", version = "1.1")
         .thenAssertThat()
         .statusIs(500)
     }

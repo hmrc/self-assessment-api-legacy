@@ -1,0 +1,9 @@
+{
+  "from": "2017-04-06",
+  "to": "2017-07-04",
+  "incomes": {
+    "turnover": 100.25,
+    "other": 100.25
+  },
+  "consolidatedExpenses": 100.25
+}

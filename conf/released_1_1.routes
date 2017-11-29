@@ -1,0 +1,5 @@
+# Self-Employments Periodic Summaries
+POST /ni/:nino/self-employments/:id/periods    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentPeriodResource.createPeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)
+GET /ni/:nino/self-employments/:id/periods    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentPeriodResource.retrievePeriods(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)
+PUT /ni/:nino/self-employments/:id/periods/:periodId    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentPeriodResource.updatePeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, periodId: uk.gov.hmrc.selfassessmentapi.models.PeriodId)
+GET /ni/:nino/self-employments/:id/periods/:periodId    uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentPeriodResource.retrievePeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, periodId: uk.gov.hmrc.selfassessmentapi.models.PeriodId)

@@ -15,15 +15,20 @@
  */
 
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import uk.gov.hmrc.selfassessmentapi.models.nonNegativeAmountValidator
 
-import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.selfassessmentapi.models.SimpleIncome
-
-case class Incomes(turnover: Option[SimpleIncome] = None, other: Option[SimpleIncome] = None) {
+case class Incomes(turnover: Option[BigDecimal] = None, other: Option[BigDecimal] = None) {
   def hasIncomes: Boolean =
     turnover.isDefined || other.isDefined
 }
 
 object Incomes {
-  implicit val format: Format[Incomes] = Json.format[Incomes]
+  implicit val writes: Writes[Incomes] = Json.writes[Incomes]
+  implicit val reads: Reads[Incomes] = (
+    (__ \ "turnover").readNullable[BigDecimal](nonNegativeAmountValidator) and
+       (__ \ "other").readNullable[BigDecimal](nonNegativeAmountValidator)
+    ) (Incomes.apply _)
+
 }

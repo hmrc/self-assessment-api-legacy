@@ -17,24 +17,26 @@
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import play.api.data.validation.ValidationError
-import play.api.libs.json.{Json, Reads, Writes, _}
+import play.api.libs.json.{JsPath, Json, Reads, Writes}
 import uk.gov.hmrc.selfassessmentapi.models.Validation._
-import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, Expense, Validation}
+import uk.gov.hmrc.selfassessmentapi.models.{Amount, ErrorCode, Validation, _}
 
-case class Expenses(costOfGoodsBought: Option[Expense] = None,
-                    cisPaymentsToSubcontractors: Option[Expense] = None,
-                    staffCosts: Option[Expense] = None,
-                    travelCosts: Option[Expense] = None,
-                    premisesRunningCosts: Option[Expense] = None,
-                    maintenanceCosts: Option[Expense] = None,
-                    adminCosts: Option[Expense] = None,
-                    advertisingCosts: Option[Expense] = None,
-                    interest: Option[Expense] = None,
-                    financialCharges: Option[Expense] = None,
-                    badDebt: Option[Expense] = None,
-                    professionalFees: Option[Expense] = None,
-                    depreciation: Option[Expense] = None,
-                    other: Option[Expense] = None) {
+
+case class Expenses(costOfGoodsBought: Option[Amount] = None,
+                    cisPaymentsToSubcontractors: Option[Amount] = None,
+                    staffCosts: Option[Amount] = None,
+                    travelCosts: Option[Amount] = None,
+                    premisesRunningCosts: Option[Amount] = None,
+                    maintenanceCosts: Option[Amount] = None,
+                    adminCosts: Option[Amount] = None,
+                    advertisingCosts: Option[Amount] = None,
+                    businessEntertainmentCosts: Option[Amount] = None,
+                    interest: Option[Amount] = None,
+                    financialCharges: Option[Amount] = None,
+                    badDebt: Option[Amount] = None,
+                    professionalFees: Option[Amount] = None,
+                    depreciation: Option[Amount] = None,
+                    other: Option[Amount] = None) {
 
   def hasExpenses: Boolean =
     costOfGoodsBought.isDefined ||
@@ -45,6 +47,7 @@ case class Expenses(costOfGoodsBought: Option[Expense] = None,
       maintenanceCosts.isDefined ||
       adminCosts.isDefined ||
       advertisingCosts.isDefined ||
+      businessEntertainmentCosts.isDefined ||
       interest.isDefined ||
       financialCharges.isDefined ||
       badDebt.isDefined ||
@@ -54,58 +57,29 @@ case class Expenses(costOfGoodsBought: Option[Expense] = None,
 }
 
 object Expenses {
-  private val validationError =
-    ValidationError("disallowableAmount must be equal to or less than amount", ErrorCode.INVALID_DISALLOWABLE_AMOUNT)
-  implicit val writes: Writes[Expenses] = Json.writes[Expenses]
-  implicit val reads: Reads[Expenses] = Json
-    .reads[Expenses]
-    .validate(
-      Seq(
-        Validation[Expenses](
-          JsPath \ "depreciation" \ "disallowableAmount",
-          _.depreciation.forall(e => e.disallowableAmount.forall(_ == e.amount)),
-          ValidationError("the disallowableAmount for depreciation expenses must be the same as the amount",
-                          ErrorCode.DEPRECIATION_DISALLOWABLE_AMOUNT)
-        ),
-        Validation(JsPath \ "costOfGoodsBought" \ "disallowableAmount",
-                   _.costOfGoodsBought.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "cisPaymentsToSubcontractors" \ "disallowableAmount",
-                   _.cisPaymentsToSubcontractors.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "staffCosts" \ "disallowableAmount",
-                   _.staffCosts.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "travelCosts" \ "disallowableAmount",
-                   _.travelCosts.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "premisesRunningCosts" \ "disallowableAmount",
-                   _.premisesRunningCosts.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "maintenanceCosts" \ "disallowableAmount",
-                   _.maintenanceCosts.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "adminCosts" \ "disallowableAmount",
-                   _.adminCosts.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "advertisingCosts" \ "disallowableAmount",
-                   _.advertisingCosts.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "interest" \ "disallowableAmount",
-                   _.interest.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "financialCharges" \ "disallowableAmount",
-                   _.financialCharges.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "badDebt" \ "disallowableAmount",
-                   _.badDebt.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "professionalFees" \ "disallowableAmount",
-                   _.professionalFees.forall(validDisallowableAmount),
-                   validationError),
-        Validation(JsPath \ "other" \ "disallowableAmount", _.other.forall(validDisallowableAmount), validationError)
-      ))
 
-  private def validDisallowableAmount(expense: Expense) =
-    expense.disallowableAmount.forall(_ <= expense.amount)
+  private def onError(field: String) = ValidationError(s"The $field should be a non-negative number less than 99999999999999.98 with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT)
+  private def validIf(amount: Amount) = amount >= 0 && amount.scale < 3 && amount <= MAX_AMOUNT
+
+  implicit val writes: Writes[Expenses] = Json.writes[Expenses]
+  implicit val reads: Reads[Expenses] = Json.reads[Expenses]
+    .validate(
+    Seq(
+      Validation[Expenses](JsPath \ "costOfGoodsBought", _.costOfGoodsBought.forall(validIf), onError("costOfGoodsBought")),
+      Validation[Expenses](JsPath \ "cisPaymentsToSubcontractors", _.cisPaymentsToSubcontractors.forall(validIf), onError("cisPaymentsToSubcontractors")),
+      Validation[Expenses](JsPath \ "staffCosts", _.staffCosts.forall(validIf), onError("staffCosts")),
+      Validation[Expenses](JsPath \ "travelCosts", _.travelCosts.forall(validIf), onError("travelCosts")),
+      Validation[Expenses](JsPath \ "premisesRunningCosts", _.premisesRunningCosts.forall(validIf), onError("premisesRunningCosts")),
+      Validation[Expenses](JsPath \ "maintenanceCosts", _.maintenanceCosts.forall(validIf), onError("maintenanceCosts")),
+      Validation[Expenses](JsPath \ "adminCosts", _.adminCosts.forall(validIf), onError("adminCosts")),
+      Validation[Expenses](JsPath \ "advertisingCosts", _.advertisingCosts.forall(validIf), onError("advertisingCosts")),
+      Validation[Expenses](JsPath \ "businessEntertainmentCosts", _.businessEntertainmentCosts.forall(validIf), onError("businessEntertainmentCosts")),
+      Validation[Expenses](JsPath \ "interest", _.interest.forall(validIf), onError("interest")),
+      Validation[Expenses](JsPath \ "financialCharges", _.financialCharges.forall(validIf), onError("financialCharges")),
+      Validation[Expenses](JsPath \ "badDebt", _.badDebt.forall(validIf), onError("badDebt")),
+      Validation[Expenses](JsPath \ "professionalFees", _.professionalFees.forall(validIf), onError("professionalFees")),
+      Validation[Expenses](JsPath \ "depreciation", _.depreciation.forall(validIf), onError("depreciation")),
+      Validation[Expenses](JsPath \ "other", _.other.forall(validIf), onError("other"))
+    )
+  )
 }

@@ -18,11 +18,13 @@ package uk.gov.hmrc.selfassessmentapi.models.des.selfemployment
 
 import play.api.libs.json.{Json, Reads, Writes}
 import uk.gov.hmrc.selfassessmentapi.models
+import uk.gov.hmrc.selfassessmentapi.models.des.expense2Deduction
 
 
 case class SelfEmploymentAnnualSummary(annualAdjustments: Option[AnnualAdjustments],
                                        annualAllowances: Option[AnnualAllowances],
-                                       annualNonFinancials: Option[AnnualNonFinancials])
+                                       annualNonFinancials: Option[AnnualNonFinancials],
+                                       annualDisallowables: Option[Deductions])
 
 object SelfEmploymentAnnualSummary {
   implicit val reads: Reads[SelfEmploymentAnnualSummary] = Json.reads[SelfEmploymentAnnualSummary]
@@ -78,12 +80,32 @@ object SelfEmploymentAnnualSummary {
       )
     }
 
+    val disallowables = apiSummary.disallowableExpenses.map { expenses =>
+      Deductions(
+        costOfGoods = expenses.costOfGoodsBought.map(expense2Deduction),
+        constructionIndustryScheme = expenses.cisPaymentsToSubcontractors.map(expense2Deduction),
+        staffCosts = expenses.staffCosts.map(expense2Deduction),
+        travelCosts = expenses.travelCosts.map(expense2Deduction),
+        premisesRunningCosts = expenses.premisesRunningCosts.map(expense2Deduction),
+        maintenanceCosts = expenses.maintenanceCosts.map(expense2Deduction),
+        adminCosts = expenses.adminCosts.map(expense2Deduction),
+        advertisingCosts = expenses.advertisingCosts.map(expense2Deduction),
+        businessEntertainmentCosts = expenses.businessEntertainmentCosts.map(expense2Deduction),
+        interest = expenses.interest.map(expense2Deduction),
+        financialCharges = expenses.financialCharges.map(expense2Deduction),
+        badDebt = expenses.badDebt.map(expense2Deduction),
+        professionalFees = expenses.professionalFees.map(expense2Deduction),
+        depreciation = expenses.depreciation.map(expense2Deduction),
+        other = expenses.other.map(expense2Deduction)
+      )
+    }
+
     SelfEmploymentAnnualSummary(
       annualAdjustments = adjustments,
       annualAllowances = allowances,
-      annualNonFinancials = nonFinancials)
+      annualNonFinancials = nonFinancials,
+      annualDisallowables = disallowables)
   }
-
 }
 
 case class AnnualAdjustments(includedNonTaxableProfits: Option[BigDecimal],
@@ -130,8 +152,7 @@ case class AnnualNonFinancials(businessDetailsChangedRecently: Option[Boolean],
                                exemptFromPayingClass4Nics: Option[Boolean],
                                class4NicsExemptionReason: Option[String])
 
-object AnnualNonFinancials{
+object AnnualNonFinancials {
   implicit val reads: Reads[AnnualNonFinancials] = Json.reads[AnnualNonFinancials]
   implicit val writes: Writes[AnnualNonFinancials] = Json.writes[AnnualNonFinancials]
-
 }

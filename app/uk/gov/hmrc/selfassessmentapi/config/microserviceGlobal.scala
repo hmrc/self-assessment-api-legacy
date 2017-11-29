@@ -38,22 +38,20 @@ import uk.gov.hmrc.kenshoo.monitoring.MonitoringFilter
 import uk.gov.hmrc.play.config.{AppName, RunMode}
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.scheduling._
-import uk.gov.hmrc.selfassessmentapi.config.simulation.{
-  AgentAuthorizationSimulation,
-  AgentSubscriptionSimulation,
-  ClientSubscriptionSimulation
-}
+import uk.gov.hmrc.selfassessmentapi.config.simulation.{AgentAuthorizationSimulation, AgentSubscriptionSimulation, ClientSubscriptionSimulation}
 import uk.gov.hmrc.selfassessmentapi.models.SourceType.sourceTypeToDocumentationName
 import uk.gov.hmrc.selfassessmentapi.models.TaxYear.taxYearFormat
 import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
+import uk.gov.hmrc.versioning.RequestHeaderUtils._
 
 import scala.collection.immutable.ListMap
 import play.api.libs.concurrent.Execution.Implicits._
+
 import scala.concurrent.Future
 import scala.util.matching.Regex
-import uk.gov.hmrc.http.{ HeaderCarrier, NotImplementedException }
-import uk.gov.hmrc.play.microservice.filters.{ AuditFilter, LoggingFilter, MicroserviceFilterSupport }
+import uk.gov.hmrc.http.{HeaderCarrier, NotImplementedException}
+import uk.gov.hmrc.play.microservice.filters.{AuditFilter, LoggingFilter, MicroserviceFilterSupport}
 import uk.gov.hmrc.play.auth.controllers.AuthParamsControllerConfig
 import uk.gov.hmrc.play.config.ControllerConfig
 
@@ -165,6 +163,9 @@ object MicroserviceAuthFilter extends AuthorisationFilter with MicroserviceFilte
 }
 
 object HeaderValidatorFilter extends Filter with HeaderValidator with MicroserviceFilterSupport {
+
+  override val validateVersion: String => Boolean = Set("1.0", "1.1").contains(_)
+
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
     val controller = rh.tags.get(Tags.ROUTE_CONTROLLER)
     val needsHeaderValidation =
@@ -208,7 +209,7 @@ object MicroserviceGlobal
 
   override def microserviceFilters: Seq[EssentialFilter] =
     Seq(HeaderValidatorFilter, EmptyResponseFilter, SetContentTypeFilter) ++ enabledFilters ++
-      Seq(application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
+    Seq(application.injector.instanceOf[MicroserviceMonitoringFilter]) ++ defaultMicroserviceFilters
 
   override lazy val scheduledJobs: Seq[ScheduledJob] = createScheduledJobs()
 
@@ -228,6 +229,15 @@ object MicroserviceGlobal
             case _                           => result
           }
       }
+    }
+  }
+
+  override def onRequestReceived(originalRequest: RequestHeader) = {
+    val requestContext = extractUriContext(originalRequest)
+    if (AppContext.unversionedContexts.contains(requestContext)) {
+      super.onRequestReceived(originalRequest)
+    } else {
+      super.onRequestReceived(getVersionedRequest(originalRequest))
     }
   }
 

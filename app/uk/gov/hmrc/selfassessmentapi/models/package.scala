@@ -33,7 +33,7 @@ package object models {
   type SummaryId = String
   type ValidationErrors = Seq[(JsPath, Seq[ValidationError])]
 
-  private val MAX_AMOUNT = BigDecimal("99999999999999.98")
+  val MAX_AMOUNT = BigDecimal("99999999999999.98")
 
   /**
     * Asserts that amounts must have a maximum of two decimal places

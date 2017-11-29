@@ -43,6 +43,24 @@ class SelfEmploymentAnnualSummarySpec extends UnitSpec {
           balancingChargeBPRA = Some(200.50),
           balancingChargeOther = Some(200.50),
           goodsAndServicesOwnUse = Some(200.50))),
+        disallowableExpenses = Some(
+          models.selfemployment.Expenses(
+            cisPaymentsToSubcontractors = Some(10.10),
+            depreciation = Some(11.10),
+            costOfGoodsBought = Some(12.10),
+            professionalFees = Some(13.10),
+            badDebt = Some(14.10),
+            adminCosts = Some(15.10),
+            advertisingCosts = Some(16.10),
+            businessEntertainmentCosts = Some(17.10),
+            financialCharges = Some(18.10),
+            interest = Some(19.10),
+            maintenanceCosts = Some(20.10),
+            premisesRunningCosts = Some(21.10),
+            staffCosts = Some(22.10),
+            travelCosts = Some(23.10),
+            other = Some(24.10)
+          )),
         nonFinancials = Some(models.selfemployment.NonFinancials(
           class4NicInfo = Some(Class4NicInfo(Some(true), Some(DIVER))), Some(false))))
 
@@ -69,6 +87,24 @@ class SelfEmploymentAnnualSummarySpec extends UnitSpec {
       adjustments.balancingChargeBpra shouldBe Some(200.50)
       adjustments.balancingChargeOther shouldBe Some(200.50)
       adjustments.goodsAndServicesOwnUse shouldBe Some(200.50)
+
+      val disallowables = desSummary.annualDisallowables.get
+
+      disallowables.constructionIndustryScheme.get shouldBe Deduction(10.10, None)
+      disallowables.depreciation.get shouldBe Deduction(11.10, None)
+      disallowables.costOfGoods.get shouldBe Deduction(12.10, None)
+      disallowables.professionalFees.get shouldBe Deduction(13.10, None)
+      disallowables.badDebt.get shouldBe Deduction(14.10, None)
+      disallowables.adminCosts.get shouldBe Deduction(15.10, None)
+      disallowables.advertisingCosts.get shouldBe Deduction(16.10, None)
+      disallowables.businessEntertainmentCosts.get shouldBe Deduction(17.10, None)
+      disallowables.financialCharges.get shouldBe Deduction(18.10, None)
+      disallowables.interest.get shouldBe Deduction(19.10, None)
+      disallowables.maintenanceCosts.get shouldBe Deduction(20.10, None)
+      disallowables.premisesRunningCosts.get shouldBe Deduction(21.10, None)
+      disallowables.staffCosts.get shouldBe Deduction(22.10, None)
+      disallowables.travelCosts.get shouldBe Deduction(23.10, None)
+      disallowables.other.get shouldBe Deduction(24.10, None)
 
       val nonFinancials = desSummary.annualNonFinancials.get
       nonFinancials.exemptFromPayingClass4Nics shouldBe Some(true)

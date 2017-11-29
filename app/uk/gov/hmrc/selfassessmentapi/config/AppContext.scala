@@ -38,4 +38,5 @@ object AppContext extends ServicesConfig {
   lazy val auditEnabled: Boolean = config.getBoolean(s"auditing.enabled").getOrElse(true)
   lazy val authEnabled: Boolean = config.getBoolean(s"$env.microservice.services.auth.enabled").getOrElse(true)
   lazy val getMaxPeriodTimeSpan : Int = config.getInt(s"$env.microservice.max-period-timespan").getOrElse(86)
+  lazy val unversionedContexts: Seq[String] = config.getStringSeq("versioning.unversionedContexts").getOrElse(Seq.empty[String])
 }

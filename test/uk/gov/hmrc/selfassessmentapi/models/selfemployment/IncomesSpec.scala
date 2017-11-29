@@ -16,18 +16,17 @@
 
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
-import uk.gov.hmrc.selfassessmentapi.models.SimpleIncome
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
 class IncomesSpec extends JsonSpec {
   "Incomes" should {
     "round trip in" in
-      roundTripJson(Incomes(turnover = Some(SimpleIncome(200)), other = Some(SimpleIncome(200))))
+      roundTripJson(Incomes(turnover = Some(200), other = Some(200)))
 
     "accept Incomes with just 'turnover' defined" in
-      roundTripJson(Incomes(turnover = Some(SimpleIncome(200))))
+      roundTripJson(Incomes(turnover = Some(200)))
 
     "accept Incomes with just 'other' defined" in
-      roundTripJson(Incomes(other = Some(SimpleIncome(200))))
+      roundTripJson(Incomes(other = Some(200)))
   }
 }

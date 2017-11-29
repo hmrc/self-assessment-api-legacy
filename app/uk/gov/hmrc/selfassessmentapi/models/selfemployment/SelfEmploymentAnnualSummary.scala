@@ -19,18 +19,20 @@ package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.models.{Class4NicInfo, Class4NicsExemptionCode, ErrorCode, des}
+import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, des}
 
 case class SelfEmploymentAnnualSummary(allowances: Option[Allowances],
                                        adjustments: Option[Adjustments],
+                                       disallowableExpenses: Option[Expenses],
                                        nonFinancials: Option[NonFinancials])
 
 object SelfEmploymentAnnualSummary {
   implicit val writes: Writes[SelfEmploymentAnnualSummary] = Json.writes[SelfEmploymentAnnualSummary]
 
   implicit val reads: Reads[SelfEmploymentAnnualSummary] = (
-    (__ \ "allowances").readNullable[Allowances] and
+      (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments] and
+      (__ \ "disallowableExpenses").readNullable[Expenses] and
       (__ \ "nonFinancials").readNullable[NonFinancials]
     ) (SelfEmploymentAnnualSummary.apply _).filter(
     ValidationError(
@@ -67,7 +69,6 @@ object SelfEmploymentAnnualSummary {
         cisDeductionsTotal = adj.cisDeductionsTotal,
         taxDeductionsFromTradingIncome = adj.taxDeductionsFromTradingIncome,
         class4NicProfitAdjustment = adj.class4NicProfitAdjustment
-
       )
     }
 
@@ -86,6 +87,26 @@ object SelfEmploymentAnnualSummary {
 
     val nonFinancials = NonFinancials.from(desSummary.annualNonFinancials)
 
-    SelfEmploymentAnnualSummary(allowances, adjustments, nonFinancials)
+    val disallowableExpenses = desSummary.annualDisallowables.map { deductions =>
+      Expenses(
+        costOfGoodsBought = deductions.costOfGoods.map(_.amount),
+        cisPaymentsToSubcontractors = deductions.constructionIndustryScheme.map(_.amount),
+        staffCosts = deductions.staffCosts.map(_.amount),
+        travelCosts = deductions.travelCosts.map(_.amount),
+        premisesRunningCosts = deductions.premisesRunningCosts.map(_.amount),
+        maintenanceCosts = deductions.maintenanceCosts.map(_.amount),
+        adminCosts = deductions.adminCosts.map(_.amount),
+        advertisingCosts = deductions.advertisingCosts.map(_.amount),
+        businessEntertainmentCosts = deductions.businessEntertainmentCosts.map(_.amount),
+        interest = deductions.interest.map(_.amount),
+        financialCharges = deductions.financialCharges.map(_.amount),
+        badDebt = deductions.badDebt.map(_.amount),
+        professionalFees = deductions.professionalFees.map(_.amount),
+        depreciation = deductions.depreciation.map(_.amount),
+        other = deductions.other.map(_.amount)
+      )
+    }
+
+    SelfEmploymentAnnualSummary(allowances, adjustments, disallowableExpenses, nonFinancials)
   }
 }

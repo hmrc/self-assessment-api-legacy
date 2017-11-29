@@ -57,7 +57,7 @@ class SelfEmploymentPeriodSpec extends JsonSpec with GeneratorDrivenPropertyChec
       val period = SelfEmploymentPeriod(id = None,
                                         from = LocalDate.parse("2017-04-01"),
                                         to = LocalDate.parse("2017-04-01"),
-                                        incomes = Some(Incomes(turnover = Some(SimpleIncome(0)))),
+                                        incomes = Some(Incomes(turnover = Some(0))),
                                         expenses = None,
                                         consolidatedExpenses = None)
       assertValidationPasses(period)

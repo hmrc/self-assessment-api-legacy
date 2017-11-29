@@ -129,7 +129,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Jsons.SelfEmployment.period(turnover = -100.1234)).to(s"%sourceLocation%/periods")
+        .post(Jsons.SelfEmployment.period(turnover = -100.1234), version = "1.1").to(s"%sourceLocation%/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest
@@ -148,12 +148,12 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .post(Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-05")))
+        .post(Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-05")), version = "1.1")
         .to(s"%sourceLocation%/periods")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Jsons.SelfEmployment.period(turnover = -100.1234)).at(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05")
+        .put(Jsons.SelfEmployment.period(turnover = -100.1234), version = "1.1").at(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .isBadRequest

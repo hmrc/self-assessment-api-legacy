@@ -29,23 +29,23 @@ class SelfEmploymentPeriodSpec extends JsonSpec {
         from = LocalDate.parse("2017-04-06"),
         to = LocalDate.parse("2018-04-05"),
         incomes =
-          Some(models.selfemployment.Incomes(turnover = Some(SimpleIncome(10.10)), other = Some(SimpleIncome(10.10)))),
+          Some(models.selfemployment.Incomes(turnover = Some(10.10), other = Some(10.10))),
         expenses = Some(
           models.selfemployment.Expenses(
-            cisPaymentsToSubcontractors = Some(Expense(10.10, Some(10.10))),
-            depreciation = Some(Expense(10.10, Some(10.10))),
-            costOfGoodsBought = Some(Expense(10.10, Some(10.10))),
-            professionalFees = Some(Expense(10.10, Some(10.10))),
-            badDebt = Some(Expense(10.10, Some(10.10))),
-            adminCosts = Some(Expense(10.10, Some(10.10))),
-            advertisingCosts = Some(Expense(10.10, Some(10.10))),
-            financialCharges = Some(Expense(10.10, Some(10.10))),
-            interest = Some(Expense(10.10, Some(10.10))),
-            maintenanceCosts = Some(Expense(10.10, Some(10.10))),
-            premisesRunningCosts = Some(Expense(10.10, Some(10.10))),
-            staffCosts = Some(Expense(10.10, Some(10.10))),
-            travelCosts = Some(Expense(10.10, Some(10.10))),
-            other = Some(Expense(10.10, Some(10.10)))
+            cisPaymentsToSubcontractors = Some(10.10),
+            depreciation = Some(10.10),
+            costOfGoodsBought = Some(10.10),
+            professionalFees = Some(10.10),
+            badDebt = Some(10.10),
+            adminCosts = Some(10.10),
+            advertisingCosts = Some(10.10),
+            financialCharges = Some(10.10),
+            interest = Some(10.10),
+            maintenanceCosts = Some(10.10),
+            premisesRunningCosts = Some(10.10),
+            staffCosts = Some(10.10),
+            travelCosts = Some(10.10),
+            other = Some(10.10)
           )),
           consolidatedExpenses = None)
 

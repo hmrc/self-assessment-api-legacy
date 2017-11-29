@@ -48,14 +48,8 @@ import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 import uk.gov.hmrc.versioning.RequestHeaderUtils._
 
 import scala.collection.immutable.ListMap
-import play.api.libs.concurrent.Execution.Implicits._
-
 import scala.concurrent.Future
 import scala.util.matching.Regex
-import uk.gov.hmrc.http.{HeaderCarrier, NotImplementedException}
-import uk.gov.hmrc.play.microservice.filters.{AuditFilter, LoggingFilter, MicroserviceFilterSupport}
-import uk.gov.hmrc.play.auth.controllers.AuthParamsControllerConfig
-import uk.gov.hmrc.play.config.ControllerConfig
 
 case class ControllerConfigParams(needsHeaderValidation: Boolean = true,
                                   needsLogging: Boolean = true,

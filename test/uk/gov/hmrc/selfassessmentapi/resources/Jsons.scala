@@ -159,8 +159,7 @@ object Jsons {
                   repairsAndMaintenance: BigDecimal = 0,
                   financialCosts: BigDecimal = 0,
                   professionalFees: BigDecimal = 0,
-                  otherCost: BigDecimal = 0,
-                  consolidatedExpenses: Option[BigDecimal] = None): JsValue = {
+                  otherCost: BigDecimal = 0): JsValue = {
 
       val from =
         fromDate
@@ -176,16 +175,6 @@ object Jsons {
           .map { date =>
             s"""
                | "to": "$date",
-         """.stripMargin
-          }
-          .getOrElse("")
-
-
-      val ce =
-        consolidatedExpenses
-          .map { ce =>
-            s"""
-               | , "consolidatedExpenses": "$ce"
          """.stripMargin
           }
           .getOrElse("")
@@ -204,7 +193,6 @@ object Jsons {
            |    "professionalFees": { "amount": $professionalFees },
            |    "other": { "amount": $otherCost }
            |  }
-           |  $ce
            |}
        """.stripMargin)
     }
@@ -220,8 +208,7 @@ object Jsons {
                     financialCosts: BigDecimal = 0,
                     professionalFees: BigDecimal = 0,
                     costOfServices: BigDecimal = 0,
-                    otherCost: BigDecimal = 0,
-                    consolidatedExpenses: Option[BigDecimal] = None): JsValue = {
+                    otherCost: BigDecimal = 0): JsValue = {
 
       val from =
         fromDate
@@ -240,16 +227,6 @@ object Jsons {
          """.stripMargin
           }
           .getOrElse("")
-
-      val ce =
-        consolidatedExpenses
-          .map { ce =>
-            s"""
-               | , "consolidatedExpenses": "$ce"
-         """.stripMargin
-          }
-          .getOrElse("")
-
 
       Json.parse(s"""
            |{
@@ -270,7 +247,6 @@ object Jsons {
            |    "costOfServices": { "amount": $costOfServices },
            |    "other": { "amount": $otherCost }
            |  }
-           |  $ce
            |}
        """.stripMargin)
     }

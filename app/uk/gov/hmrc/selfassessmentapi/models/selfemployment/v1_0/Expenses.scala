@@ -29,6 +29,7 @@ case class Expenses(costOfGoodsBought: Option[Expense] = None,
                     maintenanceCosts: Option[Expense] = None,
                     adminCosts: Option[Expense] = None,
                     advertisingCosts: Option[Expense] = None,
+                    businessEntertainmentCosts: Option[Expense] = None,
                     interest: Option[Expense] = None,
                     financialCharges: Option[Expense] = None,
                     badDebt: Option[Expense] = None,
@@ -45,6 +46,7 @@ case class Expenses(costOfGoodsBought: Option[Expense] = None,
       maintenanceCosts.isDefined ||
       adminCosts.isDefined ||
       advertisingCosts.isDefined ||
+      businessEntertainmentCosts.isDefined ||
       interest.isDefined ||
       financialCharges.isDefined ||
       badDebt.isDefined ||
@@ -89,6 +91,9 @@ object Expenses {
                    _.adminCosts.forall(validDisallowableAmount),
                    validationError),
         Validation(JsPath \ "advertisingCosts" \ "disallowableAmount",
+                   _.advertisingCosts.forall(validDisallowableAmount),
+                   validationError),
+        Validation(JsPath \ "businessEntertainmentCosts" \ "disallowableAmount",
                    _.advertisingCosts.forall(validDisallowableAmount),
                    validationError),
         Validation(JsPath \ "interest" \ "disallowableAmount",

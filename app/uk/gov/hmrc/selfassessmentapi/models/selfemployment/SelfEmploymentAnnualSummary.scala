@@ -61,8 +61,6 @@ object SelfEmploymentAnnualSummary {
         balancingChargeOther = adj.balancingChargeOther,
         goodsAndServicesOwnUse = adj.goodsAndServicesOwnUse,
         overlapProfitCarriedForward = adj.overlapProfitCarriedForward,
-        adjustedProfit = adj.adjustedProfit,
-        adjustedLoss = adj.adjustedLoss,
         lossOffsetAgainstOtherIncome = adj.lossOffsetAgainstOtherIncome,
         lossCarriedBackOffsetAgainstIncomeOrCGT = adj.lossCarriedBackOffsetAgainstIncomeOrCGT,
         lossCarriedForwardTotal = adj.lossCarriedForwardTotal,

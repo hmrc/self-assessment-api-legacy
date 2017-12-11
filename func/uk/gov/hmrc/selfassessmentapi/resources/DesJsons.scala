@@ -278,8 +278,6 @@ object DesJsons {
            |      "balancingChargeOther": 200.00,
            |      "goodsAndServicesOwnUse": 200.00,
            |      "overlapProfitCarriedForward": 500.25,
-           |      "adjustedProfit": 500.25,
-           |      "adjustedLoss": 500.25,
            |      "lossOffsetAgainstOtherIncome": 500.25,
            |      "lossCarriedBackOffsetAgainstIncomeOrCGT": 500.25,
            |      "lossCarriedForwardTotal": 500.25,

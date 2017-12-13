@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.models
 
-
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode.ErrorCode
@@ -72,12 +71,16 @@ object Errors {
   object BadToken extends Error("UNAUTHORIZED", "Bearer token is missing or not authorized", None)
   object BadRequest extends Error("INVALID_REQUEST", "Invalid request", None)
   object InternalServerError extends Error("INTERNAL_SERVER_ERROR", "An internal server error occurred", None)
+  object NotFinalisedDeclaration extends Error("NOT_FINALISED", "The statement cannot be accepted without a declaration it is finalised.", Some("/finalised"))
+  object PeriodicUpdateMissing extends Error("PERIODIC_UPDATE_MISSING", "End-of-period statement cannot be accepted until all periodic updates have been submitted.", None)
+  object InvalidDateRange extends Error("INVALID_DATE_RANGE", "The start date must be the same day or before the from date.", None)
+  object EarlySubmission extends Error("EARLY_SUBMISSION", "You cannot submit a statement before the end of your accounting period.", None)
+  object NonMatchingPeriod extends Error("NON_MATCHING_PERIOD", "You cannot submit your end-of-period statement for a period that does not match your accounting period.", None)
 
   def badRequest(validationErrors: ValidationErrors) = BadRequest(flattenValidationErrors(validationErrors), "Invalid request")
   def badRequest(error: Error) = BadRequest(Seq(error), "Invalid request")
   def badRequest(message: String) = BadRequest(Seq.empty, message)
 
-  
   def businessError(error: Error): BusinessError = businessError(Seq(error))
   def businessError(errors: Seq[Error]): BusinessError = BusinessError(errors, "Business validation error")
 
@@ -104,9 +107,9 @@ object Errors {
       case "error.path.missing" => Error("MANDATORY_FIELD_MISSING", "a mandatory field is missing", Some(errorPath))
       case "error.expected.numberformatexception" => Error("INVALID_NUMERIC_VALUE", "please provide a numeric field", Some(errorPath))
       case "error.expected.jsstring" => Error("INVALID_STRING_VALUE", "please provide a string field", Some(errorPath))
+      case "error.expected.jsboolean" => Error("INVALID_BOOLEAN_VALUE", "please provide a valid boolean field", Some(errorPath))
       case _ => Error("UNMAPPED_PLAY_ERROR", playError.message, Some(errorPath))
     }
   }
-
 
 }

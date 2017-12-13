@@ -17,6 +17,7 @@ import uk.gov.hmrc.selfassessmentapi.{NinoGenerator, TestApplication}
 
 import scala.collection.mutable
 import scala.util.matching.Regex
+import org.joda.time.LocalDate
 
 trait BaseFunctionalSpec extends TestApplication {
 
@@ -474,7 +475,6 @@ trait BaseFunctionalSpec extends TestApplication {
 
       this
     }
-
 
     def userIsNotAuthorisedForTheResource: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
@@ -1006,7 +1006,6 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
 
-
         def noPeriodFor(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
           stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
             .willReturn(
@@ -1017,7 +1016,6 @@ trait BaseFunctionalSpec extends TestApplication {
 
           givens
         }
-
 
         def invalidDateFrom(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
           stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
@@ -1212,6 +1210,50 @@ trait BaseFunctionalSpec extends TestApplication {
 
           givens
         }
+
+        def endOfYearStatementReadyToBeFinalised(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+            .willReturn(
+              aResponse()
+                .withStatus(204)
+                .withBody("")))
+
+          givens
+        }
+
+        def endOfYearStatementMissingPeriod(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+            .willReturn(
+              aResponse()
+                .withStatus(403)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.periodicUpdateMissing)))
+
+          givens
+        }
+
+        def endOfYearStatementIsLate(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+            .willReturn(
+              aResponse()
+                .withStatus(403)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.lateSubmission)))
+
+          givens
+        }
+
+        def endOfYearStatementDoesNotMatchPeriod(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
+          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+            .willReturn(
+              aResponse()
+                .withStatus(403)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.nonMatchingPeriod)))
+
+          givens
+        }
+
       }
 
       object taxCalculation {
@@ -1307,7 +1349,6 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
       }
-
 
       object properties {
 
@@ -1651,7 +1692,6 @@ trait BaseFunctionalSpec extends TestApplication {
 
           givens
         }
-
 
         def invalidPeriodUpdateFor(nino: Nino, propertyType: PropertyType, from: String = "2017-04-06", to: String = "2018-04-05"): Givens = {
           stubFor(put(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))

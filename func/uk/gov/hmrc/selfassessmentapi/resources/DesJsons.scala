@@ -278,8 +278,7 @@ object DesJsons {
            |      "balancingChargeOther": 200.00,
            |      "goodsAndServicesOwnUse": 200.00,
            |      "overlapProfitCarriedForward": 500.25,
-           |      "lossOffsetAgainstOtherIncome": 500.25,
-           |      "lossCarriedBackOffsetAgainstIncomeOrCGT": 500.25,
+           |      "overlapProfitBroughtForward": 500.25,
            |      "lossCarriedForwardTotal": 500.25,
            |      "cisDeductionsTotal": 500.25,
            |      "taxDeductionsFromTradingIncome": 500.25,
@@ -290,7 +289,6 @@ object DesJsons {
            |      "capitalAllowanceMainPool": 200.00,
            |      "capitalAllowanceSpecialRatePool": 200.00,
            |      "zeroEmissionGoodsVehicleAllowance": 200.00,
-           |      "businessPremisesRenovationAllowance": 200.00,
            |      "enhanceCapitalAllowance": 200.00,
            |      "allowanceOnSales": 200.00,
            |      "capitalAllowanceSingleAssetPool": 500.25

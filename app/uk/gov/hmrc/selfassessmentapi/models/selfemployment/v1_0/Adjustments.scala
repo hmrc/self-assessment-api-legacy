@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.models.selfemployment
+package uk.gov.hmrc.selfassessmentapi.models.selfemployment.v1_0
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
@@ -33,7 +33,8 @@ case class Adjustments(includedNonTaxableProfits: Option[BigDecimal] = None,
                        balancingChargeOther: Option[BigDecimal] = None,
                        goodsAndServicesOwnUse: Option[Amount] = None,
                        overlapProfitCarriedForward: Option[BigDecimal] = None,
-                       overlapProfitBroughtForward: Option[BigDecimal] = None,
+                       lossOffsetAgainstOtherIncome: Option[BigDecimal] = None,
+                       lossCarriedBackOffsetAgainstIncomeOrCGT: Option[BigDecimal] = None,
                        lossCarriedForwardTotal: Option[BigDecimal] = None,
                        cisDeductionsTotal: Option[BigDecimal] = None,
                        taxDeductionsFromTradingIncome: Option[BigDecimal] = None,
@@ -45,7 +46,7 @@ object Adjustments {
   implicit val writes: Writes[Adjustments] = Json.writes[Adjustments]
 
   implicit val reads: Reads[Adjustments] = (
-      (__ \ "includedNonTaxableProfits").readNullable[BigDecimal](nonNegativeAmountValidator) and
+    (__ \ "includedNonTaxableProfits").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "basisAdjustment").readNullable[BigDecimal](amountValidator) and
       (__ \ "overlapReliefUsed").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "accountingAdjustment").readNullable[BigDecimal](nonNegativeAmountValidator) and
@@ -56,7 +57,8 @@ object Adjustments {
       (__ \ "balancingChargeOther").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "goodsAndServicesOwnUse").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "overlapProfitCarriedForward").readNullable[BigDecimal](nonNegativeAmountValidator) and
-      (__ \ "overlapProfitBroughtForward").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "lossOffsetAgainstOtherIncome").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "lossCarriedBackOffsetAgainstIncomeOrCGT").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "lossCarriedForwardTotal").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "cisDeductionsTotal").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "taxDeductionsFromTradingIncome").readNullable[BigDecimal](nonNegativeAmountValidator) and

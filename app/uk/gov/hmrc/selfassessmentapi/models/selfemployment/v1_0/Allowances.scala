@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.models.selfemployment
+package uk.gov.hmrc.selfassessmentapi.models.selfemployment.v1_0
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
@@ -24,6 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.models.nonNegativeAmountValidator
 case class Allowances(annualInvestmentAllowance: Option[BigDecimal] = None,
                       capitalAllowanceMainPool: Option[BigDecimal] = None,
                       capitalAllowanceSpecialRatePool: Option[BigDecimal] = None,
+                      businessPremisesRenovationAllowance: Option[BigDecimal] = None,
                       enhancedCapitalAllowance: Option[BigDecimal] = None,
                       allowanceOnSales: Option[BigDecimal] = None,
                       zeroEmissionGoodsVehicleAllowance: Option[BigDecimal] = None,
@@ -37,9 +38,10 @@ object Allowances {
     (__ \ "annualInvestmentAllowance").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "capitalAllowanceMainPool").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "capitalAllowanceSpecialRatePool").readNullable[BigDecimal](nonNegativeAmountValidator) and
+      (__ \ "businessPremisesRenovationAllowance").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "enhancedCapitalAllowance").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "allowanceOnSales").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "zeroEmissionGoodsVehicleAllowance").readNullable[BigDecimal](nonNegativeAmountValidator) and
       (__ \ "capitalAllowanceSingleAssetPool").readNullable[BigDecimal](nonNegativeAmountValidator)
-  )(Allowances.apply _)
+    )(Allowances.apply _)
 }

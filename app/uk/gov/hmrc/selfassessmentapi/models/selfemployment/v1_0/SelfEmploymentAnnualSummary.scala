@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.models.selfemployment
+package uk.gov.hmrc.selfassessmentapi.models.selfemployment.v1_0
 
+import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.models.des
+import uk.gov.hmrc.selfassessmentapi.models.des.selfemployment.v1_0.Deduction
+import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, Expense, des}
 
 case class SelfEmploymentAnnualSummary(allowances: Option[Allowances],
                                        adjustments: Option[Adjustments],
@@ -29,13 +31,24 @@ object SelfEmploymentAnnualSummary {
   implicit val writes: Writes[SelfEmploymentAnnualSummary] = Json.writes[SelfEmploymentAnnualSummary]
 
   implicit val reads: Reads[SelfEmploymentAnnualSummary] = (
-      (__ \ "allowances").readNullable[Allowances] and
+    (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments] and
       (__ \ "disallowableExpenses").readNullable[Expenses] and
       (__ \ "nonFinancials").readNullable[NonFinancials]
-    ) (SelfEmploymentAnnualSummary.apply _)
+    ) (SelfEmploymentAnnualSummary.apply _).filter(
+    ValidationError(
+      "Balancing charge on BPRA (Business Premises Renovation Allowance) can only be claimed when there is a value for BPRA.",
+      ErrorCode.INVALID_BALANCING_CHARGE_BPRA)) { annualSummary => validateBalancingChargeBPRA(annualSummary) }
 
-  def from(desSummary: des.selfemployment.SelfEmploymentAnnualSummary): SelfEmploymentAnnualSummary = {
+  private def validateBalancingChargeBPRA(annualSummary: SelfEmploymentAnnualSummary): Boolean = {
+    annualSummary.adjustments.forall { adjustments =>
+      adjustments.balancingChargeBPRA.forall { _ =>
+        annualSummary.allowances.exists(_.businessPremisesRenovationAllowance.exists(_ > 0))
+      }
+    }
+  }
+
+  def from(desSummary: des.selfemployment.v1_0.SelfEmploymentAnnualSummary): SelfEmploymentAnnualSummary = {
     val adjustments = desSummary.annualAdjustments.map { adj =>
       Adjustments(
         includedNonTaxableProfits = adj.includedNonTaxableProfits,
@@ -49,7 +62,8 @@ object SelfEmploymentAnnualSummary {
         balancingChargeOther = adj.balancingChargeOther,
         goodsAndServicesOwnUse = adj.goodsAndServicesOwnUse,
         overlapProfitCarriedForward = adj.overlapProfitCarriedForward,
-        overlapProfitBroughtForward = adj.overlapProfitBroughtForward,
+        lossOffsetAgainstOtherIncome = adj.lossOffsetAgainstOtherIncome,
+        lossCarriedBackOffsetAgainstIncomeOrCGT = adj.lossCarriedBackOffsetAgainstIncomeOrCGT,
         lossCarriedForwardTotal = adj.lossCarriedForwardTotal,
         cisDeductionsTotal = adj.cisDeductionsTotal,
         taxDeductionsFromTradingIncome = adj.taxDeductionsFromTradingIncome,
@@ -62,6 +76,7 @@ object SelfEmploymentAnnualSummary {
         annualInvestmentAllowance = allow.annualInvestmentAllowance,
         capitalAllowanceMainPool = allow.capitalAllowanceMainPool,
         capitalAllowanceSpecialRatePool = allow.capitalAllowanceSpecialRatePool,
+        businessPremisesRenovationAllowance = allow.businessPremisesRenovationAllowance,
         enhancedCapitalAllowance = allow.enhanceCapitalAllowance,
         allowanceOnSales = allow.allowanceOnSales,
         zeroEmissionGoodsVehicleAllowance = allow.zeroEmissionGoodsVehicleAllowance,
@@ -71,23 +86,25 @@ object SelfEmploymentAnnualSummary {
 
     val nonFinancials = NonFinancials.from(desSummary.annualNonFinancials)
 
+    def deduction2Expense(ded: Deduction) = Expense(ded.amount, ded.disallowableAmount)
+
     val disallowableExpenses = desSummary.annualDisallowables.map { deductions =>
       Expenses(
-        costOfGoodsBought = deductions.costOfGoods.map(_.amount),
-        cisPaymentsToSubcontractors = deductions.constructionIndustryScheme.map(_.amount),
-        staffCosts = deductions.staffCosts.map(_.amount),
-        travelCosts = deductions.travelCosts.map(_.amount),
-        premisesRunningCosts = deductions.premisesRunningCosts.map(_.amount),
-        maintenanceCosts = deductions.maintenanceCosts.map(_.amount),
-        adminCosts = deductions.adminCosts.map(_.amount),
-        advertisingCosts = deductions.advertisingCosts.map(_.amount),
-        businessEntertainmentCosts = deductions.businessEntertainmentCosts.map(_.amount),
-        interest = deductions.interest.map(_.amount),
-        financialCharges = deductions.financialCharges.map(_.amount),
-        badDebt = deductions.badDebt.map(_.amount),
-        professionalFees = deductions.professionalFees.map(_.amount),
-        depreciation = deductions.depreciation.map(_.amount),
-        other = deductions.other.map(_.amount)
+        costOfGoodsBought = deductions.costOfGoods.map(deduction2Expense),
+        cisPaymentsToSubcontractors = deductions.constructionIndustryScheme.map(deduction2Expense),
+        staffCosts = deductions.staffCosts.map(deduction2Expense),
+        travelCosts = deductions.travelCosts.map(deduction2Expense),
+        premisesRunningCosts = deductions.premisesRunningCosts.map(deduction2Expense),
+        maintenanceCosts = deductions.maintenanceCosts.map(deduction2Expense),
+        adminCosts = deductions.adminCosts.map(deduction2Expense),
+        advertisingCosts = deductions.advertisingCosts.map(deduction2Expense),
+        businessEntertainmentCosts = deductions.businessEntertainmentCosts.map(deduction2Expense),
+        interest = deductions.interest.map(deduction2Expense),
+        financialCharges = deductions.financialCharges.map(deduction2Expense),
+        badDebt = deductions.badDebt.map(deduction2Expense),
+        professionalFees = deductions.professionalFees.map(deduction2Expense),
+        depreciation = deductions.depreciation.map(deduction2Expense),
+        other = deductions.other.map(deduction2Expense)
       )
     }
 

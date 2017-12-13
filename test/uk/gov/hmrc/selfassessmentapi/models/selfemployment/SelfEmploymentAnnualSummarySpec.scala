@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import uk.gov.hmrc.selfassessmentapi.models.Class4NicsExemptionCode.{DIVER, NON_RESIDENT}
-import uk.gov.hmrc.selfassessmentapi.models.{Class4NicInfo, ErrorCode, des}
+import uk.gov.hmrc.selfassessmentapi.models.{Class4NicInfo, des}
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
 class SelfEmploymentAnnualSummarySpec extends JsonSpec {
@@ -28,7 +28,6 @@ class SelfEmploymentAnnualSummarySpec extends JsonSpec {
           annualInvestmentAllowance = Some(50.50),
           capitalAllowanceMainPool = Some(12.34),
           capitalAllowanceSpecialRatePool = Some(55.65),
-          businessPremisesRenovationAllowance = Some(20.20),
           enhancedCapitalAllowance = Some(12.23),
           allowanceOnSales = Some(87.56),
           zeroEmissionGoodsVehicleAllowance = Some(5.33)
@@ -74,27 +73,6 @@ class SelfEmploymentAnnualSummarySpec extends JsonSpec {
     }
   }
 
-  "validate" should {
-    "reject annual summaries where allowances.businessPremisesRenovationAllowance is not defined but adjustments.balancingChargeBPRA is defined" in {
-      val summary = SelfEmploymentAnnualSummary(
-        Some(Allowances(businessPremisesRenovationAllowance = Some(0))),
-        Some(Adjustments(balancingChargeBPRA = Some(200.90))),
-        None,
-        None)
-
-      assertValidationErrorWithCode(summary, "", ErrorCode.INVALID_BALANCING_CHARGE_BPRA)
-    }
-
-    "accept annual summaries with only businessPremisesRenovationAllowance defined" in {
-      val summary = SelfEmploymentAnnualSummary(
-        Some(Allowances(businessPremisesRenovationAllowance = Some(0))),
-        None, None, None)
-
-      assertValidationPasses(summary)
-    }
-  }
-
-
   "from" should {
     "correctly map a DES self-employment to an API self-employment" in {
       val desSelfEmployment = des.selfemployment.SelfEmploymentAnnualSummary(
@@ -110,8 +88,7 @@ class SelfEmploymentAnnualSummarySpec extends JsonSpec {
           balancingChargeOther = Some(200.25),
           goodsAndServicesOwnUse = Some(200.25),
           overlapProfitCarriedForward = Some(10),
-          lossOffsetAgainstOtherIncome = Some(10.15),
-          lossCarriedBackOffsetAgainstIncomeOrCGT = Some(10.25),
+          overlapProfitBroughtForward = Some(10),
           lossCarriedForwardTotal = Some(12.25),
           cisDeductionsTotal = Some(10.05),
           taxDeductionsFromTradingIncome = Some(12.25),
@@ -121,7 +98,6 @@ class SelfEmploymentAnnualSummarySpec extends JsonSpec {
           annualInvestmentAllowance = Some(200.25),
           capitalAllowanceMainPool = Some(200.25),
           capitalAllowanceSpecialRatePool = Some(200.25),
-          businessPremisesRenovationAllowance = Some(200.25),
           enhanceCapitalAllowance = Some(200.25),
           allowanceOnSales = Some(200.25),
           zeroEmissionGoodsVehicleAllowance = Some(200.25),
@@ -150,8 +126,7 @@ class SelfEmploymentAnnualSummarySpec extends JsonSpec {
       adjustments.balancingChargeOther shouldBe Some(200.25)
       adjustments.goodsAndServicesOwnUse shouldBe Some(200.25)
       adjustments.overlapProfitCarriedForward shouldBe Some(10)
-      adjustments.lossOffsetAgainstOtherIncome shouldBe Some(10.15)
-      adjustments.lossCarriedBackOffsetAgainstIncomeOrCGT shouldBe Some(10.25)
+      adjustments.overlapProfitBroughtForward shouldBe Some(10)
       adjustments.lossCarriedForwardTotal shouldBe Some(12.25)
       adjustments.cisDeductionsTotal shouldBe Some(10.05)
       adjustments.taxDeductionsFromTradingIncome shouldBe Some(12.25)
@@ -162,7 +137,6 @@ class SelfEmploymentAnnualSummarySpec extends JsonSpec {
       allowances.annualInvestmentAllowance shouldBe Some(200.25)
       allowances.capitalAllowanceMainPool shouldBe Some(200.25)
       allowances.capitalAllowanceSpecialRatePool shouldBe Some(200.25)
-      allowances.businessPremisesRenovationAllowance shouldBe Some(200.25)
       allowances.enhancedCapitalAllowance shouldBe Some(200.25)
       allowances.allowanceOnSales shouldBe Some(200.25)
       allowances.zeroEmissionGoodsVehicleAllowance shouldBe Some(200.25)

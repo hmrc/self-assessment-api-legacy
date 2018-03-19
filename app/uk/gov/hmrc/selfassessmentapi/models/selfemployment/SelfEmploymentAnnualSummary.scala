@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
-import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.selfassessmentapi.models.{Class4NicInfo, Class4NicsExemptionCode, ErrorCode, des}
+import uk.gov.hmrc.selfassessmentapi.models.des
 
 case class SelfEmploymentAnnualSummary(allowances: Option[Allowances],
                                        adjustments: Option[Adjustments],
@@ -32,18 +31,8 @@ object SelfEmploymentAnnualSummary {
     (__ \ "allowances").readNullable[Allowances] and
       (__ \ "adjustments").readNullable[Adjustments] and
       (__ \ "nonFinancials").readNullable[NonFinancials]
-    ) (SelfEmploymentAnnualSummary.apply _).filter(
-    ValidationError(
-      "Balancing charge on BPRA (Business Premises Renovation Allowance) can only be claimed when there is a value for BPRA.",
-      ErrorCode.INVALID_BALANCING_CHARGE_BPRA)) { annualSummary => validateBalancingChargeBPRA(annualSummary) }
+    )(SelfEmploymentAnnualSummary.apply _)
 
-  private def validateBalancingChargeBPRA(annualSummary: SelfEmploymentAnnualSummary): Boolean = {
-    annualSummary.adjustments.forall { adjustments =>
-      adjustments.balancingChargeBPRA.forall { _ =>
-        annualSummary.allowances.exists(_.businessPremisesRenovationAllowance.exists(_ > 0))
-      }
-    }
-  }
 
   def from(desSummary: des.selfemployment.SelfEmploymentAnnualSummary): SelfEmploymentAnnualSummary = {
     val adjustments = desSummary.annualAdjustments.map { adj =>

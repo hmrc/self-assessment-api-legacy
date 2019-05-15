@@ -7,7 +7,7 @@ import uk.gov.hmrc.SbtArtifactory
 
 object MicroServiceBuild extends Build with MicroService {
 
-  val appName = "self-assessment-api"
+  val appName = "self-assessment-api-legacy"
 
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
   override lazy val playSettings: Seq[Setting[_]] = Seq(

@@ -23,6 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.mocks.services.MockSelfEmploymentBISSServic
 import uk.gov.hmrc.selfassessmentapi.models.Errors._
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SelfEmploymentBISSResourceSpec extends ResourceSpec

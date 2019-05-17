@@ -23,10 +23,9 @@ import uk.gov.hmrc.selfassessmentapi.config.simulation.{AgentAuthorizationSimula
 import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class AgentSimulationFilter @Inject()(implicit val mat: Materializer, appContext: AppContext) extends Filter {
+class AgentSimulationFilter @Inject()(implicit val mat: Materializer, appContext: AppContext, ec: ExecutionContext) extends Filter {
 
   def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
 

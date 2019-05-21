@@ -26,14 +26,13 @@ import uk.gov.hmrc.selfassessmentapi.models.crystallisation.CrystallisationReque
 import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.{CrystObligationsResponse, CrystallisationIntentResponse, EmptyResponse}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 
 class CrystallisationConnector @Inject()(
                                           override val http: DefaultHttpClient,
                                           override val appContext: AppContext
-                                        ) extends BaseConnector {
+                                        )(implicit ec: ExecutionContext) extends BaseConnector {
 
   protected val baseUrl: String =  appContext.desUrl
 

@@ -32,8 +32,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.MicroserviceAuditConnector
 import uk.gov.hmrc.r2.selfassessmentapi.models.audit.{AuditDetail, ExtendedAuditDetail}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class AuditService @Inject()(auditConnector: MicroserviceAuditConnector) {
 
   val logger: Logger = Logger(this.getClass)
@@ -67,7 +65,8 @@ class AuditService @Inject()(auditConnector: MicroserviceAuditConnector) {
   def extendedAudit[T <: ExtendedAuditDetail](extendedAuditData: ExtendedAuditData[T])
                                              (implicit hc: HeaderCarrier,
                                               fmt: Format[T],
-                                              request: Request[_]): Future[AuditResult] = {
+                                              request: Request[_],
+                                              ec: ExecutionContext): Future[AuditResult] = {
 
     val event = ExtendedDataEvent(
       auditSource = "self-assessment-api",

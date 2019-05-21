@@ -23,6 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockPropertiesBISSConnecto
 import uk.gov.hmrc.selfassessmentapi.models.Errors.{ErrorWrapper, NinoInvalid, NinoNotFound, NoSubmissionDataExists, ServerError, ServiceUnavailable, TaxYearInvalid, TaxYearNotFound}
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PropertiesBISSResourceSpec extends BaseResourceSpec

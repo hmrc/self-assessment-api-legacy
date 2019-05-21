@@ -25,14 +25,13 @@ import uk.gov.hmrc.selfassessmentapi.models.Errors.{InvalidRequest, NinoInvalid,
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.{AuthorisationService, SelfEmploymentBISSService}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
+import scala.concurrent.ExecutionContext
 
 class SelfEmploymentBISSResource @Inject()(
                                             override val appContext: AppContext,
                                             override val authService: AuthorisationService,
                                             service: SelfEmploymentBISSService
-                                          ) extends BaseResource {
+                                          )(implicit ec: ExecutionContext) extends BaseResource {
 
   def getSummary(nino: Nino, taxYear: TaxYear, selfEmploymentId: String): Action[AnyContent] =
     APIAction(nino, SourceType.SelfEmployments, Some("BISS")).async {

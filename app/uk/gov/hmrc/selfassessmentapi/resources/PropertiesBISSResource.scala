@@ -26,14 +26,14 @@ import uk.gov.hmrc.selfassessmentapi.models.Errors.{NinoInvalid, NinoNotFound, N
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 
 class PropertiesBISSResource @Inject()(
                                         override val appContext: AppContext,
                                         override val authService: AuthorisationService,
                                         val propertiesBISSConnector: PropertiesBISSConnector
-                                      ) extends BaseResource {
+                                      )(implicit ec: ExecutionContext) extends BaseResource {
 
   def getSummary(nino: Nino, taxYear: TaxYear): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("BISS")).async {

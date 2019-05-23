@@ -1070,6 +1070,25 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
 
+        def alreadyLogicallyDeleted(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+          .willReturn(aResponse()
+            .withStatus(410)
+            .withHeader("Content-Type", "application/json")
+            .withBody(DesJsons.Errors.gone)))
+
+          givens
+        }
+
+        def logicallyDeleted(nino: Nino,id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+          .willReturn(aResponse()
+            .withStatus(204)
+            .withHeader("Content-Type", "application/json")))
+
+          givens
+        }
+
         def annualSummaryWillBeReturnedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
@@ -1416,6 +1435,29 @@ trait BaseFunctionalSpec extends TestApplication {
               .willReturn(aResponse()
                 .withStatus(200)
                 .withBody(DesJsons.Properties.AnnualSummary.response)))
+
+          givens
+        }
+
+        def alreadyLogicallyDeleted(nino: Nino, propertyType: PropertyType, taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(
+            put(urlEqualTo(
+              s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
+              .willReturn(aResponse()
+                .withStatus(410)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.Errors.gone)))
+
+          givens
+        }
+
+        def logicallyDeleted(nino: Nino, propertyType: PropertyType, taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+          stubFor(
+            put(urlEqualTo(
+              s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
+              .willReturn(aResponse()
+                .withStatus(204)
+                .withHeader("Content-Type", "application/json")))
 
           givens
         }

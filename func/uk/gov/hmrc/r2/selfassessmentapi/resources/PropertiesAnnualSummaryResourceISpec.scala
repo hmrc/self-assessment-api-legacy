@@ -75,6 +75,28 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .statusIs(404)
       }
 
+      s"return code 204 when amending annual summaries and DES returns a 204 response for $propertyType" in {
+        given()
+          .userIsSubscribedToMtdFor(nino)
+          .clientIsFullyAuthorisedForTheResource
+          .des().properties.logicallyDeleted(nino, propertyType, taxYear)
+          .when()
+          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .thenAssertThat()
+          .statusIs(204)
+      }
+
+      s"return code 204 when amending annual summaries and DES returns a 410 GONE error for $propertyType" in {
+        given()
+          .userIsSubscribedToMtdFor(nino)
+          .clientIsFullyAuthorisedForTheResource
+          .des().properties.alreadyLogicallyDeleted(nino, propertyType, taxYear)
+          .when()
+          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .thenAssertThat()
+          .statusIs(204)
+      }
+
       s"return code 500 when provided with an invalid Originator-Id header for $propertyType" in {
         given()
           .userIsSubscribedToMtdFor(nino)

@@ -66,6 +66,32 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(expectedBody)
     }
 
+
+
+    s"return code 204 when amending annual summaries and DES returns a 204 response" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .des().selfEmployment.logicallyDeleted(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(204)
+        .when()
+    }
+
+    s"return code 204 when amending annual summaries and DES returns a 410 GONE error" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .des().selfEmployment.alreadyLogicallyDeleted(nino)
+        .when()
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .thenAssertThat()
+        .statusIs(204)
+        .when()
+    }
+
     "return code 500 when provided with an invalid Originator-Id header" in {
       given()
         .userIsSubscribedToMtdFor(nino)

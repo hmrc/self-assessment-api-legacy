@@ -87,6 +87,7 @@ object DesErrorCode extends Enumeration {
   NO_DATA_EXISTS,
   SELF_EMPLOYMENT_ID_NOT_FOUND,
   INVALID_TAX_CRYSTALLISE,
+  GONE,
   MULTIPLE_ERRORS = Value
 
   implicit val format: Format[DesErrorCode] = EnumJson.enumFormat(DesErrorCode,

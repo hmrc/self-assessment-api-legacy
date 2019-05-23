@@ -24,6 +24,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.connectors.SelfEmploymentAnnualSummaryCo
 import uk.gov.hmrc.r2.selfassessmentapi.contexts.AuthContext
 import uk.gov.hmrc.r2.selfassessmentapi.models._
 import uk.gov.hmrc.r2.selfassessmentapi.models.audit.AnnualSummaryUpdate
+import uk.gov.hmrc.r2.selfassessmentapi.models.des.DesErrorCode
 import uk.gov.hmrc.r2.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.SelfEmploymentAnnualSummaryResponse
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
@@ -49,8 +50,9 @@ class SelfEmploymentAnnualSummaryResource @Inject()(
         case Right(response) =>
           auditService.audit(makeAnnualSummaryUpdateAudit(nino, id, taxYear, request.authContext, response))
           response.filter {
-            case 200 =>
-              NoContent
+            case 200 => NoContent
+            case 204 => NoContent
+            case 410 if response.errorCodeIs(DesErrorCode.GONE) => NoContent
           }
       } recoverWith exceptionHandling
     }
@@ -79,8 +81,8 @@ class SelfEmploymentAnnualSummaryResource @Inject()(
         taxYear = taxYear,
         affinityGroup = authCtx.affinityGroup,
         agentCode = authCtx.agentCode,
-        transactionReference = response.status / 100 match {
-          case 2 => response.transactionReference
+        transactionReference = response.status match {
+          case 200 => response.transactionReference
           case _ => None
         },
         requestPayload = request.body,

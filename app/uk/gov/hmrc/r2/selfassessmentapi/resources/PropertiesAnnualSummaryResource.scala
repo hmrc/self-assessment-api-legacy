@@ -56,10 +56,12 @@ class PropertiesAnnualSummaryResource @Inject()(
           auditService.audit(makeAnnualSummaryUpdateAudit(nino, propertyId, taxYear, request.authContext, response))
           response.filter {
             case 200 => NoContent
+            case 204 => NoContent
             case 404 if response.errorCodeIs(DesErrorCode.NOT_FOUND_PROPERTY) =>
               logger.warn(s"[PropertiesAnnualSummaryResource] [updateAnnualSummary #$propertyId] - DES Returned: ${DesErrorCode.NOT_FOUND_PROPERTY} " +
                 s"CorrelationId: ${correlationId(response)}")
               NotFound
+            case 410 if response.errorCodeIs(DesErrorCode.GONE) => NoContent
           }
       } recoverWith exceptionHandling
     }
@@ -115,8 +117,8 @@ class PropertiesAnnualSummaryResource @Inject()(
         taxYear = taxYear,
         affinityGroup = authCtx.affinityGroup,
         agentCode = authCtx.agentCode,
-        transactionReference = response.status / 100 match {
-          case 2 => response.transactionReference
+        transactionReference = response.status match {
+          case 200 => response.transactionReference
           case _ => None
         },
         requestPayload = request.body,

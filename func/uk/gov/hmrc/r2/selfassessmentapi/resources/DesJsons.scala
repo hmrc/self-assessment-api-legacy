@@ -62,6 +62,8 @@ object DesJsons {
       "NOT_FOUND_PERIOD",
       "The remote endpoint has indicated that no data can be found for the given period.")
     val notFound: String = error("NOT_FOUND", "DES     The remote endpoint has indicated that no data can be found.")
+    val gone: String = error("GONE", "This resource has already been logically deleted.")
+
     val tradingNameConflict: String = error("CONFLICT", "Duplicated trading name.")
     val serverError: String =
       error("SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")

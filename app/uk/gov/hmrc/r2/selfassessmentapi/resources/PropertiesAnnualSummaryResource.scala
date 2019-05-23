@@ -83,7 +83,7 @@ class PropertiesAnnualSummaryResource @Inject()(
                 }
               case None => NotFound
             }
-          case 404 if response.errorCodeIsOneOf(DesErrorCode.NOT_FOUND_PROPERTY, DesErrorCode.NOT_FOUND_PERIOD) => {
+          case 404 => {
             logger.warn(
               s"[PropertiesAnnualSummaryResource] [retrieveAnnualSummary#$propertyId]\n" +
                 s"Received from DES:\n ${response.underlying.body}\n" +

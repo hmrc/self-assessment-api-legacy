@@ -20,6 +20,7 @@ import play.api.test.FakeApplication
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.Jsons
 import uk.gov.hmrc.support.BaseFunctionalSpec
+import uk.gov.hmrc.r2.selfassessmentapi.resources.{Jsons => R2Jsons}
 
 class AuthorisationServiceSpec extends BaseFunctionalSpec {
 
@@ -185,7 +186,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
     }
 
     "be able to make PUT requests" in {
-      val property = Jsons.Properties.otherPeriod(
+      val property = R2Jsons.Properties.otherPeriod(
         fromDate = Some("2017-04-06"),
         toDate = Some("2018-04-05"),
         rentIncome = 500,

@@ -25,7 +25,6 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.PropertiesPeriodConnector
 import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType
-import uk.gov.hmrc.selfassessmentapi.models.properties._
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.ResponseMapper
 import uk.gov.hmrc.selfassessmentapi.services.{AuditService, AuthorisationService}
 
@@ -41,18 +40,10 @@ class PropertiesPeriodResource @Inject()(
       connector.retrieveAll(nino, id).map { response =>
         response.filter {
           case 200 =>
-            id match {
-              case PropertyType.FHL =>
-                ResponseMapper[FHL.Properties, des.properties.FHL.Properties]
-                  .allPeriods(response)
-                  .map(seq => Ok(Json.toJson(seq)))
-                  .getOrElse(InternalServerError)
-              case PropertyType.OTHER =>
-                ResponseMapper[Other.Properties, des.properties.Other.Properties]
-                  .allPeriods(response)
-                  .map(seq => Ok(Json.toJson(seq)))
-                  .getOrElse(InternalServerError)
-            }
+            ResponseMapper
+              .allPeriods(response)
+              .map(seq => Ok(Json.toJson(seq)))
+              .getOrElse(InternalServerError)
         }
       } recoverWith exceptionHandling
     }

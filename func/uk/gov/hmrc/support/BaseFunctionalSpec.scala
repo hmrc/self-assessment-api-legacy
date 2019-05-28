@@ -1333,9 +1333,10 @@ trait BaseFunctionalSpec extends TestApplication {
               aResponse()
                 .withStatus(204)
                 .withHeader("Content-Type", "application/json")
-                .withBody(s"""
-                             |{
-                             |}
+                .withBody(
+                  s"""
+                     |{
+                     |}
                           """.stripMargin
                 )))
 
@@ -1351,7 +1352,7 @@ trait BaseFunctionalSpec extends TestApplication {
                 .withBody(responseBody)))
           givens
         }
-  
+
         def crystallisationObligation(nino: Nino, taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA?from=${taxYear.taxYearFromDate}&to=${taxYear.taxYearToDate}"))
             .willReturn(
@@ -1423,7 +1424,7 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
 
-        def returnObligationsWithNoIdentificationFor(nino: Nino):Givens = {
+        def returnObligationsWithNoIdentificationFor(nino: Nino): Givens = {
           stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/$nino/ITSA?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
             .willReturn(
               aResponse()
@@ -1434,7 +1435,7 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
 
-        def returnEopsObligationsWithNoIdentificationFor(nino: Nino):Givens = {
+        def returnEopsObligationsWithNoIdentificationFor(nino: Nino): Givens = {
           stubFor(get(urlMatching(s"/enterprise/obligation-data/nino/$nino/ITSA.*"))
             .willReturn(
               aResponse()
@@ -1578,8 +1579,8 @@ trait BaseFunctionalSpec extends TestApplication {
         }
 
         def annualSummaryWillNotBeReturnedDueToNotFoundProperty(nino: Nino,
-                                              propertyType: PropertyType,
-                                              taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+                                                                propertyType: PropertyType,
+                                                                taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(
             any(urlEqualTo(
               s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
@@ -1608,8 +1609,8 @@ trait BaseFunctionalSpec extends TestApplication {
         }
 
         def annualSummaryWillNotBeReturnedDueToNotFoundPeriod(nino: Nino,
-                                                                propertyType: PropertyType,
-                                                                taxYear: TaxYear = TaxYear("2017-18")): Givens = {
+                                                              propertyType: PropertyType,
+                                                              taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(
             any(urlEqualTo(
               s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
@@ -1698,55 +1699,7 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
 
-        def periodWillBeReturnedFor(nino: Nino, propertyType: PropertyType, periodId: String = "2017-04-06_2018-04-05"): Givens = {
-          val periodAsJsonString = propertyType match {
-            case PropertyType.FHL =>
-              DesJsons.Properties.Period.fhl(
-                transactionReference = periodId,
-                from = "2017-04-05",
-                to = "2018-04-04",
-                rentIncome = 200.00,
-                premisesRunningCosts = 200.00,
-                repairsAndMaintenance = 200.00,
-                financialCosts = 200.00,
-                professionalFees = 200.00,
-                costOfServices = 200.00,
-                other = 200.00)
-                .toString()
-            case PropertyType.OTHER =>
-              DesJsons.Properties.Period.other(
-                transactionReference = periodId,
-                from = "2017-04-05",
-                to = "2018-04-04",
-                rentIncome = 200.00,
-                premiumsOfLeaseGrant = Some(200.00),
-                reversePremiums = Some(200.00),
-                otherPropertyIncome = Some(200.00),
-                premisesRunningCosts = Some(200.00),
-                repairsAndMaintenance = Some(200.00),
-                financialCosts = Some(200.00),
-                professionalFees = Some(200.00),
-                costOfServices = Some(200.00),
-                residentialFinancialCost = Some(200.00),
-                other = Some(200.00))
-                .toString()
-          }
-
-          periodId match {
-            case Period(from, to) =>
-              stubFor(
-                get(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to"))
-                  .willReturn(
-                    aResponse()
-                      .withStatus(200)
-                      .withHeader("Content-Type", "application/json")
-                      .withBody(periodAsJsonString)))
-              givens
-            case _ => fail(s"Invalid period ID: $periodId.")
-          }
-        }
-
-        def propertyPeriodPostError(nino: Nino, propertyType: PropertyType)(status:Int, code: String): Givens = {
+        def propertyPeriodPostError(nino: Nino, propertyType: PropertyType)(status: Int, code: String): Givens = {
           stubFor(
             post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
@@ -1899,13 +1852,13 @@ trait BaseFunctionalSpec extends TestApplication {
         }
 
         def amendPropertyUpdateError(nino: Nino, propertyType: PropertyType, from: String = "2017-04-06", to: String = "2018-04-05")
-                                    (status:Int,code:String): Givens = {
+                                    (status: Int, code: String): Givens = {
           stubFor(put(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
             .willReturn(
               aResponse()
                 .withStatus(status)
-                  .withHeader("Content-Type", "Application/json")
-                  .withBody(code)
+                .withHeader("Content-Type", "Application/json")
+                .withBody(code)
             ))
 
           givens
@@ -2006,9 +1959,9 @@ trait BaseFunctionalSpec extends TestApplication {
 
         def updatePayments(nino: Nino, taxYear: TaxYear): Givens = {
           stubFor(post(urlEqualTo(s"/income-store/nino/$nino/charitable-giving/${taxYear.toDesTaxYear}"))
-              .willReturn(
-                aResponse()
-                  .withStatus(204)
+            .willReturn(
+              aResponse()
+                .withStatus(204)
                 .withBody("")))
           givens
         }
@@ -2094,6 +2047,7 @@ trait BaseFunctionalSpec extends TestApplication {
           givens
         }
       }
+
     }
 
     def des() = new Des(this)

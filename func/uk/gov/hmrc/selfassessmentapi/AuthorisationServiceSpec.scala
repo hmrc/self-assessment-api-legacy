@@ -209,7 +209,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .periodWillBeUpdatedFor(nino, PropertyType.OTHER)
         .when()
         .put(property)
-        .at(s"/ni/$nino/uk-properties/${PropertyType.OTHER}/periods/2017-04-06_2018-04-05")
+        .at(s"/r2/ni/$nino/uk-properties/${PropertyType.OTHER}/periods/2017-04-06_2018-04-05")
         .thenAssertThat()
         .statusIs(204)
     }

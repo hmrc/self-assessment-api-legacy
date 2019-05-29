@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import play.api.libs.json.{Format, JsResult, JsSuccess, JsValue}
+import play.api.libs.json.{Format, JsResult, JsValue}
 import uk.gov.hmrc.selfassessmentapi.models.TaxYear
 import uk.gov.hmrc.selfassessmentapi.models.banks.BankAnnualSummary
 
@@ -34,36 +34,6 @@ object JsonFormatters {
     }
 
     override def reads(json: JsValue): JsResult[Map[K, V]]
-  }
-
-  object SelfEmploymentFormatters {
-
-    import uk.gov.hmrc.selfassessmentapi.models.selfemployment.BalancingChargeType.BalancingChargeType
-    import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{BalancingChargeType, SelfEmploymentAnnualSummary}
-
-    implicit def balancingChargeTypeFormat[V: Format]: MapEnumFormat[BalancingChargeType, V] = new MapEnumFormat[BalancingChargeType, V] {
-      override def reads(json: JsValue): JsResult[Map[BalancingChargeType, V]] = {
-        play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
-          JsSuccess(result.map {
-            case (k, v) => BalancingChargeType.withName(k) -> v
-          })
-        }
-      }
-    }
-
-    implicit val annualSummaryMapFormat: Format[Map[TaxYear, SelfEmploymentAnnualSummary]] = new Format[Map[TaxYear, SelfEmploymentAnnualSummary]] {
-      override def writes(o: Map[TaxYear, SelfEmploymentAnnualSummary]): JsValue = {
-        play.api.libs.json.Writes.mapWrites[SelfEmploymentAnnualSummary].writes(o.map {
-          case (k, v) => k.toString -> v
-        })
-      }
-
-      override def reads(json: JsValue): JsResult[Map[TaxYear, SelfEmploymentAnnualSummary]] = {
-        play.api.libs.json.Reads.mapReads[SelfEmploymentAnnualSummary].reads(json).map(_.map {
-          case (k, v) => TaxYear(k) -> v
-        })
-      }
-    }
   }
 
   object DividendsFormatters {

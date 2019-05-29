@@ -17,8 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import play.api.libs.json.JsString
-import uk.gov.hmrc.selfassessmentapi.resources.{GovTestScenarioHeader, Jsons}
+import uk.gov.hmrc.r2.selfassessmentapi.resources.{Jsons => R2Jsons}
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
+import uk.gov.hmrc.selfassessmentapi.resources.{GovTestScenarioHeader, Jsons}
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
@@ -318,8 +319,8 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .post(Jsons.Properties.otherPeriod(rentIncome = 1000.123))
-        .to(s"/ni/$nino/uk-properties/other/periods")
+        .post(R2Jsons.Properties.otherPeriod(rentIncome = 1000.123))
+        .to(s"/r2/ni/$nino/uk-properties/other/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -331,8 +332,8 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .put(Jsons.Properties.otherPeriod())
-        .at(s"/ni/$nino/uk-properties/other/periods/invalid-id")
+        .put(R2Jsons.Properties.otherPeriod())
+        .at(s"/r2/ni/$nino/uk-properties/other/periods/invalid-id")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)

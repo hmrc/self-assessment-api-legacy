@@ -16,11 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.domain
 
-import play.api.libs.json.{Format, JsResult, JsSuccess, JsValue}
-import uk.gov.hmrc.selfassessmentapi.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.models.properties.FHLExpenseType.FHLExpenseType
-import uk.gov.hmrc.selfassessmentapi.models.properties.FHLIncomeType.FHLIncomeType
-import uk.gov.hmrc.selfassessmentapi.models.properties.{FHLExpenseType, FHLIncomeType, FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary}
+import play.api.libs.json.{Format, JsResult, JsValue}
 
 /**
   * Provides a suite of JSON formats for objects used throughout the codebase.
@@ -36,112 +32,6 @@ object JsonFormatters {
     }
 
     override def reads(json: JsValue): JsResult[Map[K, V]]
-  }
-
-  object SelfEmploymentFormatters {
-
-    import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary
-    import uk.gov.hmrc.selfassessmentapi.models.selfemployment.BalancingChargeType.BalancingChargeType
-    import uk.gov.hmrc.selfassessmentapi.models.selfemployment.BalancingChargeType
-
-    implicit def balancingChargeTypeFormat[V: Format]: MapEnumFormat[BalancingChargeType, V] = new MapEnumFormat[BalancingChargeType, V] {
-      override def reads(json: JsValue): JsResult[Map[BalancingChargeType, V]] = {
-        play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
-          JsSuccess(result.map {
-            case (k, v) => BalancingChargeType.withName(k) -> v
-          })
-        }
-      }
-    }
-
-    implicit val annualSummaryMapFormat: Format[Map[TaxYear, SelfEmploymentAnnualSummary]] = new Format[Map[TaxYear, SelfEmploymentAnnualSummary]] {
-      override def writes(o: Map[TaxYear, SelfEmploymentAnnualSummary]): JsValue = {
-        play.api.libs.json.Writes.mapWrites[SelfEmploymentAnnualSummary].writes(o.map {
-          case (k, v) => k.toString -> v
-        })
-      }
-
-      override def reads(json: JsValue): JsResult[Map[TaxYear, SelfEmploymentAnnualSummary]] = {
-        play.api.libs.json.Reads.mapReads[SelfEmploymentAnnualSummary].reads(json).map(_.map {
-          case (k, v) => TaxYear(k) -> v
-        })
-      }
-    }
-  }
-
-  object PropertiesFormatters {
-
-    import uk.gov.hmrc.selfassessmentapi.models.properties.ExpenseType.ExpenseType
-    import uk.gov.hmrc.selfassessmentapi.models.properties.IncomeType.IncomeType
-    import uk.gov.hmrc.selfassessmentapi.models.properties.{ ExpenseType, IncomeType}
-
-    implicit def incomeTypeFormat[V: Format]: MapEnumFormat[IncomeType, V] = new MapEnumFormat[IncomeType, V] {
-      override def reads(json: JsValue): JsResult[Map[IncomeType, V]] = {
-        play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
-          JsSuccess(result.map {
-            case (k, v) => IncomeType.withName(k) -> v
-          })
-        }
-      }
-    }
-
-    implicit def fhlIncomeTypeFormat[V: Format]: MapEnumFormat[FHLIncomeType, V] = new MapEnumFormat[FHLIncomeType, V] {
-      override def reads(json: JsValue): JsResult[Map[FHLIncomeType, V]] = {
-        play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
-          JsSuccess(result.map {
-            case (k, v) => FHLIncomeType.withName(k) -> v
-          })
-        }
-      }
-    }
-
-    implicit def expenseTypeFormat[V: Format]: MapEnumFormat[ExpenseType, V] = new MapEnumFormat[ExpenseType, V] {
-      override def reads(json: JsValue): JsResult[Map[ExpenseType, V]] = {
-        play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
-          JsSuccess(result.map {
-            case (k, v) => ExpenseType.withName(k) -> v
-          })
-        }
-      }
-    }
-
-    implicit def fhlExpenseTypeFormat[V: Format]: MapEnumFormat[FHLExpenseType, V] = new MapEnumFormat[FHLExpenseType, V] {
-      override def reads(json: JsValue): JsResult[Map[FHLExpenseType, V]] = {
-        play.api.libs.json.Reads.mapReads[V].reads(json).flatMap { result =>
-          JsSuccess(result.map {
-            case (k, v) => FHLExpenseType.withName(k) -> v
-          })
-        }
-      }
-    }
-
-    implicit val annualSummaryOtherMapFormat: Format[Map[TaxYear, OtherPropertiesAnnualSummary]] = new Format[Map[TaxYear, OtherPropertiesAnnualSummary]] {
-      override def writes(o: Map[TaxYear, OtherPropertiesAnnualSummary]): JsValue = {
-        play.api.libs.json.Writes.mapWrites[OtherPropertiesAnnualSummary].writes(o.map {
-          case (k, v) => k.toString -> v
-        })
-      }
-
-      override def reads(json: JsValue): JsResult[Map[TaxYear, OtherPropertiesAnnualSummary]] = {
-        play.api.libs.json.Reads.mapReads[OtherPropertiesAnnualSummary].reads(json).map(_.map {
-          case (k, v) => TaxYear(k) -> v
-        })
-      }
-    }
-
-    implicit val annualSummaryFHLMapFormat: Format[Map[TaxYear, FHLPropertiesAnnualSummary]] = new Format[Map[TaxYear, FHLPropertiesAnnualSummary]] {
-      override def writes(o: Map[TaxYear, FHLPropertiesAnnualSummary]): JsValue = {
-        play.api.libs.json.Writes.mapWrites[FHLPropertiesAnnualSummary].writes(o.map {
-          case (k, v) => k.toString -> v
-        })
-      }
-
-      override def reads(json: JsValue): JsResult[Map[TaxYear, FHLPropertiesAnnualSummary]] = {
-        play.api.libs.json.Reads.mapReads[FHLPropertiesAnnualSummary].reads(json).map(_.map {
-          case (k, v) => TaxYear(k) -> v
-        })
-      }
-    }
   }
 
 }

@@ -18,9 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.models.des.properties.{Common, FHL, Other}
-import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
-import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.selfassessmentapi.models.{CessationReason, TaxYear}
 
 object DesJsons {
@@ -464,92 +461,6 @@ object DesJsons {
            |}
          """.stripMargin
 
-      def fhl(transactionReference: String = "12345",
-              from: String = "",
-              to: String = "",
-              rentIncome: BigDecimal = 0,
-              rentIncomeTaxDeducted: Option[BigDecimal] = Some(0),
-              premisesRunningCosts: BigDecimal = 0,
-              repairsAndMaintenance: BigDecimal = 0,
-              financialCosts: BigDecimal = 0,
-              professionalFees: BigDecimal = 0,
-              costOfServices: BigDecimal = 0,
-              consolidatedExpenses: BigDecimal = 0,
-              other: BigDecimal = 0): JsValue =
-        Json.toJson(
-          FHL.Properties(
-            transactionReference = Some(transactionReference),
-            from = from,
-            to = to,
-            financials = Some(
-              FHL
-                .Financials(
-                  incomes = Some(FHL.Incomes(rentIncome = Some(Common.Income(rentIncome, rentIncomeTaxDeducted)))),
-                  deductions = Some(FHL.Deductions(
-                    premisesRunningCosts = Some(premisesRunningCosts),
-                    repairsAndMaintenance = Some(repairsAndMaintenance),
-                    financialCosts = Some(financialCosts),
-                    professionalFees = Some(professionalFees),
-                    costOfServices = Some(costOfServices),
-                    consolidatedExpenses = Some(consolidatedExpenses),
-                    other = Some(other)
-                  ))
-                ))
-          ))
-
-      def other(transactionReference: String = "12345",
-                from: String = "",
-                to: String = "",
-                rentIncome: BigDecimal = 0,
-                rentIncomeTaxDeducted: Option[BigDecimal] = Some(0),
-                premiumsOfLeaseGrant: Option[BigDecimal] = Some(0),
-                reversePremiums: Option[BigDecimal] = Some(0),
-                otherPropertyIncome: Option[BigDecimal] = Some(0),
-                premisesRunningCosts: Option[BigDecimal] = Some(0),
-                repairsAndMaintenance: Option[BigDecimal] = Some(0),
-                financialCosts: Option[BigDecimal] = Some(0),
-                professionalFees: Option[BigDecimal] = Some(0),
-                costOfServices: Option[BigDecimal] = Some(0),
-                residentialFinancialCost: Option[BigDecimal] = Some(0),
-                consolidatedExpenses: Option[BigDecimal] = Some(0),
-                other: Option[BigDecimal] = Some(0)): JsValue =
-        Json.toJson(
-          Other
-            .Properties(
-              transactionReference = Some(transactionReference),
-              from = from,
-              to = to,
-              financials = Some(Other.Financials(
-                incomes = Some(Other.Incomes(rentIncome = Some(Common.Income(rentIncome, rentIncomeTaxDeducted)),
-                  premiumsOfLeaseGrant = premiumsOfLeaseGrant,
-                  reversePremiums = reversePremiums,
-                  otherIncome = otherPropertyIncome)),
-                deductions = Some(Other.Deductions(
-                  premisesRunningCosts = premisesRunningCosts,
-                  repairsAndMaintenance = repairsAndMaintenance,
-                  financialCosts = financialCosts,
-                  professionalFees = professionalFees,
-                  costOfServices = costOfServices,
-                  residentialFinancialCost = residentialFinancialCost,
-                  consolidatedExpenses = consolidatedExpenses,
-                  other = other
-                ))
-              ))
-            ))
-
-      def periods(propertyType: PropertyType): String =
-        propertyType match {
-          case PropertyType.FHL =>
-            Json
-              .arr(fhl(transactionReference = "abc", from = "2017-04-06", to = "2017-07-04"),
-                fhl(transactionReference = "def", from = "2017-07-05", to = "2017-08-04"))
-              .toString()
-          case PropertyType.OTHER =>
-            Json
-              .arr(other(transactionReference = "abc", from = "2017-04-06", to = "2017-07-04"),
-                other(transactionReference = "def", from = "2017-07-05", to = "2017-08-04"))
-              .toString()
-        }
     }
   }
 

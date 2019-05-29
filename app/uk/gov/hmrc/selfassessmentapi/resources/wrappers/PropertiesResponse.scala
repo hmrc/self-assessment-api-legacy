@@ -17,10 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.resources.wrappers
 
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.models.des
-import uk.gov.hmrc.selfassessmentapi.models.des.{DesError, DesErrorCode}
-import uk.gov.hmrc.selfassessmentapi.models.properties.Properties
 import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.selfassessmentapi.models.des
+import uk.gov.hmrc.selfassessmentapi.models.properties.Properties
 
 case class PropertiesResponse(underlying: HttpResponse) extends Response { self =>
   def createLocationHeader(nino: Nino): String = s"/self-assessment/ni/$nino/uk-properties"
@@ -34,7 +33,4 @@ case class PropertiesResponse(underlying: HttpResponse) extends Response { self 
         None
     }
   }
-
-  def isInvalidNino: Boolean =
-    json.asOpt[DesError].exists(_.code == DesErrorCode.INVALID_NINO)
 }

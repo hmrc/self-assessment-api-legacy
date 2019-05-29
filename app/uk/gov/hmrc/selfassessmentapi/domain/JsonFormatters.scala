@@ -18,7 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.domain
 
 import play.api.libs.json.{Format, JsResult, JsSuccess, JsValue}
 import uk.gov.hmrc.selfassessmentapi.models.TaxYear
-import uk.gov.hmrc.selfassessmentapi.models.banks.BankAnnualSummary
 import uk.gov.hmrc.selfassessmentapi.models.properties.FHLExpenseType.FHLExpenseType
 import uk.gov.hmrc.selfassessmentapi.models.properties.FHLIncomeType.FHLIncomeType
 import uk.gov.hmrc.selfassessmentapi.models.properties.{FHLExpenseType, FHLIncomeType, FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary}
@@ -139,23 +138,6 @@ object JsonFormatters {
 
       override def reads(json: JsValue): JsResult[Map[TaxYear, FHLPropertiesAnnualSummary]] = {
         play.api.libs.json.Reads.mapReads[FHLPropertiesAnnualSummary].reads(json).map(_.map {
-          case (k, v) => TaxYear(k) -> v
-        })
-      }
-    }
-  }
-
-  object BankFormatters {
-
-    implicit val annualSummaryMapFormat: Format[Map[TaxYear, BankAnnualSummary]] = new Format[Map[TaxYear, BankAnnualSummary]] {
-      override def writes(o: Map[TaxYear, BankAnnualSummary]): JsValue = {
-        play.api.libs.json.Writes.mapWrites[BankAnnualSummary].writes(o.map {
-          case (k, v) => k.toString -> v
-        })
-      }
-
-      override def reads(json: JsValue): JsResult[Map[TaxYear, BankAnnualSummary]] = {
-        play.api.libs.json.Reads.mapReads[BankAnnualSummary].reads(json).map(_.map {
           case (k, v) => TaxYear(k) -> v
         })
       }

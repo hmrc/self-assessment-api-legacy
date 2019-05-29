@@ -60,18 +60,6 @@ GET         /ni/:nino/uk-properties/:id/:taxYear                                
 # Properties End-of-Period Statements
 POST        /ni/:nino/uk-properties/end-of-period-statements/from/:start/to/:end               @uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodStatementResource.finaliseEndOfPeriodStatement(nino: uk.gov.hmrc.domain.Nino, start: org.joda.time.LocalDate, end: org.joda.time.LocalDate)
 
-####################
-#      Banks       #
-####################
-GET         /ni/:nino/savings-accounts                                                         @uk.gov.hmrc.selfassessmentapi.resources.BanksResource.retrieveAll(nino: uk.gov.hmrc.domain.Nino)
-POST        /ni/:nino/savings-accounts                                                         @uk.gov.hmrc.selfassessmentapi.resources.BanksResource.create(nino: uk.gov.hmrc.domain.Nino)
-PUT         /ni/:nino/savings-accounts/:id                                                     @uk.gov.hmrc.selfassessmentapi.resources.BanksResource.update(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)
-GET         /ni/:nino/savings-accounts/:id                                                     @uk.gov.hmrc.selfassessmentapi.resources.BanksResource.retrieve(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)
-
-# Banks Annual Summaries
-GET         /ni/:nino/savings-accounts/:id/:taxYear                                            @uk.gov.hmrc.selfassessmentapi.resources.BanksAnnualSummaryResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear)
-PUT         /ni/:nino/savings-accounts/:id/:taxYear                                            @uk.gov.hmrc.selfassessmentapi.resources.BanksAnnualSummaryResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear)
-
 #######################
 #     Crystallisation #
 #######################

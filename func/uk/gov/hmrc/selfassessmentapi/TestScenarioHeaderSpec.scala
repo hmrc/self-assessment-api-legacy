@@ -46,31 +46,4 @@ class TestScenarioHeaderSpec extends BaseFunctionalSpec {
         .statusIs(200)
     }
   }
-
-  "Request for dividends with no Gov-Test-Scenario" should {
-    "return HTTP 200" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().selfEmployment.willBeReturnedFor(nino)
-        .when()
-        .get(s"/ni/$nino/dividends/$taxYear")
-        .thenAssertThat()
-        .statusIs(200)
-    }
-  }
-
-  "Request for dividends with invalid Gov-Test-Scenario" should {
-    "return HTTP 200" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().selfEmployment.willBeReturnedFor(nino)
-        .when()
-        .get(s"/ni/$nino/dividends/$taxYear")
-        .withHeaders(GovTestScenarioHeader, "FOO")
-        .thenAssertThat()
-        .statusIs(200)
-    }
-  }
 }

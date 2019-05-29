@@ -72,13 +72,6 @@ GET         /ni/:nino/savings-accounts/:id                                      
 GET         /ni/:nino/savings-accounts/:id/:taxYear                                            @uk.gov.hmrc.selfassessmentapi.resources.BanksAnnualSummaryResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear)
 PUT         /ni/:nino/savings-accounts/:id/:taxYear                                            @uk.gov.hmrc.selfassessmentapi.resources.BanksAnnualSummaryResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear)
 
-####################
-#     Dividends    #
-####################
-PUT         /ni/:nino/dividends/:taxYear                                                       @uk.gov.hmrc.selfassessmentapi.resources.DividendsAnnualSummaryResource.updateAnnualSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear)
-GET         /ni/:nino/dividends/:taxYear                                                       @uk.gov.hmrc.selfassessmentapi.resources.DividendsAnnualSummaryResource.retrieveAnnualSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear)
-
-
 #######################
 #     Crystallisation #
 #######################

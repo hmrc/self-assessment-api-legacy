@@ -53,4 +53,3 @@ POST        /ni/:nino/uk-properties/end-of-period-statements/from/:start/to/:end
 #    Tax Calculations    #
 ##########################
 POST        /ni/:nino/calculations                                                             @uk.gov.hmrc.selfassessmentapi.resources.TaxCalculationResource.requestCalculation(nino: uk.gov.hmrc.domain.Nino)
-GET         /ni/:nino/calculations/:id                                                         @uk.gov.hmrc.selfassessmentapi.resources.TaxCalculationResource.retrieveCalculation(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)

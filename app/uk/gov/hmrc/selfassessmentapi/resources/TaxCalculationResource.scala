@@ -73,11 +73,6 @@ class TaxCalculationResource @Inject()(
       } recoverWith exceptionHandling
     }
 
-  def retrieveCalculation(nino: Nino, calcId: SourceId): Action[Unit] =
-    APIAction(nino, SourceType.Calculation).async(parse.empty) { implicit request =>
-      Future.successful(Gone(Json.toJson(Errors.TaxCalcGone)))
-    }
-
   private def makeTaxCalcTriggerAudit(nino: Nino, authCtx: AuthContext, response: TaxCalculationResponse)(
     implicit hc: HeaderCarrier,
     request: Request[JsValue]): AuditData[TaxCalculationTrigger] =

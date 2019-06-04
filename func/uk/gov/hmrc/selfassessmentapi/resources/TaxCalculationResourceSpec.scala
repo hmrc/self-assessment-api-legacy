@@ -88,32 +88,4 @@ class TaxCalculationResourceSpec extends BaseFunctionalSpec {
         .bodyIsLike(Jsons.Errors.internalServerError)
     }
   }
-
-  "retrieveCalculation" should {
-    "return 410 when hitting the existing calculation endpoint" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .stubAudit
-        .des().taxCalculation.isReadyFor(nino)
-        .when()
-        .get(s"/ni/$nino/calculations/abc")
-        .thenAssertThat()
-        .statusIs(410)
-        .bodyIsLike(Jsons.Errors.taxCalcGone)
-    }
-
-    "return 410 when provided with an invalid calculation ID" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .stubAudit
-        .when()
-        .get(s"/ni/$nino/calculations/abc")
-        .thenAssertThat()
-        .statusIs(410)
-        .bodyIsLike(Jsons.Errors.taxCalcGone)
-    }
-
-  }
 }

@@ -1,4 +1,5 @@
 import play.routes.compiler.StaticRoutesGenerator
+import play.sbt.PlayImport.PlayKeys
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import sbt._
@@ -77,6 +78,7 @@ trait MicroService {
               parallelExecution in FuncTest := false,
               routesGenerator := StaticRoutesGenerator)
     .settings(resolvers += Resolver.bintrayRepo("hmrc", "releases"), resolvers += Resolver.jcenterRepo, resolvers += Resolver.sonatypeRepo("snapshots"))
+    .settings(PlayKeys.playDefaultPort := 9778)
 }
 
 private object FuncTestPhases {

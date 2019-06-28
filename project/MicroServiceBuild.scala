@@ -22,7 +22,7 @@ private object AppDependencies {
   private val hmrcTestVersion = "3.9.0-play-25"
 
   val compile = Seq(
-    "uk.gov.hmrc" %% "play-reactivemongo" % "6.7.0",
+    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.19.0-play-25",
     ws exclude("org.apache.httpcomponents", "httpclient") exclude("org.apache.httpcomponents", "httpcore"),
     "uk.gov.hmrc" %% "bootstrap-play-25" % "4.13.0",
     "uk.gov.hmrc" %% "auth-client" % "2.22.0-play-25",
@@ -45,7 +45,7 @@ private object AppDependencies {
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
         "com.github.tomakehurst" % "wiremock" % "2.2.2" % scope,
-        "uk.gov.hmrc" %% "reactivemongo-test" % "3.1.0" % scope,
+        "uk.gov.hmrc" %% "reactivemongo-test" % "4.15.0-play-25" % scope,
         "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "2.0.0" % scope,
         "org.mongodb" %% "casbah" % "3.1.1" % scope,
         "org.scalacheck" %% "scalacheck" % "1.13.4" % scope,

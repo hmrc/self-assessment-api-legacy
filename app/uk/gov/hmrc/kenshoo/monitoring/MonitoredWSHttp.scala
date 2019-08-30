@@ -85,10 +85,4 @@ trait MonitoredWSHttp extends WSHttp with HttpAPIMonitor {
       super.doPut(url, body)
     }
   }
-
-  override def doDelete(url: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    monitorRequestsWithoutBodyIfUrlPatternIsKnown("DELETE", url) {
-      super.doDelete(url)
-    }
-  }
 }

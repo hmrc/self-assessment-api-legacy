@@ -1,9 +1,5 @@
-import play.sbt.routes.RoutesKeys.{routesImport, _}
+import play.sbt.routes.RoutesKeys.routesImport
 import sbt._
-import uk.gov.hmrc.SbtAutoBuildPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.versioning.SbtGitVersioning
-import uk.gov.hmrc.SbtArtifactory
 
 object MicroServiceBuild extends Build with MicroService {
 
@@ -16,16 +12,15 @@ object MicroServiceBuild extends Build with MicroService {
 
 private object AppDependencies {
 
-  import play.sbt.PlayImport._
   import play.core.PlayVersion
+  import play.sbt.PlayImport._
 
   private val hmrcTestVersion = "3.9.0-play-25"
 
   val compile = Seq(
     "uk.gov.hmrc" %% "simple-reactivemongo" % "7.20.0-play-25",
     ws exclude("org.apache.httpcomponents", "httpclient") exclude("org.apache.httpcomponents", "httpcore"),
-    "uk.gov.hmrc" %% "bootstrap-play-25" % "4.15.0",
-    "uk.gov.hmrc" %% "auth-client" % "2.22.0-play-25",
+    "uk.gov.hmrc" %% "bootstrap-play-25" % "5.1.0",
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-25",
     "uk.gov.hmrc" %% "play-hmrc-api" % "3.2.0",
     "ai.x" %% "play-json-extensions" % "0.8.0",

@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.mocks.connectors
+package uk.gov.hmrc.r2.selfassessmentapi.mocks.connectors
 
 import org.scalatest.Suite
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
-import uk.gov.hmrc.selfassessmentapi.connectors.MicroserviceAuditConnector
-import uk.gov.hmrc.selfassessmentapi.mocks.Mock
+import uk.gov.hmrc.r2.selfassessmentapi.mocks.Mock
 
 import scala.concurrent.ExecutionContext
 
-trait MockMicroserviceAuditConnector extends Mock {
+trait MockAuditConnector extends Mock {
   _: Suite =>
 
-  val microserviceAuditConnector = mock[MicroserviceAuditConnector]
+  val mockAuditConnector = mock[AuditConnector]
 
   object MockMicroserviceAuditConnector {
 
-    def sendExtendedEvent(event: ExtendedDataEvent)(implicit hc: HeaderCarrier = HeaderCarrier(), ec: ExecutionContext) = {
-      when(microserviceAuditConnector.sendExtendedEvent(eqTo(event))(any(), any()))
+    def sendExtendedEvent(event: ExtendedDataEvent)(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
+      when(mockAuditConnector.sendExtendedEvent(eqTo(event))(any(), any()))
     }
 
   }
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
-    reset(microserviceAuditConnector)
+    reset(mockAuditConnector)
   }
 }

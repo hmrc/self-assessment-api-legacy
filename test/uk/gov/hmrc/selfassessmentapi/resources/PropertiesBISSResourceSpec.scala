@@ -45,7 +45,8 @@ class PropertiesBISSResourceSpec extends BaseResourceSpec
     val resource = new PropertiesBISSResource(
       mockAppContext,
       mockAuthorisationService,
-      mockPropertiesBISSConnector
+      mockPropertiesBISSConnector,
+      cc
     )
     mockAPIAction(SourceType.Properties)
   }

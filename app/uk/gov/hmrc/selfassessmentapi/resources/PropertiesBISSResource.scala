@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import javax.inject.Inject
 import play.api.libs.json.Json.toJson
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.PropertiesBISSConnector
@@ -32,8 +32,9 @@ import scala.concurrent.ExecutionContext
 class PropertiesBISSResource @Inject()(
                                         override val appContext: AppContext,
                                         override val authService: AuthorisationService,
-                                        val propertiesBISSConnector: PropertiesBISSConnector
-                                      )(implicit ec: ExecutionContext) extends BaseResource {
+                                        val propertiesBISSConnector: PropertiesBISSConnector,
+                                        cc: ControllerComponents
+                                      )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def getSummary(nino: Nino, taxYear: TaxYear): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("BISS")).async {

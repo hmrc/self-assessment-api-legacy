@@ -17,32 +17,31 @@
 package uk.gov.hmrc.r2.selfassessmentapi.config
 
 import javax.inject.Inject
-import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 
 class AppContext @Inject()(
+                            servicesConfig: ServicesConfig,
                             config: Configuration,
-                            environment: Environment
-                          ) extends ServicesConfig {
+                            environment: Environment,
+                            runMode: RunMode
+                          )  {
 
-  lazy val selfAssessmentContextRoute: String = config.getString(s"$env.contextPrefix").getOrElse("")
-  lazy val desEnv: String = config.getString(s"$env.microservice.services.des.env").getOrElse(throw new RuntimeException("desEnv is not configured"))
-  lazy val desToken: String = config.getString(s"$env.microservice.services.des.token").getOrElse(throw new RuntimeException("desEnv is not configured"))
+  lazy val env: String = runMode.env
+
+  lazy val selfAssessmentContextRoute: String = config.getString(s"${runMode.env}.contextPrefix").getOrElse("")
+  lazy val desEnv: String = config.getString(s"${runMode.env}.microservice.services.des.env").getOrElse(throw new RuntimeException("desEnv is not configured"))
+  lazy val desToken: String = config.getString(s"${runMode.env}.microservice.services.des.token").getOrElse(throw new RuntimeException("desEnv is not configured"))
   lazy val appName: String = config.getString("appName").getOrElse(throw new RuntimeException("appName is not configured"))
   lazy val appUrl: String = config.getString("appUrl").getOrElse(throw new RuntimeException("appUrl is not configured"))
   lazy val apiGatewayContext: Option[String] = config.getString("api.gateway.context")
   lazy val apiGatewayRegistrationContext: String = apiGatewayContext.getOrElse(throw new RuntimeException("api.gateway.context is not configured"))
   lazy val apiGatewayLinkContext: String = apiGatewayContext.map(x => if (x.isEmpty) x else s"/$x").getOrElse("")
   lazy val apiStatus: String = config.getString("api.status").getOrElse(throw new RuntimeException("api.status is not configured"))
-  lazy val desUrl: String = baseUrl("des")
-  lazy val featureSwitch: Option[Configuration] = config.getConfig(s"$env.feature-switch")
+  lazy val desUrl: String = servicesConfig.baseUrl("des")
+  lazy val featureSwitch: Option[Configuration] = config.getConfig(s"${runMode.env}.feature-switch")
   lazy val auditEnabled: Boolean = config.getBoolean(s"auditing.enabled").getOrElse(true)
-  lazy val authEnabled: Boolean = config.getBoolean(s"$env.microservice.services.auth.enabled").getOrElse(true)
+  lazy val authEnabled: Boolean = config.getBoolean(s"${runMode.env}.microservice.services.auth.enabled").getOrElse(true)
   lazy val sandboxMode: Boolean = config.getBoolean(s"sandbox-mode").getOrElse(false)
-  lazy val mtdDate: String = config.getString(s"$env.mtd-date").getOrElse(throw new RuntimeException("mtd-date is not configured"))
-
-  override protected def mode: Mode = environment.mode
-
-  override protected def runModeConfiguration: Configuration = config
+  lazy val mtdDate: String = config.getString(s"${runMode.env}.mtd-date").getOrElse(throw new RuntimeException("mtd-date is not configured"))
 }

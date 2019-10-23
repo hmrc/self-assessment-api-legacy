@@ -24,12 +24,12 @@ import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.{Failure, Success}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import uk.gov.hmrc.selfassessmentapi.AsyncUnitSpec
-import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockMicroserviceAuditConnector
+import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockAuditConnector
 import uk.gov.hmrc.selfassessmentapi.models.audit.PeriodicUpdate
 
 import scala.concurrent.Future
 
-class MicroserviceAuditServiceSpec extends AsyncUnitSpec with MockMicroserviceAuditConnector {
+class MicroserviceAuditServiceSpec extends AsyncUnitSpec with MockAuditConnector {
 
   private implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("abcd")))
 
@@ -58,21 +58,21 @@ class MicroserviceAuditServiceSpec extends AsyncUnitSpec with MockMicroserviceAu
   "sendEvent" should {
 
     "return Success if the audit was successful" in {
-      val testService = new AuditService(microserviceAuditConnector)
+      val testService = new AuditService(mockAuditConnector)
 
       MockMicroserviceAuditConnector.sendExtendedEvent(event).thenReturn(Future.successful(Success))
 
-      testService.sendEvent(event, microserviceAuditConnector) map { auditResult =>
+      testService.sendEvent(event, mockAuditConnector) map { auditResult =>
         assert(auditResult == Success)
       }
     }
 
     "return Failure if an exception occurred when sending the audit event" in {
-      val testService = new AuditService(microserviceAuditConnector)
+      val testService = new AuditService(mockAuditConnector)
       val ex = new RuntimeException("some non-fatal exception")
       MockMicroserviceAuditConnector.sendExtendedEvent(event).thenThrow(ex)
 
-      testService.sendEvent(event, microserviceAuditConnector) map { auditResult =>
+      testService.sendEvent(event, mockAuditConnector) map { auditResult =>
         assert(auditResult.asInstanceOf[Failure].nested.contains(ex))
       }
     }

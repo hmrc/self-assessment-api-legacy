@@ -31,7 +31,8 @@ class PropertiesObligationsResourceSpec extends ResourceSpec
       mockAppContext,
       mockAuthorisationService,
       mockObligationsConnector,
-      mockAuditService
+      mockAuditService,
+      cc
     )
     mockAPIAction(SourceType.Properties)
   }

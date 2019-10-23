@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.models
 
 import com.github.nscala_time.time.OrderingImplicits
 import org.joda.time.LocalDate
-import play.api.libs.json.{Format, Json, Writes}
+import play.api.libs.json.{Format, JodaReads, JodaWrites, Json, Writes}
 import uk.gov.hmrc.selfassessmentapi.models.EopsStatus.EopsStatus
 
 import scala.util.{Failure, Success, Try}
@@ -31,7 +31,7 @@ object EopsObligations {
 
 case class EopsObligation(start: LocalDate, end: LocalDate, due: LocalDate, processed: Option[LocalDate] = None, status: EopsStatus)
 
-object EopsObligation {
+object EopsObligation extends JodaReads with JodaWrites {
 
   implicit val from =  new DesTransformValidator[des.ObligationDetail, EopsObligation] {
     def from(desObligation: des.ObligationDetail) = {

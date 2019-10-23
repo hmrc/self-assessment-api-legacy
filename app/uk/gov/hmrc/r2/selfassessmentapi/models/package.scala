@@ -18,21 +18,19 @@ package uk.gov.hmrc.r2.selfassessmentapi
 
 import org.joda.time.LocalDate
 import play.api.Logger
-import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsPath, Reads}
-import uk.gov.hmrc.r2.selfassessmentapi.models.properties.{FHL, Other}
+import play.api.libs.json.{JodaReads, JodaWrites, JsPath, JsonValidationError, Reads}
 
 import scala.io.{Codec, Source}
 import scala.util.Try
 
-package object models {
+package object models extends JodaReads with JodaWrites {
 
   //type BigDecimal = BigDecimal
   type SourceId = String
   type PropertyId = String
   type PeriodId = String
   type SummaryId = String
-  type ValidationErrors = Seq[(JsPath, Seq[ValidationError])]
+  type ValidationErrors = Seq[(JsPath, Seq[JsonValidationError])]
 
   private val MAX_AMOUNT =    BigDecimal("99999999999999.98")
 
@@ -45,7 +43,7 @@ package object models {
   val amountValidator: Reads[BigDecimal] = Reads
     .of[BigDecimal]
     .filter(
-      ValidationError("Amount should be a number less than 99999999999999.98 with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT))(
+      JsonValidationError("Amount should be a number less than 99999999999999.98 with up to 2 decimal places", ErrorCode.INVALID_MONETARY_AMOUNT))(
       amount => amount.scale < 3 && amount <= MAX_AMOUNT)
 
   /**
@@ -53,7 +51,7 @@ package object models {
     */
   val nonNegativeAmountValidator: Reads[BigDecimal] = Reads
     .of[BigDecimal]
-    .filter(ValidationError("Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places",
+    .filter(JsonValidationError("Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places",
       ErrorCode.INVALID_MONETARY_AMOUNT))(
       amount => amount >= 0 && amount.scale < 3 && amount <= MAX_AMOUNT)
 
@@ -62,7 +60,7 @@ package object models {
     */
   val nonNegativeAmountValidatorR2: Reads[BigDecimal] = Reads
     .of[BigDecimal]
-    .filter(ValidationError("Amount should be a non-negative number less than 99999999999.99 with up to 2 decimal places",
+    .filter(JsonValidationError("Amount should be a non-negative number less than 99999999999.99 with up to 2 decimal places",
       ErrorCode.INVALID_MONETARY_AMOUNT))(
       amount => amount >= 0 && amount.scale < 3 && amount <= MAX_AMOUNT_R2)
 
@@ -72,7 +70,7 @@ package object models {
   val positiveOrNegativeAmountValidator: Reads[BigDecimal] = Reads
     .of[BigDecimal]
     .filter(
-      ValidationError("Amount should be a number between -99999999999.99 and 99999999999.99 with up to 2 decimal places",
+      JsonValidationError("Amount should be a number between -99999999999.99 and 99999999999.99 with up to 2 decimal places",
         ErrorCode.INVALID_MONETARY_AMOUNT))(
         amount => amount >= -99999999999.99 && amount.scale < 3 && amount <= 99999999999.99)
 
@@ -92,14 +90,14 @@ package object models {
 
   val postcodeValidator: Reads[String] = Reads
     .of[String]
-    .filter(ValidationError("postalCode must match \"^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$\"",
+    .filter(JsonValidationError("postalCode must match \"^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$\"",
       ErrorCode.INVALID_POSTCODE))(postcode =>
       postcode.matches("^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"))
 
   val commencementDateValidator: Reads[LocalDate] = Reads
     .of[LocalDate]
     .filter(
-      ValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
+      JsonValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
     )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
 
   def lengthIsBetween(minLength: Int, maxLength: Int): Reads[String] =
@@ -107,7 +105,7 @@ package object models {
       .of[String]
       .map(_.trim)
       .filter(
-        ValidationError(s"field length must be between $minLength and $maxLength characters",
+        JsonValidationError(s"field length must be between $minLength and $maxLength characters",
           ErrorCode.INVALID_FIELD_LENGTH))(name => name.length <= maxLength && name.length >= minLength)
 
 
@@ -124,7 +122,7 @@ package object models {
     */
   val nonNegativeAmountValidatorForCharitableGivings: Reads[BigDecimal] = Reads
     .of[BigDecimal]
-    .filter(ValidationError("amounts should be a non-negative number less than 10000000000.00 with up to 2 decimal places",
+    .filter(JsonValidationError("amounts should be a non-negative number less than 10000000000.00 with up to 2 decimal places",
       ErrorCode.INVALID_MONETARY_AMOUNT))(
       amount => amount >= 0 && amount.scale < 3 && amount <= 10000000000.00)
 

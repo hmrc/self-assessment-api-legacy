@@ -45,7 +45,7 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
   val resourceHelper = new ResourceHelper(mockAppContext)
 
   object TestResource extends PropertiesPeriodStatementResource(
-    appContext, mockAuthorisationService, statementConnector, auditService, resourceHelper
+    appContext, mockAuthorisationService, statementConnector, auditService, resourceHelper, cc
   ) {
     mockAPIAction(SourceType.Properties)
   }

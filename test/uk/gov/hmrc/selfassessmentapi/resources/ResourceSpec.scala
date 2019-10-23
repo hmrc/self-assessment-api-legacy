@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{Matchers, OptionValues, WordSpec}
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.Configuration
 import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.mvc.ControllerComponents
+import play.api.test.Helpers.stubControllerComponents
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, ResultExtractors}
 import uk.gov.hmrc.selfassessmentapi.TestUtils
 import uk.gov.hmrc.selfassessmentapi.mocks.auth.MockAuthorisationService
@@ -54,4 +56,6 @@ trait ResourceSpec extends WordSpec
     // helper function to create a request when parse.empty is used in the resource
     def ignoreBody: FakeRequest[Unit] = req.withBody[Unit](())
   }
+
+  lazy val cc: ControllerComponents = stubControllerComponents()
 }

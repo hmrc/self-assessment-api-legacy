@@ -31,7 +31,8 @@ class PropertiesResourceSpec extends ResourceSpec
     val resource = new PropertiesResource(
       mockAppContext,
       mockAuthorisationService,
-      mockPropertiesConnector
+      mockPropertiesConnector,
+      cc
     )
     mockAPIAction(SourceType.Properties)
   }

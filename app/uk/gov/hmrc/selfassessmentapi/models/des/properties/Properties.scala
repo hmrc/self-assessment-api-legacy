@@ -24,7 +24,7 @@ case class Properties(
   accountingPeriodEndDate: LocalDate
 )
 
-object Properties {
+object Properties extends JodaReads with JodaWrites {
 
   implicit val format = Json.format[Properties]
 

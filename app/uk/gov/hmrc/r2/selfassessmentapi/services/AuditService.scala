@@ -29,10 +29,9 @@ import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.r2.selfassessmentapi.connectors.MicroserviceAuditConnector
 import uk.gov.hmrc.r2.selfassessmentapi.models.audit.{AuditDetail, ExtendedAuditDetail}
 
-class AuditService @Inject()(auditConnector: MicroserviceAuditConnector) {
+class AuditService @Inject()(auditConnector: AuditConnector) {
 
   val logger: Logger = Logger(this.getClass)
 

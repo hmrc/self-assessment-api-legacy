@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
-import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode._
@@ -38,11 +37,11 @@ object SelfEmploymentPeriodUpdate {
     (__ \ "expenses").readNullable[Expenses] and
     (__ \ "consolidatedExpenses").readNullable[BigDecimal](nonNegativeAmountValidator)
   )(SelfEmploymentPeriodUpdate.apply _)
-    .filter(ValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
+    .filter(JsonValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
       BOTH_EXPENSES_SUPPLIED))(_.singleExpensesTypeSpecified)
     .validate(
       Seq(
         Validation(JsPath(),
                    financialsValidator,
-                   ValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES))))
+                   JsonValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES))))
 }

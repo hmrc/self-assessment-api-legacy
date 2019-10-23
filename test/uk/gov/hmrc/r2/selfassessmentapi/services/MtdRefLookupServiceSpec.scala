@@ -17,7 +17,7 @@
 package uk.gov.hmrc.r2.selfassessmentapi.services
 
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.r2.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.BusinessDetailsConnector

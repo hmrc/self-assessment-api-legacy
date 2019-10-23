@@ -35,7 +35,8 @@ class SelfEmploymentPeriodResourceSpec extends ResourceSpec
       mockAppContext,
       mockAuthorisationService,
       mockSelfEmploymentPeriodConnector,
-      mockAuditService
+      mockAuditService,
+      cc
     )
     mockAPIAction(SourceType.SelfEmployments)
   }

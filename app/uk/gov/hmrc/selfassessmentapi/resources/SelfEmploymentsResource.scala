@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import javax.inject.Inject
 import play.api.libs.json.{JsArray, JsValue, Json, Writes}
-import play.api.mvc.{Action, Result}
+import play.api.mvc.{Action, ControllerComponents, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentConnector
@@ -34,8 +34,9 @@ import scala.concurrent.ExecutionContext.Implicits._
 class SelfEmploymentsResource @Inject()(
                                          override val appContext: AppContext,
                                          override val authService: AuthorisationService,
-                                         connector: SelfEmploymentConnector
-                                       ) extends BaseResource {
+                                         connector: SelfEmploymentConnector,
+                                         cc: ControllerComponents
+                                       ) extends BaseResource(cc) {
 
   def create(nino: Nino): Action[JsValue] =
     APIAction(nino, SourceType.SelfEmployments).async(parse.json) { implicit request =>

@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.kenshoo.monitoring
 
-import java.security.cert.X509Certificate
-
 import akka.stream.Materializer
 import com.codahale.metrics.MetricRegistry
 import org.scalatest.Matchers
 import play.api.http.HttpEntity
-import play.api.mvc.{Headers, RequestHeader, ResponseHeader, Result}
+import play.api.mvc.request.RequestTarget
+import play.api.mvc.{ResponseHeader, Result}
+import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HeaderCarrier
 
 class MonitoringFilterSpec extends UnitSpec {
 
@@ -35,32 +35,18 @@ class MonitoringFilterSpec extends UnitSpec {
 
   "monitoring filter" should {
     "monitor known incoming requests" in new MonitoringFilterTestImp {
-      await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(TestRequestHeader("/ni/OM687829D/self-employments", "GET")))
+      await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(
+        FakeRequest().withTarget(RequestTarget("/ni/OM687829D/self-employments", "", Map.empty)).withMethod("GET")))
       assertRequestIsMonitoredAs("API-SelfEmployments-GET")
     }
 
     "do not monitor unknown incoming requests" in new MonitoringFilterTestImp {
-      await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(TestRequestHeader("/foo-bar", "GET")))
+      await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(
+        FakeRequest().withTarget(RequestTarget("/foo-bar", "", Map.empty)).withMethod("GET")))
       assertRequestIsNotMonitored()
     }
   }
 }
-
-case class TestRequestHeader(expectedUri: String, expectedMethod: String) extends RequestHeader {
-  override def id: Long = -1L
-  override def secure: Boolean = false
-  override def uri: String = expectedUri
-  override def remoteAddress: String = ""
-  override def queryString: Map[String, Seq[String]] = Map()
-  override def method: String = expectedMethod
-  override def headers: Headers = new Headers(Seq.empty)
-  override def path: String = ""
-  override def version: String = ""
-  override def tags: Map[String, String] = Map()
-
-  override def clientCertificateChain: Option[Seq[X509Certificate]] = ???
-}
-
 
 class MonitoringFilterTestImp extends MonitoringFilter with Matchers {
   override val urlPatternToNameMapping: Map[String, String] = Map("/ni/OM687829D/self-employments" -> "SelfEmployments")

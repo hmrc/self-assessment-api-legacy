@@ -21,15 +21,15 @@ import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.mvc.{ActionBuilder, _}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.{BackendController, BaseController}
 import uk.gov.hmrc.r2.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.r2.selfassessmentapi.contexts.{AuthContext, Individual}
 import uk.gov.hmrc.r2.selfassessmentapi.models.SourceType.SourceType
 import uk.gov.hmrc.r2.selfassessmentapi.services.AuthorisationService
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait BaseResource extends BaseController {
+abstract class BaseResource(cc: ControllerComponents) extends BackendController(cc) {
   val appContext: AppContext
   val authService: AuthorisationService
 
@@ -38,6 +38,8 @@ trait BaseResource extends BaseController {
   private lazy val featureSwitch = FeatureSwitch(appContext.featureSwitch, appContext.env)
 
   def AuthAction(nino: Nino) = new ActionRefiner[Request, AuthRequest] {
+    override protected def executionContext: ExecutionContext = cc.executionContext
+
     override protected def refine[A](request: Request[A]): Future[Either[Result, AuthRequest[A]]] =
       if (authIsEnabled) {
         implicit val ev: Request[A] = request
@@ -49,7 +51,11 @@ trait BaseResource extends BaseController {
   }
 
   def FeatureSwitchAction(source: SourceType, summary: Option[String] = None) =
-    new ActionBuilder[Request] with ActionFilter[Request] {
+    new ActionBuilder[Request, AnyContent] with ActionFilter[Request] {
+      override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = cc.executionContext
+
       override protected def filter[A](request: Request[A]): Future[Option[Result]] =
         Future {
           if (featureSwitch.isEnabled(source, summary)) None
@@ -57,7 +63,7 @@ trait BaseResource extends BaseController {
         }
     }
 
-  def APIAction(nino: Nino, source: SourceType, summary: Option[String] = None): ActionBuilder[AuthRequest] =
+  def APIAction(nino: Nino, source: SourceType, summary: Option[String] = None): ActionBuilder[AuthRequest, AnyContent] =
     FeatureSwitchAction(source, summary) andThen AuthAction(nino)
 
 

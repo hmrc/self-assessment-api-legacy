@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.models
 
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode.ErrorCode
-import play.api.libs.functional.syntax._
 import uk.gov.hmrc.selfassessmentapi.models.des.DesErrorCode.DesErrorCode
 
 object Errors {
@@ -179,7 +177,7 @@ object Errors {
    * Converts a Play error without an error code into an Error that contains an error code
    * based on the content of the error message.
    */
-  private def convertErrorMessageToCode(playError: ValidationError, errorPath: String): Error = {
+  private def convertErrorMessageToCode(playError: JsonValidationError, errorPath: String): Error = {
     playError.message match {
       case "error.expected.jodadate.format" => Error("INVALID_DATE", "please provide a date in ISO format (i.e. YYYY-MM-DD)", Some(errorPath))
       case "error.path.missing" => Error("MANDATORY_FIELD_MISSING", "a mandatory field is missing", Some(errorPath))

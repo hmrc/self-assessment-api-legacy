@@ -35,7 +35,8 @@ class PropertiesAnnualSummaryResourceSpec extends ResourceSpec
       mockAppContext,
       mockAuthorisationService,
       mockPropertiesAnnualSummaryConnector,
-      mockAuditService
+      mockAuditService,
+      cc
     )
     mockAPIAction(SourceType.Properties)
   }

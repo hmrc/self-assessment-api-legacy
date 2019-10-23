@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{Matchers, OptionValues, WordSpec}
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.Configuration

@@ -19,7 +19,6 @@ package uk.gov.hmrc.r2.selfassessmentapi.models.properties
 
 
 import org.joda.time.LocalDate
-import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.r2.selfassessmentapi.models
@@ -27,7 +26,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.models.ErrorCode.BOTH_EXPENSES_SUPPLIED
 import uk.gov.hmrc.r2.selfassessmentapi.models.Validation._
 import uk.gov.hmrc.r2.selfassessmentapi.models.{ExpensesDef, _}
 
-object FHL {
+object FHL extends JodaReads with JodaWrites {
 
   case class Properties(id: Option[String], from: LocalDate, to: LocalDate, financials: Option[Financials])
     extends Period {
@@ -72,16 +71,16 @@ object FHL {
     }).validate(Seq(
       Validation(JsPath(),
         periodDateValidator,
-        ValidationError("The period 'to' date is before the period 'from' date or the submission period already exists.", ErrorCode.INVALID_PERIOD)),
+        JsonValidationError("The period 'to' date is before the period 'from' date or the submission period already exists.", ErrorCode.INVALID_PERIOD)),
       Validation(
         JsPath(),
         bothExpensesValidator,
-        ValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
+        JsonValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
           ErrorCode.BOTH_EXPENSES_SUPPLIED)
       ),
       Validation(JsPath(),
         financialsValidator,
-        ValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES))
+        JsonValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES))
     ))
 
     implicit lazy val format : Format[Properties] = Format(reads, writes)
@@ -208,11 +207,11 @@ object FHL {
       .validate(Seq(
         Validation(JsPath(),
           financialsValidator,
-          ValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES)),
+          JsonValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES)),
         Validation(
           JsPath(),
           bothExpensesValidator,
-          ValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
+          JsonValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
             ErrorCode.BOTH_EXPENSES_SUPPLIED)
         )
       ))
@@ -239,7 +238,7 @@ object Other {
     def asSummary: PeriodSummary = PeriodSummary(id.getOrElse(""), from, to)
   }
 
-  object Properties extends PeriodValidator[Properties] {
+  object Properties extends PeriodValidator[Properties] with JodaReads with JodaWrites {
 
     implicit val writes: Writes[Properties] = (
       (__ \ "id").writeNullable[String] and
@@ -277,16 +276,16 @@ object Other {
     }).validate(Seq(
       Validation(JsPath(),
         periodDateValidator,
-        ValidationError("The period 'to' date is before the period 'from' date or the submission period already exists.", ErrorCode.INVALID_PERIOD)),
+        JsonValidationError("The period 'to' date is before the period 'from' date or the submission period already exists.", ErrorCode.INVALID_PERIOD)),
       Validation(
         JsPath(),
         bothExpensesValidator,
-        ValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
+        JsonValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
           ErrorCode.BOTH_EXPENSES_SUPPLIED)
       ),
       Validation(JsPath(),
         financialsValidator,
-        ValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES))
+        JsonValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES))
     ))
 
     implicit lazy val format = Format(reads, writes)
@@ -436,16 +435,16 @@ object Other {
       (__ \ "incomes").readNullable[Incomes] and
         (__ \ "expenses").readNullable[Expenses]
       )(Financials.apply _)
-      .filter(ValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
+      .filter(JsonValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
         BOTH_EXPENSES_SUPPLIED))(_.singleExpensesTypeSpecified)
       .validate(Seq(
         Validation(JsPath(),
           financialsValidator,
-          ValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES)),
+          JsonValidationError("No incomes and expenses are supplied", ErrorCode.NO_INCOMES_AND_EXPENSES)),
         Validation(
           JsPath(),
           bothExpensesValidator,
-          ValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
+          JsonValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
             ErrorCode.BOTH_EXPENSES_SUPPLIED)
         )
       ))

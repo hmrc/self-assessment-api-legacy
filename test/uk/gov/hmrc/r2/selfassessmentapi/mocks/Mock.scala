@@ -19,8 +19,8 @@ package uk.gov.hmrc.r2.selfassessmentapi.mocks
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.mockito.stubbing.OngoingStubbing
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, Suite}
+import org.scalatestplus.mockito.MockitoSugar
 
 trait Mock extends MockitoSugar with BeforeAndAfterEach { _: Suite =>
 

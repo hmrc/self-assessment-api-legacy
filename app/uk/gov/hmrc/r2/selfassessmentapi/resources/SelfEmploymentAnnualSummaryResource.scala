@@ -38,8 +38,9 @@ class SelfEmploymentAnnualSummaryResource @Inject()(
                                                      override val appContext: AppContext,
                                                      override val authService: AuthorisationService,
                                                      connector: SelfEmploymentAnnualSummaryConnector,
-                                                     auditService: AuditService
-                                                   ) extends BaseResource {
+                                                     auditService: AuditService,
+                                                     cc: ControllerComponents
+                                                   ) extends BaseResource(cc) {
 
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] =
     APIAction(nino, SourceType.SelfEmployments, Some("annual")).async(parse.json) { implicit request =>

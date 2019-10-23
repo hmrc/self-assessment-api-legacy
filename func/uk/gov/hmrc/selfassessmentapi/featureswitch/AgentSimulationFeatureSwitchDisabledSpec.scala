@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.featureswitch
 
-import play.api.test.FakeApplication
+import play.api.{Application, Configuration}
+import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
@@ -24,7 +25,7 @@ class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
 
   private val conf = Map("Test.feature-switch.test-scenario-simulation.enabled" -> false)
 
-  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
 
   "Agent simulation filters" should {
     "not be applied if feature is switched off" in {

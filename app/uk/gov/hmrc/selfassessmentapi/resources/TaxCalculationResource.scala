@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import javax.inject.Inject
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, Request}
+import play.api.mvc.{Action, ControllerComponents, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.services.AuditService
@@ -38,8 +38,9 @@ class TaxCalculationResource @Inject()(
                                         override val appContext: AppContext,
                                         override val authService: AuthorisationService,
                                         connector: TaxCalculationConnector,
-                                        auditService: AuditService
-                                      ) extends BaseResource {
+                                        auditService: AuditService,
+                                        cc: ControllerComponents
+                                      ) extends BaseResource(cc) {
 
   private val cannedEtaResponse =
     s"""

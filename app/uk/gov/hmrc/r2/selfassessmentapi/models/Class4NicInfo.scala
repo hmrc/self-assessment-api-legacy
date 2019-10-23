@@ -45,10 +45,10 @@ object Class4NicInfo {
       (__ \ "isExempt").readNullable[Boolean] and
       (__ \ "exemptionCode").readNullable[Class4NicsExemptionCode]
     )(Class4NicInfo.apply _)
-    .filter(ValidationError(s"Empty class4NicInfo element provided", INVALID_VALUE))(nonEmptyClass4NicInfo)
-    .filter(ValidationError(s"Exemption code must be present only if the exempt flag is set to true", INVALID_VALUE))(exemptionCodeOnlyPresentFails)
-    .filter(ValidationError(s"Exemption code value must be present if the exempt flag is set to true", MANDATORY_FIELD_MISSING))(isExemptionCodePresent)
-    .filter(ValidationError(s"Exemption code value must not be present if the exempt flag is set to false", INVALID_VALUE))(isExemptionCodeAbsent)
+    .filter(JsonValidationError(s"Empty class4NicInfo element provided", INVALID_VALUE))(nonEmptyClass4NicInfo)
+    .filter(JsonValidationError(s"Exemption code must be present only if the exempt flag is set to true", INVALID_VALUE))(exemptionCodeOnlyPresentFails)
+    .filter(JsonValidationError(s"Exemption code value must be present if the exempt flag is set to true", MANDATORY_FIELD_MISSING))(isExemptionCodePresent)
+    .filter(JsonValidationError(s"Exemption code value must not be present if the exempt flag is set to false", INVALID_VALUE))(isExemptionCodeAbsent)
 
   private def nonEmptyClass4NicInfo(class4Exemption: Class4NicInfo) =
     (class4Exemption.isExempt, class4Exemption.exemptionCode) match {

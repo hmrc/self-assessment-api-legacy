@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import play.api.libs.json.Json
+import uk.gov.hmrc.selfassessmentapi.models.ErrorBadRequest
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
@@ -31,7 +34,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations")
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-01-01&to=2017-03-31")
         .thenAssertThat()
         .statusIs(200)
         .bodyIsLike(Jsons.Obligations().toString)
@@ -42,7 +45,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations")
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-01-01&to=2017-03-31")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -90,6 +93,54 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .get(s"/ni/abc1234/uk-properties/obligations")
         .thenAssertThat()
         .statusIs(400)
+    }
+
+    "return code 400 when from date is invalid" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=201-01-01&to=2017-03-31")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("FORMAT_FROM_DATE")
+        .bodyIs(Json.toJson(ErrorBadRequest(FORMAT_FROM_DATE, "The provided 'from' date is invalid")))
+    }
+
+    "return code 400 when to date is invalid" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-01-01&to=201-03-31")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("FORMAT_TO_DATE")
+        .bodyIs(Json.toJson(ErrorBadRequest(FORMAT_TO_DATE, "The provided 'to' date is invalid")))
+    }
+
+    "return code 400 when to is before from date" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-12-01&to=2017-03-31")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("RANGE_TO_DATE_BEFORE_FROM_DATE")
+        .bodyIs(Json.toJson(ErrorBadRequest(RANGE_TO_DATE_BEFORE_FROM_DATE, "The 'to' date is less than the 'from' date")))
+    }
+
+    "return code 400 when from and to date range is more than 366 days" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-01-01&to=2018-01-02")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("RANGE_DATE_TOO_LONG")
+        .bodyIs(Json.toJson(ErrorBadRequest(RANGE_DATE_TOO_LONG, "The specified date range is too big")))
     }
   }
 }

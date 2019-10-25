@@ -25,6 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.ObligationsConnector
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType}
 import uk.gov.hmrc.selfassessmentapi.resources.Audit.makeObligationsRetrievalAudit
+import uk.gov.hmrc.selfassessmentapi.resources.utils.BusinessObligationQueryParams
 import uk.gov.hmrc.selfassessmentapi.services.AuditService
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
@@ -38,7 +39,7 @@ class PropertiesObligationsResource @Inject()(
 
   private val incomeSourceType = "ITSP"
 
-  def retrieveObligations(nino: Nino): Action[AnyContent] =
+  def retrieveObligations(nino: Nino, params: BusinessObligationQueryParams): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("obligations")).async { implicit request =>
       connector.get(nino, incomeSourceType).map { response =>
         auditService.audit(makeObligationsRetrievalAudit(nino, None, request.authContext, response, UkPropertiesRetrieveObligations))

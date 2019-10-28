@@ -25,6 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.ObligationsConnector
 import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.resources.Audit.makeObligationsRetrievalAudit
+import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 import uk.gov.hmrc.selfassessmentapi.services.AuditService
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
@@ -38,7 +39,7 @@ class SelfEmploymentObligationsResource @Inject()(
 
   private val incomeSourceType = "ITSB"
 
-  def retrieveObligations(nino: Nino, id: SourceId): Action[Unit] =
+  def retrieveObligations(nino: Nino, id: SourceId, queryParams: ObligationQueryParams): Action[Unit] =
     APIAction(nino, SourceType.SelfEmployments, Some("obligations")).async(parse.empty) { implicit request =>
       obligationsConnector.get(nino, incomeSourceType).map { response =>
         auditService.audit(

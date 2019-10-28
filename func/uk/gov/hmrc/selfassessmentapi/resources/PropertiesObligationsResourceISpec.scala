@@ -136,7 +136,6 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .bodyIsError("RULE_DATE_PARAMETER")
     }
 
-
     "return code 400 when to is before from date" in {
       given()
         .userIsSubscribedToMtdFor(nino)

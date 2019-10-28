@@ -16,7 +16,7 @@ GET         /ni/:nino/self-employments/:id                                      
 GET         /ni/:nino/self-employments/:selfEmploymentId/:taxYear/income-summary        @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentBISSResource.getSummary(nino: uk.gov.hmrc.domain.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear, selfEmploymentId: String)
 
 # Obligations
-GET         /ni/:nino/self-employments/:id/obligations                                  @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentObligationsResource.retrieveObligations(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)
+GET         /ni/:nino/self-employments/:id/obligations                                  @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentObligationsResource.retrieveObligations(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, queryParams: uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams)
 
 # Self-Employments Periodic Summaries
 POST        /ni/:nino/self-employments/:id/periods                                      @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentPeriodResource.createPeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)

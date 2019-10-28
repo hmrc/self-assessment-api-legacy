@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockObligationsConnector
 import uk.gov.hmrc.selfassessmentapi.mocks.services.MockAuditService
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
-import uk.gov.hmrc.selfassessmentapi.resources.utils.BusinessObligationQueryParams
+import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 
 import scala.concurrent.Future
 
@@ -47,7 +47,7 @@ class PropertiesObligationsResourceSpec extends ResourceSpec
         val from = Some(LocalDate.parse("2017-01-01"))
         val to = Some(LocalDate.parse("2017-12-31"))
         val result = resource.retrieveObligations(nino,
-          BusinessObligationQueryParams(from, to))(FakeRequest())
+          ObligationQueryParams(from, to))(FakeRequest())
         status(result) shouldBe INTERNAL_SERVER_ERROR
         contentType(result) shouldBe None
       }

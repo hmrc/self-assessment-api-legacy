@@ -56,6 +56,7 @@ class ErrorHandler @Inject()(
         case "FORMAT_TO_DATE" => BadRequest(toJson(ErrorBadRequest(FORMAT_TO_DATE, "The provided 'to' date is invalid")))
         case "RANGE_TO_DATE_BEFORE_FROM_DATE" => BadRequest(toJson(ErrorBadRequest(RANGE_TO_DATE_BEFORE_FROM_DATE, "The 'to' date is less than the 'from' date")))
         case "RANGE_DATE_TOO_LONG" => BadRequest(toJson(ErrorBadRequest(RANGE_DATE_TOO_LONG, "The specified date range is too big")))
+        case "RULE_DATE_PARAMETER" => BadRequest(toJson(ErrorBadRequest(RULE_DATE_PARAMETER, "The 'from' query parameter supplied without the `to` query parameter, or vice-versa")))
         case _ => result
       }
     }

@@ -58,7 +58,8 @@ object ErrorCode extends Enumeration {
   FORMAT_FROM_DATE,
   FORMAT_TO_DATE,
   RANGE_TO_DATE_BEFORE_FROM_DATE,
-  RANGE_DATE_TOO_LONG= Value
+  RANGE_DATE_TOO_LONG,
+  RULE_DATE_PARAMETER= Value
 
   implicit val format: Format[ErrorCode] = EnumJson.enumFormat(ErrorCode,
     Some(s"Recognized ErrorCode values: ${ErrorCode.values.mkString(", ")}"))

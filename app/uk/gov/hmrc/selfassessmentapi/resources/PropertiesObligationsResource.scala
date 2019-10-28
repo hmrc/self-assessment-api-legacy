@@ -41,7 +41,7 @@ class PropertiesObligationsResource @Inject()(
 
   def retrieveObligations(nino: Nino, params: ObligationQueryParams): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("obligations")).async { implicit request =>
-      connector.get(nino, incomeSourceType).map { response =>
+      connector.get(nino, incomeSourceType, Some(params)).map { response =>
         auditService.audit(makeObligationsRetrievalAudit(nino, None, request.authContext, response, UkPropertiesRetrieveObligations))
         response.filter {
           case 200 =>

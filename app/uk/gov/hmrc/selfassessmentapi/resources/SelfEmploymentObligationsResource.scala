@@ -39,9 +39,9 @@ class SelfEmploymentObligationsResource @Inject()(
 
   private val incomeSourceType = "ITSB"
 
-  def retrieveObligations(nino: Nino, id: SourceId, queryParams: ObligationQueryParams): Action[Unit] =
+  def retrieveObligations(nino: Nino, id: SourceId, params: ObligationQueryParams): Action[Unit] =
     APIAction(nino, SourceType.SelfEmployments, Some("obligations")).async(parse.empty) { implicit request =>
-      obligationsConnector.get(nino, incomeSourceType).map { response =>
+      obligationsConnector.get(nino, incomeSourceType, Some(params)).map { response =>
         auditService.audit(
           makeObligationsRetrievalAudit(nino, Some(id), request.authContext, response, SelfEmploymentRetrieveObligations))
         response.filter {

@@ -21,7 +21,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.models.obligations.ObligationsQueryParams
+import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.ObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,8 +34,13 @@ class ObligationsConnector @Inject()(
 
   val baseUrl: String = appContext.desUrl
 
-  def get(nino: Nino, regime: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ObligationsResponse] = {
-    httpGet[ObligationsResponse](baseUrl + s"/enterprise/obligation-data/nino/$nino/ITSA?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}", ObligationsResponse)
+  def get(nino: Nino, regime: String, params: Option[ObligationQueryParams] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ObligationsResponse] = {
+    val (from, to) =
+      params match {
+        case Some(ObligationQueryParams(Some(from), Some(to))) => (from, to)
+        case _ => (ObligationQueryParams().from.get, ObligationQueryParams().to.get)
+      }
+    httpGet[ObligationsResponse](baseUrl + s"/enterprise/obligation-data/nino/$nino/ITSA?from=${from}&to=${to}", ObligationsResponse)
   }
 
 }

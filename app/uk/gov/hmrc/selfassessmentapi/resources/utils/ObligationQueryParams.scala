@@ -17,7 +17,27 @@
 package uk.gov.hmrc.selfassessmentapi.resources.utils
 
 import org.joda.time.LocalDate
+import org.joda.time.format.DateTimeFormat
 
-case class ObligationQueryParams(from: Option[LocalDate], to: Option[LocalDate], status: Option[String]) {
-  val map = Map("from" -> from, "to" -> to, "status" -> status)
+case class ObligationQueryParams(from: Option[LocalDate], to: Option[LocalDate]) {
+  val map = Map("from" -> from, "to" -> to)
 }
+
+object ObligationQueryParams {
+
+  val MAX_PAST_RANGE_DAYS = 366
+
+  implicit def toString(date: LocalDate) : String = {
+    val dateFormat = "YYYY-MM-dd"
+    DateTimeFormat.forPattern(dateFormat)
+    date.formatted(dateFormat)
+  }
+
+  def apply() : ObligationQueryParams = {
+    val toDate = LocalDate.now()
+    val fromDate = toDate.minusDays(MAX_PAST_RANGE_DAYS)
+    ObligationQueryParams(Some(fromDate), Some(toDate))
+  }
+}
+
+

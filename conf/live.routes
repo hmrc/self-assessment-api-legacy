@@ -16,7 +16,7 @@ GET         /ni/:nino/self-employments/:id                                      
 #PUT /ni/:nino/self-employments/:id   uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentsResource.update(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)
 
 # Obligations
-GET         /ni/:nino/self-employments/:id/obligations                                         @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentObligationsResource.retrieveObligations(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)
+GET         /ni/:nino/self-employments/:id/obligations                                         @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentObligationsResource.retrieveObligations(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, queryParams: uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams)
 
 # Self-Employments Periodic Summaries
 POST        /ni/:nino/self-employments/:id/periods                                             @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentPeriodResource.createPeriod(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId)
@@ -41,7 +41,7 @@ POST        /ni/:nino/uk-properties                                             
 GET         /ni/:nino/uk-properties                                                            @uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrieve(nino: uk.gov.hmrc.domain.Nino)
 
 # Obligations
-GET         /ni/:nino/uk-properties/obligations                                                @uk.gov.hmrc.selfassessmentapi.resources.PropertiesObligationsResource.retrieveObligations(nino: uk.gov.hmrc.domain.Nino)
+GET         /ni/:nino/uk-properties/obligations                                                @uk.gov.hmrc.selfassessmentapi.resources.PropertiesObligationsResource.retrieveObligations(nino: uk.gov.hmrc.domain.Nino, queryParams: uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams)
 
 # Properties Periodic Summaries
 GET         /ni/:nino/uk-properties/:id/periods                                                @uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodResource.retrievePeriods(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType)

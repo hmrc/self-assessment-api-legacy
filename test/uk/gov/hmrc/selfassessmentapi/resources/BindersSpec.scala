@@ -21,8 +21,9 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.selfassessmentapi.models.{SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 
-class BindersSpec extends UnitSpec {
+  class BindersSpec extends UnitSpec {
 
   "ninoBinder.bind" should {
 
@@ -95,26 +96,42 @@ class BindersSpec extends UnitSpec {
   "obligationQueryParamsBinder.bind" should {
 
 
-    "error if \"from\" date is invalid" in {
-      val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("201R-02-13")))
-      val oqp = result.get.left.get
-      oqp shouldEqual "ERROR_INVALID_DATE_FROM"
+    "error if 'from' date is invalid" in {
+      val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("201R-02-13"), "to" -> Seq("2017-01-13")))
+      result shouldEqual Some(Left("FORMAT_FROM_DATE"))
     }
 
-    "error if \"to\" date is invalid" in {
-      val result = Binders.obligationQueryParamsBinder.bind("", Map("to" -> Seq("201Z-12-13")))
-      val oqp = result.get.left.get
-      oqp shouldEqual "ERROR_INVALID_DATE_TO"
+    "error if 'to' date is invalid" in {
+      val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("2017-02-13"), "to" -> Seq("201Z-12-13")))
+      result shouldEqual Some(Left("FORMAT_TO_DATE"))
     }
 
-
-    "error if \"from\" is greater than \"to\" date" in {
+    "error if 'from' is greater than 'to' date" in {
       val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("2017-02-13"), "to" -> Seq("2017-01-13")))
-      val oqp = result.get.left.get
-      oqp shouldEqual "ERROR_INVALID_DATE_RANGE"
+      result shouldEqual Some(Left("RANGE_TO_DATE_BEFORE_FROM_DATE"))
     }
 
-    "bind \"from\", \"to\" dates" in {
+    "error if 'from' and 'to' date range is more than 366 days" in {
+      val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("2017-01-01"), "to" -> Seq("2018-01-02")))
+      result shouldEqual Some(Left("RANGE_DATE_TOO_LONG"))
+    }
+
+    "error if 'from' date is supplied and 'to' date is not supplied" in {
+      val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("2017-01-01")))
+      result shouldEqual Some(Left("RULE_DATE_PARAMETER"))
+    }
+
+    "error if 'to' date is supplied and 'from' date is not supplied" in {
+      val result = Binders.obligationQueryParamsBinder.bind("", Map("to" -> Seq("2017-01-01")))
+      result shouldEqual Some(Left("RULE_DATE_PARAMETER"))
+    }
+
+    "create empty bindables if `from` and `to` dates are not supplied" in {
+      val result = Binders.obligationQueryParamsBinder.bind(key = "", Map())
+      result shouldBe Some(Right(ObligationQueryParams(None, None)))
+    }
+
+    "bind 'from', 'to' dates" in {
       val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("2017-02-13"), "to" -> Seq("2017-02-13")))
       val oqp = result.get.right.get
       oqp.from.get shouldEqual new LocalDate("2017-02-13")
@@ -122,28 +139,4 @@ class BindersSpec extends UnitSpec {
     }
 
   }
-
-  "periodQueryParamsBinder.bind" should {
-
-    "bind \"from\", \"to\" dates " in {
-      val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("2017-02-13"), "to" -> Seq("2017-12-13")))
-      val oqp = result.get.right.get
-      oqp.from.get shouldEqual new LocalDate("2017-02-13")
-      oqp.to.get shouldEqual new LocalDate("2017-12-13")
-    }
-
-    "error if \"from\" date is invalid" in {
-      val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("201R-02-13"), "to" -> Seq("2019-12-13")))
-      val oqp = result.get.left.get
-      oqp shouldEqual "ERROR_INVALID_DATE_FROM"
-    }
-
-    "error if \"to\" date is invalid" in {
-      val result = Binders.obligationQueryParamsBinder.bind("", Map("from" -> Seq("2017-02-13"), "to" -> Seq("201Z-12-13")))
-      val oqp = result.get.left.get
-      oqp shouldEqual "ERROR_INVALID_DATE_TO"
-    }
-
-  }
-
 }

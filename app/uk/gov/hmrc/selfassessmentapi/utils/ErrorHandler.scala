@@ -52,6 +52,11 @@ class ErrorHandler @Inject()(
         case "ERROR_INVALID_DATE_RANGE" => BadRequest(toJson(ErrorBadRequest(INVALID_DATE_RANGE, "The date range in the query string is invalid")))
         case "ERROR_EOPS_INVALID_DATE_RANGE" => BadRequest(toJson(Errors.InvalidDateRange_2))
         case "ERROR_INVALID_PROPERTY_TYPE" => NotFound(toJson(ErrorNotFound))
+        case "FORMAT_FROM_DATE" => BadRequest(toJson(ErrorBadRequest(FORMAT_FROM_DATE, "The provided 'from' date is invalid")))
+        case "FORMAT_TO_DATE" => BadRequest(toJson(ErrorBadRequest(FORMAT_TO_DATE, "The provided 'to' date is invalid")))
+        case "RANGE_TO_DATE_BEFORE_FROM_DATE" => BadRequest(toJson(ErrorBadRequest(RANGE_TO_DATE_BEFORE_FROM_DATE, "The 'to' date is less than the 'from' date")))
+        case "RANGE_DATE_TOO_LONG" => BadRequest(toJson(ErrorBadRequest(RANGE_DATE_TOO_LONG, "The specified date range is too big")))
+        case "RULE_DATE_PARAMETER" => BadRequest(toJson(ErrorBadRequest(RULE_DATE_PARAMETER, "The 'from' query parameter supplied without the `to` query parameter, or vice-versa")))
         case _ => result
       }
     }

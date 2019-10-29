@@ -28,7 +28,6 @@ import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.selfassessmentapi.models.obligations.ObligationsQueryParams
-import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.selfassessmentapi.models.{ErrorNotImplemented, Period, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.resources.DesJsons

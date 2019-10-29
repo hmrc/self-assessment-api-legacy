@@ -91,5 +91,71 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(400)
     }
+
+    "return code 400 when from date is invalid" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=201-01-01&to=2017-03-31")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("FORMAT_FROM_DATE")
+    }
+
+    "return code 400 when to date is invalid" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-01-01&to=201-03-31")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("FORMAT_TO_DATE")
+    }
+
+    "return code 400 when 'to' date is supplied with no 'from' date" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?to=2017-03-31")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("RULE_DATE_PARAMETER")
+    }
+
+    "return code 400 when 'from' date is supplied with no 'to' date" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-03-31")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("RULE_DATE_PARAMETER")
+    }
+
+    "return code 400 when to is before from date" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-12-01&to=2017-03-31")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("RANGE_TO_DATE_BEFORE_FROM_DATE")
+    }
+
+    "return code 400 when from and to date range is more than 366 days" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .when()
+        .get(s"/ni/$nino/uk-properties/obligations?from=2017-01-01&to=2018-01-02")
+        .thenAssertThat()
+        .statusIs(400)
+        .bodyIsError("RANGE_DATE_TOO_LONG")
+    }
   }
 }

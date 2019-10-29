@@ -20,6 +20,7 @@ import org.scalatest.Suite
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.connectors.ObligationsConnector
 import uk.gov.hmrc.selfassessmentapi.mocks.Mock
+import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 
 trait MockObligationsConnector extends Mock {
   _: Suite =>
@@ -27,8 +28,8 @@ trait MockObligationsConnector extends Mock {
   val mockObligationsConnector = mock[ObligationsConnector]
 
   object MockObligationsConnector {
-    def get(nino: Nino, regime: String) = {
-      when(mockObligationsConnector.get(eqTo(nino), eqTo(regime))(any(), any()))
+    def get(nino: Nino, regime: String, params: Option[ObligationQueryParams] = None) = {
+      when(mockObligationsConnector.get(eqTo(nino), eqTo(regime), any[Option[ObligationQueryParams]]())(any(), any()))
     }
   }
 

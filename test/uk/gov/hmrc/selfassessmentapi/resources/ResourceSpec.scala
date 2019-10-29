@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{Matchers, OptionValues, WordSpec}
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.mvc.ControllerComponents
@@ -41,7 +41,7 @@ trait ResourceSpec extends WordSpec
   with TestUtils
   with MockAppContext
   with MockAuthorisationService
-  with OneAppPerSuite {
+  with GuiceOneAppPerSuite {
 
   val nino = generateNino
 

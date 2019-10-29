@@ -17,7 +17,7 @@
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import org.scalatest.BeforeAndAfter
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Result}
 import play.api.test.FakeRequest
@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.Nino
 
 import scala.concurrent.Future
 
-trait BaseResourceSpec extends ResourceSpec with BeforeAndAfter with OneAppPerSuite{
+trait BaseResourceSpec extends ResourceSpec with BeforeAndAfter with GuiceOneAppPerSuite{
 
   val validNino = Nino("AA123456A")
 

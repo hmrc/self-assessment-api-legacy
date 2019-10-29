@@ -17,7 +17,6 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import javax.inject.Inject
-import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.domain.Nino
@@ -28,6 +27,8 @@ import uk.gov.hmrc.selfassessmentapi.resources.Audit.makeObligationsRetrievalAud
 import uk.gov.hmrc.selfassessmentapi.services.AuditService
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
+import scala.concurrent.ExecutionContext
+
 
 class SelfEmploymentObligationsResource @Inject()(
                                                    override val appContext: AppContext,
@@ -35,7 +36,7 @@ class SelfEmploymentObligationsResource @Inject()(
                                                    obligationsConnector: ObligationsConnector,
                                                    auditService: AuditService,
                                                    cc: ControllerComponents
-                                                 ) extends BaseResource(cc) {
+                                                 )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   private val incomeSourceType = "ITSB"
 

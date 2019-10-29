@@ -20,8 +20,8 @@ import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents, Request}
 import uk.gov.hmrc.domain.Nino
-//import uk.gov.hmrc.selfassessmentapi.config.AppContext._
-import play.api.libs.concurrent.Execution.Implicits._
+
+import scala.concurrent.ExecutionContext
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentPeriodConnector
@@ -41,7 +41,7 @@ class SelfEmploymentPeriodResource @Inject()(
                                               connector: SelfEmploymentPeriodConnector,
                                               auditService: AuditService,
                                               cc: ControllerComponents
-                                            ) extends BaseResource(cc) {
+                                            )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def createPeriod(nino: Nino, sourceId: SourceId): Action[JsValue] =
     APIAction(nino, SourceType.SelfEmployments, Some("periods")).async(parse.json) { implicit request =>

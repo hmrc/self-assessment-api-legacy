@@ -23,11 +23,11 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatest.Matchers
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
 import scala.concurrent.duration._
 
-trait TestApplication extends MongoEmbeddedDatabase with Matchers with OneServerPerSuite with Eventually with ScalaFutures
+trait TestApplication extends MongoEmbeddedDatabase with Matchers with GuiceOneServerPerSuite with Eventually with ScalaFutures
   with IntegrationPatience with MockitoSugar {
 
   override implicit val timeout: FiniteDuration = 100 seconds

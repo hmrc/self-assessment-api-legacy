@@ -38,13 +38,13 @@ case class FeatureSwitch(value: Option[Configuration], env: String) {
 
   def isWhiteListingEnabled: Boolean = {
     value match {
-      case Some(config) => config.getBoolean("white-list.enabled").getOrElse(false)
+      case Some(config) => config.getOptional[Boolean]("white-list.enabled").getOrElse(false)
       case None => false
     }
   }
 
   def isAgentSimulationFilterEnabled: Boolean = value match {
-    case Some(config) => config.getBoolean("test-scenario-simulation.enabled").getOrElse(false)
+    case Some(config) => config.getOptional[Boolean]("test-scenario-simulation.enabled").getOrElse(false)
     case None => false
   }
 
@@ -52,7 +52,7 @@ case class FeatureSwitch(value: Option[Configuration], env: String) {
     value match {
       case Some(config) =>
         config
-          .getStringSeq("white-list.applicationIds")
+          .getOptional[Seq[String]]("white-list.applicationIds")
           .getOrElse(throw new RuntimeException(s"$env.feature-switch.white-list.applicationIds is not configured"))
       case None => Seq()
     }
@@ -62,14 +62,10 @@ case class FeatureSwitch(value: Option[Configuration], env: String) {
 sealed case class FeatureConfig(config: Configuration) {
 
   def isSummaryEnabled(source: String, summary: String): Boolean = {
-    val summaryEnabled = config.getBoolean(s"$source.$summary.enabled") match {
-      case Some(flag) => flag
-      case None => true
-    }
-    isSourceEnabled(source) && summaryEnabled
+    isSourceEnabled(source) && config.getOptional[Boolean](s"$source.$summary.enabled").getOrElse(true)
   }
 
   def isSourceEnabled(source: String): Boolean = {
-    config.getBoolean(s"$source.enabled").getOrElse(true)
+    config.getOptional[Boolean](s"$source.enabled").getOrElse(true)
   }
 }

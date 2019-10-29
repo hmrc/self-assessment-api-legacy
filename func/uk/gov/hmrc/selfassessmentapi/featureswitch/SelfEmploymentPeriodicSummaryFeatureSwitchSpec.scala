@@ -23,16 +23,16 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentPeriodicSummaryFeatureSwitchSpec extends BaseFunctionalSpec {
 
-  private val conf: Map[String, _] =
+  private val conf = Configuration.from(
     Map("Test" ->
       Map("feature-switch" ->
         Map("self-employments" ->
           Map("enabled" -> true, "annual" -> Map("enabled" -> true), "periods" -> Map("enabled" -> false))
         )
       )
-    )
+    ))
 
-  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = conf).build()
 
   "self-employments" should {
     "not be visible if feature Switched Off" in {

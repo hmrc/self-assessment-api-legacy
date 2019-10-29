@@ -23,8 +23,8 @@ import uk.gov.hmrc.r2.selfassessmentapi.mocks.services.MockAuditService
 import uk.gov.hmrc.r2.selfassessmentapi.models.SourceType
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 
 class PropertiesAnnualSummaryResourceSpec extends ResourceSpec
   with MockPropertiesAnnualSummaryConnector

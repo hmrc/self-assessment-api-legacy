@@ -18,7 +18,6 @@ package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import javax.inject.Inject
 import play.api.Logger
-import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json.toJson
 import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request, Result}
@@ -36,7 +35,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.models.properties._
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.{PeriodMapper, PropertiesPeriodResponse, ResponseMapper}
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class PropertiesPeriodResource @Inject()(
@@ -45,7 +44,7 @@ class PropertiesPeriodResource @Inject()(
                                           connector: PropertiesPeriodConnector,
                                           auditService: AuditService,
                                           cc: ControllerComponents
-                                        ) extends BaseResource(cc) {
+                                        )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def createPeriod(nino: Nino, id: PropertyType): Action[JsValue] =
     APIAction(nino, SourceType.Properties, Some("periods")).async(parse.json) { implicit request =>

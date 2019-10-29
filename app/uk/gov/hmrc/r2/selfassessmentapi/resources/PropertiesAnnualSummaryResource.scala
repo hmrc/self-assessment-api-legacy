@@ -17,8 +17,6 @@
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import javax.inject.Inject
-import org.omg.CosNaming.NamingContextPackage.NotFound
-import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
 import uk.gov.hmrc.domain.Nino
@@ -34,7 +32,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.models.{ErrorResult, SourceType, TaxYear
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.PropertiesAnnualSummaryResponse
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class PropertiesAnnualSummaryResource @Inject()(
@@ -43,7 +41,7 @@ class PropertiesAnnualSummaryResource @Inject()(
                                                  connector: PropertiesAnnualSummaryConnector,
                                                  auditService: AuditService,
                                                  cc: ControllerComponents
-                                               ) extends BaseResource(cc) {
+                                               )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def updateFHLAnnualSummary(nino: Nino, taxYear: TaxYear): Action[JsValue] = updateAnnualSummary(nino, PropertyType.FHL, taxYear)
 

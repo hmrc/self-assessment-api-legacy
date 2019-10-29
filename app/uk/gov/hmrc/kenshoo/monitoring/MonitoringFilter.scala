@@ -18,13 +18,13 @@ package uk.gov.hmrc.kenshoo.monitoring
 
 import play.api.Logger
 import play.api.mvc.{Filter, RequestHeader, Result}
-
-import play.api.libs.concurrent.Execution.Implicits._
-import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 
+import scala.concurrent.{ExecutionContext, Future}
+
 trait MonitoringFilter extends Filter with HttpAPIMonitor {
+
+  implicit val ec: ExecutionContext
 
   val urlPatternToNameMapping: Map[String, String]
 

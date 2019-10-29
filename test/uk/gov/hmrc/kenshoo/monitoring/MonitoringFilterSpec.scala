@@ -35,6 +35,7 @@ class MonitoringFilterSpec extends UnitSpec {
 
   "monitoring filter" should {
     "monitor known incoming requests" in new MonitoringFilterTestImp {
+
       await(apply(_ => Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))(
         FakeRequest().withTarget(RequestTarget("/ni/OM687829D/self-employments", "", Map.empty)).withMethod("GET")))
       assertRequestIsMonitoredAs("API-SelfEmployments-GET")
@@ -49,6 +50,9 @@ class MonitoringFilterSpec extends UnitSpec {
 }
 
 class MonitoringFilterTestImp extends MonitoringFilter with Matchers {
+
+  lazy val ec: ExecutionContext = implicitly
+
   override val urlPatternToNameMapping: Map[String, String] = Map("/ni/OM687829D/self-employments" -> "SelfEmployments")
 
   var serviceName : String = ""

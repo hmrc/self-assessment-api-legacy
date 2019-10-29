@@ -21,6 +21,7 @@ import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockObligationsConnector
 import uk.gov.hmrc.selfassessmentapi.mocks.services.MockAuditService
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PropertiesObligationsResourceSpec extends ResourceSpec

@@ -143,59 +143,6 @@ object Binders {
     }
   }
 
-
-  //  implicit def obligationQueryParamsBinder(implicit stringBinder: QueryStringBindable[String]) =
-  //    new QueryStringBindable[ObligationQueryParams] {
-  //
-  //      private def validDateRange(fromOpt: OptEither[LocalDate], toOpt: OptEither[LocalDate]) =
-  //        for {
-  //          from <- fromOpt
-  //          if from.isRight
-  //          to <- toOpt
-  //          if to.isRight
-  //        } yield
-  //          (from.right.get, to.right.get) match {
-  //            case (from, to) if to.isBefore(from) => Left("ERROR_INVALID_DATE_RANGE")
-  //            case _ => Right(()) // object wrapped in Right irrelevant
-  //          }
-  //
-  //      private def statusValid(statusOpt: OptEither[String]) =
-  //        for {
-  //          status <- statusOpt
-  //          if status.isRight
-  //        } yield
-  //          status.right.get match {
-  //            case status if !Set("O", "F", "A").contains(status.toUpperCase) =>
-  //              Left("INVALID_STATUS")
-  //            case _ => Right(()) // object wrapped in Right irrelevant
-  //          }
-  //
-  //      override def bind(key: String, params: Map[String, Seq[String]]) : OptEither[ObligationQueryParams] = {
-  //
-  //        val from = dateQuery(stringBinder, params, "from", "ERROR_INVALID_DATE_FROM")
-  //        val to = dateQuery(stringBinder, params, "to", "ERROR_INVALID_DATE_TO")
-  //        val status = stringBinder.bind("status", params)
-  //
-  //        val errors = for {
-  //          paramOpt <- Seq(from,
-  //                          to,
-  //                          validDateRange(from, to),
-  //                          statusValid(status))
-  //          param <- paramOpt
-  //          if param.isLeft
-  //        } yield param.left.get
-  //
-  //        if (errors.isEmpty) {
-  //          Some(Right(ObligationQueryParams(from.map(_.right.get), to.map(_.right.get), status.map(_.right.get))))
-  //        } else {
-  //          Some(Left(errors.head))
-  //        }
-  //      }
-  //
-  //      override def unbind(key: String, value: ObligationQueryParams): String =
-  //        stringBinder.unbind(key, value.map(key).fold("")(_.toString))
-  //    }
-
   implicit def eopsObligationQueryParamsBinder(implicit stringBinder: QueryStringBindable[String]) =
     new QueryStringBindable[EopsObligationQueryParams] {
 

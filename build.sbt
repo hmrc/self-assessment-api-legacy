@@ -62,15 +62,12 @@ lazy val microservice = Project(appName, file("."))
   .settings(publishingSettings: _*)
   .settings(scoverageSettings: _*)
   .settings(defaultSettings(): _*)
-  .configs(FuncTest)
-  .settings(inConfig(FuncTest)(Defaults.itSettings): _*)
+  .configs(FuncTest).settings(inConfig(FuncTest)(Defaults.testSettings): _*)
   .settings(
     Keys.fork in FuncTest := true,
-    unmanagedSourceDirectories in FuncTest := (baseDirectory in FuncTest)(
-      base => Seq(base / "func", base / "test")
-    ).value,
+    unmanagedSourceDirectories in FuncTest := Seq((baseDirectory in FuncTest).value / "func"),
     javaOptions in FuncTest += "-Dlogger.resource=logback-test.xml",
-    parallelExecution in FuncTest := true,
+    parallelExecution in FuncTest := false,
     addTestReportOption(FuncTest, "int-test-reports")
   )
   .settings(resolvers += Resolver.jcenterRepo)

@@ -42,7 +42,8 @@ object AppDependencies {
     "org.scalacheck" %% "scalacheck" % "1.14.0" % scope,
     "org.skyscreamer" % "jsonassert" % "1.5.0" % scope,
     "com.jayway.restassured" % "rest-assured" % "2.9.0" % scope,
-    "org.mockito" % "mockito-core" % "1.10.19" % scope
+    "org.mockito" % "mockito-core" % "1.10.19" % scope,
+    "org.scoverage" %% "scalac-scoverage-runtime" % "1.3.1" % scope
   )
 
   // Fixes a transitive dependency clash between wiremock and scalatestplus-play

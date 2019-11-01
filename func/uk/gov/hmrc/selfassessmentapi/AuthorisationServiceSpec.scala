@@ -183,7 +183,6 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
-        .contentTypeIsJson()
     }
 
     "be able to make PUT requests" in {
@@ -239,7 +238,6 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
-        .contentTypeIsJson()
     }
   }
 

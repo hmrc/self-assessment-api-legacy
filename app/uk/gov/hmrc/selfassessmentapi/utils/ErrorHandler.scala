@@ -76,6 +76,6 @@ class ErrorHandler @Inject()(
   }
 
   override protected def onDevServerError(request: RequestHeader, exception: UsefulException): Future[Result] = {
-    onServerError(request, exception)
+    onProdServerError(request,exception)
   }
 }

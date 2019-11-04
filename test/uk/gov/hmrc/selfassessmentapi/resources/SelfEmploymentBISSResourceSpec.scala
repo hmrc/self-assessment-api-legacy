@@ -33,7 +33,8 @@ class SelfEmploymentBISSResourceSpec extends ResourceSpec
     val resource = new SelfEmploymentBISSResource(
       mockAppContext,
       mockAuthorisationService,
-      mockSelfEmploymentBISSService
+      mockSelfEmploymentBISSService,
+      cc
     )
     mockAPIAction(SourceType.SelfEmployments)
   }

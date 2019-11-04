@@ -23,14 +23,14 @@ import play.api.libs.functional.syntax._
 
 case class AccountingPeriod(start: LocalDate, end: LocalDate)
 
-object AccountingPeriod {
+object AccountingPeriod extends JodaReads with JodaWrites {
   implicit val writes: Writes[AccountingPeriod] = Json.writes[AccountingPeriod]
 
   implicit val reads: Reads[AccountingPeriod] = (
     (__ \ "start").read[LocalDate](startDateValidator) and
     (__ \ "end").read[LocalDate]
     )(AccountingPeriod.apply _)
-    .filter(ValidationError("the accounting period 'start' date should come before the 'end' date", ErrorCode.INVALID_ACCOUNTING_PERIOD)
+    .filter(JsonValidationError("the accounting period 'start' date should come before the 'end' date", ErrorCode.INVALID_ACCOUNTING_PERIOD)
     )(accountingPeriodValidator)
 
   private def accountingPeriodValidator(accountingPeriod: AccountingPeriod) = {
@@ -38,7 +38,7 @@ object AccountingPeriod {
   }
 
   private def startDateValidator = Reads.of[LocalDate].filter(
-    ValidationError("the 'start' should be after or equal to 2017-04-01", ErrorCode.START_DATE_INVALID)
+    JsonValidationError("the 'start' should be after or equal to 2017-04-01", ErrorCode.START_DATE_INVALID)
   )(date => {
     val mvpStart = LocalDate.parse("2017-04-01")
     date.isAfter(mvpStart) || date.isEqual(mvpStart)

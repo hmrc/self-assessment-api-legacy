@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import play.api.test.FakeApplication
+import play.api.{Application, Configuration}
+import play.api.inject.guice.GuiceApplicationBuilder
+import uk.gov.hmrc.r2.selfassessmentapi.resources.{Jsons => R2Jsons}
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.Jsons
 import uk.gov.hmrc.support.BaseFunctionalSpec
-import uk.gov.hmrc.r2.selfassessmentapi.resources.{Jsons => R2Jsons}
 
 class AuthorisationServiceSpec extends BaseFunctionalSpec {
 
   private val conf = Map("Test.microservice.services.auth.enabled" -> true)
 
-  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
 
   "a user" should {
 
@@ -182,7 +183,6 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
-        .contentTypeIsJson()
     }
 
     "be able to make PUT requests" in {
@@ -238,7 +238,6 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .to(s"/ni/$nino/self-employments")
         .thenAssertThat()
         .statusIs(201)
-        .contentTypeIsJson()
     }
   }
 

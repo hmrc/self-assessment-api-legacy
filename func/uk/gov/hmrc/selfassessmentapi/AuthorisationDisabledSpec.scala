@@ -16,14 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import play.api.test.FakeApplication
+import play.api.{Application, Configuration}
+import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.selfassessmentapi.resources.Jsons
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AuthorisationDisabledSpec extends BaseFunctionalSpec {
   private val conf = Map("Test.microservice.services.auth.enabled" -> false)
 
-  override lazy val app: FakeApplication = new FakeApplication(additionalConfiguration = conf)
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
 
   "when auth is disabled, any request" should {
     "be allowed" in {

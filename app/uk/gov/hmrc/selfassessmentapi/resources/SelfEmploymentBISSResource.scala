@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import javax.inject.Inject
 import play.api.libs.json.Json.toJson
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.models.Errors.{InvalidRequest, NinoInvalid, NinoNotFound, NoSubmissionDataExists, SelfEmploymentIDInvalid, SelfEmploymentIDNotFound, ServerError, TaxYearInvalid, TaxYearNotFound}
@@ -30,8 +30,9 @@ import scala.concurrent.ExecutionContext
 class SelfEmploymentBISSResource @Inject()(
                                             override val appContext: AppContext,
                                             override val authService: AuthorisationService,
-                                            service: SelfEmploymentBISSService
-                                          )(implicit ec: ExecutionContext) extends BaseResource {
+                                            service: SelfEmploymentBISSService,
+                                            cc: ControllerComponents
+                                          )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def getSummary(nino: Nino, taxYear: TaxYear, selfEmploymentId: String): Action[AnyContent] =
     APIAction(nino, SourceType.SelfEmployments, Some("BISS")).async {

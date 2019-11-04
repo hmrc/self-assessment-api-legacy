@@ -21,11 +21,12 @@ package uk.gov.hmrc.r2.selfassessmentapi.models.properties
 import org.joda.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.libs.json.Json
 import uk.gov.hmrc.r2.selfassessmentapi.models._
 import uk.gov.hmrc.r2.selfassessmentapi.resources.JsonSpec
 
-class PropertiesPeriodSpec extends JsonSpec with GeneratorDrivenPropertyChecks {
+class PropertiesPeriodSpec extends JsonSpec with ScalaCheckDrivenPropertyChecks {
 
 
   "PropertiesPeriod" should {

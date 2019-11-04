@@ -38,8 +38,9 @@ class PropertiesPeriodStatementResource @Inject()(
                                                    override val authService: AuthorisationService,
                                                    statementConnector: PropertiesPeriodStatementConnector,
                                                    auditService: AuditService,
-                                                   resourceHelper: ResourceHelper
-                                                 ) extends BaseResource {
+                                                   resourceHelper: ResourceHelper,
+                                                   cc: ControllerComponents
+                                                 ) extends BaseResource(cc) {
 
 
   def finaliseEndOfPeriodStatement(nino: Nino, start: LocalDate, end: LocalDate): Action[JsValue] =

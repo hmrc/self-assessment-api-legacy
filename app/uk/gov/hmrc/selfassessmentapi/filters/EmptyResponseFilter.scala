@@ -31,7 +31,6 @@ class EmptyResponseFilter @Inject()(implicit val mat: Materializer, ec: Executio
     f(rh) map { res =>
       if ((res.header.status == 201 || res.header.status == 409) && res.body.isKnownEmpty) {
         val headers = res.header.headers
-          .updated("Content-Type", "application/json")
           .updated(emptyHeader, "true")
         res.copy(res.header.copy(headers = headers), HttpEntity.NoEntity)
       } else res

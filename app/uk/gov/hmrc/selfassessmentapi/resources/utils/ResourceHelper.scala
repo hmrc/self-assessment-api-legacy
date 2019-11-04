@@ -31,9 +31,11 @@ import uk.gov.hmrc.selfassessmentapi.resources.validate
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.Response
 import uk.gov.hmrc.selfassessmentapi.services.AuditData
 
+import scala.concurrent.ExecutionContext
+
 class ResourceHelper @Inject()(
                                 appContext: AppContext
-                              ) {
+                              )(implicit ec: ExecutionContext) {
 
   def buildAuditEvent(nino: Nino,
                       id: SourceId,

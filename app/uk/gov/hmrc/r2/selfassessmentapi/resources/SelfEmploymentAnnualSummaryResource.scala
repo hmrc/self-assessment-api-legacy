@@ -28,8 +28,8 @@ import uk.gov.hmrc.r2.selfassessmentapi.models.des.DesErrorCode
 import uk.gov.hmrc.r2.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.SelfEmploymentAnnualSummaryResponse
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
-//import uk.gov.hmrc.r2.selfassessmentapi.services.AuditService.audit
-import play.api.libs.concurrent.Execution.Implicits._
+
+import scala.concurrent.ExecutionContext
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 
@@ -38,8 +38,9 @@ class SelfEmploymentAnnualSummaryResource @Inject()(
                                                      override val appContext: AppContext,
                                                      override val authService: AuthorisationService,
                                                      connector: SelfEmploymentAnnualSummaryConnector,
-                                                     auditService: AuditService
-                                                   ) extends BaseResource {
+                                                     auditService: AuditService,
+                                                     cc: ControllerComponents
+                                                   )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] =
     APIAction(nino, SourceType.SelfEmployments, Some("annual")).async(parse.json) { implicit request =>

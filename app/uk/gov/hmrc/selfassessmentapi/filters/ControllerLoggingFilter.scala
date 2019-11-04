@@ -22,6 +22,10 @@ import play.api.mvc.Filter
 import uk.gov.hmrc.selfassessmentapi.config.ControllerConfiguration
 import uk.gov.hmrc.play.bootstrap.filters.LoggingFilter
 
+import scala.concurrent.ExecutionContext
+
 class ControllerLoggingFilter @Inject()(config: ControllerConfiguration)(implicit val mat: Materializer) extends Filter with LoggingFilter {
   override def controllerNeedsLogging(controllerName: String) = config.controllerParamsConfig(controllerName).needsLogging
+
+  override implicit val ec: ExecutionContext = mat.executionContext
 }

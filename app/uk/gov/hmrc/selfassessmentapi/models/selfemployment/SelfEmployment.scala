@@ -38,7 +38,7 @@ case class SelfEmployment(id: Option[SourceId] = None,
                           businessAddressLineFour: Option[String],
                           businessPostcode: String)
 
-object SelfEmployment {
+object SelfEmployment extends JodaReads with JodaWrites {
   def from(desSelfEmployment: des.selfemployment.SelfEmployment): Option[SelfEmployment] = {
     for {
       accountingType <- AccountingType.fromDes(desSelfEmployment.cashOrAccruals)

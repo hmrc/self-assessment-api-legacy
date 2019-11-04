@@ -29,20 +29,19 @@ import play.api.libs.json._
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.r2.selfassessmentapi.{NinoGenerator, TestApplication}
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.r2.selfassessmentapi.models.{ErrorNotImplemented, Period}
 import uk.gov.hmrc.r2.selfassessmentapi.resources.DesJsons
-import uk.gov.hmrc.r2.selfassessmentapi.TestApplication
-import uk.gov.hmrc.r2.selfassessmentapi.NinoGenerator
 import uk.gov.hmrc.selfassessmentapi.models.TaxYear
-import uk.gov.hmrc.support.{Http, UrlInterpolation}
+import uk.gov.hmrc.support.{HttpComponent, UrlInterpolation}
 
 import scala.collection.mutable
 import scala.concurrent.duration.FiniteDuration
 import scala.util.matching.Regex
 
-trait BaseFunctionalSpec extends TestApplication {
+trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
   protected val nino = NinoGenerator().nextNino()
 
@@ -201,7 +200,7 @@ trait BaseFunctionalSpec extends TestApplication {
               case pattern(arrayName, index) =>
                 js match {
                   case Some(v) =>
-                    if (arrayName.isEmpty) v(index.toInt).toOption else (v \ arrayName) (index.toInt).toOption
+                    if (arrayName.isEmpty) Some(v(index.toInt)) else Some((v \ arrayName) (index.toInt))
                   case None => None
                 }
               case _ => (v \ pathElement).toOption

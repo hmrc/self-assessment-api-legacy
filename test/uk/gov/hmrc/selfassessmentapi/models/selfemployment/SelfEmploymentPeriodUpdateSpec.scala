@@ -17,13 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import org.scalacheck.Gen
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.models.Generators.{genExpenses, genIncomes}
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
-class SelfEmploymentPeriodUpdateSpec extends JsonSpec with GeneratorDrivenPropertyChecks {
+class SelfEmploymentPeriodUpdateSpec extends JsonSpec with ScalaCheckDrivenPropertyChecks {
 
   "SelfEmploymentPeriodUpdate" should {
     "round trip" in forAll(genSelfEmploymentPeriodUpdate())(roundTripJson(_))

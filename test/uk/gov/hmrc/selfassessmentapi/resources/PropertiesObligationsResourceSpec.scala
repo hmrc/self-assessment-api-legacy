@@ -23,6 +23,7 @@ import uk.gov.hmrc.selfassessmentapi.mocks.services.MockAuditService
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
 import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PropertiesObligationsResourceSpec extends ResourceSpec
@@ -33,7 +34,8 @@ class PropertiesObligationsResourceSpec extends ResourceSpec
       mockAppContext,
       mockAuthorisationService,
       mockObligationsConnector,
-      mockAuditService
+      mockAuditService,
+      cc
     )
     mockAPIAction(SourceType.Properties)
   }

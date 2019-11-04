@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, OptionValues, WordSpec}
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.mvc.ControllerComponents
+import play.api.test.Helpers.stubControllerComponents
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, ResultExtractors}
 import uk.gov.hmrc.r2.selfassessmentapi.TestUtils
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.auth.MockAuthorisationService
@@ -39,7 +41,7 @@ trait ResourceSpec extends WordSpec
   with TestUtils
   with MockAppContext
   with MockAuthorisationService
-  with OneAppPerSuite {
+  with GuiceOneAppPerSuite {
 
   val nino = generateNino
 
@@ -54,4 +56,6 @@ trait ResourceSpec extends WordSpec
     // helper function to create a request when parse.empty is used in the resource
     def ignoreBody: FakeRequest[Unit] = req.withBody[Unit](())
   }
+
+  lazy val cc: ControllerComponents = stubControllerComponents()
 }

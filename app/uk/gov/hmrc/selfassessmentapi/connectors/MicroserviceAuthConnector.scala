@@ -19,17 +19,16 @@ package uk.gov.hmrc.selfassessmentapi.connectors
 import javax.inject.Inject
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.{AuthConnector, PlayAuthConnector}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import uk.gov.hmrc.play.config.ServicesConfig
 
 class MicroserviceAuthConnector @Inject()(
+                                           servicesConfig: ServicesConfig,
                                            configuration: Configuration,
-                                           env: Environment,
+                                           environment: Environment,
                                            override val http: DefaultHttpClient
-                                         ) extends AuthConnector with PlayAuthConnector with ServicesConfig {
-  override val mode = env.mode
-  override val runModeConfiguration: Configuration = configuration
-  override val serviceUrl: String = baseUrl("auth")
-  val authBaseUrl: String = baseUrl("auth")
+                                         ) extends AuthConnector with PlayAuthConnector  {
+  override val serviceUrl: String = servicesConfig.baseUrl("auth")
+  val authBaseUrl: String = servicesConfig.baseUrl("auth")
 
 }

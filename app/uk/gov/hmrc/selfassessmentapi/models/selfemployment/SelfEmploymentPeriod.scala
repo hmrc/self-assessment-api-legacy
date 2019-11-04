@@ -104,15 +104,15 @@ object SelfEmploymentPeriod extends PeriodValidator[SelfEmploymentPeriod] {
       (__ \ "expenses").readNullable[Expenses] and
       (__ \ "consolidatedExpenses").readNullable[BigDecimal](nonNegativeAmountValidator)
   )(SelfEmploymentPeriod.apply _)
-    .filter(ValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
+    .filter(JsonValidationError(s"Both expenses and consolidatedExpenses elements cannot be present at the same time",
       BOTH_EXPENSES_SUPPLIED))(_.singleExpensesTypeSpecified)
     .validate(
       Seq(Validation(JsPath(),
                      periodDateValidator,
-                     ValidationError("The period 'to' date is before the period 'from' date or the submission period already exists.", INVALID_PERIOD)),
+                     JsonValidationError("The period 'to' date is before the period 'from' date or the submission period already exists.", INVALID_PERIOD)),
           Validation(JsPath(),
                      financialsValidator,
-                     ValidationError("No incomes and expenses are supplied", NO_INCOMES_AND_EXPENSES))))
+                     JsonValidationError("No incomes and expenses are supplied", NO_INCOMES_AND_EXPENSES))))
 
 
 }

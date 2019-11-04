@@ -18,9 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import cats.implicits._
 import javax.inject.Inject
-import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.PropertiesConnector
@@ -28,12 +27,15 @@ import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.properties.NewProperties
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
+import scala.concurrent.ExecutionContext
+
 
 class PropertiesResource @Inject()(
                                     override val appContext: AppContext,
                                     override val authService: AuthorisationService,
-                                    val propertiesConnector: PropertiesConnector
-                                  ) extends BaseResource {
+                                    val propertiesConnector: PropertiesConnector,
+                                    cc: ControllerComponents
+                                  )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def create(nino: Nino): Action[JsValue] =
     APIAction(nino, SourceType.Properties).async(parse.json) { implicit request => {

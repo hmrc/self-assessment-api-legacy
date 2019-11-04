@@ -22,7 +22,7 @@ import play.api.{Configuration, Environment}
 
 class GraphiteMetricsModule2 extends Module  {
   def bindings(environment: Environment, configuration: Configuration) = {
-    if (configuration.getBoolean("metrics.enabled").getOrElse(true)) {
+    if (configuration.getOptional[Boolean]("metrics.enabled").getOrElse(true)) {
       Seq(
         bind[MetricsFilter].to[MetricsFilterImpl].eagerly,
         bind[Metrics].to[MetricsImpl].eagerly

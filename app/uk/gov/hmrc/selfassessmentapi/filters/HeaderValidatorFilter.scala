@@ -20,7 +20,7 @@ import akka.stream.Materializer
 import javax.inject.Inject
 import play.api.libs.json.Json.toJson
 import play.api.mvc._
-import play.routing.Router.Tags
+import play.api.routing.Router
 import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, HeaderValidator}
 import uk.gov.hmrc.selfassessmentapi.config.ControllerConfiguration
 
@@ -30,7 +30,7 @@ class HeaderValidatorFilter @Inject()(implicit val mat: Materializer, controller
 
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
 
-    val controller = rh.tags.get(Tags.ROUTE_CONTROLLER)
+    val controller = rh.attrs.get(Router.Attrs.HandlerDef).map(_.controller)
 
     val needsHeaderValidation =
       controller.forall(

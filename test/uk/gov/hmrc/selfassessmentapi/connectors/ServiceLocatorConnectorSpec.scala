@@ -18,13 +18,14 @@ package uk.gov.hmrc.selfassessmentapi.connectors
 
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.api.domain.Registration
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpPost, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpPost, HttpResponse}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ServiceLocatorConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures {

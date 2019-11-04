@@ -24,6 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockSelfEmploymentPeriodCo
 import uk.gov.hmrc.selfassessmentapi.mocks.services.MockAuditService
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SelfEmploymentPeriodResourceSpec extends ResourceSpec
@@ -35,7 +36,8 @@ class SelfEmploymentPeriodResourceSpec extends ResourceSpec
       mockAppContext,
       mockAuthorisationService,
       mockSelfEmploymentPeriodConnector,
-      mockAuditService
+      mockAuditService,
+      cc
     )
     mockAPIAction(SourceType.SelfEmployments)
   }

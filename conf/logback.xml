@@ -48,6 +48,8 @@
     <logger name="reactivemongo" level="ERROR"/>
     <logger name="reactivemongo-akka" level="ERROR"/>
 
+    <logger name="reactivemongo" level="WARN"/>
+
     <root level="INFO">
         <appender-ref ref="ASYNC_FILE"/>
         <appender-ref ref="ASYNC_STDOUT"/>

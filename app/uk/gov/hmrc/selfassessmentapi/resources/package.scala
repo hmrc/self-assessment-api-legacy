@@ -20,16 +20,9 @@ import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results.{BadRequest, Forbidden, InternalServerError}
-import uk.gov.hmrc.selfassessmentapi.models.{
-  PathValidationErrorResult,
-  AuthorisationErrorResult,
-  ErrorResult,
-  Errors,
-  GenericErrorResult,
-  ValidationErrorResult
-}
-import play.api.libs.concurrent.Execution.Implicits._
-import scala.concurrent.Future
+import uk.gov.hmrc.selfassessmentapi.models.{AuthorisationErrorResult, ErrorResult, Errors, GenericErrorResult, PathValidationErrorResult, ValidationErrorResult}
+
+import scala.concurrent.{ExecutionContext, Future}
 import cats.data.EitherT
 import cats.implicits._
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.Response
@@ -54,19 +47,19 @@ package object resources {
 
   object BusinessResult {
 
-    def apply[T](eventuallyErrorOrResult: Future[Either[ErrorResult, T]]): BusinessResult[T] =
+    def apply[T](eventuallyErrorOrResult: Future[Either[ErrorResult, T]])(implicit ec: ExecutionContext): BusinessResult[T] =
       new EitherT(eventuallyErrorOrResult)
 
-    def apply[T](errorOrResult: Either[ErrorResult, T]): BusinessResult[T] =
+    def apply[T](errorOrResult: Either[ErrorResult, T])(implicit ec: ExecutionContext): BusinessResult[T] =
       EitherT.fromEither(errorOrResult)
 
-    def success[T](value: T): BusinessResult[T] = EitherT.fromEither(Right(value))
+    def success[T](value: T)(implicit ec: ExecutionContext): BusinessResult[T] = EitherT.fromEither(Right(value))
 
-    def failure[T](error: ErrorResult): BusinessResult[T] = EitherT.fromEither(Left(error))
+    def failure[T](error: ErrorResult)(implicit ec: ExecutionContext): BusinessResult[T] = EitherT.fromEither(Left(error))
 
   }
 
-  implicit class DesBusinessResult[R <: Response](result: BusinessResult[R]) {
+  implicit class DesBusinessResult[R <: Response](result: BusinessResult[R])(implicit ec: ExecutionContext) {
 
     def onDesSuccess(handleSuccess: R => Result): Future[Result] = {
       for {
@@ -79,29 +72,29 @@ package object resources {
 
   }
 
-  def validateJson[T](json: JsValue)(implicit reads: Reads[T]): BusinessResult[T] =
+  def validateJson[T](json: JsValue)(implicit reads: Reads[T], ec: ExecutionContext): BusinessResult[T] =
     BusinessResult {
       for {
         errors <- json.validate[T].asEither.left
       } yield ValidationErrorResult(errors)
     }
 
-  def validate[T](value: T)(validate: PartialFunction[T, Errors.Error]): BusinessResult[T] =
+  def validate[T](value: T)(validate: PartialFunction[T, Errors.Error])(implicit ec: ExecutionContext): BusinessResult[T] =
     if (validate.isDefinedAt(value)) BusinessResult.failure(PathValidationErrorResult(validate(value)))
     else BusinessResult.success(value)
 
-  def authorise[T](value: T)(auth: PartialFunction[T, Errors.Error]): BusinessResult[T] =
+  def authorise[T](value: T)(auth: PartialFunction[T, Errors.Error])(implicit ec: ExecutionContext): BusinessResult[T] =
     if (auth.isDefinedAt(value)) BusinessResult.failure(AuthorisationErrorResult(Errors.businessError(auth(value))))
     else BusinessResult.success(value)
 
-  def execute[T](f: Unit => Future[T]): BusinessResult[T] =
+  def execute[T](f: Unit => Future[T])(implicit ec: ExecutionContext): BusinessResult[T] =
     BusinessResult {
       for {
         result <- f(())
       } yield Right(result)
     }
 
-  def validate[T, R](jsValue: JsValue)(f: T => Future[R])(implicit reads: Reads[T]): Future[Either[ErrorResult, R]] =
+  def validate[T, R](jsValue: JsValue)(f: T => Future[R])(implicit reads: Reads[T], ec: ExecutionContext): Future[Either[ErrorResult, R]] =
     jsValue.validate[T] match {
       case JsSuccess(payload, _) => f(payload).map(Right(_))
       case JsError(errors) => Future.successful(Left(ValidationErrorResult(errors)))

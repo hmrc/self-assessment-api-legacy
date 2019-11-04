@@ -17,12 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import org.joda.time.LocalDate
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.{JodaReads, JodaWrites, Json, Writes}
 import uk.gov.hmrc.selfassessmentapi.models.SourceId
 
 case class Eops(from: LocalDate, to: LocalDate, due: LocalDate, status: String)
 
-object Eops {
+object Eops extends JodaReads with JodaWrites {
   implicit val writes: Writes[Eops] = Json.writes[Eops]
 }
 

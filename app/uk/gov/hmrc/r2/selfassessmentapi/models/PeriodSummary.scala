@@ -18,11 +18,11 @@ package uk.gov.hmrc.r2.selfassessmentapi.models
 
 import com.github.nscala_time.time.OrderingImplicits
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{JodaReads, JodaWrites, Json}
 
 case class PeriodSummary(id: PeriodId, from: LocalDate, to: LocalDate) extends Period
 
-object PeriodSummary {
+object PeriodSummary extends JodaReads with JodaWrites {
   private implicit val localDateOrdering = OrderingImplicits.LocalDateOrdering
 
   implicit val ordering: Ordering[PeriodSummary] = Ordering.by(_.from)

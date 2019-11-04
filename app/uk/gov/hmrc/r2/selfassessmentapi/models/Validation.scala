@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.models
 
-import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsError, JsPath, JsSuccess, Reads}
+import play.api.libs.json._
 
-case class Validation[T](path: JsPath, validator: T => Boolean, validationError: ValidationError)
+case class Validation[T](path: JsPath, validator: T => Boolean, validationError: JsonValidationError)
 
 object Validation {
   implicit class ErrorAccumulatingValidator[T](reads: Reads[T]) {
     def validate(validations: Seq[Validation[T]]): Reads[T] =
       reads.flatMap { t =>
         Reads[T] { _ =>
-          val errors = validations.foldLeft(Seq.empty[(JsPath, Seq[ValidationError])]) {
+          val errors = validations.foldLeft(Seq.empty[(JsPath, Seq[JsonValidationError])]) {
             case (errs, Validation(path, validator, err)) =>
               if (validator(t)) errs else errs :+ path -> Seq(err)
           }

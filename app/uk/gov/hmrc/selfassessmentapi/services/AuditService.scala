@@ -21,6 +21,7 @@ import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logger
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.Request
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Failure
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -29,10 +30,8 @@ import uk.gov.hmrc.selfassessmentapi.models.audit.{AuditDetail, ExtendedAuditDet
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.selfassessmentapi.connectors.MicroserviceAuditConnector
 
-class AuditService @Inject()(auditConnector: MicroserviceAuditConnector) {
+class AuditService @Inject()(auditConnector: AuditConnector) {
 
   val logger: Logger = Logger(this.getClass)
 

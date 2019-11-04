@@ -22,7 +22,7 @@ import play.api.libs.functional.syntax._
 
 case class PeriodSummary(from: LocalDate, to: LocalDate, transactionReference: String)
 
-object PeriodSummary {
+object PeriodSummary extends JodaReads with JodaWrites {
   implicit val reads: Reads[PeriodSummary] =
     ((__ \ "from").read[LocalDate] and
       (__ \ "to").read[LocalDate] and

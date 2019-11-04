@@ -17,29 +17,28 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import javax.inject.Inject
-import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, Request}
+import play.api.mvc.{Action, ControllerComponents, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.selfassessmentapi.services.AuditService
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.TaxCalculationConnector
 import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
 import uk.gov.hmrc.selfassessmentapi.models.audit.TaxCalculationTrigger
 import uk.gov.hmrc.selfassessmentapi.models.calculation.CalculationRequest
-import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceId, SourceType}
+import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType}
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.TaxCalculationResponse
-import uk.gov.hmrc.selfassessmentapi.services.{AuditData, AuthorisationService}
+import uk.gov.hmrc.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 class TaxCalculationResource @Inject()(
                                         override val appContext: AppContext,
                                         override val authService: AuthorisationService,
                                         connector: TaxCalculationConnector,
-                                        auditService: AuditService
-                                      ) extends BaseResource {
+                                        auditService: AuditService,
+                                        cc: ControllerComponents
+                                      )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   private val cannedEtaResponse =
     s"""

@@ -1012,6 +1012,17 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
           givens
         }
 
+        def periodWithNegativeBadDebtsWillBeReturnedFor(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
+          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(DesJsons.SelfEmployment.Period.withNegativeBadDebts())))
+
+          givens
+        }
+
         def periodWillBeUpdatedFor(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
           stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries?from=$from&to=$to"))
             .willReturn(

@@ -265,6 +265,84 @@ object DesJsons {
          """.stripMargin
       }
 
+      def withNegativeBadDebts(id: String = "abc", from: String = "2017-04-05", to: String = "2018-04-04"): String = {
+        s"""
+           |{
+           |   "id": "$id",
+           |   "from": "$from",
+           |   "to": "$to",
+           |   "financials": {
+           |      "incomes": {
+           |         "turnover": 200.00,
+           |         "other": 200.00
+           |      },
+           |      "deductions": {
+           |         "costOfGoods": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "constructionIndustryScheme": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "staffCosts": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "travelCosts": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "premisesRunningCosts": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "maintenanceCosts": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "adminCosts": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "advertisingCosts": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "interest": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "financialCharges": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "badDebt": {
+           |            "amount": -200.00,
+           |            "disallowableAmount": -200.00
+           |         },
+           |         "professionalFees": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "depreciation": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         },
+           |         "businessEntertainmentCosts": {
+           |           "amount": 200.00,
+           |           "disallowableAmount": 200.00
+           |         },
+           |         "other": {
+           |            "amount": 200.00,
+           |            "disallowableAmount": 200.00
+           |         }
+           |      }
+           |   }
+           |}
+         """.stripMargin
+      }
+
       def periods: String = {
         s"""
            |{

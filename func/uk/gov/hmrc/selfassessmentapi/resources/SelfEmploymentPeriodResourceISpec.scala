@@ -50,6 +50,33 @@ class SelfEmploymentPeriodResourceISpec extends BaseFunctionalSpec {
           s"/self-assessment/ni/$nino/self-employments/\\w+/periods/2017-04-06_2017-07-04".r)
     }
 
+    "return code 201 containing a location header with bad debts expenses when creating a period" in {
+      val period = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"), badDebt = (-10.10, -10.10))
+
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .des()
+        .selfEmployment
+        .willBeCreatedFor(nino)
+        .des()
+        .selfEmployment
+        .periodWillBeCreatedFor(nino)
+        .when()
+        .post(Jsons.SelfEmployment())
+        .to(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(201)
+        .when()
+        .post(period)
+        .to(s"%sourceLocation%/periods")
+        .thenAssertThat()
+        .statusIs(201)
+        .responseContainsHeader("Location",
+          s"/self-assessment/ni/$nino/self-employments/\\w+/periods/2017-04-06_2017-07-04".r)
+    }
+
+
     "return code 201 containing a location header containing from date and to date when creating a period with consolidated expenses" in {
 
       val period = Jsons.SelfEmployment.periodWithSimplifiedExpenses(fromDate = Some("2017-04-06"),
@@ -351,6 +378,27 @@ class SelfEmploymentPeriodResourceISpec extends BaseFunctionalSpec {
         .statusIs(204)
     }
 
+    "return code 204 when updating a period that exists with bad debts" in {
+      val updatePeriod = Jsons.SelfEmployment.period(turnover = 200.25,
+        otherIncome = 100.25,
+        costOfGoodsBought = (200.25, 50.25),
+        cisPaymentsToSubcontractors = (100.25, 55.25),
+        badDebt = (-10.10, -10.10)
+      )
+
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .des()
+        .selfEmployment
+        .periodWillBeUpdatedFor(nino, from = "2017-04-05", to = "2018-04-04")
+        .when()
+        .put(updatePeriod)
+        .at(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
+        .thenAssertThat()
+        .statusIs(204)
+    }
+
     "return code 400 when attempting to amend a period where the payload contains both the 'expenses' and 'consolidatedExpenses'" in {
 
       val updatePeriod = Jsons.SelfEmployment.period(turnover = 200.25,
@@ -477,6 +525,45 @@ class SelfEmploymentPeriodResourceISpec extends BaseFunctionalSpec {
         .des()
         .selfEmployment
         .periodWillBeReturnedFor(nino, from = "2017-04-05", to = "2018-04-04")
+        .when()
+        .get(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
+        .thenAssertThat()
+        .statusIs(200)
+        .contentTypeIsJson()
+        .bodyIsLike(expectedBody.toString)
+        .bodyDoesNotHavePath[PeriodId]("id")
+    }
+
+    "return code 200 when retrieving a period that exists with negative bad debts" in {
+      val expectedBody = Jsons.SelfEmployment.period(
+        fromDate = Some("2017-04-05"),
+        toDate = Some("2018-04-04"),
+        turnover = 200,
+        otherIncome = 200,
+        costOfGoodsBought = (200, 200),
+        cisPaymentsToSubcontractors = (200, 200),
+        staffCosts = (200, 200),
+        travelCosts = (200, 200),
+        premisesRunningCosts = (200, 200),
+        maintenanceCosts = (200, 200),
+        adminCosts = (200, 200),
+        advertisingCosts = (200, 200),
+        interest = (200, 200),
+        financialCharges = (200, 200),
+        badDebt = (-200, -200),
+        professionalFees = (200, 200),
+        depreciation = (200, 200),
+        otherExpenses = (200, 200),
+        businessEntertainmentCosts = (200, 200)
+      )
+
+
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsFullyAuthorisedForTheResource
+        .des()
+        .selfEmployment
+        .periodWithNegativeBadDebtsWillBeReturnedFor(nino, from = "2017-04-05", to = "2018-04-04")
         .when()
         .get(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
         .thenAssertThat()

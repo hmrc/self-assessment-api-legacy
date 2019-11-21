@@ -33,7 +33,7 @@ class FinancialsSpec extends JsonSpec {
             depreciation = Some(ExpenseNegativeOrPositive(10.10, Some(10.10))),
             costOfGoodsBought = Some(ExpenseNegativeOrPositive(10.10, Some(10.10))),
             professionalFees = Some(ExpenseProfessionalFees(10.10, Some(10.10))),
-            badDebt = Some(Expense(10.10, Some(10.10))),
+            badDebt = Some(ExpenseNegativeOrPositive(10.10, Some(10.10))),
             adminCosts = Some(Expense(10.10, Some(10.10))),
             advertisingCosts = Some(Expense(10.10, Some(10.10))),
             businessEntertainmentCosts = Some(Expense(10.10, Some(10.10))),

@@ -24,7 +24,10 @@ class ExpensesSpec extends JsonSpec {
   "Expenses" should {
 
     "round trip in" in
-      roundTripJson(Expenses(depreciation = Some(ExpenseNegativeOrPositive(200, Some(200))), badDebt = Some(Expense(200, Some(100)))))
+      roundTripJson(Expenses(depreciation = Some(ExpenseNegativeOrPositive(200, Some(200))), badDebt = Some(ExpenseNegativeOrPositive(200, Some(100)))))
+
+    "round trip with negative badDebt in" in
+      roundTripJson(Expenses(depreciation = Some(ExpenseNegativeOrPositive(200, Some(200))), badDebt = Some(ExpenseNegativeOrPositive(-200, Some(-100)))))
 
     "accept Expenses with depreciation expense where disallowable amount is not defined" in
       roundTripJson(Expenses(depreciation = Some(ExpenseNegativeOrPositive(200, None))))
@@ -42,7 +45,7 @@ class ExpensesSpec extends JsonSpec {
         businessEntertainmentCosts = Some(Expense(200, Some(100))),
         interest = Some(ExpenseNegativeOrPositive(200, Some(200))),
         financialCharges = Some(ExpenseNegativeOrPositive(200, Some(200))),
-        badDebt = Some(Expense(200, Some(100))),
+        badDebt = Some(ExpenseNegativeOrPositive(200, Some(100))),
         professionalFees = Some(ExpenseProfessionalFees(200, Some(200))),
         depreciation = Some(ExpenseNegativeOrPositive(200, Some(200))),
         other = Some(Expense(200, Some(100)))
@@ -61,7 +64,7 @@ class ExpensesSpec extends JsonSpec {
         businessEntertainmentCosts = Some(Expense(200, None)),
         interest = Some(ExpenseNegativeOrPositive(200, None)),
         financialCharges = Some(ExpenseNegativeOrPositive(200, None)),
-        badDebt = Some(Expense(200, None)),
+        badDebt = Some(ExpenseNegativeOrPositive(200, None)),
         professionalFees = Some(ExpenseProfessionalFees(200, None)),
         depreciation = Some(ExpenseNegativeOrPositive(200, None)),
         other = Some(Expense(200, None))
@@ -80,7 +83,7 @@ class ExpensesSpec extends JsonSpec {
       businessEntertainmentCosts = Some(Expense(200, None)),
       interest = Some(ExpenseNegativeOrPositive(200, None)),
       financialCharges = Some(ExpenseNegativeOrPositive(200, None)),
-      badDebt = Some(Expense(200, None)),
+      badDebt = Some(ExpenseNegativeOrPositive(200, None)),
       professionalFees = Some(ExpenseProfessionalFees(200, None)),
       depreciation = Some(ExpenseNegativeOrPositive(200, None)),
       other = Some(Expense(200, None))), "/costOfGoodsBought/amount", ErrorCode.INVALID_MONETARY_AMOUNT)

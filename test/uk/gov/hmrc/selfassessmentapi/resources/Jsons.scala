@@ -654,6 +654,76 @@ object Jsons {
        """.stripMargin)
     }
 
+    def periodWithNegativeBadDebtsExpenses(fromDate: Option[String] = None,
+               toDate: Option[String] = None,
+               turnover: BigDecimal = 10.10,
+               otherIncome: BigDecimal = 10.10,
+               costOfGoodsBought: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               cisPaymentsToSubcontractors: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               staffCosts: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               travelCosts: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               premisesRunningCosts: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               maintenanceCosts: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               adminCosts: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               advertisingCosts: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               interest: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               financialCharges: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               badDebt: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               professionalFees: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               businessEntertainmentCosts: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               depreciation: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               otherExpenses: (BigDecimal, BigDecimal) = (10.10, 10.10),
+               consolidatedExpenses: Option[BigDecimal] = None): JsValue = {
+
+      val (from, to) = fromToDates(fromDate, toDate)
+
+      Json.parse(s"""
+                    |{
+                    |  $from
+                    |  $to
+                    |  "incomes": {
+                    |    "turnover": { "amount": $turnover },
+                    |    "other": { "amount": $otherIncome }
+                    |  },
+                    |  "expenses": {
+                    |    "cisPaymentsToSubcontractors": {
+                    |      "amount": ${cisPaymentsToSubcontractors._1},
+                    |      "disallowableAmount": ${cisPaymentsToSubcontractors._2}
+                    |    },
+                    |    "depreciation": {
+                    |      "amount": ${depreciation._1},
+                    |      "disallowableAmount": ${depreciation._2}
+                    |    },
+                    |    "costOfGoodsBought": {
+                    |      "amount": ${costOfGoodsBought._1},
+                    |      "disallowableAmount": ${costOfGoodsBought._2}
+                    |    },
+                    |    "professionalFees": {
+                    |      "amount": ${professionalFees._1},
+                    |      "disallowableAmount": ${professionalFees._2}
+                    |    },
+                    |    "businessEntertainmentCosts": {
+                    |      "amount": ${businessEntertainmentCosts._1},
+                    |      "disallowableAmount": ${businessEntertainmentCosts._2}
+                    |    },
+                    |    "staffCosts": { "amount": ${staffCosts._1}, "disallowableAmount": ${staffCosts._2} },
+                    |    "travelCosts": { "amount": ${travelCosts._1}, "disallowableAmount": ${travelCosts._2} },
+                    |    "premisesRunningCosts": { "amount": ${premisesRunningCosts._1}, "disallowableAmount": ${premisesRunningCosts._2} },
+                    |    "maintenanceCosts": { "amount": ${maintenanceCosts._1}, "disallowableAmount": ${maintenanceCosts._2} },
+                    |    "adminCosts": { "amount": ${adminCosts._1}, "disallowableAmount": ${adminCosts._2} },
+                    |    "advertisingCosts": { "amount": ${advertisingCosts._1}, "disallowableAmount": ${advertisingCosts._2} },
+                    |    "interest": { "amount": ${interest._1}, "disallowableAmount": ${interest._2} },
+                    |    "financialCharges": { "amount": ${financialCharges._1}, "disallowableAmount": ${financialCharges._2} },
+                    |    "badDebt": { "amount": ${badDebt._1}, "disallowableAmount": ${badDebt._2} },
+                    |    "other": { "amount": ${otherExpenses._1}, "disallowableAmount": ${otherExpenses._2} }
+                    |  }
+                    |
+           |  ${consolidatedExpenses.fold("")(se => s""","consolidatedExpenses": $se""")}
+                    |
+           |}
+       """.stripMargin)
+    }
+
   }
 
   object Dividends {

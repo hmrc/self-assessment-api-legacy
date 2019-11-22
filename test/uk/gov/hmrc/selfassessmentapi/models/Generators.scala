@@ -63,7 +63,7 @@ object Generators {
       advertisingCosts <- Gen.option(genExpense())
       interest <- Gen.option(genExpenseNegativeOrPositive())
       financialCharges <- Gen.option(genExpenseNegativeOrPositive())
-      badDebt <- Gen.option(genExpense())
+      badDebt <- Gen.option(genExpenseNegativeOrPositive())
       professionalFees <- Gen.option(genExpenseProfessionalFees())
       depreciation <- Gen.option(genExpenseNegativeOrPositive(depreciation = true))
       other <- Gen.option(genExpense())

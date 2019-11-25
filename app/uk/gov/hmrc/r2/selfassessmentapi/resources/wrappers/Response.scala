@@ -37,8 +37,10 @@ trait Response {
 
   val status: Int = underlying.status
 
-  private def logResponse(): Unit =
-    logger.warn(s"DES error occurred with status code ${underlying.status} and body ${underlying.body}")
+  private def logResponse(): Unit = {
+    val correlationId: String = underlying.header("CorrelationId").getOrElse("NO_ID_RETURNED")
+    logger.warn(s"DES error occurred with Correlation ID : $correlationId, status code ${underlying.status} and body ${underlying.body}. ")
+  }
 
   def filter[A](pf: PartialFunction[Int, Result])(implicit request: AuthRequest[A]): Result =
     (status / 100, request.authContext) match {
@@ -85,21 +87,21 @@ trait Response {
     case 400 if errorCodeIsOneOf(INVALID_NINO, INVALID_IDVALUE)    => BadRequest(toJson(Errors.NinoInvalid))
     case 400 if errorCodeIsOneOf(INVALID_PAYLOAD) => BadRequest(toJson(Errors.InvalidRequest))
     case 400
-        if errorCodeIsOneOf(NOT_FOUND_NINO,
-                            INVALID_BUSINESSID,
-                            INVALID_INCOME_SOURCE,
-                            INVALID_INCOMESOURCEID,
-                            INVALID_INCOME_SOURCEID,
-                            INVALID_TYPE,
-                            INVALID_IDENTIFIER,
-                            INVALID_CALCID) =>
+      if errorCodeIsOneOf(NOT_FOUND_NINO,
+        INVALID_BUSINESSID,
+        INVALID_INCOME_SOURCE,
+        INVALID_INCOMESOURCEID,
+        INVALID_INCOME_SOURCEID,
+        INVALID_TYPE,
+        INVALID_IDENTIFIER,
+        INVALID_CALCID) =>
       NotFound
     case 400
-        if errorCodeIsOneOf(INVALID_ORIGINATOR_ID,
-                            INVALID_DATE_FROM,
-                            INVALID_DATE_TO,
-                            INVALID_STATUS,
-                            INVALID_TAX_YEAR) =>
+      if errorCodeIsOneOf(INVALID_ORIGINATOR_ID,
+        INVALID_DATE_FROM,
+        INVALID_DATE_TO,
+        INVALID_STATUS,
+        INVALID_TAX_YEAR) =>
       InternalServerError(toJson(Errors.InternalServerError))
     case 403 if errorCodeIsOneOf(NOT_UNDER_16) => Forbidden(toJson(Errors.businessError(Errors.NotUnder16)))
     case 403 if errorCodeIsOneOf(NOT_OVER_STATE_PENSION) => Forbidden(toJson(Errors.businessError(Errors.NotOverStatePension)))
@@ -119,7 +121,7 @@ trait Response {
     case 409 if errorCodeIsOneOf(NOT_ALIGN_PERIOD) => Forbidden(toJson(Errors.businessError(Errors.MisalignedPeriod)))
     case 409 if errorCodeIsOneOf(NOT_ALLOWED_SIMPLIFIED_EXPENSES) => Forbidden(toJson(Errors.businessError(Errors.NotAllowedConsolidatedExpenses)))
     case 409
-        if isMultiDesError && errorCodesContainOneOf(NOT_CONTIGUOUS_PERIOD, OVERLAPS_IN_PERIOD, NOT_ALIGN_PERIOD) =>
+      if isMultiDesError && errorCodesContainOneOf(NOT_CONTIGUOUS_PERIOD, OVERLAPS_IN_PERIOD, NOT_ALIGN_PERIOD) =>
       val apiErrors = desErrorsToApiErrors(json.asOpt[MultiDesError].get.failures)
       Forbidden(toJson(Errors.businessError(apiErrors)))
     case 500 if errorCodeIsOneOf(SERVER_ERROR)        => InternalServerError(toJson(Errors.InternalServerError))

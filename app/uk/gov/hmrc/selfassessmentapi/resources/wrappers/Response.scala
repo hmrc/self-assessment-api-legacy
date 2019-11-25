@@ -37,8 +37,10 @@ trait Response {
 
   val status: Int = underlying.status
 
-  private def logResponse(): Unit =
-    logger.warn(s"DES error occurred with status code ${underlying.status} and body ${underlying.body}")
+  private def logResponse(): Unit = {
+    val correlationId: String = underlying.header("CorrelationId").getOrElse("NO_ID_RETURNED")
+    logger.warn(s"DES error occurred with Correlation ID : $correlationId, status code ${underlying.status} and body ${underlying.body}. ")
+  }
 
   def filter[A](pf: PartialFunction[Int, Result])(implicit request: AuthRequest[A]): Result =
     (status / 100, request.authContext) match {

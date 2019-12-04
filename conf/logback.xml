@@ -45,10 +45,9 @@
     <logger name="uk.gov" level="INFO"/>
 
     <logger name="application" level="WARN"/>
-    <logger name="reactivemongo" level="ERROR"/>
-    <logger name="reactivemongo-akka" level="ERROR"/>
+    <logger name="reactivemongo-akka.actor" level="OFF"/>
 
-    <logger name="reactivemongo" level="WARN"/>
+    <logger name="reactivemongo" level="OFF"/>
 
     <root level="INFO">
         <appender-ref ref="ASYNC_FILE"/>

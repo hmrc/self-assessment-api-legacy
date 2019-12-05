@@ -21,6 +21,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
+import uk.gov.hmrc.selfassessmentapi.domain.EmptyJsonBody
 import uk.gov.hmrc.selfassessmentapi.models.TaxYear
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.TaxCalculationResponse
 
@@ -32,8 +33,11 @@ class TaxCalculationConnector @Inject()(
                                        ) extends BaseConnector {
   private lazy val baseUrl: String = appContext.desUrl
 
-  def requestCalculation(nino: Nino, taxYear: TaxYear)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TaxCalculationResponse] =
-    httpEmptyPost[TaxCalculationResponse](
-      baseUrl + s"/income-tax/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation",
-      TaxCalculationResponse)
+  def requestCalculation(nino: Nino, taxYear: TaxYear)
+                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TaxCalculationResponse] =
+
+  httpPost[EmptyJsonBody, TaxCalculationResponse](
+    baseUrl + s"/income-tax/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation",
+    EmptyJsonBody,
+    TaxCalculationResponse)
 }

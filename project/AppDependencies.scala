@@ -21,12 +21,12 @@ import sbt._
 object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.20.0-play-26",
+    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.22.0-play-26",
     ws exclude("org.apache.httpcomponents", "httpclient") exclude("org.apache.httpcomponents", "httpcore"),
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.1.0",
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.3.0",
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
     "com.typesafe.play" %% "play-json-joda" % "2.6.0",
-    "uk.gov.hmrc" %% "play-hmrc-api" % "3.2.0",
+    "uk.gov.hmrc" %% "play-hmrc-api" % "3.6.0-play-26",
     "org.typelevel" %% "cats-core" % "1.6.1"
   )
 

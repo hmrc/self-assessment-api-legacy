@@ -25,8 +25,13 @@ import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, HeaderValidator}
 import uk.gov.hmrc.selfassessmentapi.config.ControllerConfiguration
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
-class HeaderValidatorFilter @Inject()(implicit val mat: Materializer, controllerConfiguration: ControllerConfiguration) extends Filter with HeaderValidator {
+class HeaderValidatorFilter @Inject()(implicit val mat: Materializer, controllerConfiguration: ControllerConfiguration)
+  extends Filter with HeaderValidator with Results {
+
+  override protected def executionContext: ExecutionContext = ???
+  override def parser: BodyParser[AnyContent] = ???
 
   def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
 
@@ -43,5 +48,4 @@ class HeaderValidatorFilter @Inject()(implicit val mat: Materializer, controller
     else Future.successful(Status(ErrorAcceptHeaderInvalid.httpStatusCode)(toJson(ErrorAcceptHeaderInvalid)))
 
   }
-
 }

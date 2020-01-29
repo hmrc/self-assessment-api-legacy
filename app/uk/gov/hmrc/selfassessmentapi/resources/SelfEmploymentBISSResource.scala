@@ -39,7 +39,7 @@ class SelfEmploymentBISSResource @Inject()(
       implicit request =>
         logger.debug(s"[SelfEmploymentBISSResource][getSummary] Get BISS for NI number : $nino with selfEmploymentId: $selfEmploymentId")
         service.getSummary(nino, taxYear, selfEmploymentId).map {
-          case Left(error) => error.error match {
+          case Left(error) => (error.error: @unchecked) match {
             case NinoInvalid | TaxYearInvalid | SelfEmploymentIDInvalid => BadRequest(toJson(error))
             case NinoNotFound | TaxYearNotFound | NoSubmissionDataExists | SelfEmploymentIDNotFound => NotFound(toJson(error))
             case ServerError | Errors.ServiceUnavailable => InternalServerError(toJson(error))

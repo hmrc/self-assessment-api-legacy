@@ -17,12 +17,9 @@
 package uk.gov.hmrc.r2.selfassessmentapi.mocks.connectors
 
 import org.scalatest.Suite
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.Mock
-
-import scala.concurrent.ExecutionContext
 
 trait MockAuditConnector extends Mock {
   _: Suite =>
@@ -31,7 +28,7 @@ trait MockAuditConnector extends Mock {
 
   object MockMicroserviceAuditConnector {
 
-    def sendExtendedEvent(event: ExtendedDataEvent)(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
+    def sendExtendedEvent(event: ExtendedDataEvent) = {
       when(mockAuditConnector.sendExtendedEvent(eqTo(event))(any(), any()))
     }
 

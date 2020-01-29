@@ -43,11 +43,12 @@ class PropertiesObligationsResourceSpec extends ResourceSpec
   "retrieveObligations" should {
     "return a 500" when {
       "the connector returns a failed future" in new Setup {
+        val from = Some(LocalDate.parse("2017-01-01"))
+        val to = Some(LocalDate.parse("2017-12-31"))
+
         MockObligationsConnector.get(nino, "ITSP", Some(ObligationQueryParams(from, to)))
           .returns(Future.failed(new RuntimeException("somemthing went wrong")))
 
-        val from = Some(LocalDate.parse("2017-01-01"))
-        val to = Some(LocalDate.parse("2017-12-31"))
         val result = resource.retrieveObligations(nino,
           ObligationQueryParams(from, to))(FakeRequest())
         status(result) shouldBe INTERNAL_SERVER_ERROR

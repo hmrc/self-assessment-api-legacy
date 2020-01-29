@@ -17,527 +17,378 @@
 package uk.gov.hmrc.r2.selfassessmentapi.models.properties
 
 
-
 import org.joda.time.LocalDate
-import org.scalacheck.Gen
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.libs.json.Json
 import uk.gov.hmrc.r2.selfassessmentapi.models._
 import uk.gov.hmrc.r2.selfassessmentapi.resources.JsonSpec
 
-class PropertiesPeriodSpec extends JsonSpec with ScalaCheckDrivenPropertyChecks {
+class PropertiesPeriodSpec extends JsonSpec {
 
+  // FHL
+  val fhlIncomes: FHL.Incomes = FHL.Incomes(
+    rentIncome = Some(Income(10.25, Some(10.25))),
+    rarRentReceived = Some(IncomeR2(10.25, Some(10.25)))
+  )
+  val fhlExpenses: FHL.Expenses = FHL.Expenses(
+    premisesRunningCosts = Some(FHL.Expense(10.25)),
+    repairsAndMaintenance = Some(FHL.Expense(10.25)),
+    financialCosts = Some(FHL.Expense(10.25)),
+    professionalFees = Some(FHL.Expense(10.25)),
+    costOfServices = Some(FHL.Expense(10.25)),
+    consolidatedExpenses = None,
+    other = Some(FHL.Expense(10.25)),
+    travelCosts = Some(FHL.ExpenseR2(10.25)),
+    rarReliefClaimed = Some(FHL.ExpenseR2(10.25))
+
+  )
+  val fhlFinancials: FHL.Financials = FHL.Financials(
+    incomes = Some(fhlIncomes),
+    expenses = Some(fhlExpenses)
+  )
+  val fhlProperties: FHL.Properties = FHL.Properties(
+    id = None,
+    from = LocalDate.parse("2020-01-28"),
+    to = LocalDate.parse("2020-01-29"),
+    financials = Some(fhlFinancials)
+  )
+
+
+  // Other
+  val otherIncomes: Other.Incomes = Other.Incomes(
+    rentIncome = Some(Income(10.25, Some(10.25))),
+    premiumsOfLeaseGrant = Some(Income(10.25, Some(10.25))),
+    reversePremiums = Some(Income(10.25, Some(10.25))),
+    otherPropertyIncome = Some(Income(10.25, Some(10.25))),
+    rarRentReceived = Some(IncomeR2(10.25, Some(10.25)))
+  )
+  val otherExpenses: Other.Expenses = Other.Expenses(
+    premisesRunningCosts = Some(Other.Expense(10.25)),
+    repairsAndMaintenance = Some(Other.Expense(10.25)),
+    financialCosts = Some(Other.Expense(10.25)),
+    professionalFees = Some(Other.Expense(10.25)),
+    costOfServices = Some(Other.Expense(10.25)),
+    consolidatedExpenses = None,
+    residentialFinancialCost = Some(Other.Expense(10.25)),
+    other = Some(Other.Expense(10.25)),
+    travelCosts = Some(Other.ExpenseR2(10.25)),
+    broughtFwdResidentialFinancialCost = Some(Other.ExpenseR2(10.25)),
+    rarReliefClaimed = Some(Other.ExpenseR2(10.25))
+  )
+  val otherFinancials: Other.Financials = Other.Financials(
+    incomes = Some(otherIncomes),
+    expenses = Some(otherExpenses)
+  )
+  val otherProperties: Other.Properties = Other.Properties(
+    id = None,
+    from = LocalDate.parse("2020-01-28"),
+    to = LocalDate.parse("2020-01-29"),
+    financials = Some(otherFinancials)
+  )
 
   "PropertiesPeriod" should {
-    "round trip FHL properties" in forAll(FHLGen.genPropertiesPeriod())(roundTripJson(_))
+    "read and write" when {
+      "passed FHL properties with all fields" in {
+        roundTripJson(fhlProperties)
+      }
+      "passed FHL properties with only incomes" in {
+        val model = fhlProperties.copy(
+          financials = Some(fhlFinancials.copy(
+            expenses = None
+          ))
+        )
+        roundTripJson(model)
+      }
+      "passed FHL properties with only expenses" in {
+        val model = fhlFinancials.copy(incomes = None)
+        roundTripJson(model)
+      }
+      "passed Other properties with all fields" in {
+        roundTripJson(otherProperties)
+      }
+      "passed Other properties with only incomes" in {
+        val model = otherProperties.copy(
+          financials = Some(otherFinancials.copy(
+            expenses = None
+          ))
+        )
+        roundTripJson(model)
+      }
+      "passed Other properties with only expenses" in {
+        val model = otherProperties.copy(
+          financials = Some(otherFinancials.copy(
+            incomes = None
+          ))
+        )
+        roundTripJson(model)
+      }
+      "passed Other properties with only residentialFinancialCost in Expenses" in {
+        val model = otherProperties.copy(
+          financials = Some(otherFinancials.copy(
+            incomes = None,
+            expenses = Some(Other.Expenses(residentialFinancialCost = Some(Other.Expense(10.25))))
+          ))
+        )
+        roundTripJson(model)
+      }
+    }
+  }
 
+  "FHL Financials" should {
+    "read and write" when {
+      "passed only rarRentReceived in Incomes" in {
+        val model = fhlFinancials.copy(
+          incomes = Some(FHL.Incomes(None, Some(IncomeR2(10.25, None))))
+        )
+        roundTripJson(model)
+      }
+      "passed only consolidated expenses" in {
+        val model = fhlFinancials.copy(
+          incomes = None,
+          expenses = Some(FHL.Expenses(consolidatedExpenses = Some(FHL.Expense(10.25))))
+        )
+        roundTripJson(model)
+      }
+    }
+  }
 
-    "round trip Other properties" in forAll(OtherGen.genPropertiesPeriod())(roundTripJson(_))
+  "Other Financials" should {
+    "read and write" when {
+      "passed only premiumsOfLeaseGrant in Incomes" in {
+        val model = otherFinancials.copy(
+          incomes = Some(Other.Incomes(premiumsOfLeaseGrant = Some(Income(10.25, Some(10.25)))))
+        )
+        roundTripJson(model)
+      }
+      "passed only reversePremiums in Incomes" in {
+        val model = otherFinancials.copy(
+          incomes = Some(Other.Incomes(reversePremiums = Some(Income(10.25, Some(10.25)))))
+        )
+        roundTripJson(model)
+      }
+      "passed only otherPropertyIncome in Incomes" in {
+        val model = otherFinancials.copy(
+          incomes = Some(Other.Incomes(otherPropertyIncome = Some(Income(10.25, Some(10.25)))))
+        )
+        roundTripJson(model)
+      }
+      "passed only rarRentReceived in Incomes" in {
+        val model = otherFinancials.copy(
+          incomes = Some(Other.Incomes(rarRentReceived = Some(IncomeR2(10.25, Some(10.25)))))
+        )
+        roundTripJson(model)
+      }
+      "passed only expenses" in {
+        val model = otherFinancials.copy(
+          incomes = None,
+          expenses = Some(otherExpenses)
+        )
+        roundTripJson(model)
+      }
+      "passed only consolidated expenses" in {
+        val model = otherFinancials.copy(
+          incomes = None,
+          expenses = Some(Other.Expenses(consolidatedExpenses = Some(Other.Expense(10.25))))
+        )
+        roundTripJson(model)
+      }
+      "passed only residentialFinancialCost in Expenses" in {
+        val model = otherFinancials.copy(
+          incomes = None,
+          expenses = Some(Other.Expenses(residentialFinancialCost = Some(Other.Expense(10.25))))
+        )
+        roundTripJson(model)
+      }
+    }
+  }
+
+  "FHL.Properties.asSummary" should {
+    "return a PeriodSummary" when {
+      "passed a Properties model with no ID" in {
+        FHL.Properties(None, LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"), None).asSummary shouldBe
+          PeriodSummary("", LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"))
+      }
+      "passed a Properties model with an ID" in {
+        FHL.Properties(Some("id"), LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"), None).asSummary shouldBe
+          PeriodSummary("id", LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"))
+      }
+    }
+  }
+
+  "Other.Properties.asSummary" should {
+    "return a PeriodSummary" when {
+      "passed a Properties model with no ID" in {
+        Other.Properties(None, LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"), None).asSummary shouldBe
+          PeriodSummary("", LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"))
+      }
+      "passed a Properties model with an ID" in {
+        Other.Properties(Some("id"), LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"), None).asSummary shouldBe
+          PeriodSummary("id", LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"))
+      }
+    }
   }
 
 
-
-  "validate" should {
-    "reject FHL properties where the `to` date comes before the `from` date" in
-      forAll(FHLGen.genPropertiesPeriod(invalidPeriod = true)) { fhlProps =>
-        assertValidationErrorsWithCode[FHL.Properties](Json.toJson(fhlProps), Map("" -> Seq(ErrorCode.INVALID_PERIOD)))
-      }
-
-    "reject Other properties where the `to` date comes before the `from` date" in
-      forAll(OtherGen.genPropertiesPeriod(invalidPeriod = true)) { otherProps =>
-        assertValidationErrorsWithCode[Other.Properties](Json.toJson(otherProps),
-          Map("" -> Seq(ErrorCode.INVALID_PERIOD)))
-      }
-
-    "reject FHL properties that has null financials" in
-      forAll(FHLGen.genPropertiesPeriod(nullFinancials = true)) { fhlProps =>
-        assertValidationErrorsWithCode[FHL.Properties](Json.toJson(fhlProps),
-          Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES)))
-      }
-
-    "reject Other properties that has null financials" in
-      forAll(OtherGen.genPropertiesPeriod(nullFinancials = true)) { otherProps =>
-        assertValidationErrorsWithCode[Other.Properties](Json.toJson(otherProps),
-          Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES)))
-      }
-
-    "reject FHL properties that has both expenses" in
-      forAll(FHLGen.genPropertiesPeriod(bothExpenses = true)) { fhlProps =>
-        assertValidationErrorsWithCode[FHL.Properties](Json.toJson(fhlProps),
-          Map("" -> Seq(ErrorCode.BOTH_EXPENSES_SUPPLIED)))
-      }
-
-    "reject Other properties that has both expenses" in
-      forAll(OtherGen.genPropertiesPeriod(bothExpenses = true)) { otherProps =>
-        assertValidationErrorsWithCode[Other.Properties](Json.toJson(otherProps),
-          Map("" -> Seq(ErrorCode.BOTH_EXPENSES_SUPPLIED)))
-      }
-
-    "reject FHL properties where the `to` date comes before the `from` date and has null financials" in
-      forAll(FHLGen.genPropertiesPeriod(invalidPeriod = true, nullFinancials = true)) { fhlProps =>
+  "FHL validation" should {
+    "return a JsonValidationError with the correct error code" when {
+      "passed a `from` date after a `to` date" in {
         assertValidationErrorsWithCode[FHL.Properties](
-          Json.toJson(fhlProps),
-          Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES, ErrorCode.INVALID_PERIOD)))
-
+          value = Json.toJson(fhlProperties.copy(to = LocalDate.parse("2020-01-26"))),
+          pathAndCode = Map("" -> Seq(ErrorCode.INVALID_PERIOD))
+        )
       }
-
-    "reject Other properties where the `to` date comes before the `from` date and has null financials" in
-      forAll(OtherGen.genPropertiesPeriod(invalidPeriod = true, nullFinancials = true)) { otherProps =>
-        assertValidationErrorsWithCode[Other.Properties](
-          Json.toJson(otherProps),
-          Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES, ErrorCode.INVALID_PERIOD)))
-      }
-
-    "accept Other Properties where only consolidated expenses are passed" in
-      forAll(OtherGen.genPropertiesPeriod(consolidatedExpenses = true)) { otherProps =>
-        assertJsonValidationPasses[Other.Properties](
-          Json.toJson(otherProps))
-      }
-
-    "accept Other Properties where only residential expenses are passed" in
-      forAll(OtherGen.genPropertiesPeriod(onlyResidentialExpenses = true)) { otherProps =>
-        assertJsonValidationPasses[Other.Properties](
-          Json.toJson(otherProps))
-      }
-
-    "accept Other Properties where only expenses are passed" in
-      forAll(OtherGen.genPropertiesPeriod()) { otherProps =>
-        assertJsonValidationPasses[Other.Properties](
-          Json.toJson(otherProps))
-      }
-
-    "accept max boundary R2 amounts for FHL" in
-    forAll(fhlR2TestData()) { fhlProps =>
-      assertJsonValidationPasses[FHL.Properties](
-        Json.toJson(fhlProps)
-      )
-    }
-
-    "reject over max boundary for rarRentReceived for FHL" in
-      forAll(fhlR2TestData(rarRentReceived = 100000000000.00)) { fhlProps =>
+      "passed both expenses and consolidatedExpenses" in {
+        val model = fhlProperties.copy(
+          financials = fhlProperties.financials.map(_.copy(
+            expenses = fhlProperties.financials.flatMap(_.expenses.map(_.copy(
+              consolidatedExpenses = Some(FHL.Expense(10.25))
+            )))
+          ))
+        )
         assertValidationErrorsWithCode[FHL.Properties](
-          Json.toJson(fhlProps),
-          Map("/incomes/rarRentReceived/amount" ->  Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+          value = Json.toJson(model),
+          pathAndCode = Map("" -> Seq(ErrorCode.BOTH_EXPENSES_SUPPLIED))
         )
       }
-
-    "reject over max boundary for travelCosts for FHL" in
-      forAll(fhlR2TestData(travelCosts = 100000000000.00)) { fhlProps =>
-      assertValidationErrorsWithCode[FHL.Properties](
-        Json.toJson(fhlProps),
-        Map("/expenses/travelCosts/amount" ->  Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
-      )
-    }
-
-    "reject over max boundary for rarReliefClaimed for FHL" in
-    forAll(fhlR2TestData(rarReliefClaimed = 100000000000.00)) { fhlProps =>
-      assertValidationErrorsWithCode[FHL.Properties](
-        Json.toJson(fhlProps),
-        Map("/expenses/rarReliefClaimed/amount" ->  Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
-      )
-    }
-
-    "reject over max boundary for other for FHL (R1 boundary test)" in
-      forAll(fhlR2TestData(other = BigDecimal("99999999999999.99"))) { fhlProps =>
+      "passed no financials field" in {
+        val model = fhlProperties.copy(financials = None)
         assertValidationErrorsWithCode[FHL.Properties](
-          Json.toJson(fhlProps),
-          Map("/expenses/other/amount" ->  Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+          value = Json.toJson(model),
+          pathAndCode = Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES))
         )
       }
-  }
-
-  "accept max boundary R2 amounts for Other" in
-    forAll(otherR2TestData()) { otherProps =>
-      assertJsonValidationPasses[FHL.Properties](
-        Json.toJson(otherProps)
-      )
+      "passed no incomes or expenses fields" in {
+        val model = fhlProperties.copy(financials = Some(FHL.Financials(None, None)))
+        assertValidationErrorsWithCode[FHL.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES))
+        )
+      }
     }
-
-
-  "reject over max boundary for rarRentReceived for Other" in
-      forAll(otherR2TestData(rarRentReceived = 100000000000.00)) { otherProps =>
-        assertValidationErrorsWithCode[Other.Properties](
-          Json.toJson(otherProps),
-          Map("/incomes/rarRentReceived/amount" ->  Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+    "return multiple JsonValidationErrors" when {
+      "passed a `from` date after a `to` date and no financials value" in {
+        val model = fhlProperties.copy(to = LocalDate.parse("2020-01-26"), financials = None)
+        assertValidationErrorsWithCode[FHL.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES, ErrorCode.INVALID_PERIOD))
         )
       }
-
-    "reject over max boundary for travelCosts for Other" in
-      forAll(otherR2TestData(travelCosts = 100000000000.00)) { otherProps =>
-        assertValidationErrorsWithCode[Other.Properties](
-          Json.toJson(otherProps),
-          Map("/expenses/travelCosts/amount" ->  Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
-        )
-      }
-
-    "reject over max boundary for broughtFwdResidentialFinancialCost for Other" in
-      forAll(otherR2TestData(broughtFwdResidentialFinancialCost = 100000000000.00)) { otherProps =>
-        assertValidationErrorsWithCode[Other.Properties](
-          Json.toJson(otherProps),
-          Map("/expenses/broughtFwdResidentialFinancialCost/amount" ->  Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
-        )
-      }
-
-
-  "reject over max boundary for rarReliefClaimed for Other" in
-    forAll(otherR2TestData(rarReliefClaimed = 100000000000.00)) { otherProps =>
-      assertValidationErrorsWithCode[Other.Properties](
-        Json.toJson(otherProps),
-        Map("/expenses/rarReliefClaimed/amount" ->  Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
-      )
     }
-
-
-
-
-
-
-
-  def fhlR2TestData(rarRentReceived: BigDecimal = 99999999999.99, travelCosts: BigDecimal = 99999999999.99, rarReliefClaimed: BigDecimal = 99999999999.99, other: BigDecimal = 99999999999999.98) = FHL.Properties(
-    id = None,
-    from = LocalDate.parse("2019-04-30"),
-    to = LocalDate.parse("2019-05-01"),
-    financials = Some(
-      FHL.Financials(
-        incomes = Some(
-          FHL.Incomes(
-            rentIncome = Some(Income(2891, Some(754))),
-            rarRentReceived = Some(IncomeR2(rarRentReceived, Some(0)))
-          )
-        ),
-        expenses = Some(
-          FHL.Expenses(
-            premisesRunningCosts = Some(FHL.Expense(amount = 123)),
-            repairsAndMaintenance = Some(FHL.Expense(amount = 123)),
-            financialCosts = Some(FHL.Expense(amount = 123)),
-            professionalFees = Some(FHL.Expense(amount = 123)),
-            costOfServices = Some(FHL.Expense(amount = 123)),
-            other = Some(FHL.Expense(other)),
-            travelCosts = Some(FHL.ExpenseR2(travelCosts)),
-            rarReliefClaimed = Some(FHL.ExpenseR2(rarReliefClaimed))
-          )
+    "reject IncomeR2 values" when {
+      "the IncomeR2 value is less than 0" in {
+        val model = fhlProperties.copy(
+          financials = fhlProperties.financials.map(_.copy(
+            incomes = Some(FHL.Incomes(Some(Income(10.25, Some(10.25))), Some(IncomeR2(-10.25, None))))
+          ))
         )
-      )
-    )
-  )
-
-  def otherR2TestData(rarRentReceived: BigDecimal = 99999999999.99, travelCosts: BigDecimal = 99999999999.99, broughtFwdResidentialFinancialCost: BigDecimal = 99999999999.99, rarReliefClaimed: BigDecimal = 99999999999.99) = Other.Properties(
-    id = None,
-    from = LocalDate.parse("2019-04-30"),
-    to = LocalDate.parse("2019-05-01"),
-    financials = Some(
-      Other.Financials(
-        incomes = Some(
-          Other.Incomes(
-            rentIncome = Some(Income(2891, Some(754))),
-            premiumsOfLeaseGrant = Some(Income(323, Some(123))),
-            reversePremiums = Some(Income(5466, Some(123))),
-            otherPropertyIncome = Some(Income(64664, Some(123))),
-            rarRentReceived = Some(IncomeR2(rarRentReceived, Some(0)))
-          )
-        ),
-        expenses = Some(
-          Other.Expenses(
-            premisesRunningCosts = Some(Other.Expense(amount = 123)),
-            repairsAndMaintenance = Some(Other.Expense(amount = 123)),
-            financialCosts = Some(Other.Expense(amount = 123)),
-            professionalFees = Some(Other.Expense(amount = 123)),
-            costOfServices = Some(Other.Expense(amount = 123)),
-            residentialFinancialCost = Some(Other.Expense(amount = 123)),
-            other = Some(Other.Expense(amount = 123)),
-            travelCosts = Some(Other.ExpenseR2(travelCosts)),
-            broughtFwdResidentialFinancialCost = Some(Other.ExpenseR2(broughtFwdResidentialFinancialCost)),
-            rarReliefClaimed = Some(Other.ExpenseR2(rarReliefClaimed))
-          )
-        )
-      )
-    )
-  )
-
-  val amount: Gen[BigDecimal] = amountGen(0, 5000)
-
-  object FHLGen {
-    val genIncome: Gen[Income] =
-      for {
-        amount <- amount
-        taxDeducted <- Gen.option(amountGen(0, amount))
-
-      } yield Income(amount, taxDeducted)
-
-    val genIncomeR2: Gen[IncomeR2] =
-      for {
-        amount <- amount
-        taxDeducted <- Gen.option(amountGen(0, amount))
-
-      } yield IncomeR2(amount, taxDeducted)
-
-    val genRentIncome: Gen[Income] =
-      for {
-        amount <- amount
-      } yield Income(amount, None)
-
-    val genIncomes: Gen[FHL.Incomes] =
-      for {
-        rentIncome <- Gen.option(genIncome)
-        rarRentReceived <- Gen.option(genIncomeR2)
-      } yield FHL.Incomes(rentIncome = rentIncome, rarRentReceived = rarRentReceived)
-
-    val genExpense: Gen[FHL.Expense] = for (amount <- amount) yield FHL.Expense(amount)
-
-    val genExpenseR2: Gen[FHL.ExpenseR2] = for (amount <- amount) yield FHL.ExpenseR2(amount)
-
-    val genExpenses: Gen[FHL.Expenses] =
-      for {
-        premisesRunningCosts <- Gen.option(genExpense)
-        repairsAndMaintenance <- Gen.option(genExpense)
-        financialCosts <- Gen.option(genExpense)
-        professionalFees <- Gen.option(genExpense)
-        costOfServices <- Gen.option(genExpense)
-        other <- Gen.option(genExpense)
-        travelCosts <- Gen.option(genExpenseR2)
-        rarReliefClaimed <- Gen.option(genExpenseR2)
-
-      } yield
-        FHL.Expenses(
-          premisesRunningCosts = premisesRunningCosts,
-          repairsAndMaintenance = repairsAndMaintenance,
-          financialCosts = financialCosts,
-          professionalFees = professionalFees,
-          costOfServices = costOfServices,
-          other = other,
-          travelCosts = travelCosts,
-          rarReliefClaimed = rarReliefClaimed
-        )
-
-    val genExpensesBoth: Gen[FHL.Expenses] =
-      for {
-        premisesRunningCosts <- Gen.option(genExpense)
-        repairsAndMaintenance <- Gen.option(genExpense)
-        financialCosts <- Gen.option(genExpense)
-        professionalFees <- Gen.option(genExpense)
-        costOfServices <- Gen.option(genExpense)
-        consolidatedExpenses <- Gen.option(genExpense)
-        other <- Gen.option(genExpense)
-        travelCosts <- Gen.option(genExpenseR2)
-        rarReliefClaimed <- Gen.option(genExpenseR2)
-      } yield
-        FHL.Expenses(
-          premisesRunningCosts = premisesRunningCosts,
-          repairsAndMaintenance = repairsAndMaintenance,
-          financialCosts = financialCosts,
-          professionalFees = professionalFees,
-          consolidatedExpenses = consolidatedExpenses,
-          other = other,
-          travelCosts = travelCosts,
-          rarReliefClaimed = rarReliefClaimed,
-          costOfServices = costOfServices
-        )
-
-    val genConsolidatedExpenses: Gen[FHL.Expenses] =
-      for {
-        consolidatedExpenses <- Gen.option(genExpense)
-      } yield FHL.Expenses(consolidatedExpenses = consolidatedExpenses)
-
-    val genFinancialsExpenses: Gen[FHL.Financials] =
-      (for {
-        incomes <- Gen.option(genIncomes)
-        expenses <- Gen.option(genExpenses)
-      } yield FHL.Financials(incomes, expenses)) retryUntil { f =>
-        f.incomes.exists(_.hasIncomes) || f.expenses.exists(_.hasExpenses)
-      }
-
-    val genFinancialsConsolidatedExpenses: Gen[FHL.Financials] =
-      (for {
-        incomes <- Gen.option(genIncomes)
-        expenses <- Gen.option(genConsolidatedExpenses)
-      } yield FHL.Financials(incomes, expenses)) retryUntil { f =>
-        f.incomes.exists(_.hasIncomes) || f.expenses.exists(_.consolidatedExpenses.isDefined)
-      }
-
-    val genBothExpensesFinancials: Gen[FHL.Financials] =
-      (for {
-        incomes <- Gen.option(genIncomes)
-        expenses <- Gen.option(genExpensesBoth)
-      } yield FHL.Financials(incomes, expenses)) retryUntil { f =>
-        f.expenses.exists(_.hasExpenses) && f.expenses.exists(_.consolidatedExpenses.isDefined)
-      }
-
-    def genPropertiesPeriod(invalidPeriod: Boolean = false,
-                            nullFinancials: Boolean = false,
-                            consolidatedExpenses: Boolean = false,
-                            bothExpenses: Boolean = false): Gen[FHL.Properties] =
-      for {
-        emptyFinancials <- Gen.option(FHL.Financials(None, None))
-        financials <- genFinancialsExpenses
-        consolidatedFinancials <- genFinancialsConsolidatedExpenses
-        bothExpensesFinancials <- genBothExpensesFinancials
-      } yield {
-        val from = LocalDate.now()
-        val to = from.plusDays(1)
-        FHL.Properties(
-          None,
-          if (invalidPeriod) to else from,
-          if (invalidPeriod) from else to,
-          if (nullFinancials) emptyFinancials
-          else if (bothExpenses) Some(bothExpensesFinancials)
-          else if (consolidatedExpenses) Some(consolidatedFinancials)
-          else Some(financials)
+        assertValidationErrorsWithCode[FHL.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("/incomes/rarRentReceived/amount" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
         )
       }
+      "the IncomeR2 value is greater than 2dp" in {
+        val model = fhlProperties.copy(
+          financials = fhlProperties.financials.map(_.copy(
+            incomes = Some(FHL.Incomes(Some(Income(10.25, Some(10.25))), Some(IncomeR2(10.254, None))))
+          ))
+        )
+        assertValidationErrorsWithCode[FHL.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("/incomes/rarRentReceived/amount" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+        )
+      }
+      "the IncomeR2 value is greater than the max allowed amount" in {
+        val model = fhlProperties.copy(
+          financials = fhlProperties.financials.map(_.copy(
+            incomes = Some(FHL.Incomes(Some(Income(10.25, Some(10.25))), Some(IncomeR2(100000000000.00, None))))
+          ))
+        )
+        assertValidationErrorsWithCode[FHL.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("/incomes/rarRentReceived/amount" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+        )
+      }
+    }
+  }
+  "Other validation" should {
+    "return a JsonValidationError with the correct error code" when {
+      "passed a `from` date after a `to` date" in {
+        assertValidationErrorsWithCode[Other.Properties](
+          value = Json.toJson(otherProperties.copy(to = LocalDate.parse("2020-01-26"))),
+          pathAndCode = Map("" -> Seq(ErrorCode.INVALID_PERIOD))
+        )
+      }
+      "passed both expenses and consolidatedExpenses" in {
+        val model = otherProperties.copy(
+          financials = otherProperties.financials.map(_.copy(
+            expenses = otherProperties.financials.flatMap(_.expenses.map(_.copy(
+              consolidatedExpenses = Some(Other.Expense(10.25))
+            )))
+          ))
+        )
+        assertValidationErrorsWithCode[Other.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("" -> Seq(ErrorCode.BOTH_EXPENSES_SUPPLIED))
+        )
+      }
+      "passed no financials field" in {
+        val model = otherProperties.copy(financials = None)
+        assertValidationErrorsWithCode[Other.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES))
+        )
+      }
+      "passed no incomes or expenses fields" in {
+        val model = otherProperties.copy(financials = Some(Other.Financials(None, None)))
+        assertValidationErrorsWithCode[Other.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES))
+        )
+      }
+    }
+    "return multiple JsonValidationErrors" when {
+      "passed a `from` date after a `to` date and no financials value" in {
+        val model = otherProperties.copy(to = LocalDate.parse("2020-01-26"), financials = None)
+        assertValidationErrorsWithCode[Other.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES, ErrorCode.INVALID_PERIOD))
+        )
+      }
+    }
+    "reject IncomeR2 values" when {
+      "the IncomeR2 value is less than 0" in {
+        val model = otherProperties.copy(
+          financials = otherProperties.financials.map(_.copy(
+            incomes = Some(Other.Incomes(rarRentReceived = Some(IncomeR2(-10.25, None))))
+          ))
+        )
+        assertValidationErrorsWithCode[Other.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("/incomes/rarRentReceived/amount" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+        )
+      }
+      "the IncomeR2 value is greater than 2dp" in {
+        val model = otherProperties.copy(
+          financials = otherProperties.financials.map(_.copy(
+            incomes = Some(Other.Incomes(rarRentReceived = Some(IncomeR2(10.254, None))))
+          ))
+        )
+        assertValidationErrorsWithCode[Other.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("/incomes/rarRentReceived/amount" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+        )
+      }
+      "the IncomeR2 value is greater than the max allowed amount" in {
+        val model = otherProperties.copy(
+          financials = otherProperties.financials.map(_.copy(
+            incomes = Some(Other.Incomes(rarRentReceived = Some(IncomeR2(100000000000.00, None))))
+          ))
+        )
+        assertValidationErrorsWithCode[Other.Properties](
+          value = Json.toJson(model),
+          pathAndCode = Map("/incomes/rarRentReceived/amount" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+        )
+      }
+    }
   }
 
-  def amountGen(lower: BigDecimal, upper: BigDecimal): Gen[BigDecimal] =
-    for (value <- Gen.chooseNum(lower.intValue(), upper.intValue())) yield BigDecimal(value)
-
-  object OtherGen {
-    val genIncome: Gen[Income] =
-      for {
-        amount <- amount
-        taxDeducted <- Gen.option(amountGen(0, amount))
-      } yield Income(amount, taxDeducted)
-
-    val genIncomeR2 : Gen[IncomeR2] =
-      for {
-        amount <- amount
-        taxDeducted <- Gen.option(amountGen(0, amount))
-      } yield IncomeR2(amount, taxDeducted)
-
-    val genIncomes: Gen[Other.Incomes] =
-      for {
-        rentIncome <- Gen.option(genIncome)
-        premiumsOfLeaseGrant <- Gen.option(genIncome)
-        reversePremiums <- Gen.option(genIncome)
-        otherPropertyIncome <- Gen.option(genIncome)
-        rarRentReceived <- Gen.option(genIncomeR2)
-      } yield Other.Incomes(rentIncome, premiumsOfLeaseGrant, reversePremiums, otherPropertyIncome, rarRentReceived)
-
-    val genExpense: Gen[Other.Expense] = for (amount <- amount) yield Other.Expense(amount)
-
-    val genExpenseR2: Gen[Other.ExpenseR2] = for (amount <- amount) yield Other.ExpenseR2(amount)
-
-    val genExpenses: Gen[Other.Expenses] =
-      for {
-        premisesRunningCosts <- Gen.option(genExpense)
-        repairsAndMaintenance <- Gen.option(genExpense)
-        financialCosts <- Gen.option(genExpense)
-        professionalFees <- Gen.option(genExpense)
-        costOfServices <- Gen.option(genExpense)
-        residentialFinancialCost <- Gen.option(genExpense)
-        other <- Gen.option(genExpense)
-        travelCosts <- Gen.option(genExpenseR2)
-        broughtFwdResidentialFinancialCost <- Gen.option(genExpenseR2)
-        rarReliefClaimed <- Gen.option(genExpenseR2)
-      } yield
-        Other
-          .Expenses(premisesRunningCosts = premisesRunningCosts,
-            repairsAndMaintenance = repairsAndMaintenance,
-            financialCosts = financialCosts,
-            professionalFees = professionalFees,
-            costOfServices = costOfServices,
-            residentialFinancialCost = residentialFinancialCost,
-            other = other,
-            travelCosts = travelCosts,
-            broughtFwdResidentialFinancialCost = broughtFwdResidentialFinancialCost,
-            rarReliefClaimed = rarReliefClaimed)
-
-    val genExpensesBoth: Gen[Other.Expenses] =
-      for {
-        premisesRunningCosts <- Gen.option(genExpense)
-        repairsAndMaintenance <- Gen.option(genExpense)
-        financialCosts <- Gen.option(genExpense)
-        professionalFees <- Gen.option(genExpense)
-        costOfServices <- Gen.option(genExpense)
-        consolidatedExpenses <- Gen.option(genExpense)
-        residentialFinancialCost <- Gen.option(genExpense)
-        other <- Gen.option(genExpense)
-        travelCosts <- Gen.option(genExpenseR2)
-        broughtFwdResidentialFinancialCost <- Gen.option(genExpenseR2)
-        rarReliefClaimed <- Gen.option(genExpenseR2)
-      } yield
-        Other
-          .Expenses(premisesRunningCosts,
-            repairsAndMaintenance,
-            financialCosts,
-            professionalFees,
-            costOfServices,
-            consolidatedExpenses,
-            residentialFinancialCost,
-            other,
-            travelCosts,
-            broughtFwdResidentialFinancialCost,
-            rarReliefClaimed)
-
-    val genConsolidatedExpenses: Gen[Other.Expenses] =
-      for {
-        consolidatedExpenses <- Gen.option(genExpense)
-        residentialFinancialCost <- Gen.option(genExpense)
-        broughtFwdResidentialFinancialCost <- Gen.option(genExpenseR2)
-      } yield Other.Expenses(consolidatedExpenses = consolidatedExpenses, residentialFinancialCost = residentialFinancialCost,
-        broughtFwdResidentialFinancialCost = broughtFwdResidentialFinancialCost)
-
-    val genResidentialExpenses: Gen[Other.Expenses] =
-      for {
-        residentialFinancialCost <- Gen.option(genExpense)
-      } yield Other.Expenses(residentialFinancialCost = residentialFinancialCost)
-
-
-    val genFinancialsExpenses: Gen[Other.Financials] =
-      (for {
-        incomes <- Gen.option(genIncomes)
-        expenses <- Gen.option(genExpenses)
-      } yield Other.Financials(incomes, expenses)) retryUntil { f =>
-        f.incomes.exists(_.hasIncomes) || f.expenses.exists(_.hasExpenses)
-      }
-
-    val genFinancialsConsolidatedExpenses: Gen[Other.Financials] =
-      (for {
-        incomes <- Gen.option(genIncomes)
-        expenses <- Gen.option(genConsolidatedExpenses)
-      } yield Other.Financials(incomes, expenses)) retryUntil { f =>
-        f.incomes.exists(_.hasIncomes) || f.expenses.exists(_.consolidatedExpenses.isDefined) && f.expenses.exists(_.residentialFinancialCost.isDefined)
-      }
-
-    val genBothExpensesFinancials: Gen[Other.Financials] =
-      (for {
-        incomes <- Gen.option(genIncomes)
-        expenses <- Gen.option(genExpensesBoth)
-      } yield Other.Financials(incomes, expenses)) retryUntil { f =>
-        f.expenses.exists(_.hasExpenses) && f.expenses.exists(_.consolidatedExpenses.isDefined)
-      }
-
-    val genResidentialFinancials: Gen[Other.Financials] =
-      (for {
-        incomes <- Gen.option(genIncomes)
-        expenses <- Gen.option(genConsolidatedExpenses)
-      } yield Other.Financials(incomes, expenses)) retryUntil { f =>
-        f.expenses.exists(_.residentialFinancialCost.isDefined)
-      }
-
-    def genPropertiesPeriod(invalidPeriod: Boolean = false,
-                            nullFinancials: Boolean = false,
-                            consolidatedExpenses: Boolean = false,
-                            bothExpenses: Boolean = false,
-                            onlyResidentialExpenses: Boolean = false): Gen[Other.Properties] =
-      for {
-        emptyFinancials <- Gen.option(Other.Financials(None, None))
-        financials <- genFinancialsExpenses
-        consolidatedFinancials <- genFinancialsConsolidatedExpenses
-        bothExpensesFinancials <- genBothExpensesFinancials
-        residentialFinancials <- genResidentialFinancials
-      } yield {
-        val from = LocalDate.now()
-        val to = from.plusDays(1)
-        Other.Properties(
-          None,
-          if (invalidPeriod) to else from,
-          if (invalidPeriod) from else to,
-          if (nullFinancials) emptyFinancials
-          else if (bothExpenses) Some(bothExpensesFinancials)
-          else if (consolidatedExpenses) Some(consolidatedFinancials)
-          else if (onlyResidentialExpenses) Some(residentialFinancials)
-          else Some(financials)
-        )
-      }
-  }
 }

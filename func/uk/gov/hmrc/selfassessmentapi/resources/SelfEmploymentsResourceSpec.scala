@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.models.SourceId
 import uk.gov.hmrc.support.BaseFunctionalSpec
 

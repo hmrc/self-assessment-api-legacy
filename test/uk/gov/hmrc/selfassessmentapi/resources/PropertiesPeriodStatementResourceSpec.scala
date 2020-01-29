@@ -20,7 +20,7 @@ import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTime, LocalDate}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import play.api.libs.json.JsObject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -76,8 +76,8 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
   implicit val materializer: Materializer = ActorMaterializer()
 
   def setUp() {
-    when(auditService.audit(Matchers.anyObject[AuditData[EndOfPeriodStatementDeclaration]]())
-    (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(AuditResult.Success))
+    when(auditService.audit(ArgumentMatchers.any[AuditData[EndOfPeriodStatementDeclaration]]())
+    (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(AuditResult.Success))
 
     when(mockAppContext.mtdDate) returns "2017-04-06"
   }
@@ -90,8 +90,8 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
         val from = DateTime.now().minusDays(1).toLocalDate
         val to = DateTime.now().toLocalDate
 
-        when(statementConnector.create(Matchers.anyObject[Nino](), Matchers.anyObject[Period](), Matchers.anyObject[String]())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(NO_CONTENT))))
+        when(statementConnector.create(ArgumentMatchers.any[Nino](), ArgumentMatchers.any[Period](), ArgumentMatchers.any[String]())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(NO_CONTENT))))
         submitWithSessionAndAuth(TestResource.finaliseEndOfPeriodStatement(validNino,
           from, to), requestJson) {
           result => status(result) shouldBe NO_CONTENT
@@ -164,8 +164,8 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
     "PropertiesPeriodStatementResource.finaliseEndOfPeriodStatement is called" should {
       "return missing periodic updates error response" in {
         when(mockAppContext.mtdDate) returns "2017-04-06"
-        when(statementConnector.create(Matchers.anyObject[Nino](), Matchers.anyObject[Period](), Matchers.anyObject[String]())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(FORBIDDEN))))
+        when(statementConnector.create(ArgumentMatchers.any[Nino](), ArgumentMatchers.any[Period](), ArgumentMatchers.any[String]())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(FORBIDDEN))))
         submitWithSessionAndAuth(TestResource.finaliseEndOfPeriodStatement(validNino,
           DateTime.now().minusDays(1).toLocalDate, DateTime.now().toLocalDate), invalidRequestJson) {
           result => status(result) shouldBe FORBIDDEN

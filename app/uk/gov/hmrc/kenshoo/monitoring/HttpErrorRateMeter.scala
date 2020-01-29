@@ -18,18 +18,17 @@ package uk.gov.hmrc.kenshoo.monitoring
 
 import play.api.Logger
 import play.api.mvc.Result
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.http._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpException, HttpResponse, Upstream4xxResponse, Upstream5xxResponse }
 
 trait HttpErrorRateMeter extends KenshooMetric {
   def meterName[T](serviceName: String, statusCode: Int): String = {
     if (statusCode >= 500) s"Http5xxErrorCount-$serviceName" else s"Http4xxErrorCount-$serviceName"
   }
 
-  def countErrors[T](serviceName: String)(future: Future[T])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[T] = {
+  def countErrors[T](serviceName: String)(future: Future[T])(implicit ec: ExecutionContext): Future[T] = {
     future.andThen {
       case Success(result: Result) if result.header.status >= 400 => record(meterName(serviceName, result.header.status))
       case Success(response: HttpResponse) if response.status >= 400 => record(meterName(serviceName, response.status))

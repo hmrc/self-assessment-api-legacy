@@ -20,9 +20,6 @@ import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents, Request}
 import uk.gov.hmrc.domain.Nino
-
-import scala.concurrent.ExecutionContext
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentPeriodConnector
 import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
@@ -30,10 +27,9 @@ import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.audit.PeriodicUpdate
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{SelfEmploymentPeriod, SelfEmploymentPeriodUpdate}
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentPeriodResponse
-import uk.gov.hmrc.selfassessmentapi.services.AuditService
-import uk.gov.hmrc.selfassessmentapi.services.{AuditData, AuthorisationService}
+import uk.gov.hmrc.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SelfEmploymentPeriodResource @Inject()(
                                               override val appContext: AppContext,
@@ -106,7 +102,7 @@ class SelfEmploymentPeriodResource @Inject()(
                                      id: SourceId,
                                      authCtx: AuthContext,
                                      response: SelfEmploymentPeriodResponse,
-                                     periodId: PeriodId)(implicit hc: HeaderCarrier, request: Request[JsValue]): AuditData[PeriodicUpdate] =
+                                     periodId: PeriodId)(implicit request: Request[JsValue]): AuditData[PeriodicUpdate] =
     AuditData(
       detail = PeriodicUpdate(
         auditType = "submitPeriodicUpdate",
@@ -133,9 +129,8 @@ class SelfEmploymentPeriodResource @Inject()(
                                     id: SourceId,
                                     periodId: PeriodId,
                                     authCtx: AuthContext,
-                                    response: SelfEmploymentPeriodResponse)(
-                                     implicit hc: HeaderCarrier,
-                                     request: Request[JsValue]): AuditData[PeriodicUpdate] =
+                                    response: SelfEmploymentPeriodResponse)
+                                   (implicit request: Request[JsValue]): AuditData[PeriodicUpdate] =
     AuditData(
       detail = PeriodicUpdate(
         auditType = "amendPeriodicUpdate",

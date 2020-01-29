@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.JsValue
 import uk.gov.hmrc.selfassessmentapi.models.Period
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType

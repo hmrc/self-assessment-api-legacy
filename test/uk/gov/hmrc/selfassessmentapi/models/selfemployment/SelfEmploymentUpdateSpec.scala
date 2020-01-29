@@ -17,8 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.resources.{JsonSpec, Jsons}
-import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, Errors}
 
 class SelfEmploymentUpdateSpec extends JsonSpec {
   "SelfEmploymentUpdate JSON" should {

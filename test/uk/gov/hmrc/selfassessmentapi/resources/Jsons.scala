@@ -567,7 +567,7 @@ object Jsons {
                   """.stripMargin)
     }
 
-    private def fromToDates(fromDate: Option[String] = None, toDate: Option[String] = None) = {
+    private def fromToDates(fromDate: Option[String], toDate: Option[String]) = {
       (fromDate
          .map { date =>
            s"""

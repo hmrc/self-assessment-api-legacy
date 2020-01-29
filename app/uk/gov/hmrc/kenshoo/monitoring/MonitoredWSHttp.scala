@@ -18,12 +18,11 @@ package uk.gov.hmrc.kenshoo.monitoring
 
 import play.api.Logger
 import play.api.libs.json.Writes
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.http.ws._
 
-import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-
 import scala.collection.immutable
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MonitoredWSHttp extends WSHttp with HttpAPIMonitor {
 
@@ -43,7 +42,7 @@ trait MonitoredWSHttp extends WSHttp with HttpAPIMonitor {
   val httpAPIs: Map[String, String]
   private lazy val apiNames = HttpAPINames(httpAPIs)
 
-  def monitorRequestsWithoutBodyIfUrlPatternIsKnown(method: String, url: String)(func: => Future[HttpResponse])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  def monitorRequestsWithoutBodyIfUrlPatternIsKnown(method: String, url: String)(func: => Future[HttpResponse])(implicit ec: ExecutionContext): Future[HttpResponse] = {
     apiNames.nameFor(method, url) match {
       case None =>
         Logger.debug(s"ConsumedAPI-Not-Monitored: $method-$url")
@@ -53,7 +52,7 @@ trait MonitoredWSHttp extends WSHttp with HttpAPIMonitor {
     }
   }
 
-  def monitorRequestsWithBodyIfUrlPatternIsKnown[A : Writes](method: String, url: String)(func: => Future[HttpResponse])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  def monitorRequestsWithBodyIfUrlPatternIsKnown[A : Writes](method: String, url: String)(func: => Future[HttpResponse])(implicit ec: ExecutionContext): Future[HttpResponse] = {
     apiNames.nameFor(method, url) match {
       case None =>
         Logger.debug(s"ConsumedAPI-Not-Monitored: $method-$url")

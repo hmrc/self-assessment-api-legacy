@@ -17,9 +17,8 @@
 package uk.gov.hmrc.r2.selfassessmentapi.models
 
 import org.joda.time.LocalDate
-import play.api.data.validation.ValidationError
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class AccountingPeriod(start: LocalDate, end: LocalDate)
 

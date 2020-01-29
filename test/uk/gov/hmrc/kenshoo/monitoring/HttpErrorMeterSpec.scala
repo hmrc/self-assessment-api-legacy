@@ -20,12 +20,11 @@ import com.codahale.metrics.Meter
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito
 import org.mockito.Mockito.{never, verify}
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpException, HttpResponse, Upstream4xxResponse, Upstream5xxResponse }
 
 class HttpErrorMeterSpec extends UnitSpec {
 

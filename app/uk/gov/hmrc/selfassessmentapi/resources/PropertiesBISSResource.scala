@@ -40,7 +40,7 @@ class PropertiesBISSResource @Inject()(
     APIAction(nino, SourceType.Properties, Some("BISS")).async {
       implicit request =>
         propertiesBISSConnector.getSummary(nino, taxYear).map {
-          case Left(error) => error.error match {
+          case Left(error) => (error.error: @unchecked) match {
             case NinoInvalid | TaxYearInvalid => BadRequest(toJson(error))
             case NinoNotFound | TaxYearNotFound | NoSubmissionDataExists => NotFound(toJson(error))
             case ServerError => InternalServerError(toJson(error))

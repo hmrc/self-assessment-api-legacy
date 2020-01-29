@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.mocks
 
-import org.mockito.Matchers
-import org.mockito.Mockito
 import org.mockito.stubbing.OngoingStubbing
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.{ArgumentMatchers, Mockito}
 import org.scalatest.{BeforeAndAfterEach, Suite}
+import org.scalatestplus.mockito.MockitoSugar
 
 trait Mock extends MockitoSugar with BeforeAndAfterEach { _: Suite =>
 
   // predefined mocking functions to avoid importing
-  def any[T]() = Matchers.any[T]()
-  def eqTo[T](t: T) = Matchers.eq[T](t)
+  def any[T]() = ArgumentMatchers.any[T]()
+  def eqTo[T](t: T) = ArgumentMatchers.eq[T](t)
   def when[T](t: T) = Mockito.when(t)
   def reset[T](t: T) = Mockito.reset(t)
 

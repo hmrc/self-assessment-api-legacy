@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
-import org.joda.time.LocalDate
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.{FHL, Other}
-import uk.gov.hmrc.r2.selfassessmentapi.models.{AccountingPeriod, AccountingType}
 
 object Jsons {
 
@@ -725,7 +723,7 @@ object Jsons {
                   """.stripMargin)
     }
 
-    private def fromToDates(fromDate: Option[String] = None, toDate: Option[String] = None) = {
+    private def fromToDates(fromDate: Option[String], toDate: Option[String]) = {
       (fromDate
         .map { date =>
           s"""

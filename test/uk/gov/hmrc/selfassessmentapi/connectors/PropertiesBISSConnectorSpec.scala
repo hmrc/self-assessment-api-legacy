@@ -20,7 +20,6 @@ import uk.gov.hmrc.selfassessmentapi.fixtures.properties.PropertiesBISSFixture
 import uk.gov.hmrc.selfassessmentapi.httpparsers.PropertiesBISSHttpParser.PropertiesBISSOutcome
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertiesBISS
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PropertiesBISSConnectorSpec extends ConnectorSpec {

@@ -19,10 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.utils
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import org.joda.time.format.ISODateTimeFormat
-import play.api.libs.json.JsValue
-import play.api.mvc.Request
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
 import uk.gov.hmrc.selfassessmentapi.models.audit.EndOfPeriodStatementDeclaration
@@ -42,9 +39,6 @@ class ResourceHelper @Inject()(
                       accountingPeriod: Period,
                       authCtx: AuthContext,
                       response: Response
-                     )(
-                       implicit hc: HeaderCarrier,
-                       request: Request[JsValue]
                      ): AuditData[EndOfPeriodStatementDeclaration] =
     AuditData(
       detail = EndOfPeriodStatementDeclaration(

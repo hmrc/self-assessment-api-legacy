@@ -20,7 +20,6 @@ import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents, Request}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.TaxCalculationConnector
 import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
@@ -73,8 +72,7 @@ class TaxCalculationResource @Inject()(
     }
 
   private def makeTaxCalcTriggerAudit(nino: Nino, authCtx: AuthContext, response: TaxCalculationResponse)(
-    implicit hc: HeaderCarrier,
-    request: Request[JsValue]): AuditData[TaxCalculationTrigger] =
+    implicit request: Request[JsValue]): AuditData[TaxCalculationTrigger] =
     AuditData(
       detail = TaxCalculationTrigger(
         httpStatus = response.status,

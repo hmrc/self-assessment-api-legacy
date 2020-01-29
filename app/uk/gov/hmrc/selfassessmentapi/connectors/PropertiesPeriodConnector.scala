@@ -17,14 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType
-import uk.gov.hmrc.selfassessmentapi.models.properties._
-import uk.gov.hmrc.selfassessmentapi.models.{Financials, Period, des}
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.PropertiesPeriodResponse
 
 import scala.concurrent.{ExecutionContext, Future}

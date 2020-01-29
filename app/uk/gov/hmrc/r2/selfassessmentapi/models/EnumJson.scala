@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.models
 
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
-import ErrorCode.{INVALID_TYPE, INVALID_VALUE}
+import uk.gov.hmrc.r2.selfassessmentapi.models.ErrorCode.{INVALID_TYPE, INVALID_VALUE}
 
 object EnumJson {
 

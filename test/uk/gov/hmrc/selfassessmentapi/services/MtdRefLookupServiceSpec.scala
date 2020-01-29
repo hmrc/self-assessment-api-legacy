@@ -45,7 +45,7 @@ class MtdRefLookupServiceSpec extends UnitSpec with MockitoSugar {
       await(unitUnderTest.mtdReferenceFor(nino)) shouldBe Right(MtdId("abc"))
       verify(repository, times(1)).retrieve(nino)
       verifyNoMoreInteractions(repository)
-      verifyZeroInteractions(businessConnector)
+      verifyNoInteractions(businessConnector)
     }
 
     "retrieve and cache the NINO to MTD reference mapping if it does not already exist, and the user is subscribed" in {

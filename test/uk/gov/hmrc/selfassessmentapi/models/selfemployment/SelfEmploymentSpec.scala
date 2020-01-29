@@ -18,12 +18,52 @@ package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.models.{AccountingPeriod, AccountingType, ErrorCode, Errors}
+import uk.gov.hmrc.selfassessmentapi.models.des.selfemployment.SelfEmploymentAddress
+import uk.gov.hmrc.selfassessmentapi.models.{AccountingPeriod, AccountingType, ErrorCode, des}
 import uk.gov.hmrc.selfassessmentapi.resources.{JsonSpec, Jsons}
 
 class SelfEmploymentSpec extends JsonSpec {
 
   "SelfEmployment JSON" should {
+    "return a Some(SelfEmployment)" when {
+      "SelfEmployment.from is called with a valid des.selfemployment.SelfEmployment model" in {
+        val desModel = des.selfemployment.SelfEmployment(
+          incomeSourceId = Some("id"),
+          accountingPeriodStartDate = "2018-09-13",
+          accountingPeriodEndDate = "2018-09-14",
+          tradingName = "Trading Persons, Places or Things",
+          addressDetails = Some(SelfEmploymentAddress(
+            addressLine1 = "123 Place Apartments",
+            addressLine2 = Some("132 Place Street"),
+            addressLine3 = Some("Place Town"),
+            addressLine4 = Some("Placeshire"),
+            postalCode = Some("PL4 C3S")
+          )),
+          typeOfBusiness = Some("Individual"),
+          tradingStartDate = Some("2018-09-13"),
+          cashOrAccruals = "cash")
+        val mtdModel = SelfEmployment(
+          id = Some("id"),
+          accountingPeriod = AccountingPeriod(
+            start = LocalDate.parse("2018-09-13"),
+            end = LocalDate.parse("2018-09-14")
+          ),
+          accountingType = AccountingType.CASH,
+          commencementDate = LocalDate.parse("2018-09-13"),
+          cessationDate = None,
+          tradingName = "Trading Persons, Places or Things",
+          businessDescription = None,
+          businessAddressLineOne = "123 Place Apartments",
+          businessAddressLineTwo = Some("132 Place Street"),
+          businessAddressLineThree = Some("Place Town"),
+          businessAddressLineFour = Some("Placeshire"),
+          businessPostcode = "PL4 C3S"
+        )
+
+        SelfEmployment.from(desModel) shouldBe Some(mtdModel)
+      }
+    }
+
     "round ignore the id if it is provided by the user" in {
       val input = SelfEmployment(Some("myid"), AccountingPeriod(LocalDate.parse("2017-04-01"), LocalDate.parse("2017-04-02")),
         AccountingType.CASH, LocalDate.now.minusDays(1), None, "Acme Ltd.", Some("Accountancy services"), "Acme Rd.", None, None, None, "A9 9AA")

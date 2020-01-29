@@ -20,7 +20,6 @@ import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.PropertiesAnnualSummaryConnector
 import uk.gov.hmrc.r2.selfassessmentapi.contexts.AuthContext
@@ -105,9 +104,8 @@ class PropertiesAnnualSummaryResource @Inject()(
                                            id: PropertyType,
                                            taxYear: TaxYear,
                                            authCtx: AuthContext,
-                                           response: PropertiesAnnualSummaryResponse)(
-                                            implicit hc: HeaderCarrier,
-                                            request: Request[JsValue]): AuditData[AnnualSummaryUpdate] =
+                                           response: PropertiesAnnualSummaryResponse)
+                                          (implicit request: Request[JsValue]): AuditData[AnnualSummaryUpdate] =
     AuditData(
       detail = AnnualSummaryUpdate(
         httpStatus = response.status,

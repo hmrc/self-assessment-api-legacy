@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
+import cats.data.EitherT
+import cats.implicits._
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results.{BadRequest, Forbidden, InternalServerError}
 import uk.gov.hmrc.selfassessmentapi.models.{AuthorisationErrorResult, ErrorResult, Errors, GenericErrorResult, PathValidationErrorResult, ValidationErrorResult}
+import uk.gov.hmrc.selfassessmentapi.resources.wrappers.Response
 
 import scala.concurrent.{ExecutionContext, Future}
-import cats.data.EitherT
-import cats.implicits._
-import uk.gov.hmrc.selfassessmentapi.resources.wrappers.Response
 
 package object resources {
 
@@ -47,7 +47,7 @@ package object resources {
 
   object BusinessResult {
 
-    def apply[T](eventuallyErrorOrResult: Future[Either[ErrorResult, T]])(implicit ec: ExecutionContext): BusinessResult[T] =
+    def apply[T](eventuallyErrorOrResult: Future[Either[ErrorResult, T]]): BusinessResult[T] =
       new EitherT(eventuallyErrorOrResult)
 
     def apply[T](errorOrResult: Either[ErrorResult, T])(implicit ec: ExecutionContext): BusinessResult[T] =

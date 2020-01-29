@@ -20,6 +20,7 @@ import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.SelfEmploymentAnnualSummaryConnector
 import uk.gov.hmrc.r2.selfassessmentapi.contexts.AuthContext
 import uk.gov.hmrc.r2.selfassessmentapi.models._
@@ -30,8 +31,6 @@ import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.SelfEmploymentAnnualS
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
 
 import scala.concurrent.ExecutionContext
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 
 
 class SelfEmploymentAnnualSummaryResource @Inject()(
@@ -72,8 +71,7 @@ class SelfEmploymentAnnualSummaryResource @Inject()(
                                            taxYear: TaxYear,
                                            authCtx: AuthContext,
                                            response: SelfEmploymentAnnualSummaryResponse)(
-                                            implicit hc: HeaderCarrier,
-                                            request: Request[JsValue]): AuditData[AnnualSummaryUpdate] =
+                                            implicit request: Request[JsValue]): AuditData[AnnualSummaryUpdate] =
     AuditData(
       detail = AnnualSummaryUpdate(
         httpStatus = response.status,

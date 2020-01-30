@@ -17,36 +17,48 @@
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
 import org.joda.time.LocalDate
-import org.scalacheck.Gen
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.models.Generators._
-import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, SimpleIncome}
+import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, Expense, SimpleIncome}
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
-class SelfEmploymentPeriodSpec extends JsonSpec with ScalaCheckDrivenPropertyChecks {
+class SelfEmploymentPeriodSpec extends JsonSpec {
+
+  val period: SelfEmploymentPeriod = SelfEmploymentPeriod(id = None,
+    from = LocalDate.parse("2017-04-01"),
+    to = LocalDate.parse("2017-04-02"),
+    incomes = Some(Incomes(turnover = Some(SimpleIncome(0)))),
+    expenses = Some(Expenses(staffCosts = Some(Expense(10.25, None)))),
+    consolidatedExpenses = None)
 
   "SelfEmploymentPeriod" should {
-    "round trip" in forAll(genSelfEmploymentPeriod())(roundTripJson(_))
-
-    "return a INVALID_PERIOD error when using a period with a 'from' date that becomes before the 'to' date" in
-      forAll(genSelfEmploymentPeriod(invalidPeriod = true)) { period =>
-        assertValidationErrorsWithCode[SelfEmploymentPeriod](Json.toJson(period),
-                                                             Map("" -> Seq(ErrorCode.INVALID_PERIOD)))
+    "round trip" when {
+      "passed a SelfEmploymentPeriod with incomes" in {
+        roundTripJson(period)
       }
-
-    "return a NO_INCOMES_AND_EXPENSES error when incomes and expenses are not supplied" in
-      forAll(genSelfEmploymentPeriod(nullFinancials = true)) { period =>
-        assertValidationErrorsWithCode[SelfEmploymentPeriod](Json.toJson(period),
-                                                             Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES)))
+      "passed a SelfEmploymentPeriod with only expenses" in {
+        roundTripJson(period.copy(incomes = None))
       }
+    }
 
-    "return a INVALID_PERIOD and NO_INCOMES_AND_EXPENSES errors when the from and to dates are invalid and incomes and expenses are not supplied" in
-      forAll(genSelfEmploymentPeriod(invalidPeriod = true, nullFinancials = true)) { period =>
-        assertValidationErrorsWithCode[SelfEmploymentPeriod](
-          Json.toJson(period),
-          Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES, ErrorCode.INVALID_PERIOD)))
-      }
+    "return a INVALID_PERIOD error when using a period with a 'from' date before the 'to' date" in {
+      assertValidationErrorsWithCode[SelfEmploymentPeriod](
+        Json.toJson(period.copy(to = period.from.minusDays(1))),
+        Map("" -> Seq(ErrorCode.INVALID_PERIOD))
+      )
+    }
+
+    "return a NO_INCOMES_AND_EXPENSES error when incomes and expenses are not supplied" in {
+      assertValidationErrorsWithCode[SelfEmploymentPeriod](
+        Json.toJson(period.copy(incomes = None, expenses = None)),
+        Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES)))
+    }
+
+    "return a INVALID_PERIOD and NO_INCOMES_AND_EXPENSES errors when the from and to dates are invalid and incomes and expenses are not supplied" in {
+      assertValidationErrorsWithCode[SelfEmploymentPeriod](
+        Json.toJson(period.copy(to = period.from.minusDays(1), incomes = None, expenses = None)),
+        Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES, ErrorCode.INVALID_PERIOD))
+      )
+    }
 
     "return an error when provided with an empty json body" in
       assertValidationErrorsWithMessage[SelfEmploymentPeriod](Json.parse("{}"),
@@ -63,19 +75,5 @@ class SelfEmploymentPeriodSpec extends JsonSpec with ScalaCheckDrivenPropertyChe
       assertValidationPasses(period)
     }
   }
-
-  def genSelfEmploymentPeriod(invalidPeriod: Boolean = false,
-                              nullFinancials: Boolean = false): Gen[SelfEmploymentPeriod] =
-    (for {
-      incomes <- Gen.option(genIncomes)
-      expenses <- Gen.option(genExpenses)
-    } yield {
-      val from = LocalDate.now()
-      val to = from.plusDays(1)
-      SelfEmploymentPeriod(None, if (invalidPeriod) to else from, if (invalidPeriod) from else to, incomes, expenses, None)
-    }) retryUntil { period =>
-      if (nullFinancials) period.incomes.isEmpty && period.expenses.isEmpty
-      else period.incomes.exists(_.hasIncomes) || period.expenses.exists(_.hasExpenses) || period.consolidatedExpenses.isDefined
-    }
 
 }

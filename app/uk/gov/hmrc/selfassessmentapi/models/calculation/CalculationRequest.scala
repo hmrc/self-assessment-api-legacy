@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.models.calculation
 
-import play.api.data.validation.ValidationError
 import play.api.libs.json.{Reads, _}
 import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, TaxYear}
 

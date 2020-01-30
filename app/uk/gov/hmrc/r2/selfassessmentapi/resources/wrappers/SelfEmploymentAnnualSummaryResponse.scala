@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.r2.selfassessmentapi.models.des
 import uk.gov.hmrc.r2.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary

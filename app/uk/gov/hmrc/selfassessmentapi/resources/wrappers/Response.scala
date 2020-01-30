@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.selfassessmentapi.contexts.FilingOnlyAgent
 import uk.gov.hmrc.selfassessmentapi.models.des.DesErrorCode.{DesErrorCode, _}
 import uk.gov.hmrc.selfassessmentapi.models.des.{DesError, MultiDesError}
-import uk.gov.hmrc.selfassessmentapi.models.{Errors, PeriodSummary, des}
+import uk.gov.hmrc.selfassessmentapi.models.{Errors, des}
 import uk.gov.hmrc.selfassessmentapi.resources.AuthRequest
 
 trait Response {

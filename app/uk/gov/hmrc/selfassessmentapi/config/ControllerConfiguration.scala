@@ -20,10 +20,8 @@ package uk.gov.hmrc.selfassessmentapi.config
 import com.typesafe.config.Config
 import javax.inject.Inject
 import net.ceedubs.ficus.Ficus._
-import net.ceedubs.ficus.readers.{StringReader, ValueReader}
+import net.ceedubs.ficus.readers.ValueReader
 import play.api.Configuration
-
-import scala.util.matching.Regex
 
 case class ControllerConfigParams(needsHeaderValidation: Boolean = true,
                                   needsLogging: Boolean = true,
@@ -31,8 +29,6 @@ case class ControllerConfigParams(needsHeaderValidation: Boolean = true,
                                   needsTaxYear: Boolean = true)
 
 class ControllerConfiguration @Inject()(configuration: Configuration) {
-
-  private implicit val regexValueReader: ValueReader[Regex] = StringReader.stringValueReader.map(_.r)
 
   private implicit val controllerParamsReader = ValueReader.relative[ControllerConfigParams] { config =>
     ControllerConfigParams(

@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.models
 
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import uk.gov.hmrc.r2.selfassessmentapi.models.ErrorCode.ErrorCode
-import play.api.libs.functional.syntax._
 import uk.gov.hmrc.r2.selfassessmentapi.models.des.DesErrorCode.DesErrorCode
 
 object Errors {

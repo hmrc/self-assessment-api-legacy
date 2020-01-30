@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.mvc.Request
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
 import uk.gov.hmrc.selfassessmentapi.models.SourceId
 import uk.gov.hmrc.selfassessmentapi.models.audit.RetrieveObligations
@@ -40,9 +38,7 @@ object Audit {
                                     id: Option[SourceId] = None,
                                     authCtx: AuthContext,
                                     response: ObligationsResponse,
-                                    transaction: RetrieveObligationTransaction)(
-                                     implicit hc: HeaderCarrier,
-                                     request: Request[_]): AuditData[RetrieveObligations] =
+                                    transaction: RetrieveObligationTransaction): AuditData[RetrieveObligations] =
     AuditData(
       detail = RetrieveObligations(
         httpStatus = response.status,

@@ -20,7 +20,7 @@ import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.Json.toJson
 import play.api.libs.json._
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Request, Result}
+import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
@@ -166,7 +166,6 @@ class PropertiesPeriodResource @Inject()(
                                                               request: Request[JsValue])(
                                                                implicit hc: HeaderCarrier,
                                                                p: PropertiesPeriodConnectorT[P, F],
-                                                               r: Reads[P],
                                                                w: Format[F]): Future[Either[ErrorResult, PropertiesPeriodResponse]] = {
     validate[F, PropertiesPeriodResponse](request.body)(p.update(nino, id, period, _))
   }
@@ -186,7 +185,7 @@ class PropertiesPeriodResource @Inject()(
                                      id: PropertyType,
                                      authCtx: AuthContext,
                                      response: PropertiesPeriodResponse,
-                                     periodId: PeriodId)(implicit hc: HeaderCarrier, request: Request[JsValue]): AuditData[PeriodicUpdate] =
+                                     periodId: PeriodId)(implicit request: Request[JsValue]): AuditData[PeriodicUpdate] =
     AuditData(
       detail = PeriodicUpdate(
         auditType = "submitPeriodicUpdate",
@@ -213,9 +212,8 @@ class PropertiesPeriodResource @Inject()(
                                     id: PropertyType,
                                     periodId: PeriodId,
                                     authCtx: AuthContext,
-                                    response: PropertiesPeriodResponse)(
-                                     implicit hc: HeaderCarrier,
-                                     request: Request[JsValue]): AuditData[PeriodicUpdate] =
+                                    response: PropertiesPeriodResponse)
+                                   (implicit request: Request[JsValue]): AuditData[PeriodicUpdate] =
     AuditData(
       detail = PeriodicUpdate(
         auditType = "amendPeriodicUpdate",

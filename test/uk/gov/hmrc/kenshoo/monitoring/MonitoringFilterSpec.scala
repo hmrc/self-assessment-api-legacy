@@ -18,7 +18,7 @@ package uk.gov.hmrc.kenshoo.monitoring
 
 import akka.stream.Materializer
 import com.codahale.metrics.MetricRegistry
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import play.api.http.HttpEntity
 import play.api.mvc.request.RequestTarget
 import play.api.mvc.{ResponseHeader, Result}
@@ -57,7 +57,7 @@ class MonitoringFilterTestImp extends MonitoringFilter with Matchers {
 
   var serviceName : String = ""
 
-  override def monitor[T](serviceName: String)(function: => Future[T])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[T] = {
+  override def monitor[T](serviceName: String)(function: => Future[T])(implicit ec: ExecutionContext): Future[T] = {
     this.serviceName = serviceName
     function
   }

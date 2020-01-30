@@ -20,9 +20,8 @@ import java.util
 import java.util.concurrent.TimeUnit
 
 import com.codahale.metrics.Timer
-import org.hamcrest.Matchers.greaterThanOrEqualTo
+import org.mockito.{AdditionalMatchers, ArgumentMatchers}
 import org.mockito.BDDMockito.given
-import org.mockito.Matchers.longThat
 import org.mockito.Mockito.verify
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
@@ -46,7 +45,7 @@ class AverageResponseTimerSpec extends UnitSpec {
         Future(Thread.sleep(1000))
       })
 
-      verify(kenshooTimer).update(longThat(greaterThanOrEqualTo(millisToNano(1000))), org.mockito.Matchers.eq(TimeUnit.NANOSECONDS))
+      verify(kenshooTimer).update(AdditionalMatchers.geq(millisToNano(1000)), ArgumentMatchers.eq(TimeUnit.NANOSECONDS))
     }
 
     "update kenshoo timer for service if one doesn't exists" in new AverageResponseTimerTest {
@@ -56,7 +55,7 @@ class AverageResponseTimerSpec extends UnitSpec {
         Future(Thread.sleep(100))
       })
 
-      verify(kenshooTimer).update(longThat(greaterThanOrEqualTo(millisToNano(100))), org.mockito.Matchers.eq(TimeUnit.NANOSECONDS))
+      verify(kenshooTimer).update(AdditionalMatchers.geq(millisToNano(100)), ArgumentMatchers.eq(TimeUnit.NANOSECONDS))
     }
   }
 

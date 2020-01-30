@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
-import org.scalatest.{Matchers, OptionValues, WordSpec}
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
@@ -27,7 +29,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.mocks.auth.MockAuthorisationService
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.config.MockAppContext
 import uk.gov.hmrc.r2.selfassessmentapi.models.SourceType.SourceType
 
-trait ResourceISpec extends WordSpec
+trait ResourceISpec extends AnyWordSpec
   with Matchers
   with MockitoSugar
   with OptionValues

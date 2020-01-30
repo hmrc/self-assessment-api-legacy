@@ -22,7 +22,6 @@ import org.joda.time.LocalDate
 import play.api.libs.json._
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentStatementConnector
 import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
@@ -86,9 +85,6 @@ class SelfEmploymentStatementResource @Inject()(
                                accountingPeriod: Period,
                                authCtx: AuthContext,
                                response: Response
-                             )(
-                               implicit hc: HeaderCarrier,
-                               request: Request[JsValue]
                              ): AuditData[EndOfPeriodStatementDeclaration] =
     AuditData(
       detail = EndOfPeriodStatementDeclaration(

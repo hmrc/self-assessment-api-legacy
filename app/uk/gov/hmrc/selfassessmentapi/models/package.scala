@@ -18,8 +18,7 @@ package uk.gov.hmrc.selfassessmentapi
 
 import org.joda.time.LocalDate
 import play.api.Logger
-import play.api.data.validation.ValidationError
-import play.api.libs.json.{JodaReads, JodaWrites, JsPath, JsonValidationError, Reads}
+import play.api.libs.json._
 
 import scala.io.{Codec, Source}
 import scala.util.Try

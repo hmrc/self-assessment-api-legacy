@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.r2.selfassessmentapi.models.properties
+import sbt.Setting
+import scoverage.ScoverageKeys
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+object CodeCoverageSettings {
 
-case class FHLPropertiesOther(nonResidentLandlord: Option[Boolean] = Some(false),
-                              rarJointLet: Option[Boolean] = None)
+  private val excludedPackages: Seq[String] = Seq(
+    "<empty>",
+    "Reverse.*",
+    "uk.gov.hmrc.BuildInfo",
+    "app.*",
+    "prod.*",
+    ".*Routes.*",
+    "config.*",
+    "testOnly.*",
+    "testOnlyDoNotUseInAppConf.*"
+  )
 
-object FHLPropertiesOther {
-  implicit val writes: Writes[FHLPropertiesOther] = Json.writes[FHLPropertiesOther]
-
-  implicit val reads: Reads[FHLPropertiesOther] = (
-    (__ \ "nonResidentLandlord").readNullable[Boolean] and
-      (__ \ "rarJointLet").readNullable[Boolean]
-    ) (FHLPropertiesOther.apply _)
+  val settings: Seq[Setting[_]] = Seq(
+    ScoverageKeys.coverageExcludedPackages := excludedPackages.mkString(";"),
+    ScoverageKeys.coverageMinimum := 85,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := true
+  )
 }

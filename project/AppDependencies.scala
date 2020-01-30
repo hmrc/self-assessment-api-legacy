@@ -21,35 +21,36 @@ import sbt._
 object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.22.0-play-26",
     ws exclude("org.apache.httpcomponents", "httpclient") exclude("org.apache.httpcomponents", "httpcore"),
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.3.0",
-    "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
-    "com.typesafe.play" %% "play-json-joda" % "2.6.0",
-    "uk.gov.hmrc" %% "play-hmrc-api" % "3.6.0-play-26",
-    "org.typelevel" %% "cats-core" % "1.6.1"
+    "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.22.0-play-26",
+    "uk.gov.hmrc"       %% "bootstrap-play-26"    % "1.3.0",
+    "uk.gov.hmrc"       %% "domain"               % "5.6.0-play-26",
+    "com.typesafe.play" %% "play-json-joda"       % "2.6.0",
+    "uk.gov.hmrc"       %% "play-hmrc-api"        % "4.1.0-play-26",
+    "org.typelevel"     %% "cats-core"            % "1.6.1",
+    compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.4.4" cross CrossVersion.full),
+    "com.github.ghik"   % "silencer-lib"          % "1.4.4" % Provided cross CrossVersion.full
   )
 
   def test(scope: String = "test, func"): Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26" % scope,
-    "org.scalatest" %% "scalatest" % "3.0.8" % scope,
-    "org.pegdown" % "pegdown" % "1.6.0" % scope,
-    "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % scope,
-    "com.github.tomakehurst" % "wiremock" % "2.23.2" % scope,
-    "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "2.2.0" % scope,
-    "org.mongodb" %% "casbah" % "3.1.1" % scope,
-    "org.scalacheck" %% "scalacheck" % "1.14.0" % scope,
-    "org.skyscreamer" % "jsonassert" % "1.5.0" % scope,
-    "com.jayway.restassured" % "rest-assured" % "2.9.0" % scope,
-    "org.mockito" % "mockito-core" % "1.10.19" % scope,
-    "org.scoverage" %% "scalac-scoverage-runtime" % "1.3.1" % scope
+    "org.scalatest"          %% "scalatest"                 % "3.1.0"             % scope,
+    "com.typesafe.play"      %% "play-test"                 % PlayVersion.current % scope,
+    "org.scalatestplus.play" %% "scalatestplus-play"        % "3.1.2"             % scope,
+    "com.github.tomakehurst" %  "wiremock"                  % "2.25.1"            % scope,
+    "de.flapdoodle.embed"    %  "de.flapdoodle.embed.mongo" % "2.2.0"             % scope,
+    "org.mongodb"            %% "casbah"                    % "3.1.1"             % scope,
+    "org.scalacheck"         %% "scalacheck"                % "1.14.2"            % scope,
+    "org.scalatestplus"      %% "scalatestplus-mockito"     % "1.0.0-M2"          % scope,
+    "com.vladsch.flexmark"   %  "flexmark-all"              % "0.35.10"           % scope,
+    "org.skyscreamer"        %  "jsonassert"                % "1.5.0"             % scope,
+    "com.jayway.restassured" %  "rest-assured"              % "2.9.0"             % scope,
+    "org.mockito"            %  "mockito-core"              % "3.2.4"             % scope
   )
 
   // Fixes a transitive dependency clash between wiremock and scalatestplus-play
-  val overrides: Set[ModuleID] = {
+  val overrides: Seq[ModuleID] = {
     val jettyFromWiremockVersion = "9.2.24.v20180105"
-    Set(
+    Seq(
       "org.eclipse.jetty" % "jetty-client" % jettyFromWiremockVersion,
       "org.eclipse.jetty" % "jetty-continuation" % jettyFromWiremockVersion,
       "org.eclipse.jetty" % "jetty-http" % jettyFromWiremockVersion,

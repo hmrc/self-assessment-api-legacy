@@ -17,7 +17,9 @@
 package uk.gov.hmrc.r2.selfassessmentapi
 
 import org.joda.time.{DateTime, DateTimeZone}
-import org.scalatest.{AsyncWordSpec, Matchers, OptionValues, WordSpec}
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.{AnyWordSpec, AsyncWordSpec}
 import uk.gov.hmrc.r2.selfassessmentapi.models.TaxYear
 
 import scala.concurrent.duration._
@@ -30,7 +32,7 @@ trait BaseUnitSpec extends Matchers with OptionValues with TestUtils {
     Await.result(f, duration)
 }
 
-trait UnitSpec extends WordSpec with BaseUnitSpec
+trait UnitSpec extends AnyWordSpec with BaseUnitSpec
 
 trait AsyncUnitSpec extends AsyncWordSpec with BaseUnitSpec
 

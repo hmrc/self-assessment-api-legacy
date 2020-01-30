@@ -19,16 +19,15 @@ package uk.gov.hmrc.kenshoo.monitoring
 import java.util.concurrent.TimeUnit
 
 import com.codahale.metrics.{Meter, Timer}
-import org.hamcrest.Matchers._
+import org.mockito.{AdditionalMatchers, ArgumentMatchers}
 import org.mockito.BDDMockito._
-import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpException }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 
 class HttpAPIMonitorSpec extends UnitSpec with Matchers {
 
@@ -46,7 +45,7 @@ class HttpAPIMonitorSpec extends UnitSpec with Matchers {
       } catch {
         case ex: Throwable => ()
       }
-      verify(kenshooTimer).update(longThat(greaterThanOrEqualTo(10000000L)), org.mockito.Matchers.eq(TimeUnit.NANOSECONDS))
+      verify(kenshooTimer).update(AdditionalMatchers.geq(10000000L), ArgumentMatchers.eq(TimeUnit.NANOSECONDS))
       verify(errorMeter4xx).mark()
     }
   }

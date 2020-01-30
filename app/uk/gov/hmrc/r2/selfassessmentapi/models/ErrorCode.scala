@@ -17,7 +17,6 @@
 package uk.gov.hmrc.r2.selfassessmentapi.models
 
 import play.api.libs.json.Format
-import uk.gov.hmrc.r2.selfassessmentapi.models.ErrorCode.ErrorCode
 
 object ErrorCode extends Enumeration {
   type ErrorCode = Value

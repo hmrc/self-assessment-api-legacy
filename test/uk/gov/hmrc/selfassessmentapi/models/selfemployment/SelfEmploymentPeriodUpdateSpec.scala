@@ -16,34 +16,58 @@
 
 package uk.gov.hmrc.selfassessmentapi.models.selfemployment
 
-import org.scalacheck.Gen
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.libs.json.Json
-import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
-import uk.gov.hmrc.selfassessmentapi.models.Generators.{genExpenses, genIncomes}
+import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, Expense, SimpleIncome}
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
-class SelfEmploymentPeriodUpdateSpec extends JsonSpec with ScalaCheckDrivenPropertyChecks {
+class SelfEmploymentPeriodUpdateSpec extends JsonSpec {
+
+  val periodUpdate: SelfEmploymentPeriodUpdate = SelfEmploymentPeriodUpdate(
+    Some(Incomes(Some(SimpleIncome(0)))),
+    None,
+    None
+  )
 
   "SelfEmploymentPeriodUpdate" should {
-    "round trip" in forAll(genSelfEmploymentPeriodUpdate())(roundTripJson(_))
+    "round trip" in roundTripJson(periodUpdate)
 
-    "return a NO_INCOMES_AND_EXPENSES error when incomes and expenses are not supplied" in
-      forAll(genSelfEmploymentPeriodUpdate(nullFinancials = true)) { period =>
-        assertValidationErrorsWithCode[SelfEmploymentPeriodUpdate](Json.toJson(period),
-                                                                   Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES)))
-      }
+    "return a NO_INCOMES_AND_EXPENSES error when incomes and expenses are not supplied" in {
+      assertValidationErrorsWithCode[SelfEmploymentPeriodUpdate](
+        Json.toJson(periodUpdate.copy(incomes = None)),
+        Map("" -> Seq(ErrorCode.NO_INCOMES_AND_EXPENSES))
+      )
+    }
 
-    def genSelfEmploymentPeriodUpdate(nullFinancials: Boolean = false): Gen[SelfEmploymentPeriodUpdate] =
-      (for {
-        incomes <- Gen.option(genIncomes)
-        expenses <- Gen.option(genExpenses)
-      } yield {
-        SelfEmploymentPeriodUpdate(incomes, expenses, None)
-      }) retryUntil { period =>
-        if (nullFinancials) period.incomes.isEmpty && period.expenses.isEmpty
-        else period.incomes.exists(_.hasIncomes) || period.expenses.exists(_.hasExpenses) || period.consolidatedExpenses.isDefined
+    "return a BOTH_EXPENSES_SUPPLIED error when both consolidatedExpenses and expenses are supplied" in {
+      assertValidationErrorsWithCode[SelfEmploymentPeriodUpdate](
+        Json.toJson(periodUpdate.copy(
+          expenses = Some(Expenses(staffCosts = Some(Expense(10.25, None)))),
+          consolidatedExpenses = Some(10.25)
+        )),
+        Map("" -> Seq(ErrorCode.BOTH_EXPENSES_SUPPLIED))
+      )
+    }
+
+    "return an INVALID_MONETARY_AMOUNT error" when {
+      "consolidatedExpenses has a negative value" in {
+        assertValidationErrorsWithCode[SelfEmploymentPeriodUpdate](
+          Json.toJson(periodUpdate.copy(consolidatedExpenses = Some(-10.25))),
+          Map("/consolidatedExpenses" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+        )
       }
+      "consolidatedExpenses has greater than 3dp" in {
+        assertValidationErrorsWithCode[SelfEmploymentPeriodUpdate](
+          Json.toJson(periodUpdate.copy(consolidatedExpenses = Some(10.254))),
+          Map("/consolidatedExpenses" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+        )
+      }
+      "consolidatedExpenses is larger than the max amount allowed" in {
+        assertValidationErrorsWithCode[SelfEmploymentPeriodUpdate](
+          Json.toJson(periodUpdate.copy(consolidatedExpenses = Some(BigDecimal("1000000000000000000")))),
+          Map("/consolidatedExpenses" -> Seq(ErrorCode.INVALID_MONETARY_AMOUNT))
+        )
+      }
+    }
 
   }
 }

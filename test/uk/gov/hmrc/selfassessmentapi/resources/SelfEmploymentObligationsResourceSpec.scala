@@ -47,11 +47,12 @@ class SelfEmploymentObligationsResourceSpec extends ResourceSpec
       "the connector returns a failed future" in new Setup {
         val request = FakeRequest().ignoreBody
 
+        val from = Some(LocalDate.parse("2017-01-01"))
+        val to = Some(LocalDate.parse("2017-12-31"))
+
         MockObligationsConnector.get(nino, "ITSB", Some(ObligationQueryParams(from, to)))
           .returns(Future.failed(new RuntimeException("something went wrong")))
 
-        val from = Some(LocalDate.parse("2017-01-01"))
-        val to = Some(LocalDate.parse("2017-12-31"))
         val result = resource.retrieveObligations(nino, sourceId, ObligationQueryParams(from, to))(request)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }

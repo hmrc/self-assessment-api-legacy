@@ -22,7 +22,7 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws exclude("org.apache.httpcomponents", "httpclient") exclude("org.apache.httpcomponents", "httpcore"),
-    "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.22.0-play-26",
+    "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.23.0-play-26",
     "uk.gov.hmrc"       %% "bootstrap-play-26"    % "1.3.0",
     "uk.gov.hmrc"       %% "domain"               % "5.6.0-play-26",
     "com.typesafe.play" %% "play-json-joda"       % "2.6.0",

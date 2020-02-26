@@ -21,16 +21,14 @@ import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.models.Errors.{InvalidRequest, NinoInvalid, NinoNotFound, NoSubmissionDataExists, SelfEmploymentIDInvalid, SelfEmploymentIDNotFound, ServerError, TaxYearInvalid, TaxYearNotFound}
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.services.{AuthorisationService, SelfEmploymentBISSService}
+import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class SelfEmploymentBISSResource @Inject()(
                                             override val appContext: AppContext,
                                             override val authService: AuthorisationService,
-                                            service: SelfEmploymentBISSService,
                                             cc: ControllerComponents
                                           )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
@@ -38,14 +36,7 @@ class SelfEmploymentBISSResource @Inject()(
     APIAction(nino, SourceType.SelfEmployments, Some("BISS")).async {
       implicit request =>
         logger.debug(s"[SelfEmploymentBISSResource][getSummary] Get BISS for NI number : $nino with selfEmploymentId: $selfEmploymentId")
-        service.getSummary(nino, taxYear, selfEmploymentId).map {
-          case Left(error) => (error.error: @unchecked) match {
-            case NinoInvalid | TaxYearInvalid | SelfEmploymentIDInvalid => BadRequest(toJson(error))
-            case NinoNotFound | TaxYearNotFound | NoSubmissionDataExists | SelfEmploymentIDNotFound => NotFound(toJson(error))
-            case ServerError | Errors.ServiceUnavailable => InternalServerError(toJson(error))
-            case InvalidRequest => BadRequest(toJson(error))
-          }
-          case Right(response) => Ok(toJson(response))
-        }
+        logger.warn(message = "[SelfEmploymentBISSResource][getSummary] - Using deprecated resource.  Should be using BISS API")
+        Future.successful(Gone(toJson(Errors.BissResourceGone)))
     }
 }

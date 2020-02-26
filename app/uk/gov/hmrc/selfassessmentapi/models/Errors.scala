@@ -151,7 +151,7 @@ object Errors {
   object SelfEmploymentIDInvalid extends Error("SELF_EMPLOYMENT_ID_INVALID", "The provided self-employment ID is invalid", None)
   object NotFoundCrystallisationCalculation extends Error("NOT_FOUND", "No calculation exists for this calculation ID, or it does not relate to an intent-to-crystallise calculation.", None)
 
-  object TaxCalcGone extends Error("RESOURCE_GONE", "This resource is no longer available. Use v2.0", None)
+  object BissResourceGone extends Error("RESOURCE_GONE", "This resource is no longer available", None)
 
   def badRequest(validationErrors: ValidationErrors) = BadRequest(flattenValidationErrors(validationErrors), "Invalid request")
   def badRequest(error: Error) = BadRequest(Seq(error), "Invalid request")

@@ -24,7 +24,7 @@ import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class SelfEmploymentBISSResource @Inject()(
                                             override val appContext: AppContext,
@@ -34,7 +34,6 @@ class SelfEmploymentBISSResource @Inject()(
 
   def getSummary(nino: Nino, taxYear: TaxYear, selfEmploymentId: String): Action[AnyContent] =
     APIAction(nino, SourceType.SelfEmployments, Some("BISS")) {
-      implicit request =>
         logger.debug(s"[SelfEmploymentBISSResource][getSummary] Get BISS for NI number : $nino with selfEmploymentId: $selfEmploymentId")
         logger.warn(message = "[SelfEmploymentBISSResource][getSummary] - Using deprecated resource.  Should be using BISS API")
         Gone(toJson(Errors.ResourceGone))

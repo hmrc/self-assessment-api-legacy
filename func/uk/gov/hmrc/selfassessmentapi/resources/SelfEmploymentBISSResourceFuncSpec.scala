@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.http.Status._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentBISSResourceFuncSpec extends BaseFunctionalSpec {
@@ -24,7 +23,7 @@ class SelfEmploymentBISSResourceFuncSpec extends BaseFunctionalSpec {
   val selfEmploymentId = "XKIS00000000988"
 
     "getSummary for SE BISS" should {
-      "return code 200 for a supplied valid data" in {
+      "return code 410 for any request" in {
         given()
           .userIsSubscribedToMtdFor(nino)
           .clientIsFullyAuthorisedForTheResource
@@ -32,18 +31,8 @@ class SelfEmploymentBISSResourceFuncSpec extends BaseFunctionalSpec {
           .when()
           .get(s"/ni/$nino/self-employments/$selfEmploymentId/$taxYear/income-summary")
           .thenAssertThat()
-          .statusIs(200)
-      }
-
-      "return code 400 for a supplied invalid nino" in {
-        given()
-          .userIsSubscribedToMtdFor(nino)
-          .clientIsFullyAuthorisedForTheResource
-          .des().SelfEmploymentBISS.getSummaryErrorResponse(nino, taxYear, selfEmploymentId, BAD_REQUEST, DesJsons.Errors.invalidIdValue)
-          .when()
-          .get(s"/ni/$nino/self-employments/$selfEmploymentId/$taxYear/income-summary")
-          .thenAssertThat()
-          .statusIs(400)
+          .statusIs(410)
+          .bodyIsLike(Jsons.Errors.resourceGone.toString)
       }
     }
 }

@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.http.Status._
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class PropertiesBISSResourceFuncSpec extends BaseFunctionalSpec {
 
-    "getSummary for Properties BISS" should {
-      "return code 200 for a supplied valid data" in {
+    "getSummary for Property BISS" should {
+      "return code 410 for any request" in {
         given()
           .userIsSubscribedToMtdFor(nino)
           .clientIsFullyAuthorisedForTheResource
@@ -30,30 +29,8 @@ class PropertiesBISSResourceFuncSpec extends BaseFunctionalSpec {
           .when()
           .get(s"/ni/$nino/uk-properties/$taxYear/income-summary")
           .thenAssertThat()
-          .statusIs(200)
+          .statusIs(410)
+          .bodyIsLike(Jsons.Errors.resourceGone.toString)
       }
-
-      "return code 400 for a supplied invalid nino" in {
-        given()
-          .userIsSubscribedToMtdFor(nino)
-          .clientIsFullyAuthorisedForTheResource
-          .des().PropertiesBISS.getSummaryErrorResponse(nino, taxYear, BAD_REQUEST, DesJsons.Errors.invalidIdValue)
-          .when()
-          .get(s"/ni/$nino/uk-properties/$taxYear/income-summary")
-          .thenAssertThat()
-          .statusIs(400)
-      }
-
-      "return multiple errors for a supplied invalid request" in {
-        given()
-          .userIsSubscribedToMtdFor(nino)
-          .clientIsFullyAuthorisedForTheResource
-          .des().PropertiesBISS.getSummaryErrorResponse(nino, taxYear, BAD_REQUEST, DesJsons.Errors.multipleErrors)
-          .when()
-          .get(s"/ni/$nino/uk-properties/$taxYear/income-summary")
-          .thenAssertThat()
-          .statusIs(400)
-      }
-
     }
 }

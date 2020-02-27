@@ -16,160 +16,31 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import play.api.libs.json.Json.toJson
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.selfassessmentapi.fixtures.properties.PropertiesBISSFixture
-import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockPropertiesBISSConnector
-import uk.gov.hmrc.selfassessmentapi.models.Errors.{ErrorWrapper, NinoInvalid, NinoNotFound, NoSubmissionDataExists, ServerError, ServiceUnavailable, TaxYearInvalid, TaxYearNotFound}
+import play.api.mvc.Result
+import play.api.test.FakeRequest
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PropertiesBISSResourceSpec extends BaseResourceSpec
-  with MockPropertiesBISSConnector {
+class PropertiesBISSResourceSpec extends ResourceSpec {
 
-  val readJson =
-    """{
-      |    "totalIncome": 100.00,
-      |    "totalExpenses": 50.00,
-      |    "totalAdditions": 5.00,
-      |    "totalDeductions": 60.00,
-      |    "netProfit": 50.00,
-      |    "netLoss": 0.00,
-      |    "taxableProfit": 0.00,
-      |    "taxableLoss": 5.00
-      |}"""
-
-  class SetUp {
+  class Setup {
     val resource = new PropertiesBISSResource(
       mockAppContext,
       mockAuthorisationService,
-      mockPropertiesBISSConnector,
       cc
     )
     mockAPIAction(SourceType.Properties)
   }
 
-  implicit val hc = HeaderCarrier()
+  "getSummary" should {
+    "return a 410 for any request" when {
+      "any data is supplied" in new Setup {
 
-  "PropertiesBISSResource getSummary" should {
-    "return valid response" when {
-      "valid nino and tax year is supplied" in new SetUp {
-        MockPropertiesBISSConnector.get(nino, taxYear).
-          returns(Future.successful(Right(PropertiesBISSFixture.propertiesBISS())))
-
-        showWithSessionAndAuth(resource.getSummary(nino, taxYear)) {
-          result =>
-            status(result) shouldBe OK
-            contentAsJson(result) shouldBe toJson(PropertiesBISSFixture.propertiesBISS())
-        }
-      }
-    }
-
-    "return invalid nino error response" when {
-      "invalid nino and valid tax year is supplied" in new SetUp {
-        val expected = ErrorWrapper(NinoInvalid, None)
-
-        MockPropertiesBISSConnector.get(nino, taxYear).
-          returns(Future.successful(Left(expected)))
-
-        showWithSessionAndAuth(resource.getSummary(nino, taxYear)) {
-          result =>
-            status(result) shouldBe BAD_REQUEST
-            contentAsJson(result) shouldBe toJson(expected)
-        }
-      }
-    }
-
-    "return invalid tax year error response" when {
-      "valid nino and invalid tax year is supplied" in new SetUp {
-        val expected = ErrorWrapper(TaxYearInvalid, None)
-
-        MockPropertiesBISSConnector.get(nino, taxYear).
-          returns(Future.successful(Left(expected)))
-
-        showWithSessionAndAuth(resource.getSummary(nino, taxYear)) {
-          result =>
-            status(result) shouldBe BAD_REQUEST
-            contentAsJson(result) shouldBe toJson(expected)
-        }
-      }
-    }
-
-    "return nino not found error response" when {
-      "nino supplied not found in the backend" in new SetUp {
-
-        val expected = ErrorWrapper(NinoNotFound, None)
-
-        MockPropertiesBISSConnector.get(nino, taxYear).
-          returns(Future.successful(Left(expected)))
-
-        showWithSessionAndAuth(resource.getSummary(nino, taxYear)) {
-          result =>
-            status(result) shouldBe NOT_FOUND
-            contentAsJson(result) shouldBe toJson(expected)
-        }
-      }
-    }
-
-    "return tax year not found error response" when {
-      "tax year supplied not found in the backend" in new SetUp {
-        val expected = ErrorWrapper(TaxYearNotFound, None)
-
-        MockPropertiesBISSConnector.get(nino, taxYear).
-          returns(Future.successful(Left(expected)))
-
-        showWithSessionAndAuth(resource.getSummary(nino, taxYear)) {
-          result =>
-            status(result) shouldBe NOT_FOUND
-            contentAsJson(result) shouldBe toJson(expected)
-        }
-      }
-    }
-
-    "return data not found error response" when {
-      "no data found with the supplied details in the backend" in new SetUp {
-        val expected = ErrorWrapper(NoSubmissionDataExists, None)
-
-        MockPropertiesBISSConnector.get(nino, taxYear).
-          returns(Future.successful(Left(expected)))
-
-        showWithSessionAndAuth(resource.getSummary(nino, taxYear)) {
-          result =>
-            status(result) shouldBe NOT_FOUND
-            contentAsJson(result) shouldBe toJson(expected)
-        }
-      }
-    }
-
-    "return server error response" when {
-      "unknown error in the backend" in new SetUp {
-        val expected = ErrorWrapper(ServerError, None)
-
-        MockPropertiesBISSConnector.get(nino, taxYear).
-          returns(Future.successful(Left(expected)))
-
-        showWithSessionAndAuth(resource.getSummary(nino, taxYear)) {
-          result =>
-            status(result) shouldBe INTERNAL_SERVER_ERROR
-            contentAsJson(result) shouldBe toJson(expected)
-        }
-      }
-    }
-
-    "return service unavailable error response" when {
-      "backend is not available" in new SetUp {
-        val expected = ErrorWrapper(ServiceUnavailable, None)
-
-        MockPropertiesBISSConnector.get(nino, taxYear).
-          returns(Future.successful(Left(expected)))
-
-        showWithSessionAndAuth(resource.getSummary(nino, taxYear)) {
-          result =>
-            status(result) shouldBe SERVICE_UNAVAILABLE
-            contentAsJson(result) shouldBe toJson(expected)
-        }
+        val result: Future[Result] = resource.getSummary(nino, taxYear)(FakeRequest())
+        status(result) shouldBe GONE
+        contentType(result) shouldBe Some(JSON)
       }
     }
   }

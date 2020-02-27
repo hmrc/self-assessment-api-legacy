@@ -23,11 +23,6 @@ import uk.gov.hmrc.selfassessmentapi.models.SourceType.SourceType
 case class FeatureSwitch(value: Option[Configuration], env: String) {
   val DEFAULT_VALUE = true
 
-  def isEnabled(sourceType: SourceType): Boolean = value match {
-    case Some(config) => FeatureConfig(config).isSourceEnabled(sourceType.toString)
-    case None => DEFAULT_VALUE
-  }
-
   def isEnabled(sourceType: SourceType, summary: Option[String]): Boolean = value match {
     case Some(config) =>
       summary match {
@@ -37,26 +32,9 @@ case class FeatureSwitch(value: Option[Configuration], env: String) {
     case None => DEFAULT_VALUE
   }
 
-  def isWhiteListingEnabled: Boolean = {
-    value match {
-      case Some(config) => config.getOptional[Boolean]("white-list.enabled").getOrElse(false)
-      case None => false
-    }
-  }
-
   def isAgentSimulationFilterEnabled: Boolean = value match {
     case Some(config) => config.getOptional[Boolean]("test-scenario-simulation.enabled").getOrElse(false)
     case None => false
-  }
-
-  def whiteListedApplicationIds: Seq[String] = {
-    value match {
-      case Some(config) =>
-        config
-          .getOptional[Seq[String]]("white-list.applicationIds")
-          .getOrElse(throw new RuntimeException(s"$env.feature-switch.white-list.applicationIds is not configured"))
-      case None => Seq()
-    }
   }
 }
 

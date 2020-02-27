@@ -49,8 +49,9 @@
     <logger name ="io.netty" level="OFF"/>
     <logger name ="javax.management" level="OFF"/>
     <logger name ="org.mongodb" level="OFF"/>
+    <logger name ="org.gov" level="DEBUG"/>
 
-    <root level="OFF">
+    <root level="DEBUG">
         <appender-ref ref="ASYNC_FILE"/>
         <appender-ref ref="ASYNC_STDOUT"/>
     </root>

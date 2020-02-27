@@ -50,8 +50,10 @@
     <logger name ="javax.management" level="OFF"/>
     <logger name ="org.mongodb" level="OFF"/>
     <logger name ="org.gov" level="DEBUG"/>
+    <logger name ="reactivemongo.core.actors.MongoDBSystem" level="OFF"/>
+    <logger name ="uk.gov.hmrc.audit.handler.DatastreamHandler" level="OFF"/>
 
-    <root level="DEBUG">
+    <root level="OFF">
         <appender-ref ref="ASYNC_FILE"/>
         <appender-ref ref="ASYNC_STDOUT"/>
     </root>

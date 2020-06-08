@@ -48,6 +48,7 @@
     <logger name="reactivemongo-akka.actor" level="OFF"/>
 
     <logger name="reactivemongo" level="OFF"/>
+    <logger name ="reactivemongo.core.actors.MongoDBSystem" level="OFF"/>
 
     <root level="INFO">
         <appender-ref ref="ASYNC_FILE"/>

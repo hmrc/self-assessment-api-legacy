@@ -102,7 +102,7 @@ class SelfEmploymentStatementResource @Inject()(
     APIAction(nino, SourceType.SelfEmployments, Some("statements")).async(parse.empty) { implicit request =>
       val selfEmploymentPattern = "^[A-Za-z0-9]{15}$"
       if (id.matches(selfEmploymentPattern)) {
-        statementConnector.get(nino, params).map { response =>
+        statementConnector.get(nino, id, params).map { response =>
           response.filter {
             case 200 =>
               logger.debug("Self-employment statements from DES = " + Json.stringify(response.json))

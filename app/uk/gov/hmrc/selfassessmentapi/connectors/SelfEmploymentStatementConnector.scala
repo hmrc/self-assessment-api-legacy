@@ -39,7 +39,7 @@ class SelfEmploymentStatementConnector @Inject()(
     httpPost[RequestDateTime, EmptyResponse](s"$baseUrl/income-store/nino/$nino/self-employments/$id/accounting-periods/${accountingPeriod.periodId}/statement",
       RequestDateTime(requestTimestamp), EmptyResponse)
 
-  def get(nino: Nino, id: SourceId, params: EopsObligationQueryParams)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentStatementResponse] = {
+  def get(nino: Nino, params: EopsObligationQueryParams)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentStatementResponse] = {
     val queryString = (params.from, params.to) match {
       case (None, None) => s"?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"
       case (Some(f), Some(t)) => s"?from=$f&to=$t"

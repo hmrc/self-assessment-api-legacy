@@ -18,4 +18,4 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.24")
 
 addSbtPlugin("org.lyranthe.sbt" % "partial-unification" % "1.1.0")
 
-addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.4")
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.1")

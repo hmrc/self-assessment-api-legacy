@@ -34,18 +34,18 @@ object AppDependencies {
   )
 
   def test(scope: String = "test, func"): Seq[ModuleID] = Seq(
-    "org.scalatest"          %% "scalatest"                 % "3.2.0"             % scope,
+    "org.scalatest"          %% "scalatest"                 % "3.2.2"             % scope,
     "com.typesafe.play"      %% "play-test"                 % PlayVersion.current % scope,
     "org.scalatestplus.play" %% "scalatestplus-play"        % "3.1.2"             % scope,
     "com.github.tomakehurst" %  "wiremock"                  % "2.27.2"            % scope,
     "de.flapdoodle.embed"    %  "de.flapdoodle.embed.mongo" % "2.2.0"             % scope,
     "org.mongodb"            %% "casbah"                    % "3.1.1"             % scope,
-    "org.scalacheck"         %% "scalacheck"                % "1.14.2"            % scope,
+    "org.scalacheck"         %% "scalacheck"                % "1.14.3"            % scope,
     "org.scalatestplus"      %% "scalatestplus-mockito"     % "1.0.0-M2"          % scope,
     "com.vladsch.flexmark"   %  "flexmark-all"              % "0.35.10"           % scope,
     "org.skyscreamer"        %  "jsonassert"                % "1.5.0"             % scope,
     "com.jayway.restassured" %  "rest-assured"              % "2.9.0"             % scope,
-    "org.mockito"            %  "mockito-core"              % "3.2.4"             % scope
+    "org.mockito"            %  "mockito-core"              % "3.5.13"             % scope
   )
 
   // Fixes a transitive dependency clash between wiremock and scalatestplus-play

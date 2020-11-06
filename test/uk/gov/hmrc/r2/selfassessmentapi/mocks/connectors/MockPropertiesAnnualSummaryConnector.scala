@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.mocks.connectors
 
+import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.PropertiesAnnualSummaryConnector
@@ -23,20 +24,23 @@ import uk.gov.hmrc.r2.selfassessmentapi.mocks.Mock
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertiesAnnualSummary
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.r2.selfassessmentapi.models.TaxYear
+import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.PropertiesAnnualSummaryResponse
+
+import scala.concurrent.Future
 
 trait MockPropertiesAnnualSummaryConnector extends Mock {
   _: Suite =>
 
-  val mockPropertiesAnnualSummaryConnector = mock[PropertiesAnnualSummaryConnector]
+  val mockPropertiesAnnualSummaryConnector: PropertiesAnnualSummaryConnector = mock[PropertiesAnnualSummaryConnector]
 
   object MockPropertiesAnnualSummaryConnector {
-    def update(nino: Nino, propertyType: PropertyType, taxYear: TaxYear, update: PropertiesAnnualSummary) = {
+    def update(nino: Nino, propertyType: PropertyType, taxYear: TaxYear, update: PropertiesAnnualSummary): OngoingStubbing[Future[PropertiesAnnualSummaryResponse]] = {
       when(mockPropertiesAnnualSummaryConnector
-        .update(eqTo(nino), eqTo(propertyType), eqTo(taxYear), eqTo(update))(any(), any()))
+        .update(eqTo(nino), eqTo(propertyType), eqTo(taxYear), eqTo(update))(any(), any(), any()))
     }
 
-    def get(nino: Nino, propertyType: PropertyType, taxYear: TaxYear) = {
-      when(mockPropertiesAnnualSummaryConnector.get(eqTo(nino), eqTo(propertyType), eqTo(taxYear))(any(), any()))
+    def get(nino: Nino, propertyType: PropertyType, taxYear: TaxYear): OngoingStubbing[Future[PropertiesAnnualSummaryResponse]] = {
+      when(mockPropertiesAnnualSummaryConnector.get(eqTo(nino), eqTo(propertyType), eqTo(taxYear))(any(), any(), any()))
     }
   }
 

@@ -28,6 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.models.des.selfemployment.Business
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmployment
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers._
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext.Implicits._
 
@@ -35,19 +36,28 @@ class SelfEmploymentsResource @Inject()(
                                          override val appContext: AppContext,
                                          override val authService: AuthorisationService,
                                          connector: SelfEmploymentConnector,
-                                         cc: ControllerComponents
+                                         cc: ControllerComponents,
+                                         val idGenerator: IdGenerator
                                        ) extends BaseResource(cc) {
 
   def create(nino: Nino): Action[JsValue] =
     APIAction(nino, SourceType.SelfEmployments).async(parse.json) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentsResource][create] " +
+        s"create self-employment with correlationId : $correlationID")
+
       validate[SelfEmployment, SelfEmploymentResponse](request.body) { selfEmployment =>
         connector.create(nino, Business.from(selfEmployment))
       } map {
         case Left(errorResult) => handleErrors(errorResult)
         case Right(response) =>
           response.filter {
-            case 200 => Created.withHeaders(LOCATION -> response.createLocationHeader(nino).getOrElse(""))
+            case 200 => logger.warn(message = s"[SelfEmploymentsResource][create] " +
+              s"Success response with correlationId : ${correlationId(response)}")
+              Created.withHeaders(LOCATION -> response.createLocationHeader(nino).getOrElse(""))
             case 403 =>
+              logger.warn(message = s"[SelfEmploymentsResource][create] " +
+                s"Error response TOO_MANY_SOURCES with correlationId : ${correlationId(response)}")
               Forbidden(
                 Json.toJson(
                   Errors.businessError(Error(ErrorCode.TOO_MANY_SOURCES.toString,
@@ -61,18 +71,29 @@ class SelfEmploymentsResource @Inject()(
 
   def retrieve(nino: Nino, id: SourceId): Action[Unit] =
     APIAction(nino, SourceType.SelfEmployments).async(parse.empty) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentsResource][retrieve] " +
+        s"retrieve self-employment with correlationId : $correlationID")
       connector.get(nino).map { response =>
         response.filter {
-          case 200 => handleRetrieve(response.selfEmployment(id), NotFound)
+          case 200 => logger.warn(message = s"[SelfEmploymentsResource][retrieve] " +
+            s"Success response with correlationId : ${correlationId(response)}")
+            handleRetrieve(response.selfEmployment(id), NotFound)
         }
       } recoverWith exceptionHandling
     }
 
   def retrieveAll(nino: Nino): Action[Unit] =
     APIAction(nino, SourceType.SelfEmployments).async(parse.empty) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentsResource][retrieveAll] " +
+        s"retrieveAll self-employments with correlationId : $correlationID")
+
       connector.get(nino).map { response =>
         response.filter {
-          case 200 => handleRetrieve(response.listSelfEmployment, Ok(JsArray()))
+          case 200 => logger.warn(message = s"[SelfEmploymentsResource][retrieveAll] " +
+            s"Success response with correlationId : ${correlationId(response)}")
+            handleRetrieve(response.listSelfEmployment, Ok(JsArray()))
         }
       } recoverWith exceptionHandling
     }

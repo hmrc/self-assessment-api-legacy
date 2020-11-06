@@ -17,33 +17,37 @@
 package uk.gov.hmrc.selfassessmentapi.mocks.connectors
 
 import org.joda.time.LocalDate
+import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentPeriodConnector
 import uk.gov.hmrc.selfassessmentapi.mocks.Mock
 import uk.gov.hmrc.selfassessmentapi.models.SourceId
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{SelfEmploymentPeriod, SelfEmploymentPeriodUpdate}
+import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentPeriodResponse
+
+import scala.concurrent.Future
 
 trait MockSelfEmploymentPeriodConnector extends Mock {
   _: Suite =>
 
-  val mockSelfEmploymentPeriodConnector = mock[SelfEmploymentPeriodConnector]
+  val mockSelfEmploymentPeriodConnector: SelfEmploymentPeriodConnector = mock[SelfEmploymentPeriodConnector]
 
   object MockSelfEmploymentPeriodConnector {
-    def create(nino: Nino, id: SourceId, selfEmploymentPeriod: SelfEmploymentPeriod) = {
-      when(mockSelfEmploymentPeriodConnector.create(eqTo(nino), eqTo(id), eqTo(selfEmploymentPeriod))(any(), any()))
+    def create(nino: Nino, id: SourceId, selfEmploymentPeriod: SelfEmploymentPeriod): OngoingStubbing[Future[SelfEmploymentPeriodResponse]] = {
+      when(mockSelfEmploymentPeriodConnector.create(eqTo(nino), eqTo(id), eqTo(selfEmploymentPeriod))(any(), any(), any()))
     }
 
-    def get(nino: Nino, id: SourceId, from: LocalDate, to: LocalDate) = {
-      when(mockSelfEmploymentPeriodConnector.get(eqTo(nino), eqTo(id), eqTo(from), eqTo(to))(any(), any()))
+    def get(nino: Nino, id: SourceId, from: LocalDate, to: LocalDate): OngoingStubbing[Future[SelfEmploymentPeriodResponse]] = {
+      when(mockSelfEmploymentPeriodConnector.get(eqTo(nino), eqTo(id), eqTo(from), eqTo(to))(any(), any(), any()))
     }
 
-    def getAll(nino: Nino, id: SourceId) = {
-      when(mockSelfEmploymentPeriodConnector.getAll(eqTo(nino), eqTo(id))(any(), any()))
+    def getAll(nino: Nino, id: SourceId): OngoingStubbing[Future[SelfEmploymentPeriodResponse]] = {
+      when(mockSelfEmploymentPeriodConnector.getAll(eqTo(nino), eqTo(id))(any(), any(), any()))
     }
 
-    def update(nino: Nino, id: SourceId, from: LocalDate, to: LocalDate, update: SelfEmploymentPeriodUpdate) = {
-      when(mockSelfEmploymentPeriodConnector.update(eqTo(nino), eqTo(id), eqTo(from), eqTo(to), eqTo(update))(any(), any()))
+    def update(nino: Nino, id: SourceId, from: LocalDate, to: LocalDate, update: SelfEmploymentPeriodUpdate): OngoingStubbing[Future[SelfEmploymentPeriodResponse]] = {
+      when(mockSelfEmploymentPeriodConnector.update(eqTo(nino), eqTo(id), eqTo(from), eqTo(to), eqTo(update))(any(), any(), any()))
     }
   }
 

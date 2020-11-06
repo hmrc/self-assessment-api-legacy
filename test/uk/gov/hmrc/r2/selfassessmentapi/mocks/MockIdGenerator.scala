@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.mocks.connectors
+package uk.gov.hmrc.r2.selfassessmentapi.mocks
 
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
-import uk.gov.hmrc.selfassessmentapi.mocks.Mock
+import uk.gov.hmrc.utils.IdGenerator
 
-import scala.concurrent.Future
 
-trait MockAuditConnector extends Mock {
+trait MockIdGenerator extends Mock {
   _: Suite =>
 
-  val mockAuditConnector: AuditConnector = mock[AuditConnector]
+  val mockIdGenerator: IdGenerator = mock[IdGenerator]
 
-  object MockMicroserviceAuditConnector {
-
-    def sendExtendedEvent(event: ExtendedDataEvent): OngoingStubbing[Future[AuditResult]] = {
-      when(mockAuditConnector.sendExtendedEvent(eqTo(event))(any(), any()))
+  object MockIdGenerator {
+    def getCorrelationId: OngoingStubbing[String] = {
+      when(mockIdGenerator.getCorrelationId)
     }
-
   }
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockAuditConnector)
+    reset(mockIdGenerator)
   }
 }

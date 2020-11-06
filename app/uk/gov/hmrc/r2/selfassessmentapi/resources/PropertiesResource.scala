@@ -26,6 +26,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.connectors.PropertiesConnector
 import uk.gov.hmrc.r2.selfassessmentapi.models._
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.NewProperties
 import uk.gov.hmrc.r2.selfassessmentapi.services.AuthorisationService
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext
 
@@ -34,11 +35,15 @@ class PropertiesResource @Inject()(
                                     override val appContext: AppContext,
                                     override val authService: AuthorisationService,
                                     propertiesConnector: PropertiesConnector,
-                                    cc: ControllerComponents
+                                    cc: ControllerComponents,
+                                    val idGenerator: IdGenerator
                                   )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def create(nino: Nino): Action[JsValue] =
     APIAction(nino, SourceType.Properties).async(parse.json) { implicit request => {
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesAnnualSummaryResource][create property] " +
+        s"Update property annual summary with correlationId : $correlationID")
       for {
         props <- validateJson[NewProperties](request.body)
         response <- execute { _ => propertiesConnector.create(nino, props) }
@@ -53,6 +58,9 @@ class PropertiesResource @Inject()(
 
   def retrieve(nino: Nino): Action[AnyContent] =
     APIAction(nino, SourceType.Properties).async { implicit request => {
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesResource][retrieve properties] " +
+        s"Update property annual summary with correlationId : $correlationID")
       for {
         response <- execute { _ => propertiesConnector.retrieve(nino) }
       } yield response

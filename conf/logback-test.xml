@@ -53,7 +53,7 @@
     <logger name ="reactivemongo.core.actors.MongoDBSystem" level="OFF"/>
     <logger name ="uk.gov.hmrc.audit.handler.DatastreamHandler" level="OFF"/>
 
-    <root level="OFF">
+    <root level="WARN">
         <appender-ref ref="ASYNC_FILE"/>
         <appender-ref ref="ASYNC_STDOUT"/>
     </root>

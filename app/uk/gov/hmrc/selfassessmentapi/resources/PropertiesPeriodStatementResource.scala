@@ -29,6 +29,7 @@ import uk.gov.hmrc.selfassessmentapi.models.{Declaration, Errors, Period, Source
 import uk.gov.hmrc.selfassessmentapi.resources.utils.ResourceHelper
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.EmptyResponse
 import uk.gov.hmrc.selfassessmentapi.services.{AuditService, AuthorisationService}
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext.Implicits._
 
@@ -39,12 +40,16 @@ class PropertiesPeriodStatementResource @Inject()(
                                                    statementConnector: PropertiesPeriodStatementConnector,
                                                    auditService: AuditService,
                                                    resourceHelper: ResourceHelper,
-                                                   cc: ControllerComponents
+                                                   cc: ControllerComponents,
+                                                   val idGenerator: IdGenerator
                                                  ) extends BaseResource(cc) {
 
 
   def finaliseEndOfPeriodStatement(nino: Nino, start: LocalDate, end: LocalDate): Action[JsValue] =
     APIAction(nino, SourceType.Properties).async(parse.json) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesPeriodStatementResource][finaliseEndOfPeriodStatement] " +
+        s"with correlationId : $correlationID")
 
       val accountingPeriod = Period(start, end)
 
@@ -59,11 +64,21 @@ class PropertiesPeriodStatementResource @Inject()(
       } onDesSuccess { desResponse =>
         auditService.audit(resourceHelper.buildAuditEvent(nino, "", accountingPeriod, request.authContext, desResponse))
         desResponse.filter {
-          case 204 => NoContent
-          case 400 if desResponse.errorCodeIs(EARLY_SUBMISSION) => Forbidden(Errors.businessJsonError(Errors.EarlySubmission))
-          case 403 if desResponse.errorCodeIs(PERIODIC_UPDATE_MISSING) => Forbidden(Errors.businessJsonError(Errors.PeriodicUpdateMissing))
-          case 403 if desResponse.errorCodeIs(NON_MATCHING_PERIOD) => Forbidden(Errors.businessJsonError(Errors.NonMatchingPeriod))
-          case 403 if desResponse.errorCodeIs(ALREADY_SUBMITTED) => Forbidden(Errors.businessJsonError(Errors.AlreadySubmitted))
+          case 204 => logger.warn(message = s"[PropertiesPeriodStatementResource][finaliseEndOfPeriodStatement] " +
+            s"Success response with correlationId : ${correlationId(desResponse)}")
+            NoContent
+          case 400 if desResponse.errorCodeIs(EARLY_SUBMISSION) => logger.warn(message = s"[PropertiesPeriodStatementResource][finaliseEndOfPeriodStatement] " +
+            s"Error response EARLY_SUBMISSION with correlationId : ${correlationId(desResponse)}")
+            Forbidden(Errors.businessJsonError(Errors.EarlySubmission))
+          case 403 if desResponse.errorCodeIs(PERIODIC_UPDATE_MISSING) => logger.warn(message = s"[PropertiesPeriodStatementResource][finaliseEndOfPeriodStatement] " +
+            s"Error response PERIODIC_UPDATE_MISSING with correlationId : ${correlationId(desResponse)}")
+            Forbidden(Errors.businessJsonError(Errors.PeriodicUpdateMissing))
+          case 403 if desResponse.errorCodeIs(NON_MATCHING_PERIOD) => logger.warn(message = s"[PropertiesPeriodStatementResource][finaliseEndOfPeriodStatement] " +
+            s"Error response NON_MATCHING_PERIOD with correlationId : ${correlationId(desResponse)}")
+            Forbidden(Errors.businessJsonError(Errors.NonMatchingPeriod))
+          case 403 if desResponse.errorCodeIs(ALREADY_SUBMITTED) => logger.warn(message = s"[PropertiesPeriodStatementResource][finaliseEndOfPeriodStatement] " +
+            s"Error response ALREADY_SUBMITTED with correlationId : ${correlationId(desResponse)}")
+            Forbidden(Errors.businessJsonError(Errors.AlreadySubmitted))
         }
       } recoverWith exceptionHandling
     }

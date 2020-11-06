@@ -34,6 +34,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyT
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties._
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.{PeriodMapper, PropertiesPeriodResponse, ResponseMapper}
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,17 +44,26 @@ class PropertiesPeriodResource @Inject()(
                                           override val authService: AuthorisationService,
                                           connector: PropertiesPeriodConnector,
                                           auditService: AuditService,
-                                          cc: ControllerComponents
+                                          cc: ControllerComponents,
+                                          val idGenerator: IdGenerator
                                         )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def createPeriod(nino: Nino, id: PropertyType): Action[JsValue] =
     APIAction(nino, SourceType.Properties, Some("periods")).async(parse.json) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesPeriodResource][createPeriod] " +
+        s"Create Property Period with correlationId : $correlationID")
+
       validateCreateRequest(id, nino, request) map {
-        case Left(errorResult) => handleErrors(errorResult)
+        case Left(errorResult) => logger.warn(message = s"[PropertiesPeriodResource][createPeriod] " +
+          s"Error occurred with correlationId : $correlationID")
+          handleErrors(errorResult)
         case Right((periodId, response)) =>
           auditService.audit(makePeriodCreateAudit(nino, id, request.authContext, response, periodId))
           response.filter {
             case 200 =>
+              logger.warn(message = s"[PropertiesPeriodResource][createPeriod] " +
+                s"Create Property Period with status 200 and correlationId : ${correlationId(response)}")
               Created.withHeaders(LOCATION -> response.createLocationHeader(nino, id, periodId))
             case 403 if response.errorCodeIs(DesErrorCode.NOT_FOUND_INCOME_SOURCE) =>
               Logger.warn(s"[PropertiesPeriodResource] [createPeriod#$id] - Converted NOT_FOUND_INCOME_SOURCE to NotFound")
@@ -73,14 +83,22 @@ class PropertiesPeriodResource @Inject()(
 
   def updatePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Action[JsValue] =
     APIAction(nino, SourceType.Properties, Some("periods")).async(parse.json) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesPeriodResource][updatePeriod] " +
+        s"Update Property Period with correlationId : $correlationID")
+
       periodId match {
         case Period(from, to) =>
           validateUpdateRequest(id, nino, Period(from, to), request) map {
-            case Left(errorResult) => handleErrors(errorResult)
+            case Left(errorResult) => logger.warn(message = s"[PropertiesPeriodResource][updatePeriod] " +
+              s"Error occurred with correlationId : $correlationID")
+              handleErrors(errorResult)
             case Right(response) =>
               auditService.audit(makePeriodUpdateAudit(nino, id, periodId, request.authContext, response))
               response.filter {
-                case 200 => NoContent
+                case 200 => logger.warn(message = s"[PropertiesPeriodResource][updatePeriod] " +
+                  s"Updated Property Period with status 200 and correlationId : ${correlationId(response)}")
+                  NoContent
                 case 400 if response.errorCodeIs(DesErrorCode.INVALID_PERIOD) =>
                   Logger.warn(
                     s"[PropertiesPeriodResource] [createPeriod#$id]\n" +
@@ -106,14 +124,22 @@ class PropertiesPeriodResource @Inject()(
 
   def retrievePeriod(nino: Nino, id: PropertyType, periodId: PeriodId): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("periods")).async { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesPeriodResource][retrievePeriod] " +
+        s"Retrieve Property Period with correlationId : $correlationID")
+
       periodId match {
         case Period(from, to) =>
           connector.retrieve(nino, from, to, id).map { response =>
             response.filter {
               case 200 =>
                 id match {
-                  case PropertyType.FHL => toResult[FHL.Properties, des.properties.FHL.Properties](response)
-                  case PropertyType.OTHER => toResult[Other.Properties, des.properties.Other.Properties](response)
+                  case PropertyType.FHL => logger.warn(message = s"[PropertiesPeriodResource][retrievePeriod] " +
+                    s"Successfully retrieved FHL Property Period with status 200 and correlationId : ${correlationId(response)}")
+                    toResult[FHL.Properties, des.properties.FHL.Properties](response)
+                  case PropertyType.OTHER => logger.warn(message = s"[PropertiesPeriodResource][retrievePeriod] " +
+                    s"Successfully retrieved OTHER Property Period with status 200 and correlationId : ${correlationId(response)}")
+                    toResult[Other.Properties, des.properties.Other.Properties](response)
                 }
             }
           } recoverWith exceptionHandling
@@ -123,16 +149,24 @@ class PropertiesPeriodResource @Inject()(
 
   def retrievePeriods(nino: Nino, id: PropertyType): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("periods")).async { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesPeriodResource][retrievePeriod] " +
+        s"Retrieve All Property Periods with correlationId : $correlationID")
+
       connector.retrieveAll(nino, id).map { response =>
         response.filter {
           case 200 =>
             id match {
               case PropertyType.FHL =>
+                logger.warn(message = s"[PropertiesPeriodResource][retrievePeriod] " +
+                  s"Successfully retrieved FHL Property PeriodS with status 200 and correlationId : ${correlationId(response)}")
                 ResponseMapper[FHL.Properties, des.properties.FHL.Properties]
                   .allPeriods(response)
                   .map(seq => Ok(Json.toJson(seq)))
                   .getOrElse(InternalServerError)
               case PropertyType.OTHER =>
+                logger.warn(message = s"[PropertiesPeriodResource][retrievePeriod] " +
+                  s"Successfully retrieved OTHER Property Periods with status 200 and correlationId : ${correlationId(response)}")
                 ResponseMapper[Other.Properties, des.properties.Other.Properties]
                   .allPeriods(response)
                   .map(seq => Ok(Json.toJson(seq)))
@@ -145,15 +179,17 @@ class PropertiesPeriodResource @Inject()(
   private def validateAndCreate[P <: Period, F <: Financials](nino: Nino, request: Request[JsValue])(
     implicit hc: HeaderCarrier,
     p: PropertiesPeriodConnectorT[P, F],
-    r: Reads[P]): Future[Either[ErrorResult, (PeriodId, PropertiesPeriodResponse)]] =
+    r: Reads[P],
+    correlationId: String): Future[Either[ErrorResult, (PeriodId, PropertiesPeriodResponse)]] =
     validate[P, (PeriodId, PropertiesPeriodResponse)](request.body) { period =>
       p.create(nino, period).map((period.periodId, _))
     }
 
   private def validateCreateRequest(id: PropertyType, nino: Nino, request: Request[JsValue])(
-    implicit hc: HeaderCarrier): Future[Either[ErrorResult, (PeriodId, PropertiesPeriodResponse)]] = {
-    implicit val a = connector.FHLPropertiesPeriodConnector
-    implicit val b = connector.OtherPropertiesPeriodConnector
+    implicit hc: HeaderCarrier,
+    correlationId: String): Future[Either[ErrorResult, (PeriodId, PropertiesPeriodResponse)]] = {
+    implicit val a: connector.FHLPropertiesPeriodConnector.type = connector.FHLPropertiesPeriodConnector
+    implicit val b: connector.OtherPropertiesPeriodConnector.type = connector.OtherPropertiesPeriodConnector
     id match {
       case PropertyType.OTHER => validateAndCreate[Other.Properties, Other.Financials](nino, request)
       case PropertyType.FHL => validateAndCreate[FHL.Properties, FHL.Financials](nino, request)
@@ -166,14 +202,16 @@ class PropertiesPeriodResource @Inject()(
                                                               request: Request[JsValue])(
                                                                implicit hc: HeaderCarrier,
                                                                p: PropertiesPeriodConnectorT[P, F],
-                                                               w: Format[F]): Future[Either[ErrorResult, PropertiesPeriodResponse]] = {
+                                                               w: Format[F],
+                                                               correlationId: String): Future[Either[ErrorResult, PropertiesPeriodResponse]] = {
     validate[F, PropertiesPeriodResponse](request.body)(p.update(nino, id, period, _))
   }
 
   private def validateUpdateRequest(id: PropertyType, nino: Nino, period: Period, request: Request[JsValue])(
-    implicit hc: HeaderCarrier): Future[Either[ErrorResult, PropertiesPeriodResponse]] = {
-    implicit val a = connector.FHLPropertiesPeriodConnector
-    implicit val b = connector.OtherPropertiesPeriodConnector
+    implicit hc: HeaderCarrier,
+    correlationId: String): Future[Either[ErrorResult, PropertiesPeriodResponse]] = {
+    implicit val a: connector.FHLPropertiesPeriodConnector.type = connector.FHLPropertiesPeriodConnector
+    implicit val b: connector.OtherPropertiesPeriodConnector.type = connector.OtherPropertiesPeriodConnector
     id match {
       case PropertyType.OTHER => validateAndUpdate[Other.Properties, Other.Financials](id, nino, period, request)
       case PropertyType.FHL => validateAndUpdate[FHL.Properties, FHL.Financials](id, nino, period, request)

@@ -27,6 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.Audit.makeObligationsRetrievalAud
 import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 import uk.gov.hmrc.selfassessmentapi.services.AuditService
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext
 
@@ -36,22 +37,30 @@ class PropertiesObligationsResource @Inject()(
                                                override val authService: AuthorisationService,
                                                connector: ObligationsConnector,
                                                auditService: AuditService,
-                                               cc: ControllerComponents
+                                               cc: ControllerComponents,
+                                               val idGenerator: IdGenerator
                                              )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   private val incomeSourceType = "ITSP"
 
   def retrieveObligations(nino: Nino, params: ObligationQueryParams): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("obligations")).async { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesObligationsResource][retrieveObligations] " +
+        s"retrieve property obligations with correlationId : $correlationID")
+
       connector.get(nino, incomeSourceType, Some(params)).map { response =>
         auditService.audit(makeObligationsRetrievalAudit(nino, None, request.authContext, response, UkPropertiesRetrieveObligations))
         response.filter {
           case 200 =>
             logger.debug("Properties obligations from DES = " + Json.stringify(response.json))
             response.obligations(incomeSourceType) match {
-              case Right(obj) => obj.map(x => Ok(Json.toJson(x))).getOrElse(NotFound)
+              case Right(obj) => logger.warn(message = s"[PropertiesObligationsResource][retrieveObligations] " +
+                s"Success response with correlationId : $correlationID")
+                obj.map(x => Ok(Json.toJson(x))).getOrElse(NotFound)
               case Left(ex) =>
-                logger.warn(ex.msg)
+                logger.warn(s"[PropertiesObligationsResource][retrieveObligations] " +
+                  s"Error response with correlationId : $correlationID and message \n : ${ex.msg}")
                 InternalServerError(Json.toJson(Errors.InternalServerError))
             }
         }

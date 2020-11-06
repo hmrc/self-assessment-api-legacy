@@ -20,6 +20,7 @@ import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc.{ActionBuilder, _}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import uk.gov.hmrc.r2.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.r2.selfassessmentapi.contexts.{AuthContext, Individual}
@@ -36,7 +37,7 @@ abstract class BaseResource(cc: ControllerComponents)(implicit ec: ExecutionCont
   private lazy val authIsEnabled = appContext.authEnabled
   private lazy val featureSwitch = FeatureSwitch(appContext.featureSwitch, appContext.env)
 
-  def AuthAction(nino: Nino) = new ActionRefiner[Request, AuthRequest] {
+  def AuthAction(nino: Nino): ActionRefiner[Request, AuthRequest] = new ActionRefiner[Request, AuthRequest] {
     override protected def executionContext: ExecutionContext = cc.executionContext
 
     override protected def refine[A](request: Request[A]): Future[Either[Result, AuthRequest[A]]] =
@@ -49,7 +50,7 @@ abstract class BaseResource(cc: ControllerComponents)(implicit ec: ExecutionCont
       } else Future.successful(Right(new AuthRequest(Individual, request)))
   }
 
-  def FeatureSwitchAction(source: SourceType, summary: Option[String] = None) =
+  def FeatureSwitchAction(source: SourceType, summary: Option[String] = None): ActionBuilder[Request, AnyContent] with ActionFilter[Request] =
     new ActionBuilder[Request, AnyContent] with ActionFilter[Request] {
       override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
 
@@ -66,7 +67,7 @@ abstract class BaseResource(cc: ControllerComponents)(implicit ec: ExecutionCont
     FeatureSwitchAction(source, summary) andThen AuthAction(nino)
 
 
-  def getRequestDateTimestamp(implicit request: AuthRequest[_]) = {
+  def getRequestDateTimestamp(implicit request: AuthRequest[_]): String = {
     val requestTimestampHeader = "X-Request-Timestamp"
     val requestTimestamp = request.headers.get(requestTimestampHeader) match {
       case Some(timestamp) if timestamp.trim.length > 0 => timestamp.trim
@@ -82,6 +83,9 @@ abstract class BaseResource(cc: ControllerComponents)(implicit ec: ExecutionCont
       logger.warn(s"when requesting ${req.uri} an uncaught error occurred.", ex)
       Future.successful(InternalServerError)
   }
+
+  protected def addCorrelationId(correlationId: String)(implicit hc: HeaderCarrier): HeaderCarrier =
+    hc.withExtraHeaders(("CorrelationId", correlationId))
 }
 
 class AuthRequest[A](val authContext: AuthContext, request: Request[A]) extends WrappedRequest[A](request)

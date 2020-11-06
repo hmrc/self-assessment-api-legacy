@@ -16,24 +16,28 @@
 
 package uk.gov.hmrc.selfassessmentapi.mocks.connectors
 
+import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.connectors.PropertiesConnector
 import uk.gov.hmrc.selfassessmentapi.mocks.Mock
 import uk.gov.hmrc.selfassessmentapi.models.properties.NewProperties
+import uk.gov.hmrc.selfassessmentapi.resources.wrappers.PropertiesResponse
+
+import scala.concurrent.Future
 
 trait MockPropertiesConnector extends Mock {
   _: Suite =>
 
-  val mockPropertiesConnector = mock[PropertiesConnector]
+  val mockPropertiesConnector: PropertiesConnector = mock[PropertiesConnector]
 
   object MockPropertiesConnector {
-    def create(nino: Nino, newProperties: NewProperties) = {
-      when(mockPropertiesConnector.create(eqTo(nino), eqTo(newProperties))(any(), any()))
+    def create(nino: Nino, newProperties: NewProperties): OngoingStubbing[Future[PropertiesResponse]] = {
+      when(mockPropertiesConnector.create(eqTo(nino), eqTo(newProperties))(any(), any(), any()))
     }
 
-    def retrieve(nino: Nino) = {
-      when(mockPropertiesConnector.retrieve(eqTo(nino))(any(), any()))
+    def retrieve(nino: Nino): OngoingStubbing[Future[PropertiesResponse]] = {
+      when(mockPropertiesConnector.retrieve(eqTo(nino))(any(), any(), any()))
     }
   }
 

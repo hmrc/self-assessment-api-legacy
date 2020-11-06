@@ -37,7 +37,7 @@ class PropertiesAnnualSummaryConnector @Inject()(
   val baseUrl: String = appContext.desUrl
 
   def update(nino: Nino, propertyType: PropertyType, taxYear: TaxYear, update: PropertiesAnnualSummary)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PropertiesAnnualSummaryResponse] = {
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesAnnualSummaryResponse] = {
     val url
     : String = baseUrl + s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"
     update match {
@@ -55,7 +55,7 @@ class PropertiesAnnualSummaryConnector @Inject()(
   }
 
   def get(nino: Nino, propertyType: PropertyType, taxYear: TaxYear)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PropertiesAnnualSummaryResponse] =
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesAnnualSummaryResponse] =
     httpGet[PropertiesAnnualSummaryResponse](
       baseUrl + s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}",
       PropertiesAnnualSummaryResponse(propertyType, _))

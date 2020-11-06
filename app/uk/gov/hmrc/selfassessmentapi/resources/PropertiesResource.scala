@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.connectors.PropertiesConnector
 import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.properties.NewProperties
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext
 
@@ -34,25 +35,37 @@ class PropertiesResource @Inject()(
                                     override val appContext: AppContext,
                                     override val authService: AuthorisationService,
                                     val propertiesConnector: PropertiesConnector,
-                                    cc: ControllerComponents
+                                    cc: ControllerComponents,
+                                    val idGenerator: IdGenerator
                                   )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def create(nino: Nino): Action[JsValue] =
     APIAction(nino, SourceType.Properties).async(parse.json) { implicit request => {
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesResource][create] " +
+        s"Create property with correlationId : $correlationID")
+
       for {
         props <- validateJson[NewProperties](request.body)
         response <- execute { _ => propertiesConnector.create(nino, props) }
       } yield response
     } onDesSuccess { response =>
       response.filter {
-        case 200 => Created.withHeaders(LOCATION -> response.createLocationHeader(nino))
-        case 403 => Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
+        case 200 => logger.warn(message = s"[PropertiesResource][create] " +
+          s"Success response with correlationId : ${correlationId(response)}")
+          Created.withHeaders(LOCATION -> response.createLocationHeader(nino))
+        case 403 => logger.warn(message = s"[PropertiesResource][create] " +
+          s"Error response with correlationId : ${correlationId(response)}")
+          Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
       }
     } recoverWith exceptionHandling
     }
 
   def retrieve(nino: Nino): Action[AnyContent] =
     APIAction(nino, SourceType.Properties).async { implicit request => {
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesResource][create] " +
+        s"Create property with correlationId : $correlationID")
       for {
         response <- execute { _ => propertiesConnector.retrieve(nino) }
       } yield response
@@ -60,8 +73,12 @@ class PropertiesResource @Inject()(
       response.filter {
         case 200 =>
           response.property match {
-            case Some(property) => Ok(Json.toJson(property))
-            case None => NotFound
+            case Some(property) => logger.warn(message = s"[PropertiesResource][retrieve] " +
+              s"Success response with correlationId : ${correlationId(response)}")
+              Ok(Json.toJson(property))
+            case None => logger.warn(message = s"[PropertiesResource][retrieve] " +
+              s"Error response with correlationId : ${correlationId(response)}")
+              NotFound
           }
       }
     } recoverWith exceptionHandling

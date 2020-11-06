@@ -37,7 +37,7 @@ abstract class BaseResource(cc: ControllerComponents) (implicit ec: ExecutionCon
   private lazy val authIsEnabled = appContext.authEnabled
   private lazy val featureSwitch = FeatureSwitch(appContext.featureSwitch, appContext.env)
 
-  def AuthAction(nino: Nino) = new ActionRefiner[Request, AuthRequest] {
+  def AuthAction(nino: Nino): ActionRefiner[Request, AuthRequest] = new ActionRefiner[Request, AuthRequest] {
     override protected def executionContext: ExecutionContext = cc.executionContext
 
     override protected def refine[A](request: Request[A]): Future[Either[Result, AuthRequest[A]]] = {
@@ -51,7 +51,7 @@ abstract class BaseResource(cc: ControllerComponents) (implicit ec: ExecutionCon
     }
   }
 
-  def FeatureSwitchAction(source: SourceType, summary: Option[String] = None) =
+  def FeatureSwitchAction(source: SourceType, summary: Option[String] = None): ActionBuilder[Request, AnyContent] with ActionFilter[Request] =
     new ActionBuilder[Request, AnyContent] with ActionFilter[Request] {
       override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
 
@@ -68,7 +68,7 @@ abstract class BaseResource(cc: ControllerComponents) (implicit ec: ExecutionCon
     FeatureSwitchAction(source, summary) andThen AuthAction(nino)
 
 
-  def getRequestDateTimestamp(implicit request: AuthRequest[_]) = {
+  def getRequestDateTimestamp(implicit request: AuthRequest[_]): String = {
     val requestTimestampHeader = "X-Request-Timestamp"
     val requestTimestamp = request.headers.get(requestTimestampHeader) match {
       case Some(timestamp) if timestamp.trim.length > 0 => timestamp.trim

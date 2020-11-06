@@ -35,7 +35,8 @@ class PropertiesPeriodStatementConnector @Inject()(
 
   val baseUrl: String = appContext.desUrl
 
-  def create(nino: Nino, accountingPeriod: Period, requestTimestamp: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EmptyResponse] =
+  def create(nino: Nino, accountingPeriod: Period, requestTimestamp: String)
+            (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[EmptyResponse] =
     httpPost[RequestDateTime, EmptyResponse](s"$baseUrl/income-store/nino/$nino/uk-properties/accounting-periods/${accountingPeriod.periodId}/statement",
       RequestDateTime(requestTimestamp), EmptyResponse)
 }

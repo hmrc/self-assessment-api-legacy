@@ -18,6 +18,7 @@ package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import play.api.libs.json.JsValue
 import play.api.test.FakeRequest
+import uk.gov.hmrc.r2.selfassessmentapi.mocks.MockIdGenerator
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.connectors.MockPropertiesAnnualSummaryConnector
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.services.MockAuditService
 import uk.gov.hmrc.r2.selfassessmentapi.models.SourceType
@@ -28,7 +29,8 @@ import scala.concurrent.Future
 
 class PropertiesAnnualSummaryResourceSpec extends ResourceSpec
   with MockPropertiesAnnualSummaryConnector
-  with MockAuditService {
+  with MockAuditService
+  with MockIdGenerator {
 
   class Setup {
     val resource = new PropertiesAnnualSummaryResource(
@@ -36,10 +38,14 @@ class PropertiesAnnualSummaryResourceSpec extends ResourceSpec
       mockAuthorisationService,
       mockPropertiesAnnualSummaryConnector,
       mockAuditService,
-      cc
+      cc,
+      mockIdGenerator
     )
     mockAPIAction(SourceType.Properties)
+    MockIdGenerator.getCorrelationId.returns(correlationId)
   }
+
+  val correlationId: String = "X-ID"
 
   val otherPropertiesAllowances = OtherPropertiesAllowances(
     annualInvestmentAllowance = Some(0.0),
@@ -70,6 +76,7 @@ class PropertiesAnnualSummaryResourceSpec extends ResourceSpec
   "updateAnnualSummary" should {
     "return a 500" when {
       "the connector returns a failed future" in new Setup {
+
         val request = FakeRequest().withBody[JsValue](otherPropertiesAnnualSummaryJson)
 
         MockPropertiesAnnualSummaryConnector.update(nino, PropertyType.OTHER, taxYear, otherPropertiesAnnualSummary)
@@ -85,6 +92,7 @@ class PropertiesAnnualSummaryResourceSpec extends ResourceSpec
   "retrieveAnnualSummary" should {
     "return a 500" when {
       "the connector returns a failed future" in new Setup {
+
         MockPropertiesAnnualSummaryConnector.get(nino, PropertyType.OTHER, taxYear)
           .returns(Future.failed(new RuntimeException("something went wrong")))
 

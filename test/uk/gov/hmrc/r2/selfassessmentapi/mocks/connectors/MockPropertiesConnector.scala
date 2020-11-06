@@ -29,11 +29,11 @@ trait MockPropertiesConnector extends Mock {
 
   object MockPropertiesConnector {
     def create(nino: Nino, newProperties: NewProperties) = {
-      when(mockPropertiesConnector.create(eqTo(nino), eqTo(newProperties))(any(), any()))
+      when(mockPropertiesConnector.create(eqTo(nino), eqTo(newProperties))(any(), any(), any()))
     }
 
     def retrieve(nino: Nino) = {
-      when(mockPropertiesConnector.retrieve(eqTo(nino))(any(), any()))
+      when(mockPropertiesConnector.retrieve(eqTo(nino))(any(), any(), any()))
     }
   }
 

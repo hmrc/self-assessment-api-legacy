@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
+import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.OptionValues
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -26,6 +27,7 @@ import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.mvc.ControllerComponents
 import play.api.test.Helpers.stubControllerComponents
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, ResultExtractors}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.TestUtils
 import uk.gov.hmrc.selfassessmentapi.mocks.auth.MockAuthorisationService
 import uk.gov.hmrc.selfassessmentapi.mocks.config.MockAppContext
@@ -45,11 +47,11 @@ trait ResourceSpec extends AnyWordSpec
   with MockAuthorisationService
   with GuiceOneAppPerSuite {
 
-  val nino = generateNino
+  val nino: Nino = generateNino
 
   def mockAPIAction(source: SourceType,
                     featureEnabled: Boolean = true,
-                    authEnabled: Boolean = false) = {
+                    authEnabled: Boolean = false): OngoingStubbing[Boolean] = {
     MockAppContext.featureSwitch returns Some(Configuration(s"$source.enabled" -> featureEnabled))
     MockAppContext.authEnabled returns authEnabled
   }

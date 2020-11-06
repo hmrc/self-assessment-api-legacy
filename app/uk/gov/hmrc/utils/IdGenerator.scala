@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.r2.selfassessmentapi.mocks.services
+package uk.gov.hmrc.utils
 
-import org.scalatest.Suite
-import uk.gov.hmrc.r2.selfassessmentapi.mocks.Mock
-import uk.gov.hmrc.r2.selfassessmentapi.services.AuditService
+import java.util.UUID
 
-trait MockAuditService extends Mock { _: Suite =>
+import javax.inject.{Inject, Singleton}
 
-  val mockAuditService: AuditService = mock[AuditService]
+@Singleton
+class IdGenerator @Inject()() {
 
-  object MockAuditService {
-  }
-
-  override protected def beforeEach(): Unit = {
-    super.beforeEach()
-    reset(mockAuditService)
-  }
+  def getCorrelationId: String = UUID.randomUUID().toString
 }

@@ -28,6 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.models.calculation.CalculationRequest
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType}
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.TaxCalculationResponse
 import uk.gov.hmrc.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext
 
@@ -36,7 +37,8 @@ class TaxCalculationResource @Inject()(
                                         override val authService: AuthorisationService,
                                         connector: TaxCalculationConnector,
                                         auditService: AuditService,
-                                        cc: ControllerComponents
+                                        cc: ControllerComponents,
+                                        val idGenerator: IdGenerator
                                       )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   private val cannedEtaResponse =
@@ -48,6 +50,10 @@ class TaxCalculationResource @Inject()(
 
   def requestCalculation(nino: Nino): Action[JsValue] =
     APIAction(nino, SourceType.Calculation).async(parse.json) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[TaxCalculationResource][requestCalculation] " +
+        s"Request for tax calculation with correlationId : $correlationID")
+
       validate[CalculationRequest, TaxCalculationResponse](request.body) { req =>
         connector.requestCalculation(nino, req.taxYear)
       } map {
@@ -55,16 +61,19 @@ class TaxCalculationResource @Inject()(
         case Right(response) =>
           auditService.audit(makeTaxCalcTriggerAudit(nino, request.authContext, response))
           response.filter {
-            case 200 =>
+            case 200 => logger.warn(message = s"[TaxCalculationResource][requestCalculation] " +
+              s"Success response with correlationId : ${correlationId(response)}")
               Accepted(Json.parse(cannedEtaResponse))
                 .withHeaders(
                   LOCATION -> response.calcId
                     .map(id => s"/self-assessment/ni/$nino/calculations/$id")
                     .getOrElse(""))
-            case 400 if response.isInvalidNino => BadRequest(Json.toJson(Errors.NinoInvalid))
+            case 400 if response.isInvalidNino => logger.warn(message = s"[TaxCalculationResource][requestCalculation] " +
+              s"BAD Request error with correlationId : ${correlationId(response)}")
+              BadRequest(Json.toJson(Errors.NinoInvalid))
             case 400 if response.isInvalidRequest =>
               logger.warn("[TaxCalculationResource] [requestCalculation] DES returned INVALID_REQUEST. This could be due to;" +
-                "\n1. No valid income sources at backend\n2. No income submissions exist at backend")
+                s"\n1. No valid income sources at backend\n2. No income submissions exist at backend with correlationId ${correlationId(response)}")
               unhandledResponse(response.status, logger)
             case _ => unhandledResponse(response.status, logger)
           }

@@ -28,6 +28,7 @@ import uk.gov.hmrc.selfassessmentapi.models.audit.PeriodicUpdate
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.{SelfEmploymentPeriod, SelfEmploymentPeriodUpdate}
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentPeriodResponse
 import uk.gov.hmrc.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,21 +37,28 @@ class SelfEmploymentPeriodResource @Inject()(
                                               override val authService: AuthorisationService,
                                               connector: SelfEmploymentPeriodConnector,
                                               auditService: AuditService,
-                                              cc: ControllerComponents
+                                              cc: ControllerComponents,
+                                              val idGenerator: IdGenerator
                                             )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def createPeriod(nino: Nino, sourceId: SourceId): Action[JsValue] =
     APIAction(nino, SourceType.SelfEmployments, Some("periods")).async(parse.json) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentPeriodResource][createPeriod] " +
+        s"Create period for SE with correlationId : $correlationID")
       validate[SelfEmploymentPeriod, (PeriodId, SelfEmploymentPeriodResponse)](request.body) { period =>
         connector
           .create(nino, sourceId, period)
           .map((period.periodId, _))
       } map {
-        case Left(errorResult) => handleErrors(errorResult)
+        case Left(errorResult) => logger.warn(message = s"[SelfEmploymentPeriodResource][createPeriod] " +
+          s"Error response with correlationId : $correlationID")
+          handleErrors(errorResult)
         case Right((periodId, response)) =>
           auditService.audit(makePeriodCreateAudit(nino, sourceId, request.authContext, response, periodId))
           response.filter {
-            case 200 =>
+            case 200 => logger.warn(message = s"[SelfEmploymentPeriodResource][createPeriod] " +
+              s"Success response with correlationId : ${correlationId(response)}")
               Created.withHeaders(LOCATION -> response.createLocationHeader(nino, sourceId, periodId))
           }
       } recoverWith exceptionHandling
@@ -58,16 +66,23 @@ class SelfEmploymentPeriodResource @Inject()(
 
   def updatePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[JsValue] =
     APIAction(nino, SourceType.SelfEmployments, Some("periods")).async(parse.json) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentPeriodResource][updatePeriod] " +
+        s"Update period for SE with correlationId : $correlationID")
       periodId match {
         case Period(from, to) =>
           validate[SelfEmploymentPeriodUpdate, SelfEmploymentPeriodResponse](request.body) { period =>
             connector.update(nino, id, from, to, period)
           } map {
-            case Left(errorResult) => handleErrors(errorResult)
+            case Left(errorResult) => logger.warn(message = s"[SelfEmploymentPeriodResource][updatePeriod] " +
+              s"Error response with correlationId : $correlationID")
+              handleErrors(errorResult)
             case Right(response) =>
               auditService.audit(makePeriodUpdateAudit(nino, id, periodId, request.authContext, response))
               response.filter {
-                case 200 => NoContent
+                case 200 => logger.warn(message = s"[SelfEmploymentPeriodResource][updatePeriod] " +
+                  s"Success response with correlationId : ${correlationId(response)}")
+                  NoContent
               }
           } recoverWith exceptionHandling
         case _ => Future.successful(NotFound)
@@ -76,11 +91,16 @@ class SelfEmploymentPeriodResource @Inject()(
 
   def retrievePeriod(nino: Nino, id: SourceId, periodId: PeriodId): Action[Unit] =
     APIAction(nino, SourceType.SelfEmployments, Some("periods")).async(parse.empty) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentPeriodResource][retrievePeriod] " +
+        s"Retrieve period for SE with correlationId : $correlationID")
       periodId match {
         case Period(from, to) =>
           connector.get(nino, id, from, to).map { response =>
             response.filter {
-              case 200 => response.period.map(x => Ok(Json.toJson(x))).getOrElse(NotFound)
+              case 200 => logger.warn(message = s"[SelfEmploymentPeriodResource][retrievePeriod] " +
+                s"Success response with correlationId : ${correlationId(response)}")
+                response.period.map(x => Ok(Json.toJson(x))).getOrElse(NotFound)
             }
           } recoverWith exceptionHandling
         case _ => Future.successful(NotFound)
@@ -89,9 +109,14 @@ class SelfEmploymentPeriodResource @Inject()(
 
   def retrievePeriods(nino: Nino, id: SourceId): Action[Unit] =
     APIAction(nino, SourceType.SelfEmployments, Some("periods")).async(parse.empty) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentPeriodResource][retrievePeriods] " +
+        s"Retrieve all periods for SE with correlationId : $correlationID")
       connector.getAll(nino, id).map { response =>
         response.filter {
           case 200 =>
+            logger.warn(message = s"[SelfEmploymentPeriodResource][retrievePeriods] " +
+              s"Success response with correlationId : ${correlationId(response)}")
             response.allPeriods.map(seq => Ok(Json.toJson(seq))).getOrElse(InternalServerError)
         }
       } recoverWith exceptionHandling

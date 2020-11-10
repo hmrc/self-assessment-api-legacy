@@ -34,14 +34,15 @@ class PropertiesConnector @Inject()(
 
   val baseUrl: String = appContext.desUrl
 
-  def create(nino: Nino, properties: NewProperties)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PropertiesResponse] = {
+  def create(nino: Nino, properties: NewProperties)
+            (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesResponse] = {
     httpPost[NewProperties, PropertiesResponse](
       baseUrl + s"/income-tax-self-assessment/nino/$nino/properties",
       properties,
       PropertiesResponse)
   }
 
-  def retrieve(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PropertiesResponse] =
+  def retrieve(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesResponse] =
     httpGet[PropertiesResponse](baseUrl + s"/registration/business-details/nino/$nino", PropertiesResponse)
 
 }

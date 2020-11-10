@@ -34,7 +34,8 @@ class ObligationsConnector @Inject()(
 
   val baseUrl: String = appContext.desUrl
 
-  def get(nino: Nino, regime: String, params: Option[ObligationQueryParams] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ObligationsResponse] = {
+  def get(nino: Nino, regime: String, params: Option[ObligationQueryParams] = None)
+         (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[ObligationsResponse] = {
     val (from, to) =
       params match {
         case Some(ObligationQueryParams(Some(from), Some(to))) => (from, to)

@@ -33,13 +33,14 @@ trait BaseConnector {
   val appContext: AppContext
   private val logger = Logger("connectors")
 
-  def withDesHeaders(hc: HeaderCarrier): HeaderCarrier = {
+  def withDesHeaders(hc: HeaderCarrier, correlationId: String): HeaderCarrier = {
     val newHc = hc
       .copy(authorization = Some(Authorization(s"Bearer ${appContext.desToken}")))
       .withExtraHeaders(
         "Environment" -> appContext.desEnv,
         "Accept" -> "application/json",
-        "Originator-Id" -> "DA_SDI"
+        "Originator-Id" -> "DA_SDI",
+        "CorrelationId" -> correlationId
       )
 
     // HACK: http-verbs removes all "otherHeaders" from HeaderCarrier on outgoing requests.
@@ -52,9 +53,9 @@ trait BaseConnector {
       .getOrElse(newHc)
   }
 
-  private def withAdditionalHeaders[R <: Response](url: String)(f: HeaderCarrier => Future[R])(
+  private def withAdditionalHeaders[R <: Response](url: String, correlationId: String)(f: HeaderCarrier => Future[R])(
     implicit hc: HeaderCarrier): Future[R] = {
-    val newHc = withDesHeaders(hc)
+    val newHc = withDesHeaders(hc, correlationId)
     logger.debug(s"URL:[$url] Headers:[${newHc.headers}]")
     f(newHc)
   }
@@ -65,25 +66,33 @@ trait BaseConnector {
     override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
   }
 
-  def httpGet[R <: Response](url: String, toResponse: HttpResponse => R)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[R] =
-    withAdditionalHeaders[R](url) { hcWithAdditionalHeaders =>
+  def httpGet[R <: Response](url: String, toResponse: HttpResponse => R)
+                            (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[R] =
+    withAdditionalHeaders[R](url, correlationId) { hcWithAdditionalHeaders =>
+      http.GET(url)(NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
+    }
+
+  def httpGetWithNoId[R <: Response](url: String, toResponse: HttpResponse => R)
+                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[R] =
+    withAdditionalHeaders[R](url, "") { hcWithAdditionalHeaders =>
       http.GET(url)(NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
     }
 
   def httpPost[T: Writes, R <: Response](url: String, elem: T, toResponse: HttpResponse => R)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[R] =
-    withAdditionalHeaders[R](url) { hcWithAdditionalHeaders =>
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[R] =
+    withAdditionalHeaders[R](url, correlationId) { hcWithAdditionalHeaders =>
       http.POST(url, elem)(implicitly[Writes[T]], NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
     }
 
-  def httpEmptyPost[R <: Response](url: String, toResponse: HttpResponse => R)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[R] =
-    withAdditionalHeaders[R](url) { hcWithAdditionalHeaders =>
+  def httpEmptyPost[R <: Response](url: String, toResponse: HttpResponse => R)
+                                  (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[R] =
+    withAdditionalHeaders[R](url, correlationId) { hcWithAdditionalHeaders =>
       http.POSTEmpty(url)(NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
     }
 
   def httpPut[T: Writes, R <: Response](url: String, elem: T, toResponse: HttpResponse => R)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[R] =
-    withAdditionalHeaders[R](url) { hcWithAdditionalHeaders =>
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[R] =
+    withAdditionalHeaders[R](url, correlationId) { hcWithAdditionalHeaders =>
       http.PUT(url, elem)(implicitly[Writes[T]], NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
     }
 }

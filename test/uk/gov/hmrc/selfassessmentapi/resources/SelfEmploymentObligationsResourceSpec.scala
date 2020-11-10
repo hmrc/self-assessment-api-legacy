@@ -17,7 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.LocalDate
+import play.api.mvc.Result
 import play.api.test.FakeRequest
+import uk.gov.hmrc.selfassessmentapi.mocks.MockIdGenerator
 import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockObligationsConnector
 import uk.gov.hmrc.selfassessmentapi.mocks.services.MockAuditService
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
@@ -27,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SelfEmploymentObligationsResourceSpec extends ResourceSpec
-  with MockObligationsConnector with MockAuditService {
+  with MockObligationsConnector with MockAuditService with MockIdGenerator {
 
   class Setup {
     val resource = new SelfEmploymentObligationsResource(
@@ -35,9 +37,11 @@ class SelfEmploymentObligationsResourceSpec extends ResourceSpec
       mockAuthorisationService,
       mockObligationsConnector,
       mockAuditService,
-      cc
+      cc,
+      mockIdGenerator
     )
     mockAPIAction(SourceType.SelfEmployments)
+    MockIdGenerator.getCorrelationId.returns("X-123")
   }
 
   val sourceId = "test-source-id"
@@ -45,15 +49,15 @@ class SelfEmploymentObligationsResourceSpec extends ResourceSpec
   "retrieveObligations" should {
     "return a 500" when {
       "the connector returns a failed future" in new Setup {
-        val request = FakeRequest().ignoreBody
+        val request: FakeRequest[Unit] = FakeRequest().ignoreBody
 
-        val from = Some(LocalDate.parse("2017-01-01"))
-        val to = Some(LocalDate.parse("2017-12-31"))
+        val from: Option[LocalDate] = Some(LocalDate.parse("2017-01-01"))
+        val to: Option[LocalDate] = Some(LocalDate.parse("2017-12-31"))
 
         MockObligationsConnector.get(nino, "ITSB", Some(ObligationQueryParams(from, to)))
           .returns(Future.failed(new RuntimeException("something went wrong")))
 
-        val result = resource.retrieveObligations(nino, sourceId, ObligationQueryParams(from, to))(request)
+        val result: Future[Result] = resource.retrieveObligations(nino, sourceId, ObligationQueryParams(from, to))(request)
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }

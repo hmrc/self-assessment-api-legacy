@@ -34,7 +34,7 @@ class TaxCalculationConnector @Inject()(
   private lazy val baseUrl: String = appContext.desUrl
 
   def requestCalculation(nino: Nino, taxYear: TaxYear)
-                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TaxCalculationResponse] =
+                        (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[TaxCalculationResponse] =
 
   httpPost[EmptyJsonBody, TaxCalculationResponse](
     baseUrl + s"/income-tax/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation",

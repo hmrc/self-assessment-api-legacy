@@ -34,6 +34,6 @@ class BusinessDetailsConnector @Inject()(
   private lazy val baseUrl: String = appContext.desUrl
 
   def get(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessDetailsResponse] =
-    httpGet[BusinessDetailsResponse](baseUrl + s"/registration/business-details/nino/$nino",
+    httpGetWithNoId[BusinessDetailsResponse](baseUrl + s"/registration/business-details/nino/$nino",
       BusinessDetailsResponse)
 }

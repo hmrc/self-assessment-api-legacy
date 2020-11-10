@@ -26,6 +26,7 @@ import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.ResponseMapper
 import uk.gov.hmrc.selfassessmentapi.services.{AuditService, AuthorisationService}
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext
 
@@ -34,14 +35,22 @@ class PropertiesPeriodResource @Inject()(
                                           override val authService: AuthorisationService,
                                           connector: PropertiesPeriodConnector,
                                           auditService: AuditService,
-                                          cc: ControllerComponents
+                                          cc: ControllerComponents,
+                                          val idGenerator: IdGenerator
                                         )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def retrievePeriods(nino: Nino, id: PropertyType): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("periods")).async { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[PropertiesPeriodResource][retrievePeriods] " +
+        s"retrieve property obligations with correlationId : $correlationID")
+
       connector.retrieveAll(nino, id).map { response =>
         response.filter {
           case 200 =>
+            logger.warn(message = s"[PropertiesPeriodResource][retrievePeriods] " +
+              s"Success response with correlationId : $correlationID")
+
             ResponseMapper
               .allPeriods(response)
               .map(seq => Ok(Json.toJson(seq)))

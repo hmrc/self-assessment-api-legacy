@@ -29,6 +29,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.models.des.DesErrorCode
 import uk.gov.hmrc.r2.selfassessmentapi.models.selfemployment.SelfEmploymentAnnualSummary
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.SelfEmploymentAnnualSummaryResponse
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext
 
@@ -38,11 +39,16 @@ class SelfEmploymentAnnualSummaryResource @Inject()(
                                                      override val authService: AuthorisationService,
                                                      connector: SelfEmploymentAnnualSummaryConnector,
                                                      auditService: AuditService,
-                                                     cc: ControllerComponents
+                                                     cc: ControllerComponents,
+                                                     val idGenerator: IdGenerator
                                                    )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   def updateAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[JsValue] =
     APIAction(nino, SourceType.SelfEmployments, Some("annual")).async(parse.json) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentAnnualSummaryResource][updateAnnualSummary] " +
+        s"Update self-employment annual summary with correlationId : $correlationID")
+
       validate[SelfEmploymentAnnualSummary, SelfEmploymentAnnualSummaryResponse](request.body) { summary =>
         connector.update(nino, id, taxYear, des.selfemployment.SelfEmploymentAnnualSummary.from(summary))
       } map {
@@ -59,6 +65,10 @@ class SelfEmploymentAnnualSummaryResource @Inject()(
 
   def retrieveAnnualSummary(nino: Nino, id: SourceId, taxYear: TaxYear): Action[AnyContent] =
     APIAction(nino, SourceType.SelfEmployments, Some("annual")).async { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentAnnualSummaryResource][retrieveAnnualSummary] " +
+        s"Update self-employment annual summary with correlationId : $correlationID")
+
       connector.get(nino, id, taxYear).map { response =>
         response.filter {
           case 200 => response.annualSummary.map(x => Ok(Json.toJson(x))).getOrElse(NotFound)

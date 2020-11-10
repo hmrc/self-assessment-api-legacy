@@ -37,25 +37,25 @@ class SelfEmploymentPeriodConnector @Inject()(
   val baseUrl: String = appContext.desUrl
 
   def create(nino: Nino, id: SourceId, selfEmploymentPeriod: SelfEmploymentPeriod)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentPeriodResponse] =
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentPeriodResponse] =
     httpPost[des.selfemployment.SelfEmploymentPeriod, SelfEmploymentPeriodResponse](
       baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries",
       des.selfemployment.SelfEmploymentPeriod.from(selfEmploymentPeriod),
       SelfEmploymentPeriodResponse)
 
   def get(nino: Nino, id: SourceId, from: LocalDate, to: LocalDate)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentPeriodResponse] =
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentPeriodResponse] =
     httpGet[SelfEmploymentPeriodResponse](
       baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to",
       SelfEmploymentPeriodResponse)
 
-  def getAll(nino: Nino, id: SourceId)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentPeriodResponse] =
+  def getAll(nino: Nino, id: SourceId)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentPeriodResponse] =
     httpGet[SelfEmploymentPeriodResponse](
       baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries",
       SelfEmploymentPeriodResponse)
 
   def update(nino: Nino, id: SourceId, from: LocalDate, to: LocalDate, update: SelfEmploymentPeriodUpdate)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentPeriodResponse] =
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentPeriodResponse] =
     httpPut[des.selfemployment.Financials, SelfEmploymentPeriodResponse](
       baseUrl + s"/income-store/nino/$nino/self-employments/$id/periodic-summaries?from=$from&to=$to",
       des.selfemployment.Financials.from(update),

@@ -33,17 +33,17 @@ class SelfEmploymentConnector @Inject()(
                                        ) extends BaseConnector {
   private lazy val baseUrl: String = appContext.desUrl
 
-  def create(nino: Nino, business: Business)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentResponse] =
+  def create(nino: Nino, business: Business)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentResponse] =
     httpPost[Business, SelfEmploymentResponse](baseUrl + s"/income-tax-self-assessment/nino/$nino/business",
       business,
       SelfEmploymentResponse)
 
-  def get(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentResponse] =
+  def get(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentResponse] =
     httpGet[SelfEmploymentResponse](baseUrl + s"/registration/business-details/nino/$nino",
       SelfEmploymentResponse)
 
   def update(nino: Nino, business: SelfEmploymentUpdate, id: SourceId)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentResponse] =
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentResponse] =
     httpPut[SelfEmploymentUpdate, SelfEmploymentResponse](
       baseUrl + s"/income-tax-self-assessment/nino/$nino/incomeSourceId/$id/regime/ITSA",
       business,

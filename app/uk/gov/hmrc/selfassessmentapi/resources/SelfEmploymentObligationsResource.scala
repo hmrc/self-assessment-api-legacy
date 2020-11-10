@@ -27,6 +27,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.Audit.makeObligationsRetrievalAud
 import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 import uk.gov.hmrc.selfassessmentapi.services.AuditService
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
+import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.ExecutionContext
 
@@ -36,23 +37,33 @@ class SelfEmploymentObligationsResource @Inject()(
                                                    override val authService: AuthorisationService,
                                                    obligationsConnector: ObligationsConnector,
                                                    auditService: AuditService,
-                                                   cc: ControllerComponents
+                                                   cc: ControllerComponents,
+                                                   val idGenerator: IdGenerator
                                                  )(implicit ec: ExecutionContext) extends BaseResource(cc) {
 
   private val incomeSourceType = "ITSB"
 
   def retrieveObligations(nino: Nino, id: SourceId, params: ObligationQueryParams): Action[Unit] =
     APIAction(nino, SourceType.SelfEmployments, Some("obligations")).async(parse.empty) { implicit request =>
+      implicit val correlationID: String = idGenerator.getCorrelationId
+      logger.warn(message = s"[SelfEmploymentObligationsResource][retrieveObligations] " +
+        s"with correlationId : $correlationID")
+
       obligationsConnector.get(nino, incomeSourceType, Some(params)).map { response =>
         auditService.audit(
           makeObligationsRetrievalAudit(nino, Some(id), request.authContext, response, SelfEmploymentRetrieveObligations))
         response.filter {
           case 200 =>
+            logger.warn(message = s"[SelfEmploymentObligationsResource][retrieveObligations] " +
+              s"Success response status 200 with correlationId : ${correlationId(response)}")
             logger.debug("Self-employment obligations from DES = " + Json.stringify(response.json))
             response.obligations(incomeSourceType, Some(id)) match {
-              case Right(obj) => obj.map(x => Ok(Json.toJson(x))).getOrElse(NotFound)
+              case Right(obj) => logger.warn(message = s"[SelfEmploymentObligationsResource][retrieveObligations] " +
+                s"Success response status 200 and valid body with correlationId : ${correlationId(response)}")
+                obj.map(x => Ok(Json.toJson(x))).getOrElse(NotFound)
               case Left(ex) =>
-                logger.warn(ex.msg)
+                logger.warn("[SelfEmploymentObligationsResource][retrieveObligations] Invalid body response with " +
+                  s"correlationId ${correlationId(response)} and message : ${ex.msg}")
                 InternalServerError(Json.toJson(Errors.InternalServerError))
             }
         }

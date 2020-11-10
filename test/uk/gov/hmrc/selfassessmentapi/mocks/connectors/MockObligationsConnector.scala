@@ -16,20 +16,24 @@
 
 package uk.gov.hmrc.selfassessmentapi.mocks.connectors
 
+import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.selfassessmentapi.connectors.ObligationsConnector
 import uk.gov.hmrc.selfassessmentapi.mocks.Mock
 import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
+import uk.gov.hmrc.selfassessmentapi.resources.wrappers.ObligationsResponse
+
+import scala.concurrent.Future
 
 trait MockObligationsConnector extends Mock {
   _: Suite =>
 
-  val mockObligationsConnector = mock[ObligationsConnector]
+  val mockObligationsConnector: ObligationsConnector = mock[ObligationsConnector]
 
   object MockObligationsConnector {
-    def get(nino: Nino, regime: String, params: Option[ObligationQueryParams] = None) = {
-      when(mockObligationsConnector.get(eqTo(nino), eqTo(regime), any[Option[ObligationQueryParams]]())(any(), any()))
+    def get(nino: Nino, regime: String, params: Option[ObligationQueryParams] = None): OngoingStubbing[Future[ObligationsResponse]] = {
+      when(mockObligationsConnector.get(eqTo(nino), eqTo(regime), any[Option[ObligationQueryParams]]())(any(), any(), any()))
     }
   }
 

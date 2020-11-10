@@ -36,14 +36,14 @@ class SelfEmploymentAnnualSummaryConnector @Inject()(
   val baseUrl: String = appContext.desUrl
 
   def update(nino: Nino, id: SourceId, taxYear: TaxYear, update: SelfEmploymentAnnualSummary)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentAnnualSummaryResponse] =
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentAnnualSummaryResponse] =
     httpPut[SelfEmploymentAnnualSummary, SelfEmploymentAnnualSummaryResponse](
       baseUrl + s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}",
       update,
       SelfEmploymentAnnualSummaryResponse)
 
   def get(nino: Nino, id: SourceId, taxYear: TaxYear)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SelfEmploymentAnnualSummaryResponse] =
+    implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentAnnualSummaryResponse] =
     httpGet[SelfEmploymentAnnualSummaryResponse](
       baseUrl + s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}",
       SelfEmploymentAnnualSummaryResponse)

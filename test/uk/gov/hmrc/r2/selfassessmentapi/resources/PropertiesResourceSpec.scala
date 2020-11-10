@@ -18,6 +18,7 @@ package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
+import uk.gov.hmrc.r2.selfassessmentapi.mocks.MockIdGenerator
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.connectors.MockPropertiesConnector
 import uk.gov.hmrc.r2.selfassessmentapi.models.SourceType
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.NewProperties
@@ -26,16 +27,21 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class PropertiesResourceSpec extends ResourceSpec
-  with MockPropertiesConnector {
+  with MockPropertiesConnector
+  with MockIdGenerator {
+
+  val correlationId: String = "X-ID"
 
   class Setup {
     val resource = new PropertiesResource(
       mockAppContext,
       mockAuthorisationService,
       mockPropertiesConnector,
-      cc
+      cc,
+      mockIdGenerator
     )
     mockAPIAction(SourceType.Properties)
+    MockIdGenerator.getCorrelationId.returns(correlationId)
   }
 
   val newProperties = NewProperties()

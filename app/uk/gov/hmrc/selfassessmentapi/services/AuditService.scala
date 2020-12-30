@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
+import java.time.{Instant, ZoneOffset}
+
 import javax.inject.Inject
-import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logger
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.Request
@@ -47,7 +48,7 @@ class AuditService @Inject()(auditConnector: AuditConnector) {
       auditType = detail.auditType.toString,
       tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags(transactionName, request.path),
       detail = Json.toJson(detail),
-      generatedAt = DateTime.now(DateTimeZone.UTC)
+      generatedAt = Instant.now().atOffset(ZoneOffset.UTC).toInstant
     )
 
   def sendEvent(event: ExtendedDataEvent, connector: AuditConnector)(implicit ec: ExecutionContext): Future[AuditResult] =
@@ -72,7 +73,7 @@ class AuditService @Inject()(auditConnector: AuditConnector) {
       auditType = extendedAuditData.auditType,
       tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags(extendedAuditData.transactionName, request.path),
       detail = Json.toJson(extendedAuditData.detail),
-      generatedAt = DateTime.now(DateTimeZone.UTC)
+      generatedAt = Instant.now().atOffset(ZoneOffset.UTC).toInstant
     )
 
     auditConnector.sendExtendedEvent(event)

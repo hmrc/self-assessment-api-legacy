@@ -16,20 +16,21 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.services
 
+import java.time.{Instant, ZoneOffset}
+
 import javax.inject.Inject
-import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logger
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.Request
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Failure
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
+import uk.gov.hmrc.r2.selfassessmentapi.models.audit.{AuditDetail, ExtendedAuditDetail}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.r2.selfassessmentapi.models.audit.{AuditDetail, ExtendedAuditDetail}
 
 class AuditService @Inject()(auditConnector: AuditConnector) {
 
@@ -47,7 +48,7 @@ class AuditService @Inject()(auditConnector: AuditConnector) {
       auditType = detail.auditType.toString,
       tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags(transactionName, request.path),
       detail = Json.toJson(detail),
-      generatedAt = DateTime.now(DateTimeZone.UTC)
+      generatedAt = Instant.now().atOffset(ZoneOffset.UTC).toInstant
     )
 
   def sendEvent(event: ExtendedDataEvent, connector: AuditConnector)(implicit ec: ExecutionContext): Future[AuditResult] =
@@ -72,7 +73,7 @@ class AuditService @Inject()(auditConnector: AuditConnector) {
       auditType = extendedAuditData.auditType,
       tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags(extendedAuditData.transactionName, request.path),
       detail = Json.toJson(extendedAuditData.detail),
-      generatedAt = DateTime.now(DateTimeZone.UTC)
+      generatedAt = Instant.now().atOffset(ZoneOffset.UTC).toInstant
     )
 
     auditConnector.sendExtendedEvent(event)

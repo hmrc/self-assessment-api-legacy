@@ -21,7 +21,7 @@ import play.api.Logger
 import play.api.mvc.{ActionBuilder, _}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.r2.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.r2.selfassessmentapi.contexts.{AuthContext, Individual}
 import uk.gov.hmrc.r2.selfassessmentapi.models.SourceType.SourceType

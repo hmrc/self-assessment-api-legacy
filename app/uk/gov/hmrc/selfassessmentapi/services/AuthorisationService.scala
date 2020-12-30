@@ -122,7 +122,7 @@ class AuthorisationService @Inject()(
       Left(InternalServerError(toJson(Errors.InternalServerError("An internal server error occurred")))))
 
     locally { // http://www.scala-lang.org/old/node/3594
-      case e@(_: AuthorisationException | Upstream5xxResponse(regex(_*), _, _)) =>
+      case e@(_: AuthorisationException | Upstream5xxResponse(regex(_*), _, _, _)) =>
         logger.warn(s"Authorisation failed with unexpected exception. Bad token? Exception: [$e]")
         Future.successful(Left(Forbidden(toJson(Errors.BadToken))))
       case e: Upstream4xxResponse =>

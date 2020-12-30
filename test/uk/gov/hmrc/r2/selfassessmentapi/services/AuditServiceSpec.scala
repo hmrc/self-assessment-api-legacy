@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.services
 
-import org.joda.time.DateTime
+import java.time.Instant
+
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.Authorization
@@ -56,7 +57,7 @@ class AuditServiceSpec extends AsyncUnitSpec with MockAuditConnector {
     tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags("jkl", "path"),
     detail = Json.toJson(auditPayload),
     eventId = "someId",
-    generatedAt = DateTime.now()
+    generatedAt = Instant.now()
   )
 
   "sendEvent" should {

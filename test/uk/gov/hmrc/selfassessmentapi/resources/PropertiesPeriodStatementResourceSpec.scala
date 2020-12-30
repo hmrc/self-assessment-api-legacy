@@ -96,7 +96,7 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
         val to = DateTime.now().toLocalDate
 
         when(statementConnector.create(ArgumentMatchers.any[Nino](), ArgumentMatchers.any[Period](), ArgumentMatchers.any[String]())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(NO_CONTENT))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(NO_CONTENT, ""))))
         submitWithSessionAndAuth(TestResource.finaliseEndOfPeriodStatement(validNino,
           from, to), requestJson) {
           result => status(result) shouldBe NO_CONTENT
@@ -170,7 +170,7 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
       "return missing periodic updates error response" in {
         when(mockAppContext.mtdDate) returns "2017-04-06"
         when(statementConnector.create(ArgumentMatchers.any[Nino](), ArgumentMatchers.any[Period](), ArgumentMatchers.any[String]())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(FORBIDDEN))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(FORBIDDEN, ""))))
         submitWithSessionAndAuth(TestResource.finaliseEndOfPeriodStatement(validNino,
           DateTime.now().minusDays(1).toLocalDate, DateTime.now().toLocalDate), invalidRequestJson) {
           result => status(result) shouldBe FORBIDDEN

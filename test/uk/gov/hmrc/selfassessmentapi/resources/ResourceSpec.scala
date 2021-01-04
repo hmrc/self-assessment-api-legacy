@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,9 @@ trait ResourceSpec extends AnyWordSpec
   def mockAPIAction(source: SourceType,
                     featureEnabled: Boolean = true,
                     authEnabled: Boolean = false): OngoingStubbing[Boolean] = {
-    MockAppContext.featureSwitch returns Some(Configuration(s"$source.enabled" -> featureEnabled))
+    MockAppContext.featureSwitch returns Some(Configuration(
+      s"$source.enabled" -> featureEnabled
+    ))
     MockAppContext.authEnabled returns authEnabled
   }
 

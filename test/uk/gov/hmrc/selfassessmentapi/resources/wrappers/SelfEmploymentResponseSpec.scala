@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
     }
 
     "return None for a json that does not contain an income source ID" in {
-      val wrapper = SelfEmploymentResponse(HttpResponse(200, None.orNull))
+      val wrapper = SelfEmploymentResponse(HttpResponse(200, "{}"))
 
       wrapper.createLocationHeader(nino) shouldBe None
     }

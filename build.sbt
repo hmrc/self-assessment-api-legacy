@@ -40,7 +40,7 @@ lazy val microservice = Project(appName, file("."))
     routesImport ++= Seq("uk.gov.hmrc.selfassessmentapi.resources.Binders._"),
     retrieveManaged := true,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    scalaVersion := "2.12.10"
+    scalaVersion := "2.12.11"
   )
   .settings(
     unmanagedResourceDirectories in Compile += baseDirectory.value / "resources"

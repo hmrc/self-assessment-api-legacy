@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import org.joda.time.LocalDate
 import org.json.{JSONArray, JSONObject}
 import org.skyscreamer.jsonassert.JSONAssert.assertEquals
 import org.skyscreamer.jsonassert.JSONCompareMode.LENIENT
+import play.api.{Application, Configuration}
 import play.api.http.Status.NO_CONTENT
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.domain.Nino
@@ -43,7 +45,26 @@ import scala.util.matching.Regex
 
 trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
-  protected val nino = NinoGenerator().nextNino()
+  protected val nino: Nino = NinoGenerator().nextNino()
+
+  private val WIREMOCK_PORT = 22222
+  private val stubHost = "localhost"
+
+  private val conf = Map(
+    "microservice.services.des.host" -> stubHost,
+    "microservice.services.des.port" -> WIREMOCK_PORT.toString,
+    "microservice.services.des.token" -> "secret",
+    "microservice.services.des.env" -> "none",
+    "microservice.services.mtd-id-lookup.host" -> stubHost,
+    "microservice.services.mtd-id-lookup.port" -> WIREMOCK_PORT.toString,
+    "microservice.services.auth.host" -> stubHost,
+    "microservice.services.auth.port" -> WIREMOCK_PORT.toString,
+    "microservice.services.mtd-api-nrs-proxy.host" -> stubHost,
+    "microservice.services.mtd-api-nrs-proxy.port" -> WIREMOCK_PORT.toString,
+    "auditing.consumer.baseUri.port" -> WIREMOCK_PORT.toString
+  )
+
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
     extends UrlInterpolation {

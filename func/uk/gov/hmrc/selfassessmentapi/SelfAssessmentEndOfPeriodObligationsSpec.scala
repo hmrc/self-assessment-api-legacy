@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,16 @@
 package uk.gov.hmrc.selfassessmentapi
 
 import org.joda.time.LocalDate
+import play.api.{Application, Configuration}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import uk.gov.hmrc.selfassessmentapi.models.Errors
 import uk.gov.hmrc.selfassessmentapi.resources.Jsons
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
+
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf(true))).build()
 
   "Retrieving end-of-period statement obligations" should {
 

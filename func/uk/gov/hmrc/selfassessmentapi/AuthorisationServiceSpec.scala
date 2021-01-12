@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AuthorisationServiceSpec extends BaseFunctionalSpec {
 
-  private val conf = Map("Test.microservice.services.auth.enabled" -> true)
-
-  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf(true))).build()
 
   "a user" should {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
+import play.api.{Application, Configuration}
+import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.selfassessmentapi.resources.Jsons
 import uk.gov.hmrc.support.BaseFunctionalSpec
 import uk.gov.hmrc.selfassessmentapi.filters.EmptyResponseFilter
 
 class EmptyResponseFilterSpec extends BaseFunctionalSpec {
+
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf(true))).build()
 
   "Empty response filter should" should {
     "be applied when returning an HTTP 201 e.g.: creating a self-employment" in {

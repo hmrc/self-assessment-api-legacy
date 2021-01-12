@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,24 +20,26 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class HealthSpec extends BaseFunctionalSpec {
 
-  "Request to /ping/ping" should {
-    "return 200" in {
-      given()
-        .when()
-        .get("/ping/ping").withoutAcceptHeader()
-        .thenAssertThat()
-        .statusIs(200)
-    }
-  }
+  //override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf(true))).build()
 
-  "Request to /admin/details" should {
-    "return 200" in {
-      given()
-        .when()
-        .get("/admin/details").withoutAcceptHeader()
-        .thenAssertThat()
-        .statusIs(200)
-    }
-  }
+//  "Request to /ping/ping" should {
+//    "return 200" in {
+//      given()
+//        .when()
+//        .get("/ping/ping").withoutAcceptHeader()
+//        .thenAssertThat()
+//        .statusIs(200)
+//    }
+//  }
+//
+//  "Request to /admin/details" should {
+//    "return 200" in {
+//      given()
+//        .when()
+//        .get("/admin/details").withoutAcceptHeader()
+//        .thenAssertThat()
+//        .statusIs(200)
+//    }
+//  }
 
 }

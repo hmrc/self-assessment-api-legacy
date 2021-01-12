@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,25 @@ import scala.util.matching.Regex
 trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
   protected val nino = NinoGenerator().nextNino()
+
+  private val WIREMOCK_PORT = 22222
+  private val stubHost = "localhost"
+
+  def conf(authEnable: Boolean = true, simEnable: Boolean = false) = Map(
+    "microservice.services.des.host" -> stubHost,
+    "microservice.services.des.port" -> WIREMOCK_PORT.toString,
+    "microservice.services.des.token" -> "secret",
+    "microservice.services.des.env" -> "none",
+    "microservice.services.mtd-id-lookup.host" -> stubHost,
+    "microservice.services.mtd-id-lookup.port" -> WIREMOCK_PORT.toString,
+    "microservice.services.auth.host" -> stubHost,
+    "microservice.services.auth.port" -> WIREMOCK_PORT.toString,
+    "microservice.services.mtd-api-nrs-proxy.host" -> stubHost,
+    "microservice.services.mtd-api-nrs-proxy.port" -> WIREMOCK_PORT.toString,
+    "auditing.consumer.baseUri.port" -> WIREMOCK_PORT.toString,
+    "Test.microservice.services.auth.enabled" -> authEnable,
+    "Test.feature-switch.test-scenario-simulation.enabled" -> simEnable
+  )
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
     extends UrlInterpolation {

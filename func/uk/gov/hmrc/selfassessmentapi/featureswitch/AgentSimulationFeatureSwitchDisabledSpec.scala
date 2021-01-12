@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
 
-  private val conf = Map("Test.feature-switch.test-scenario-simulation.enabled" -> false)
-
-  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
+  override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf(true))).build()
 
   "Agent simulation filters" should {
     "not be applied if feature is switched off" in {

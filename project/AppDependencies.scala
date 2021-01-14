@@ -26,7 +26,7 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.31.0-play-26",
     "uk.gov.hmrc"       %% "bootstrap-backend-play-26" % "3.2.0",
     "uk.gov.hmrc"       %% "domain"               % "5.10.0-play-26",
-    "com.typesafe.play" %% "play-json-joda"       % "2.6.0",
+    "com.typesafe.play" %% "play-json-joda"       % "2.6.14",
     "uk.gov.hmrc"       %% "play-hmrc-api"        % "4.1.0-play-26",
     "org.typelevel"     %% "cats-core"            % "2.3.1",
     compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.6.0" cross CrossVersion.full),
@@ -37,35 +37,14 @@ object AppDependencies {
     "org.scalatest"          %% "scalatest"                 % "3.2.3"             % scope,
     "com.typesafe.play"      %% "play-test"                 % PlayVersion.current % scope,
     "org.scalatestplus.play" %% "scalatestplus-play"        % "3.1.3"             % scope,
-    "com.github.tomakehurst" %  "wiremock"                  % "2.27.2"            % scope,
+    "com.github.tomakehurst" % "wiremock-jre8"              % "2.27.2"            % scope,
     "de.flapdoodle.embed"    %  "de.flapdoodle.embed.mongo" % "2.2.0"             % scope,
     "org.mongodb"            %% "casbah"                    % "3.1.1"             % scope,
     "org.scalacheck"         %% "scalacheck"                % "1.15.2"            % scope,
     "org.scalatestplus"      %% "scalatestplus-mockito"     % "1.0.0-M2"          % scope,
-    "com.vladsch.flexmark"   %  "flexmark-all"              % "0.36.8"           % scope,
+    "com.vladsch.flexmark"   %  "flexmark-all"              % "0.36.8"            % scope,
     "org.skyscreamer"        %  "jsonassert"                % "1.5.0"             % scope,
     "com.jayway.restassured" %  "rest-assured"              % "2.9.0"             % scope,
-    "org.mockito"            %  "mockito-core"              % "3.6.28"             % scope
+    "org.mockito"            %  "mockito-core"              % "3.7.0"             % scope
   )
-
-  // Fixes a transitive dependency clash between wiremock and scalatestplus-play
-  val overrides: Seq[ModuleID] = {
-    val jettyFromWiremockVersion = "9.4.35.v20201120"
-    Seq(
-      "org.eclipse.jetty" % "jetty-client" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-continuation" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-http" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-io" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-security" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-server" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-servlet" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-servlets" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-util" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-webapp" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-xml" % jettyFromWiremockVersion,
-      "org.eclipse.jetty.websocket" % "websocket-api" % jettyFromWiremockVersion,
-      "org.eclipse.jetty.websocket" % "websocket-client" % jettyFromWiremockVersion,
-      "org.eclipse.jetty.websocket" % "websocket-common" % jettyFromWiremockVersion
-    )
-  }
 }

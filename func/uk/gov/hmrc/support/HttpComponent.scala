@@ -68,8 +68,8 @@ trait HttpComponent {
     }
 
     private def perform(url: String)(fun: WSRequest => Future[WSResponse])(implicit hc: HeaderCarrier,
-                                                                           timeout: FiniteDuration): WSHttpResponse =
-      await(fun(client.url(url).withHttpHeaders(hc.headers: _*).withRequestTimeout(timeout)).map(new WSHttpResponse(_)))
+                                                                           timeout: FiniteDuration): HttpResponse =
+      await(fun(client.url(url).withHttpHeaders(hc.headers: _*).withRequestTimeout(timeout)).map(WSHttpResponse(_)))
 
     private def await[A](future: Future[A])(implicit timeout: FiniteDuration) = Await.result(future, timeout)
 

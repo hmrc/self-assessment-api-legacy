@@ -25,7 +25,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments, _}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.selfassessmentapi.connectors.MicroserviceAuthConnector
 import uk.gov.hmrc.selfassessmentapi.contexts.{Agent, AuthContext, FilingOnlyAgent, Individual}
 import uk.gov.hmrc.selfassessmentapi.models.Errors.{ClientNotSubscribed, NinoInvalid}
@@ -125,10 +125,10 @@ class AuthorisationService @Inject()(
       case e@(_: AuthorisationException | Upstream5xxResponse(regex(_*), _, _, _)) =>
         logger.warn(s"Authorisation failed with unexpected exception. Bad token? Exception: [$e]")
         Future.successful(Left(Forbidden(toJson(Errors.BadToken))))
-      case e: Upstream4xxResponse =>
+      case e: UpstreamErrorResponse if e.statusCode >= 400 && e.statusCode < 500 =>
         logger.warn(s"Unhandled 4xx response from play-auth: [$e]. Returning 500 to client.")
         internalServerError
-      case e: Upstream5xxResponse =>
+      case e: UpstreamErrorResponse if e.statusCode >= 500 && e.statusCode < 600 =>
         logger.warn(s"Unhandled 5xx response from play-auth: [$e]. Returning 500 to client.")
         internalServerError
       case NonFatal(e) =>

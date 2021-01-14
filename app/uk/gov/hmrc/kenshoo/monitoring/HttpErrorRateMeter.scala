@@ -32,10 +32,10 @@ trait HttpErrorRateMeter extends KenshooMetric {
     future.andThen {
       case Success(result: Result) if result.header.status >= 400 => record(meterName(serviceName, result.header.status))
       case Success(response: HttpResponse) if response.status >= 400 => record(meterName(serviceName, response.status))
-      case Failure(exception: Upstream5xxResponse) => record(meterName(serviceName, exception.upstreamResponseCode))
-      case Failure(exception: Upstream4xxResponse) => record(meterName(serviceName, exception.upstreamResponseCode))
-      case Failure(exception: HttpException) => record(meterName(serviceName, exception.responseCode))
-      case Failure(exception: Throwable) => record(meterName(serviceName, 500))
+      case Failure(e: UpstreamErrorResponse) if e.statusCode >= 500 && e.statusCode < 600 => record(meterName(serviceName, e.statusCode))
+      case Failure(e: UpstreamErrorResponse) if e.statusCode >= 400 && e.statusCode < 500 => record(meterName(serviceName, e.statusCode))
+      case Failure(e: HttpException) => record(meterName(serviceName, e.responseCode))
+      case Failure(_: Throwable) => record(meterName(serviceName, 500))
     }
   }
 

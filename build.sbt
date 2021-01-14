@@ -36,7 +36,6 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test(),
-    dependencyOverrides ++= AppDependencies.overrides,
     routesImport ++= Seq("uk.gov.hmrc.selfassessmentapi.resources.Binders._"),
     retrieveManaged := true,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
@@ -49,8 +48,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(publishingSettings: _*)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(defaultSettings(): _*)
-  .configs(FuncTest).settings(inConfig(FuncTest)(Defaults.testSettings): _*)
+  .configs(FuncTest)
   .settings(
+    inConfig(FuncTest)(Defaults.itSettings ++ headerSettings(FuncTest) ++ automateHeaderSettings(FuncTest)),
     fork in FuncTest := true,
     unmanagedSourceDirectories in FuncTest := Seq((baseDirectory in FuncTest).value / "func"),
     unmanagedClasspath in FuncTest += baseDirectory.value / "resources",
@@ -77,6 +77,5 @@ dependencyUpdatesFilter -= moduleFilter(name = "scala-library")
 dependencyUpdatesFilter -= moduleFilter(name = "flexmark-all")
 dependencyUpdatesFilter -= moduleFilter(name = "scalatestplus-play")
 dependencyUpdatesFilter -= moduleFilter(name = "scalatestplus-scalacheck")
-//bootstrap-play-26 upgrade issue, needs looking into
-dependencyUpdatesFilter -= moduleFilter(name = "bootstrap-play-26")
+dependencyUpdatesFilter -= moduleFilter(name = "bootstrap-backend-play-26")
 dependencyUpdatesFailBuild := true

@@ -49,7 +49,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(publishingSettings: _*)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(defaultSettings(): _*)
-  .configs(FuncTest).settings(inConfig(FuncTest)(Defaults.testSettings): _*)
+  .configs(FuncTest)
   .settings(
     inConfig(FuncTest)(Defaults.itSettings ++ headerSettings(FuncTest) ++ automateHeaderSettings(FuncTest)),
     fork in FuncTest := true,

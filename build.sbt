@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(publishingSettings: _*)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(defaultSettings(): _*)
-  .configs(FuncTest).settings(inConfig(FuncTest)(Defaults.testSettings): _*)
+  .configs(FuncTest)
   .settings(
+    inConfig(FuncTest)(Defaults.itSettings ++ headerSettings(FuncTest) ++ automateHeaderSettings(FuncTest)),
     fork in FuncTest := true,
     unmanagedSourceDirectories in FuncTest := Seq((baseDirectory in FuncTest).value / "func"),
     unmanagedClasspath in FuncTest += baseDirectory.value / "resources",

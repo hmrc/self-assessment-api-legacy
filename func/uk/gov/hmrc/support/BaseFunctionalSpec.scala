@@ -691,13 +691,43 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       this
     }
 
-    def clientIsFullyAuthorisedForTheResource: Givens = {
+    def clientIsAuthorisedForTheResourceWithoutCL200: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .willReturn(aResponse().withStatus(200).withBody(
-          """
+          s"""
             |{
             |  "internalId": "some-id",
             |  "affinityGroup": "Individual",
+            |  "loginTimes": {
+            |     "currentLogin": "2016-11-27T09:00:00.000Z",
+            |     "previousLogin": "2016-11-01T12:00:00.000Z"
+            |  },
+            |  "authorisedEnrolments": [
+            |   {
+            |         "key":"HMRC-AS-AGENT",
+            |         "identifiers":[
+            |            {
+            |               "key":"AgentReferenceNumber",
+            |               "value":"1000051409"
+            |            }
+            |         ],
+            |         "state":"Activated"
+            |      }
+            |  ]
+            |}
+          """.stripMargin)))
+
+      this
+    }
+
+    def clientIsFullyAuthorisedForTheResource: Givens = {
+      stubFor(post(urlPathEqualTo(s"/auth/authorise"))
+        .willReturn(aResponse().withStatus(200).withBody(
+          s"""
+            |{
+            |  "internalId": "some-id",
+            |  "affinityGroup": "Individual",
+            |  "confidenceLevel": 200,
             |  "loginTimes": {
             |     "currentLogin": "2016-11-27T09:00:00.000Z",
             |     "previousLogin": "2016-11-01T12:00:00.000Z"

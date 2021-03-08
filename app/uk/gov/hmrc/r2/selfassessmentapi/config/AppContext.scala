@@ -44,4 +44,5 @@ class AppContext @Inject()(
   lazy val authEnabled: Boolean = config.getOptional[Boolean](s"${runMode.env}.microservice.services.auth.enabled").getOrElse(true)
   lazy val sandboxMode: Boolean = config.getOptional[Boolean](s"sandbox-mode").getOrElse(false)
   lazy val mtdDate: String = servicesConfig.getString(s"${runMode.env}.mtd-date")
+  lazy val confidenceLevelDefinitionConfig: Boolean = servicesConfig.getBoolean(s"api.confidence-level-check.auth-validation.enabled")
 }

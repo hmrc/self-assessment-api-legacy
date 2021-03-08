@@ -138,6 +138,16 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .bodyIsLike(Jsons.Errors.internalServerError)
     }
 
+    "receive 403 if the user is an Individual without CL200" in {
+      given()
+        .userIsSubscribedToMtdFor(nino)
+        .clientIsAuthorisedForTheResourceWithoutCL200
+        .when()
+        .get(s"/ni/$nino/self-employments")
+        .thenAssertThat()
+        .statusIs(403)
+    }
+
     "receive 200 if the user is authorised for the resource as a client" in {
       given()
         .userIsSubscribedToMtdFor(nino)

@@ -16,21 +16,21 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Results._
 import play.api.mvc.{RequestHeader, Result}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.retrieve.{OptionalRetrieval, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments, _}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.MicroserviceAuthConnector
 import uk.gov.hmrc.selfassessmentapi.contexts.{Agent, AuthContext, FilingOnlyAgent, Individual}
-import uk.gov.hmrc.selfassessmentapi.models.Errors.{ClientNotSubscribed, NinoInvalid}
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, MtdId}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 import scala.util.matching.Regex
@@ -38,7 +38,8 @@ import scala.util.matching.Regex
 
 class AuthorisationService @Inject()(
                                       lookupService: MtdRefLookupService,
-                                      override val authConnector: MicroserviceAuthConnector
+                                      override val authConnector: MicroserviceAuthConnector,
+                                      val appContext: AppContext
                                     ) extends AuthorisedFunctions {
   type AuthResult = Either[Result, AuthContext]
 
@@ -46,11 +47,11 @@ class AuthorisationService @Inject()(
 
   def authCheck(nino: Nino)(implicit hc: HeaderCarrier, reqHeader: RequestHeader, ec: ExecutionContext): Future[AuthResult] =
     lookupService.mtdReferenceFor(nino).flatMap {
-      case Right(id) => authoriseAsClient(id)
+      case Right(id)    => authoriseAsClient(id)
       case Left(status) =>
         status match {
-          case 400 => Future.successful(Left(BadRequest(toJson(NinoInvalid))))
-          case 403 => Future.successful(Left(Forbidden(toJson(ClientNotSubscribed))))
+          case 400 => Future.successful(Left(BadRequest(toJson(Errors.NinoInvalid))))
+          case 403 => Future.successful(Left(Forbidden(toJson(Errors.ClientNotSubscribed))))
           case 500 => Future.successful(Left(InternalServerError(toJson(Errors.InternalServerError))))
         }
     }
@@ -61,6 +62,8 @@ class AuthorisationService @Inject()(
       .find(_.key == "AgentReferenceNumber")
       .map(_.value)
 
+  private val confidenceLevelOptionalRetrieval: Retrieval[Option[ConfidenceLevel]] = OptionalRetrieval("confidenceLevel", ConfidenceLevel.jsonFormat)
+
   private def authoriseAsClient(mtdId: MtdId)(implicit hc: HeaderCarrier,
                                               requestHeader: RequestHeader,
                                               ec: ExecutionContext): Future[AuthResult] = {
@@ -69,14 +72,22 @@ class AuthorisationService @Inject()(
       Enrolment("HMRC-MTD-IT")
         .withIdentifier("MTDITID", mtdId.mtdId)
         .withDelegatedAuthRule("mtd-it-auth"))
-      .retrieve(Retrievals.affinityGroup and Retrievals.agentCode and Retrievals.authorisedEnrolments) {
-        case Some(AffinityGroup.Agent) ~ Some(agentCode) ~ enrolments =>
+      .retrieve(Retrievals.affinityGroup and Retrievals.agentCode and Retrievals.authorisedEnrolments and confidenceLevelOptionalRetrieval) {
+        case Some(AffinityGroup.Agent) ~ Some(agentCode) ~ enrolments ~ _ =>
           logger.debug("Client authorisation succeeded as fully-authorised agent.")
           Future.successful(Right(Agent(agentCode = Some(agentCode), agentReference = getAgentReference(enrolments))))
-        case Some(AffinityGroup.Agent) ~ None ~ enrolments =>
+        case Some(AffinityGroup.Agent) ~ None ~ enrolments ~ _            =>
           logger.debug("Client authorisation succeeded as fully-authorised agent but could not retrieve agentCode.")
           Future.successful(Right(Agent(agentCode = None, agentReference = getAgentReference(enrolments))))
-        case _ =>
+        case Some(AffinityGroup.Individual) ~ _ ~ _ ~ confidenceLevel     =>
+          if (appContext.confidenceLevelDefinitionConfig && !confidenceLevel.contains(ConfidenceLevel.L200)) {
+            logger.debug("Client authorisation failed as individual does not meet CL200 requirement.")
+            Future.successful(Left(Forbidden(toJson(Errors.ClientNotSubscribed))))
+          } else {
+            logger.debug("Client authorisation succeeded as fully-authorised individual.")
+            Future.successful(Right(Individual))
+          }
+        case _                                                            =>
           logger.debug("Client authorisation succeeded as fully-authorised individual.")
           Future.successful(Right(Individual))
       } recoverWith (authoriseAsFOA orElse unhandledError)
@@ -98,7 +109,7 @@ class AuthorisationService @Inject()(
                   logger.debug("Client authorisation succeeded as filing-only agent.")
                   Future.successful(
                     Right(FilingOnlyAgent(agentCode = Some(agentCode), agentReference = getAgentReference(enrolments))))
-                case None =>
+                case None            =>
                   logger.debug("Agent code was not returned by auth for agent user")
                   Future.successful(
                     Right(FilingOnlyAgent(agentCode = None, agentReference = getAgentReference(enrolments))))
@@ -108,12 +119,12 @@ class AuthorisationService @Inject()(
   }
 
   private def unsubscribedAgentOrUnauthorisedClient: PartialFunction[Throwable, Future[AuthResult]] = {
-    case _: InsufficientEnrolments =>
+    case _: InsufficientEnrolments   =>
       logger.debug(s"Authorisation failed as filing-only agent.")
       Future.successful(Left(Forbidden(toJson(Errors.AgentNotSubscribed))))
     case _: UnsupportedAffinityGroup =>
       logger.debug(s"Authorisation failed as client.")
-      Future.successful(Left(Forbidden(toJson(ClientNotSubscribed))))
+      Future.successful(Left(Forbidden(toJson(Errors.ClientNotSubscribed))))
   }
 
   private def unhandledError: PartialFunction[Throwable, Future[AuthResult]] = {
@@ -125,13 +136,13 @@ class AuthorisationService @Inject()(
       case e@(_: AuthorisationException | Upstream5xxResponse(regex(_*), _, _)) =>
         logger.warn(s"Authorisation failed with unexpected exception. Bad token? Exception: [$e]")
         Future.successful(Left(Forbidden(toJson(Errors.BadToken))))
-      case e: Upstream4xxResponse =>
+      case e: Upstream4xxResponse                                               =>
         logger.warn(s"Unhandled 4xx response from play-auth: [$e]. Returning 500 to client.")
         internalServerError
-      case e: Upstream5xxResponse =>
+      case e: Upstream5xxResponse                                               =>
         logger.warn(s"Unhandled 5xx response from play-auth: [$e]. Returning 500 to client.")
         internalServerError
-      case NonFatal(e) =>
+      case NonFatal(e)                                                          =>
         logger.warn(s"Unhandled non-fatal exception from play-auth: [$e]. Returning 500 to client.")
         internalServerError
     }

@@ -38,7 +38,6 @@ GET         /ni/:nino/uk-properties/:taxYear/income-summary                     
 ####################
 
 POST        /ni/:nino/uk-properties                                                            @uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.create(nino: uk.gov.hmrc.domain.Nino)
-GET         /ni/:nino/uk-properties                                                            @uk.gov.hmrc.selfassessmentapi.resources.PropertiesResource.retrieve(nino: uk.gov.hmrc.domain.Nino)
 
 # Obligations
 GET         /ni/:nino/uk-properties/obligations                                                @uk.gov.hmrc.selfassessmentapi.resources.PropertiesObligationsResource.retrieveObligations(nino: uk.gov.hmrc.domain.Nino, queryParams: uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams)

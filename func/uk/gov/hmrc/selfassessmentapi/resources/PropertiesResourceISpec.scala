@@ -107,16 +107,4 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
 
   }
 
-  "retrieving a property business" should {
-    "return code 410 due to the resource being replaced by business-details-api" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(410)
-    }
-  }
-
 }

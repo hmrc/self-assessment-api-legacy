@@ -17,19 +17,17 @@
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import cats.implicits._
-
-import javax.inject.Inject
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.libs.json.JsValue
+import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.PropertiesConnector
 import uk.gov.hmrc.r2.selfassessmentapi.models._
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.NewProperties
 import uk.gov.hmrc.r2.selfassessmentapi.services.AuthorisationService
-import uk.gov.hmrc.selfassessmentapi.models.Errors
 import uk.gov.hmrc.utils.IdGenerator
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 
@@ -58,12 +56,4 @@ class PropertiesResource @Inject()(
         }
       } recoverWith exceptionHandling
     }
-
-  def retrieve(nino: Nino): Action[AnyContent] =
-    APIAction(nino, SourceType.Properties) {
-      logger.debug(s"[PropertiesResource][retrieve] Get Property Business for NI number : $nino")
-      logger.warn(message = "[PropertiesResource][retrieve] - Using deprecated resource.  Should be using Business Details API")
-      Gone(Json.toJson(Errors.ResourceGone))
-    }
-
 }

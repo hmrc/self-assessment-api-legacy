@@ -16,12 +16,7 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi
 
-import org.joda.time.LocalDate
-import play.api.Logger
-import play.api.libs.json.{JodaReads, JodaWrites, JsPath, JsonValidationError, Reads}
-
-import scala.io.{Codec, Source}
-import scala.util.Try
+import play.api.libs.json._
 
 package object models extends JodaReads with JodaWrites {
 
@@ -73,57 +68,5 @@ package object models extends JodaReads with JodaWrites {
       JsonValidationError("Amount should be a number between -99999999999.99 and 99999999999.99 with up to 2 decimal places",
         ErrorCode.INVALID_MONETARY_AMOUNT))(
         amount => amount >= -99999999999.99 && amount.scale < 3 && amount <= 99999999999.99)
-
-
-  val sicClassifications: Try[Seq[String]] =
-    for {
-      lines <- {
-        Try(Source.fromInputStream(getClass.getClassLoader.getResourceAsStream("SICs.txt"))(Codec.UTF8))
-          .recover {
-            case ex =>
-              Logger.warn(s"Error loading SIC classifications file SICs.txt: ${ex.getMessage}")
-              throw ex
-          }
-      }
-    } yield lines.getLines().toIndexedSeq
-
-
-  val postcodeValidator: Reads[String] = Reads
-    .of[String]
-    .filter(JsonValidationError("postalCode must match \"^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$\"",
-      ErrorCode.INVALID_POSTCODE))(postcode =>
-      postcode.matches("^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"))
-
-  val commencementDateValidator: Reads[LocalDate] = Reads
-    .of[LocalDate]
-    .filter(
-      JsonValidationError("commencement date should be today or in the past", ErrorCode.DATE_NOT_IN_THE_PAST)
-    )(date => date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))
-
-  def lengthIsBetween(minLength: Int, maxLength: Int): Reads[String] =
-    Reads
-      .of[String]
-      .map(_.trim)
-      .filter(
-        JsonValidationError(s"field length must be between $minLength and $maxLength characters",
-          ErrorCode.INVALID_FIELD_LENGTH))(name => name.length <= maxLength && name.length >= minLength)
-
-
-  implicit class Trimmer(reads: Reads[String]) {
-    def trim: Reads[String] = reads.map(_.trim)
-  }
-
-  implicit class NullableTrimmer(reads: Reads[Option[String]]) {
-    def trimNullable: Reads[Option[String]] = reads.map(_.map(_.trim))
-  }
-
-  /**
-    * Asserts that amounts must be non-negative and have a maximum of two decimal places
-    */
-  val nonNegativeAmountValidatorForCharitableGivings: Reads[BigDecimal] = Reads
-    .of[BigDecimal]
-    .filter(JsonValidationError("amounts should be a non-negative number less than 10000000000.00 with up to 2 decimal places",
-      ErrorCode.INVALID_MONETARY_AMOUNT))(
-      amount => amount >= 0 && amount.scale < 3 && amount <= 10000000000.00)
 
 }

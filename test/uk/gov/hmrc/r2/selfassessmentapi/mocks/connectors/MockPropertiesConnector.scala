@@ -16,11 +16,15 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.mocks.connectors
 
+import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.PropertiesConnector
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.Mock
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.NewProperties
+import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.PropertiesResponse
+
+import scala.concurrent.Future
 
 trait MockPropertiesConnector extends Mock {
   _: Suite =>
@@ -28,12 +32,8 @@ trait MockPropertiesConnector extends Mock {
   val mockPropertiesConnector = mock[PropertiesConnector]
 
   object MockPropertiesConnector {
-    def create(nino: Nino, newProperties: NewProperties) = {
+    def create(nino: Nino, newProperties: NewProperties): OngoingStubbing[Future[PropertiesResponse]] = {
       when(mockPropertiesConnector.create(eqTo(nino), eqTo(newProperties))(any(), any(), any()))
-    }
-
-    def retrieve(nino: Nino) = {
-      when(mockPropertiesConnector.retrieve(eqTo(nino))(any(), any(), any()))
     }
   }
 

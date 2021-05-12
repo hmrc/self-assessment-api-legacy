@@ -60,17 +60,4 @@ class PropertiesResourceSpec extends ResourceSpec
       }
     }
   }
-
-  "retrieve" should {
-    "return a 500" when {
-      "the connector returns a failed future" in new Setup {
-        MockPropertiesConnector.retrieve(nino)
-          .returns(Future.failed(new RuntimeException("something went wrong")))
-
-        val result = resource.retrieve(nino)(FakeRequest())
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-        contentType(result) shouldBe None
-      }
-    }
-  }
 }

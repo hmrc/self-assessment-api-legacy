@@ -108,96 +108,14 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
   }
 
   "retrieving a property business" should {
-    "return code 200 when creating a property business exists" in {
+    "return code 410 due to the resource being replaced by business-details-api" in {
       given()
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
-        .des().properties.willBeReturnedFor(nino)
         .when()
         .get(s"/ni/$nino/uk-properties")
         .thenAssertThat()
-        .statusIs(200)
-    }
-
-    "return code 404 when DES does not return property business" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().properties.willReturnNone(nino)
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(404)
-    }
-
-    "return code 400 when attempting to create a property business that fails DES nino validation" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().invalidNinoFor(nino)
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(400)
-        .bodyIsLike(Jsons.Errors.ninoInvalid)
-    }
-
-    "return code 500 when DES is experiencing issues" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().serverErrorFor(nino)
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(500)
-        .bodyIsLike(Jsons.Errors.internalServerError)
-    }
-
-    "return code 500 when systems that DES is dependant on are experiencing issues" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().serviceUnavailableFor(nino)
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(500)
-        .bodyIsLike(Jsons.Errors.internalServerError)
-    }
-
-    "return code 500 when we receive a status code from DES that we do not handle" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().isATeapotFor(nino)
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .statusIs(500)
-        .bodyIsLike(Jsons.Errors.internalServerError)
-    }
-
-    "return accounting period start date" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().properties.willBeReturnedFor(nino)
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .body(_ \ "accountingPeriod" \ "start").is("2001-01-01")
-    }
-
-    "return accounting period end date" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().properties.willBeReturnedFor(nino)
-        .when()
-        .get(s"/ni/$nino/uk-properties")
-        .thenAssertThat()
-        .body(_ \ "accountingPeriod" \ "end").is("2010-01-01")
+        .statusIs(410)
     }
   }
 

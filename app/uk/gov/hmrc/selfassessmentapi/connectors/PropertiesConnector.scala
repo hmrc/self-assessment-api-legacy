@@ -42,7 +42,4 @@ class PropertiesConnector @Inject()(
       PropertiesResponse)
   }
 
-  def retrieve(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesResponse] =
-    httpGet[PropertiesResponse](baseUrl + s"/registration/business-details/nino/$nino", PropertiesResponse)
-
 }

@@ -55,6 +55,5 @@
 
     <root level="WARN">
         <appender-ref ref="ASYNC_FILE"/>
-        <appender-ref ref="ASYNC_STDOUT"/>
     </root>
 </configuration>

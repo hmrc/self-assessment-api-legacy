@@ -35,10 +35,6 @@ trait MockPropertiesConnector extends Mock {
     def create(nino: Nino, newProperties: NewProperties): OngoingStubbing[Future[PropertiesResponse]] = {
       when(mockPropertiesConnector.create(eqTo(nino), eqTo(newProperties))(any(), any(), any()))
     }
-
-    def retrieve(nino: Nino): OngoingStubbing[Future[PropertiesResponse]] = {
-      when(mockPropertiesConnector.retrieve(eqTo(nino))(any(), any(), any()))
-    }
   }
 
   override protected def beforeEach(): Unit = {

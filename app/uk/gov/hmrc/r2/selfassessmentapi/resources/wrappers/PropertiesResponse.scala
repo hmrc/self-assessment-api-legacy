@@ -17,24 +17,8 @@
 package uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers
 
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.r2.selfassessmentapi.models.des
-import uk.gov.hmrc.r2.selfassessmentapi.models.des.{DesError, DesErrorCode}
-import uk.gov.hmrc.r2.selfassessmentapi.models.properties.Properties
 import uk.gov.hmrc.http.HttpResponse
 
 case class PropertiesResponse(underlying: HttpResponse) extends Response { self =>
   def createLocationHeader(nino: Nino): String = s"/self-assessment/ni/$nino/uk-properties"
-
-  def property: Option[Properties] = {
-    (json \ "propertyData").asOpt[des.properties.Properties] match {
-      case Some(property) =>
-        Some(Properties.from(property))
-      case None =>
-        logger.warn(s"The response from DES does not match the expected format. JSON: [$json]")
-        None
-    }
-  }
-
-  def isInvalidNino: Boolean =
-    json.asOpt[DesError].exists(_.code == DesErrorCode.INVALID_NINO)
 }

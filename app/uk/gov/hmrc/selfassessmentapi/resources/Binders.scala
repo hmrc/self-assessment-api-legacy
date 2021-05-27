@@ -21,7 +21,7 @@ import java.util.Locale
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.mvc.{PathBindable, QueryStringBindable}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.models.SourceType.SourceType
 import uk.gov.hmrc.selfassessmentapi.models.{SourceType, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.resources.utils.{ObligationQueryParams, EopsObligationQueryParams}

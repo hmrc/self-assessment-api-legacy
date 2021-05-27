@@ -16,33 +16,38 @@
 
 package uk.gov.hmrc.selfassessmentapi.models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.api.controllers.ErrorResponse
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode.ErrorCode
 
-case object ErrorNotImplemented extends ErrorResponse(501, ErrorCode.NOT_IMPLEMENTED.toString, "The resource is not implemented")
+object ErrorResponses {
+  implicit def genericWrites[T <: ErrorResponse]: Writes[T] =
+    ErrorResponse.writes.contramap[T](c => c: ErrorResponse)
 
-case object ErrorFeatureSwitched extends ErrorResponse(400, ErrorCode.INVALID_REQUEST.toString, "The provided JSON object contains disabled properties")
+  case object ErrorNotImplemented extends ErrorResponse(501, ErrorCode.NOT_IMPLEMENTED.toString, "The resource is not implemented")
 
-case object ErrorAgentNotSubscribedToAgentServices extends ErrorResponse(403, ErrorCode.AGENT_NOT_SUBSCRIBED.toString, "The agent is not subscribed to agent services")
+  case object ErrorFeatureSwitched extends ErrorResponse(400, ErrorCode.INVALID_REQUEST.toString, "The provided JSON object contains disabled properties")
 
-case object ErrorAgentNotAuthorized extends ErrorResponse(403, ErrorCode.AGENT_NOT_AUTHORIZED.toString, "The agent is not authorized")
+  case object ErrorAgentNotSubscribedToAgentServices extends ErrorResponse(403, ErrorCode.AGENT_NOT_SUBSCRIBED.toString, "The agent is not subscribed to agent services")
 
-case object ErrorAgentBadRequest extends ErrorResponse(400, ErrorCode.INVALID_REQUEST.toString, "Invalid request")
+  case object ErrorAgentNotAuthorized extends ErrorResponse(403, ErrorCode.AGENT_NOT_AUTHORIZED.toString, "The agent is not authorized")
 
-case object ErrorClientNotSubscribedToMTD extends ErrorResponse(403, ErrorCode.CLIENT_NOT_SUBSCRIBED.toString, "The client is not subscribed to MTD")
+  case object ErrorAgentBadRequest extends ErrorResponse(400, ErrorCode.INVALID_REQUEST.toString, "Invalid request")
 
-case class ErrorBadRequest(code: ErrorCode, override val message: String)
-  extends ErrorResponse(400, code.toString, message)
+  case object ErrorClientNotSubscribedToMTD extends ErrorResponse(403, ErrorCode.CLIENT_NOT_SUBSCRIBED.toString, "The client is not subscribed to MTD")
 
-case class InvalidPart(code: ErrorCode, message: String, path: String)
+  case class ErrorBadRequest(code: ErrorCode, override val message: String)
+    extends ErrorResponse(400, code.toString, message)
 
-object InvalidPart {
-  implicit val writes = Json.writes[InvalidPart]
-}
+  case class InvalidPart(code: ErrorCode, message: String, path: String)
 
-case class InvalidRequest(code: ErrorCode, message: String, errors: Seq[InvalidPart])
+  object InvalidPart {
+    implicit val writes = Json.writes[InvalidPart]
+  }
 
-object InvalidRequest {
-  implicit val writes = Json.writes[InvalidRequest]
+  case class InvalidRequest(code: ErrorCode, message: String, errors: Seq[InvalidPart])
+
+  object InvalidRequest {
+    implicit val writes = Json.writes[InvalidRequest]
+  }
 }

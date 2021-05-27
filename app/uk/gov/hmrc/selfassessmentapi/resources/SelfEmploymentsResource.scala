@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import javax.inject.Inject
 import play.api.libs.json.{JsArray, JsValue, Json, Writes}
 import play.api.mvc.{Action, ControllerComponents, Result}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentConnector
 import uk.gov.hmrc.selfassessmentapi.models.Errors.Error

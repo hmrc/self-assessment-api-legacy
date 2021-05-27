@@ -17,25 +17,24 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.DateTime
-import play.api.Logger
-import play.api.mvc.{ActionBuilder, _}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import uk.gov.hmrc.selfassessmentapi.config.{AppContext, FeatureSwitch}
-import uk.gov.hmrc.selfassessmentapi.contexts.{AuthContext, Individual}
+import play.api.mvc.{ ActionBuilder, _ }
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import uk.gov.hmrc.utils.Nino
+import uk.gov.hmrc.selfassessmentapi.config.{ AppContext, FeatureSwitch }
+import uk.gov.hmrc.selfassessmentapi.contexts.{ AuthContext, Individual }
 import uk.gov.hmrc.selfassessmentapi.models.SourceType.SourceType
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
+import uk.gov.hmrc.utils.Logging
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-abstract class BaseResource(cc: ControllerComponents) (implicit ec: ExecutionContext)extends BackendController(cc) {
+abstract class BaseResource(cc: ControllerComponents)(implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
 
   val appContext: AppContext
   val authService: AuthorisationService
 
-  val logger: Logger = Logger(this.getClass.getSimpleName)
   private lazy val authIsEnabled = appContext.authEnabled
-  private lazy val featureSwitch = FeatureSwitch(appContext.featureSwitch, appContext.env)
+  private lazy val featureSwitch = FeatureSwitch(appContext.featureSwitch)
 
   def AuthAction(nino: Nino): ActionRefiner[Request, AuthRequest] = new ActionRefiner[Request, AuthRequest] {
     override protected def executionContext: ExecutionContext = cc.executionContext
@@ -45,7 +44,7 @@ abstract class BaseResource(cc: ControllerComponents) (implicit ec: ExecutionCon
         implicit val ev: Request[A] = request
         authService.authCheck(nino) map {
           case Right(authContext) => Right(new AuthRequest(authContext, request))
-          case Left(authError) => Left(authError)
+          case Left(authError)    => Left(authError)
         }
       } else Future.successful(Right(new AuthRequest(Individual, request)))
     }
@@ -66,7 +65,6 @@ abstract class BaseResource(cc: ControllerComponents) (implicit ec: ExecutionCon
 
   def APIAction(nino: Nino, source: SourceType, summary: Option[String] = None): ActionBuilder[AuthRequest, AnyContent] =
     FeatureSwitchAction(source, summary) andThen AuthAction(nino)
-
 
   def getRequestDateTimestamp(implicit request: AuthRequest[_]): String = {
     val requestTimestampHeader = "X-Request-Timestamp"

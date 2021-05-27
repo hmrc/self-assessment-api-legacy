@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext

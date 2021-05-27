@@ -19,21 +19,19 @@ package uk.gov.hmrc.kenshoo.monitoring
 import com.jayway.restassured.RestAssured
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers._
-import play.api.Logger
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.Future
 
-trait MonitoringSpec extends UnitSpec {
-
-  val log = Logger(classOf[MonitoringSpec])
+trait MonitoringSpec extends UnitSpec with Logging {
 
   private class MetricBodyWrapper {
     var fieldName: String = ""
 
     def is[T](matcher: Matcher[T]) = {
-      log.debug(s"Metrics URL: ${RestAssured.baseURI}:${RestAssured.port}")
-      log.debug(RestAssured.get("/admin/metrics").`then`().assertThat().extract().body().asString())
+      logger.debug(s"Metrics URL: ${RestAssured.baseURI}:${RestAssured.port}")
+      logger.debug(RestAssured.get("/admin/metrics").`then`().assertThat().extract().body().asString())
 
       try {
         metrics.body(fieldName, matcher)

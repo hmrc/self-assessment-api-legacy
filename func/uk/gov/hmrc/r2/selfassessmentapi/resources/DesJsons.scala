@@ -17,7 +17,7 @@
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import play.api.libs.json._
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.r2.selfassessmentapi.models.des.properties.{Common, FHL, Other}
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType

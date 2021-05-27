@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import org.joda.time.DateTime
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier}
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.{Failure, Success}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
@@ -27,6 +25,7 @@ import uk.gov.hmrc.selfassessmentapi.AsyncUnitSpec
 import uk.gov.hmrc.selfassessmentapi.mocks.connectors.MockAuditConnector
 import uk.gov.hmrc.selfassessmentapi.models.audit.PeriodicUpdate
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class MicroserviceAuditServiceSpec extends AsyncUnitSpec with MockAuditConnector {
@@ -52,7 +51,7 @@ class MicroserviceAuditServiceSpec extends AsyncUnitSpec with MockAuditConnector
     tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags("jkl", "path"),
     detail = Json.toJson(auditPayload),
     eventId = "someId",
-    generatedAt = DateTime.now()
+    generatedAt = Instant.now()
   )
 
   "sendEvent" should {

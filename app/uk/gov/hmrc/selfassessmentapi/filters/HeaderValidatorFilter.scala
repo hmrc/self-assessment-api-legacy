@@ -23,6 +23,7 @@ import play.api.mvc._
 import play.api.routing.Router
 import uk.gov.hmrc.api.controllers.{ErrorAcceptHeaderInvalid, HeaderValidator}
 import uk.gov.hmrc.selfassessmentapi.config.ControllerConfiguration
+import uk.gov.hmrc.selfassessmentapi.models.ErrorResponses._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext

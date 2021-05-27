@@ -17,10 +17,9 @@
 package uk.gov.hmrc.r2.selfassessmentapi.models
 
 import org.joda.time.LocalDate
-import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.domain.{SimpleName, SimpleObjectReads, SimpleObjectWrites}
+import play.api.libs.json.{JsString, Reads, Writes, __}
 
-case class TaxYear(taxYear: String) extends SimpleName {
+case class TaxYear(taxYear: String) {
 
   private lazy val year = taxYear.split("-")(0).toInt
   override def toString = taxYear
@@ -32,8 +31,8 @@ case class TaxYear(taxYear: String) extends SimpleName {
 }
 
 object TaxYear {
-  implicit val taxYearWrite: Writes[TaxYear] = new SimpleObjectWrites[TaxYear](_.value)
-  implicit val taxYearRead: Reads[TaxYear] = new SimpleObjectReads[TaxYear]("taxYear", TaxYear.apply)
+  implicit val taxYearWrite: Writes[TaxYear] = (taxYear: TaxYear) => JsString(taxYear.value)
+  implicit val taxYearRead: Reads[TaxYear] = (__ \ "taxYear").read[String].map(TaxYear.apply)
 
   val taxYearFormat = "20[1-9][0-9]\\-[1-9][0-9]"
 

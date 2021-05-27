@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /*
  * Copyright 2021 HM Revenue & Customs
  *
@@ -29,13 +30,10 @@
  * limitations under the License.
  */
 
-resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases/"
-resolvers += "HMRC-open-artefacts-maven" at "https://open.artefacts.tax.service.gov.uk/maven2"
-resolvers += Resolver.url("HMRC-open-artefacts-ivy", url("https://open.artefacts.tax.service.gov.uk/ivy2"))(Resolver.ivyStylePatterns)
+package uk.gov.hmrc.utils
 
-addSbtPlugin("uk.gov.hmrc"       % "sbt-auto-build"         % "3.0.0")
-addSbtPlugin("uk.gov.hmrc"       % "sbt-distributables"     % "2.1.0")
-addSbtPlugin("com.typesafe.play" % "sbt-plugin"             % "2.8.8")
-addSbtPlugin("org.scalastyle"    %% "scalastyle-sbt-plugin" % "1.0.0")
-addSbtPlugin("org.scoverage"     % "sbt-scoverage"          % "1.8.1")
-addSbtPlugin("com.timushev.sbt"  % "sbt-updates"            % "0.5.3")
+import play.api.Logger
+
+trait Logging {
+  lazy val logger: Logger = Logger(this.getClass)
+}

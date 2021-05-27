@@ -27,6 +27,7 @@ import play.api.routing.Router
 import uk.gov.hmrc.api.controllers.ErrorNotFound
 import uk.gov.hmrc.http.NotImplementedException
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode._
+import uk.gov.hmrc.selfassessmentapi.models.ErrorResponses._
 import uk.gov.hmrc.selfassessmentapi.models._
 
 import scala.concurrent._

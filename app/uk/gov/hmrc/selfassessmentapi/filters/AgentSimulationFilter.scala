@@ -31,7 +31,7 @@ class AgentSimulationFilter @Inject()(implicit val mat: Materializer, appContext
 
     val method = rh.method
 
-    val featureSwitch = FeatureSwitch(appContext.featureSwitch, appContext.env)
+    val featureSwitch = FeatureSwitch(appContext.featureSwitch)
 
     if (featureSwitch.isAgentSimulationFilterEnabled) {
       rh.headers.get(GovTestScenarioHeader) match {

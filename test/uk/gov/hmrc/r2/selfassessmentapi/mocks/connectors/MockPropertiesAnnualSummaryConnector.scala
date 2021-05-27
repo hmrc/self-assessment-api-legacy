@@ -18,7 +18,7 @@ package uk.gov.hmrc.r2.selfassessmentapi.mocks.connectors
 
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.PropertiesAnnualSummaryConnector
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.Mock
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertiesAnnualSummary

@@ -17,25 +17,24 @@
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import org.joda.time.DateTime
-import play.api.Logger
 import play.api.mvc.{ActionBuilder, _}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.r2.selfassessmentapi.config.{AppContext, FeatureSwitch}
 import uk.gov.hmrc.r2.selfassessmentapi.contexts.{AuthContext, Individual}
 import uk.gov.hmrc.r2.selfassessmentapi.models.SourceType.SourceType
 import uk.gov.hmrc.r2.selfassessmentapi.services.AuthorisationService
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class BaseResource(cc: ControllerComponents)(implicit ec: ExecutionContext) extends BackendController(cc) {
+abstract class BaseResource(cc: ControllerComponents)(implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
   val appContext: AppContext
   val authService: AuthorisationService
 
-  val logger: Logger = Logger(this.getClass.getSimpleName)
   private lazy val authIsEnabled = appContext.authEnabled
-  private lazy val featureSwitch = FeatureSwitch(appContext.featureSwitch, appContext.env)
+  private lazy val featureSwitch = FeatureSwitch(appContext.featureSwitch)
 
   def AuthAction(nino: Nino): ActionRefiner[Request, AuthRequest] = new ActionRefiner[Request, AuthRequest] {
     override protected def executionContext: ExecutionContext = cc.executionContext

@@ -21,7 +21,7 @@ import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.libs.json._
 import play.api.mvc._
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.PropertiesPeriodStatementConnector
 import uk.gov.hmrc.selfassessmentapi.models.des.DesErrorCode._

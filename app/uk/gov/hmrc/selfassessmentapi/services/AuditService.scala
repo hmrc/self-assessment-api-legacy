@@ -16,9 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import javax.inject.Inject
-import org.joda.time.{DateTime, DateTimeZone}
-import play.api.Logger
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,13 +24,14 @@ import uk.gov.hmrc.play.audit.http.connector.AuditResult.Failure
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import uk.gov.hmrc.selfassessmentapi.models.audit.{AuditDetail, ExtendedAuditDetail}
+import uk.gov.hmrc.utils.Logging
 
+import java.time.Instant
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class AuditService @Inject()(auditConnector: AuditConnector) {
-
-  val logger: Logger = Logger(this.getClass)
+class AuditService @Inject()(auditConnector: AuditConnector) extends Logging {
 
   def audit[T <: AuditDetail](
       auditData: AuditData[T])(implicit hc: HeaderCarrier, fmt: Format[T], request: Request[_], ec: ExecutionContext): Future[AuditResult] =
@@ -44,10 +42,10 @@ class AuditService @Inject()(auditConnector: AuditConnector) {
                                                                       request: Request[_]): ExtendedDataEvent =
     ExtendedDataEvent(
       auditSource = "self-assessment-api",
-      auditType = detail.auditType.toString,
+      auditType = detail.auditType,
       tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags(transactionName, request.path),
       detail = Json.toJson(detail),
-      generatedAt = DateTime.now(DateTimeZone.UTC)
+      generatedAt = Instant.now()
     )
 
   def sendEvent(event: ExtendedDataEvent, connector: AuditConnector)(implicit ec: ExecutionContext): Future[AuditResult] =
@@ -72,7 +70,7 @@ class AuditService @Inject()(auditConnector: AuditConnector) {
       auditType = extendedAuditData.auditType,
       tags = AuditExtensions.auditHeaderCarrier(hc).toAuditTags(extendedAuditData.transactionName, request.path),
       detail = Json.toJson(extendedAuditData.detail),
-      generatedAt = DateTime.now(DateTimeZone.UTC)
+      generatedAt = Instant.now()
     )
 
     auditConnector.sendExtendedEvent(event)

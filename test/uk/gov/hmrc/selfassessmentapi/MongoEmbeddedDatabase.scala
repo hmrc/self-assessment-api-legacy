@@ -24,8 +24,8 @@ import de.flapdoodle.embed.mongo.{Command, MongodExecutable, MongodProcess, Mong
 import de.flapdoodle.embed.process.config.io.ProcessOutput
 import de.flapdoodle.embed.process.runtime.Network
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
-import play.api.Logger
 import uk.gov.hmrc.mongo.MongoConnector
+import uk.gov.hmrc.utils.Logging
 
 import scala.util.Try
 
@@ -51,7 +51,7 @@ trait MongoEmbeddedDatabase extends UnitSpec with BeforeAndAfterAll with BeforeA
   System.setProperty("RELEASED_ROUTES", "prod.Routes")
 }
 
-object MongoEmbeddedDatabase {
+object MongoEmbeddedDatabase extends Logging {
   private val diskPort = 27017
   private val embeddedPort = 12345
   private val localhost = "127.0.0.1"
@@ -66,7 +66,7 @@ object MongoEmbeddedDatabase {
 
   private def startEmbeddedMongo() = this.synchronized{
     if (mongod == null && useEmbeddedMongo) {
-      Logger.info("Starting embedded mongo")
+      logger.info("Starting embedded mongo")
       startMongo()
     }
   }
@@ -82,7 +82,7 @@ object MongoEmbeddedDatabase {
 
   private def startMongo(): Try[_] = {
     Try(mongod = buildExecutable.start()).recover{
-      case _ => Logger.info("Embedded mongo instance not started yet, retrying connection")
+      case _ => logger.info("Embedded mongo instance not started yet, retrying connection")
         startMongo()
     }
   }

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers
 
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HttpResponse
 
 case class PropertiesResponse(underlying: HttpResponse) extends Response { self =>

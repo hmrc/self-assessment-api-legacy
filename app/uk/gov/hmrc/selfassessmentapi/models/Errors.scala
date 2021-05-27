@@ -28,22 +28,18 @@ object Errors {
   val TAX_YEAR_NOT_FOUND = "TAX_YEAR_NOT_FOUND"
   val SERVER_ERROR = "SERVER_ERROR"
 
-  implicit val errorDescWrites: Writes[Error] = Json.writes[Error]
-  implicit val badRequestWrites: Writes[BadRequest] = new Writes[BadRequest] {
-    override def writes(req: BadRequest): JsValue = {
-      Json.obj("code" -> req.code, "message" -> req.message, "errors" -> req.errors)
-    }
+  implicit val errorDescWrites: OWrites[Error] = Json.writes[Error]
+
+  implicit def genericErrorDescWrites[T <: Error]: OWrites[T] =
+    errorDescWrites.contramap[T](c => c: Error)
+
+  implicit val badRequestWrites: OWrites[BadRequest] = (req: BadRequest) => {
+    Json.obj("code" -> req.code, "message" -> req.message, "errors" -> req.errors)
   }
 
-  implicit val businessErrorWrites: Writes[BusinessError] = new Writes[BusinessError] {
-    override def writes(req: BusinessError) =
-      Json.obj("code" -> req.code, "message" -> req.message, "errors" -> req.errors)
-  }
+  implicit val businessErrorWrites: OWrites[BusinessError] = (req: BusinessError) => Json.obj("code" -> req.code, "message" -> req.message, "errors" -> req.errors)
 
-  implicit val internalServerErrorWrites: Writes[InternalServerError] = new Writes[InternalServerError] {
-    override def writes(req: InternalServerError): JsValue =
-      Json.obj("code" -> req.code, "message" -> req.message)
-  }
+  implicit val internalServerErrorWrites: OWrites[InternalServerError] = (req: InternalServerError) => Json.obj("code" -> req.code, "message" -> req.message)
 
   case class Error(code: String, message: String, path: Option[String])
 
@@ -76,20 +72,18 @@ object Errors {
   case class ErrorWrapper(error: Error, errors: Option[Seq[Error]])
 
   object ErrorWrapper {
-    implicit val writes: Writes[ErrorWrapper] = new Writes[ErrorWrapper] {
-      override def writes(errorResponse: ErrorWrapper): JsValue = {
+    implicit val writes: OWrites[ErrorWrapper] = (errorResponse: ErrorWrapper) => {
 
-        val json = Json.obj(
-          "code" -> errorResponse.error.code,
-          "message" -> errorResponse.error.message
-        )
+      val json = Json.obj(
+        "code" -> errorResponse.error.code,
+        "message" -> errorResponse.error.message
+      )
 
-        errorResponse.errors match {
-          case Some(errors) if errors.nonEmpty => json + ("errors" -> Json.toJson(errors))
-          case _ => json
-        }
-
+      errorResponse.errors match {
+        case Some(errors) if errors.nonEmpty => json + ("errors" -> Json.toJson(errors))
+        case _                               => json
       }
+
     }
   }
 

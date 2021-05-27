@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import play.api.libs.json._
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.models.{CessationReason, TaxYear}
 
 object DesJsons {

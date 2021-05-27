@@ -21,7 +21,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Result}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 
 import scala.concurrent.Future
 

@@ -17,20 +17,19 @@
 package uk.gov.hmrc.selfassessmentapi.services
 
 import javax.inject.Inject
-import play.api.Logger
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.selfassessmentapi.connectors.BusinessDetailsConnector
 import uk.gov.hmrc.selfassessmentapi.models.MtdId
 import uk.gov.hmrc.selfassessmentapi.repositories.MtdReferenceRepository
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class MtdRefLookupService @Inject()(
                                      businessConnector: BusinessDetailsConnector,
                                      repository: MtdReferenceRepository
-                                   ) {
-  private val logger = Logger(this.getClass)
+                                   ) extends Logging {
 
   def mtdReferenceFor(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Int, MtdId]] = {
     repository.retrieve(nino).flatMap {

@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.selfassessmentapi.services
 
-import play.api.Logger
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Results._
 import play.api.mvc.{RequestHeader, Result}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{OptionalRetrieval, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments, _}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.MicroserviceAuthConnector
 import uk.gov.hmrc.selfassessmentapi.contexts.{Agent, AuthContext, FilingOnlyAgent, Individual}
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, MtdId}
+import uk.gov.hmrc.utils.Logging
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,10 +40,8 @@ class AuthorisationService @Inject()(
                                       lookupService: MtdRefLookupService,
                                       override val authConnector: MicroserviceAuthConnector,
                                       val appContext: AppContext
-                                    ) extends AuthorisedFunctions {
+                                    ) extends AuthorisedFunctions with Logging {
   type AuthResult = Either[Result, AuthContext]
-
-  private val logger = Logger(this.getClass)
 
   def authCheck(nino: Nino)(implicit hc: HeaderCarrier, reqHeader: RequestHeader, ec: ExecutionContext): Future[AuthResult] =
     lookupService.mtdReferenceFor(nino).flatMap {
@@ -133,7 +131,7 @@ class AuthorisationService @Inject()(
       Left(InternalServerError(toJson(Errors.InternalServerError("An internal server error occurred")))))
 
     locally { // http://www.scala-lang.org/old/node/3594
-      case e@(_: AuthorisationException | Upstream5xxResponse(regex(_*), _, _)) =>
+      case e@(_: AuthorisationException | Upstream5xxResponse(regex(_*), _, _, _)) =>
         logger.warn(s"Authorisation failed with unexpected exception. Bad token? Exception: [$e]")
         Future.successful(Left(Forbidden(toJson(Errors.BadToken))))
       case e: Upstream4xxResponse                                               =>

@@ -27,7 +27,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode.LENIENT
 import play.api.http.Status.NO_CONTENT
 import play.api.libs.json._
 import uk.gov.hmrc.api.controllers.ErrorNotFound
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.r2.selfassessmentapi.{NinoGenerator, TestApplication}
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType

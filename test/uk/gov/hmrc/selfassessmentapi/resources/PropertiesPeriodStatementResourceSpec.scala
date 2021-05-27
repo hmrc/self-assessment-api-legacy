@@ -17,12 +17,12 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
+//import akka.stream.{ActorMaterializer, Materializer}
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTime, LocalDate}
 import org.mockito.ArgumentMatchers
 import play.api.libs.json.JsObject
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -77,7 +77,7 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val system: ActorSystem = ActorSystem("PropertiesPeriodStatementResourceSpec")
-  implicit val materializer: Materializer = ActorMaterializer()
+//  implicit val materializer: Materializer = ActorMaterializer()
 
   def setUp() {
     when(auditService.audit(ArgumentMatchers.any[AuditData[EndOfPeriodStatementDeclaration]]())
@@ -96,7 +96,7 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
         val to = DateTime.now().toLocalDate
 
         when(statementConnector.create(ArgumentMatchers.any[Nino](), ArgumentMatchers.any[Period](), ArgumentMatchers.any[String]())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(NO_CONTENT))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(NO_CONTENT, ""))))
         submitWithSessionAndAuth(TestResource.finaliseEndOfPeriodStatement(validNino,
           from, to), requestJson) {
           result => status(result) shouldBe NO_CONTENT
@@ -158,7 +158,9 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
           DateTime.now().minusDays(1).toLocalDate, DateTime.now().toLocalDate), invalidRequestJson) {
           result =>
             status(result) shouldBe FORBIDDEN
-            result.onComplete(_ => assert(Errors.NotFinalisedDeclaration.code === ((contentAsJson(result) \ "errors").as[Seq[JsObject]].head \ "code").as[String]))
+            result.onComplete(_ =>
+              assert(Errors.NotFinalisedDeclaration.code === ((contentAsJson(result) \ "errors").as[Seq[JsObject]].head \ "code").as[String])
+            )
         }
       }
     }
@@ -170,7 +172,7 @@ class PropertiesPeriodStatementResourceSpec extends BaseResourceSpec {
       "return missing periodic updates error response" in {
         when(mockAppContext.mtdDate) returns "2017-04-06"
         when(statementConnector.create(ArgumentMatchers.any[Nino](), ArgumentMatchers.any[Period](), ArgumentMatchers.any[String]())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(FORBIDDEN))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EmptyResponse(HttpResponse(FORBIDDEN, ""))))
         submitWithSessionAndAuth(TestResource.finaliseEndOfPeriodStatement(validNino,
           DateTime.now().minusDays(1).toLocalDate, DateTime.now().toLocalDate), invalidRequestJson) {
           result => status(result) shouldBe FORBIDDEN

@@ -16,21 +16,20 @@
 
 package uk.gov.hmrc.selfassessmentapi.connectors
 
-import play.api.Logger
 import play.api.libs.json.Writes
-import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.Response
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait BaseConnector {
+//TODO: swap out for new base connector with header changes
+trait BaseConnector extends Logging {
   val appContext: AppContext
   val http: DefaultHttpClient
-  private val logger = Logger("connectors")
 
   def withDesHeaders(hc: HeaderCarrier, correlationId: String): HeaderCarrier = {
     val newHc = hc
@@ -55,7 +54,7 @@ trait BaseConnector {
   private def withAdditionalHeaders[R <: Response](url: String, correlationId: String)(f: HeaderCarrier => Future[R])(
       implicit hc: HeaderCarrier): Future[R] = {
     val newHc = withDesHeaders(hc, correlationId)
-    logger.debug(s"URL:[$url] Headers:[${newHc.headers}]")
+//    logger.debug(s"URL:[$url] Headers:[${newHc.headers}]")
     f(newHc)
   }
 

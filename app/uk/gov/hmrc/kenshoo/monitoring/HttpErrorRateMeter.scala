@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.kenshoo.monitoring
 
-import play.api.Logger
 import play.api.mvc.Result
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-trait HttpErrorRateMeter extends KenshooMetric {
+trait HttpErrorRateMeter extends KenshooMetric with Logging {
   def meterName[T](serviceName: String, statusCode: Int): String = {
     if (statusCode >= 500) s"Http5xxErrorCount-$serviceName" else s"Http4xxErrorCount-$serviceName"
   }
@@ -41,6 +41,6 @@ trait HttpErrorRateMeter extends KenshooMetric {
 
   private def record[T](name: String): Unit = {
     kenshooRegistry.getMeters.getOrDefault(name, kenshooRegistry.meter(name)).mark()
-    Logger.debug(s"kenshoo-event::meter::$name::recorded")
+    logger.debug(s"kenshoo-event::meter::$name::recorded")
   }
 }

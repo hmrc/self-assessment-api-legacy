@@ -17,11 +17,10 @@
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import javax.inject.Inject
-import play.api.Logger
 import play.api.libs.json.Json.toJson
 import play.api.libs.json._
 import play.api.mvc._
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.{PropertiesPeriodConnector, PropertiesPeriodConnectorT}
@@ -34,7 +33,7 @@ import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyT
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties._
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.{PeriodMapper, PropertiesPeriodResponse, ResponseMapper}
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
-import uk.gov.hmrc.utils.IdGenerator
+import uk.gov.hmrc.utils.{IdGenerator, Logging}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,7 +45,7 @@ class PropertiesPeriodResource @Inject()(
                                           auditService: AuditService,
                                           cc: ControllerComponents,
                                           val idGenerator: IdGenerator
-                                        )(implicit ec: ExecutionContext) extends BaseResource(cc) {
+                                        )(implicit ec: ExecutionContext) extends BaseResource(cc) with Logging {
 
   def createPeriod(nino: Nino, id: PropertyType): Action[JsValue] =
     APIAction(nino, SourceType.Properties, Some("periods")).async(parse.json) { implicit request =>
@@ -66,13 +65,13 @@ class PropertiesPeriodResource @Inject()(
                 s"Create Property Period with status 200 and correlationId : ${correlationId(response)}")
               Created.withHeaders(LOCATION -> response.createLocationHeader(nino, id, periodId))
             case 403 if response.errorCodeIs(DesErrorCode.NOT_FOUND_INCOME_SOURCE) =>
-              Logger.warn(s"[PropertiesPeriodResource] [createPeriod#$id] - Converted NOT_FOUND_INCOME_SOURCE to NotFound")
+              logger.warn(s"[PropertiesPeriodResource] [createPeriod#$id] - Converted NOT_FOUND_INCOME_SOURCE to NotFound")
               NotFound
             case 409 if response.errorCodeIs(DesErrorCode.BOTH_EXPENSES_SUPPLIED) =>
-              Logger.warn(s"[PropertiesPeriodResource] [createPeriod#$id] - DES returned ${response.json}")
+              logger.warn(s"[PropertiesPeriodResource] [createPeriod#$id] - DES returned ${response.json}")
               BadRequest(Json.toJson(Errors.badRequest(Errors.BothExpensesSupplied)))
             case 409 if response.errorCodeIs(DesErrorCode.INVALID_PERIOD) =>
-              Logger.warn(
+              logger.warn(
                 s"[PropertiesPeriodResource] [createPeriod#$id]\n" +
                   s"Received DES:\n ${response.underlying.body}\n" +
                   s"Transformed to:\n${toJson(InvalidPeriod)}.")
@@ -100,14 +99,14 @@ class PropertiesPeriodResource @Inject()(
                   s"Updated Property Period with status 200 and correlationId : ${correlationId(response)}")
                   NoContent
                 case 400 if response.errorCodeIs(DesErrorCode.INVALID_PERIOD) =>
-                  Logger.warn(
+                  logger.warn(
                     s"[PropertiesPeriodResource] [createPeriod#$id]\n" +
                       s"Received from DES:\n ${response.underlying.body}\n" +
                       s"Transformed to:\n${toJson(Errors.InternalServerError)}.\n" +
                       s"CorrelationId: ${correlationId(response)}")
                   InternalServerError(toJson(Errors.InternalServerError))
                 case 404 if response.errorCodeIs(DesErrorCode.NOT_FOUND_PROPERTY) =>
-                  Logger.warn(s"[PropertiesPeriodResource] [createPeriod#$id] - Des Returned: ${DesErrorCode.NOT_FOUND_PROPERTY}. Returning 404")
+                  logger.warn(s"[PropertiesPeriodResource] [createPeriod#$id] - Des Returned: ${DesErrorCode.NOT_FOUND_PROPERTY}. Returning 404")
                   NotFound
               }
           } recoverWith exceptionHandling

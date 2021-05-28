@@ -27,11 +27,11 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .des().properties.willBeCreatedFor(nino)
         .des().obligations.returnObligationsFor(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations")
         .thenAssertThat()
         .statusIs(200)
         .bodyIsLike(Jsons.Obligations().toString)
@@ -42,7 +42,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -53,7 +53,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.receivesObligationsTestHeader(nino, "ALL_MET")
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations").withHeaders(GovTestScenarioHeader, "ALL_MET")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations").withHeaders(GovTestScenarioHeader, "ALL_MET")
         .thenAssertThat()
         .statusIs(200)
         .bodyIsLike(Jsons.Obligations().toString)
@@ -65,7 +65,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.returnObligationsWithNoIdentificationFor(nino)
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -76,7 +76,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.obligationNotFoundFor(nino)
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -97,7 +97,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations?from=201-01-01&to=2017-03-31")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations?from=201-01-01&to=2017-03-31")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("FORMAT_FROM_DATE")
@@ -108,7 +108,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations?from=2017-01-01&to=201-03-31")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations?from=2017-01-01&to=201-03-31")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("FORMAT_TO_DATE")
@@ -119,7 +119,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations?to=2017-03-31")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations?to=2017-03-31")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("RULE_DATE_PARAMETER")
@@ -130,7 +130,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations?from=2017-03-31")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations?from=2017-03-31")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("RULE_DATE_PARAMETER")
@@ -141,7 +141,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations?from=2017-12-01&to=2017-03-31")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations?from=2017-12-01&to=2017-03-31")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("RANGE_TO_DATE_BEFORE_FROM_DATE")
@@ -152,7 +152,7 @@ class PropertiesObligationsResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations?from=2017-01-01&to=2018-01-02")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations?from=2017-01-01&to=2018-01-02")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("RANGE_DATE_TOO_LONG")

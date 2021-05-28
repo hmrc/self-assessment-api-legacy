@@ -23,7 +23,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
 
-  private val conf = Map("Test.feature-switch.test-scenario-simulation.enabled" -> false)
+  private val conf = Map("feature-switch.test-scenario-simulation.enabled" -> false)
 
   override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
 
@@ -34,7 +34,7 @@ class AgentSimulationFeatureSwitchDisabledSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(200)

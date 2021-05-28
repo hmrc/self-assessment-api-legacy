@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HttpResponse
 
 case class PropertiesPeriodResponse(underlying: HttpResponse) extends Response {
   def createLocationHeader(nino: Nino, id: PropertyType, periodId: PeriodId): String =
-    s"/self-assessment/ni/$nino/uk-properties/$id/periods/$periodId"
+    s"/self-assessment/ni/${nino.nino}/uk-properties/$id/periods/$periodId"
 
   def transactionReference: Option[String] =
     (json \ "transactionReference").asOpt[String] match {

@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.selfassessmentapi.filters
 
+import play.api.http.DefaultHttpFilters
+
 import javax.inject.Inject
-import play.api.http.{DefaultHttpFilters, HttpFilters}
 
 
 case class SelfAssessmentFilters @Inject()(
@@ -26,13 +27,12 @@ case class SelfAssessmentFilters @Inject()(
                                     headerValidatorFilter: HeaderValidatorFilter,
                                     controllerLoggingFilter: ControllerLoggingFilter,
                                     setContentTypeFilter: SetContentTypeFilter,
-                                    setXContentTypeOptionsFilter: SetXContentTypeOptionsFilter,
-                                    defaultFilters: HttpFilters
+                                    setXContentTypeOptionsFilter: SetXContentTypeOptionsFilter
                                   ) extends DefaultHttpFilters(
-  defaultFilters.filters :+
-    agentSimulationFilter :+
-    setXContentTypeOptionsFilter :+
-    emptyResponseFilter :+
-    headerValidatorFilter :+
-    controllerLoggingFilter :+
-    setContentTypeFilter : _*)
+    agentSimulationFilter,
+    setXContentTypeOptionsFilter,
+    emptyResponseFilter,
+    headerValidatorFilter,
+    controllerLoggingFilter,
+    setContentTypeFilter
+)

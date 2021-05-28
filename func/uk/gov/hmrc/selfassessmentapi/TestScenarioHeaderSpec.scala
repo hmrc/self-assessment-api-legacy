@@ -27,7 +27,7 @@ class TestScenarioHeaderSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(200)
     }
@@ -40,7 +40,7 @@ class TestScenarioHeaderSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .withHeaders(GovTestScenarioHeader, "FOO")
         .thenAssertThat()
         .statusIs(200)

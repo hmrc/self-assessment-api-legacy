@@ -31,10 +31,10 @@ class TaxCalculationResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().taxCalculation.isAcceptedFor(nino)
         .when()
-        .post(Jsons.TaxCalculation.request()).to(s"/ni/$nino/calculations")
+        .post(Jsons.TaxCalculation.request()).to(s"/ni/${nino.nino}/calculations")
         .thenAssertThat()
         .statusIs(202)
-        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/calculations/\\w+".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/${nino.nino}/calculations/\\w+".r)
         .bodyIsLike(eta(5).toString())
     }
 
@@ -44,7 +44,7 @@ class TaxCalculationResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .stubAudit
         .when()
-        .post(Json.obj()).to(s"/ni/$nino/calculations")
+        .post(Json.obj()).to(s"/ni/${nino.nino}/calculations")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(invalidRequest("MANDATORY_FIELD_MISSING" -> "/taxYear"))
@@ -56,7 +56,7 @@ class TaxCalculationResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .stubAudit
         .when()
-        .post(Jsons.TaxCalculation.request("2011-12")).to(s"/ni/$nino/calculations")
+        .post(Jsons.TaxCalculation.request("2011-12")).to(s"/ni/${nino.nino}/calculations")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(invalidRequest("TAX_YEAR_INVALID" -> "/taxYear"))
@@ -69,7 +69,7 @@ class TaxCalculationResourceSpec extends BaseFunctionalSpec {
         .stubAudit
         .des().taxCalculation.invalidRequestFor(nino)
         .when()
-        .post(Jsons.TaxCalculation.request()).to(s"/ni/$nino/calculations")
+        .post(Jsons.TaxCalculation.request()).to(s"/ni/${nino.nino}/calculations")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -82,7 +82,7 @@ class TaxCalculationResourceSpec extends BaseFunctionalSpec {
         .stubAudit
         .des().isATeapotFor(nino)
         .when()
-        .post(Jsons.TaxCalculation.request()).to(s"/ni/$nino/calculations")
+        .post(Jsons.TaxCalculation.request()).to(s"/ni/${nino.nino}/calculations")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)

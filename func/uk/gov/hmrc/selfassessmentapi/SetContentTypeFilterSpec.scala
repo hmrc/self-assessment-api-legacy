@@ -28,7 +28,7 @@ class SetContentTypeFilterSpec extends BaseFunctionalSpec {
         .selfEmployment
         .noContentTypeFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .get(s"/ni/${nino.nino}/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
         .responseContainsHeader("Content-Type", "application/json".r)

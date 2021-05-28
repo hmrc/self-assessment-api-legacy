@@ -17,7 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.models.calculation
 
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
-import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
+import uk.gov.hmrc.utils.TaxYear
 
 class CalculationRequestSpec extends JsonSpec {
 

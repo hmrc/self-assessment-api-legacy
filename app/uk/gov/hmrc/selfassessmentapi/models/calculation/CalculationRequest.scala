@@ -17,7 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.models.calculation
 
 import play.api.libs.json.{Reads, _}
-import uk.gov.hmrc.selfassessmentapi.models.{ErrorCode, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
+import uk.gov.hmrc.utils.TaxYear
 
 case class CalculationRequest(taxYear: TaxYear)
 

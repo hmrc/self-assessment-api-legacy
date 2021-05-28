@@ -19,9 +19,9 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import javax.inject.Inject
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.utils.Nino
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType}
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
 import scala.concurrent.ExecutionContext

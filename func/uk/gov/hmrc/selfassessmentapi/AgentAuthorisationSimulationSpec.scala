@@ -31,7 +31,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -43,7 +43,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments/abc")
+        .get(s"/ni/${nino.nino}/self-employments/abc")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -55,7 +55,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments/abc/obligations")
+        .get(s"/ni/${nino.nino}/self-employments/abc/obligations")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -67,7 +67,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments/abc/$taxYear")
+        .get(s"/ni/${nino.nino}/self-employments/abc/$taxYear")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -79,7 +79,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods")
+        .get(s"/ni/${nino.nino}/self-employments/abc/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -91,7 +91,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments/abc/periods/def")
+        .get(s"/ni/${nino.nino}/self-employments/abc/periods/def")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -105,7 +105,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .post(Jsons.SelfEmployment(accountingType = "NONSENSE")).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment(accountingType = "NONSENSE")).to(s"/ni/${nino.nino}/self-employments")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -117,7 +117,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .post(Jsons.SelfEmployment.period()).to(s"/ni/$nino/self-employments/invalid-id/periods")
+        .post(Jsons.SelfEmployment.period()).to(s"/ni/${nino.nino}/self-employments/invalid-id/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -130,7 +130,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.periodWillNotBeUpdatedFor(nino, from = "2017-04-05", to = "2018-04-04")
         .when()
-        .put(Jsons.SelfEmployment.period()).at(s"/ni/$nino/self-employments/abc/periods/2017-04-05_2018-04-04")
+        .put(Jsons.SelfEmployment.period()).at(s"/ni/${nino.nino}/self-employments/abc/periods/2017-04-05_2018-04-04")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -144,7 +144,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .des().selfEmployment.willBeCreatedFor(nino)
         .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -163,7 +163,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .des().selfEmployment.willBeReturnedFor(nino)
         .des().selfEmployment.periodWillBeCreatedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()
@@ -172,7 +172,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(201)
         .when()
-        .put(Jsons.SelfEmployment.period(turnover = 100.1234)).at(s"/ni/$nino/self-employments/abc/periods/2017-04-06_2018-04-05")
+        .put(Jsons.SelfEmployment.period(turnover = 100.1234)).at(s"/ni/${nino.nino}/self-employments/abc/periods/2017-04-06_2018-04-05")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -185,7 +185,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.annualSummaryWillNotBeUpdatedFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/ni/${nino.nino}/self-employments/abc/$taxYear")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -198,7 +198,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.tooManySourcesFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -212,7 +212,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties")
+        .get(s"/ni/${nino.nino}/uk-properties")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -224,7 +224,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/obligations")
+        .get(s"/ni/${nino.nino}/uk-properties/obligations")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -236,13 +236,13 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/furnished-holiday-lettings/$taxYear")
+        .get(s"/ni/${nino.nino}/uk-properties/furnished-holiday-lettings/$taxYear")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
         .when()
-        .get(s"/ni/$nino/uk-properties/other/$taxYear")
+        .get(s"/ni/${nino.nino}/uk-properties/other/$taxYear")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -254,13 +254,13 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/furnished-holiday-lettings/periods")
+        .get(s"/ni/${nino.nino}/uk-properties/furnished-holiday-lettings/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
         .when()
-        .get(s"/ni/$nino/uk-properties/other/periods")
+        .get(s"/ni/${nino.nino}/uk-properties/other/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -272,7 +272,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/other/periods")
+        .get(s"/ni/${nino.nino}/uk-properties/other/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -284,7 +284,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/uk-properties/furnished-holiday-lettings/periods")
+        .get(s"/ni/${nino.nino}/uk-properties/furnished-holiday-lettings/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -296,7 +296,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .post(JsString("NONSENSE")).to(s"/ni/$nino/uk-properties")
+        .post(JsString("NONSENSE")).to(s"/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .isBadRequest
     }
@@ -307,7 +307,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .when()
         .put(Jsons.Properties.otherAnnualSummary(annualInvestmentAllowance = 100.1234))
-        .at(s"/ni/$nino/uk-properties/other/$taxYear")
+        .at(s"/ni/${nino.nino}/uk-properties/other/$taxYear")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -320,7 +320,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .when()
         .post(R2Jsons.Properties.otherPeriod(rentIncome = 1000.123))
-        .to(s"/r2/ni/$nino/uk-properties/other/periods")
+        .to(s"/r2/ni/${nino.nino}/uk-properties/other/periods")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -333,7 +333,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .when()
         .put(R2Jsons.Properties.otherPeriod())
-        .at(s"/r2/ni/$nino/uk-properties/other/periods/invalid-id")
+        .at(s"/r2/ni/${nino.nino}/uk-properties/other/periods/invalid-id")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)
@@ -347,7 +347,7 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .des().properties.notFoundIncomeSourceFor(nino)
         .when()
         .post(Jsons.Properties())
-        .to(s"/ni/$nino/uk-properties")
+        .to(s"/ni/${nino.nino}/uk-properties")
         .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
         .thenAssertThat()
         .statusIs(403)

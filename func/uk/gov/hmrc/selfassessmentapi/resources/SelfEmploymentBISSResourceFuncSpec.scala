@@ -29,7 +29,7 @@ class SelfEmploymentBISSResourceFuncSpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().SelfEmploymentBISS.getSummary(nino, taxYear, selfEmploymentId)
           .when()
-          .get(s"/ni/$nino/self-employments/$selfEmploymentId/$taxYear/income-summary")
+          .get(s"/ni/${nino.nino}/self-employments/$selfEmploymentId/$taxYear/income-summary")
           .thenAssertThat()
           .statusIs(410)
           .bodyIsLike(Jsons.Errors.resourceGone.toString)

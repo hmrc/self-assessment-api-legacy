@@ -29,10 +29,8 @@ case class Nino(nino: String) {
 }
 
 object Nino extends (String => Nino) {
-
-  implicit val ninoWrite: Writes[Nino] = (nino: Nino) => JsString(nino.value)
-  implicit val ninoRead: Reads[Nino] = (__ \ "nino").read[String].map(Nino.apply)
-
+  implicit val ninoWrite: Writes[Nino] = new SimpleObjectWrites[Nino](_.value)
+  implicit val ninoRead: Reads[Nino] = new SimpleObjectReads[Nino]("nino", Nino.apply)
 
   private val validNinoFormat = "[[A-Z]&&[^DFIQUV]][[A-Z]&&[^DFIQUVO]] ?\\d{2} ?\\d{2} ?\\d{2} ?[A-D]{1}"
   private val invalidPrefixes = List("BG", "GB", "NK", "KN", "TN", "NT", "ZZ")

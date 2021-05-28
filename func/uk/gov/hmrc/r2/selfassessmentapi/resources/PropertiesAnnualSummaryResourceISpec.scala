@@ -29,7 +29,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().properties.annualSummaryWillBeUpdatedFor(nino, propertyType, taxYear)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(204)
       }
@@ -43,7 +43,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .userIsSubscribedToMtdFor(nino)
           .clientIsFullyAuthorisedForTheResource
           .when()
-          .put(invalidAnnualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(invalidAnnualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(400)
           .contentTypeIsJson()
@@ -59,7 +59,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .willBeCreatedFor(nino)
           .des().properties.annualSummaryWillNotBeReturnedFor(nino, propertyType, taxYear)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(404)
       }
@@ -70,7 +70,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().properties.annualSummaryWillNotBeReturnedDueToNotFoundProperty(nino, propertyType, taxYear)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(404)
       }
@@ -81,7 +81,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().properties.logicallyDeleted(nino, propertyType, taxYear)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(204)
       }
@@ -92,7 +92,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().properties.alreadyLogicallyDeleted(nino, propertyType, taxYear)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(204)
       }
@@ -103,7 +103,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().invalidOriginatorIdFor(nino)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(500)
           .bodyIsLike(Jsons.Errors.internalServerError)
@@ -115,7 +115,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().payloadFailsValidationFor(nino)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(400)
           .contentTypeIsJson()
@@ -127,7 +127,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .userIsSubscribedToMtdFor(nino)
           .clientIsFullyAuthorisedForTheResource
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/2015-16")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/2015-16")
           .thenAssertThat()
           .statusIs(400)
           .bodyIsError("TAX_YEAR_INVALID")
@@ -139,7 +139,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().serverErrorFor(nino)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(500)
           .contentTypeIsJson()
@@ -152,7 +152,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().serviceUnavailableFor(nino)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(500)
           .contentTypeIsJson()
@@ -165,7 +165,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().isATeapotFor(nino)
           .when()
-          .put(annualSummary(propertyType)).at(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .put(annualSummary(propertyType)).at(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(500)
       }
@@ -179,7 +179,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .put(s"/r2/ni/$nino/uk-properties/${PropertyType.FHL}/$taxYear", Some(Jsons.Properties.invalidFhlAnnualSummary))
+        .put(s"/r2/ni/${nino.nino}/uk-properties/${PropertyType.FHL}/$taxYear", Some(Jsons.Properties.invalidFhlAnnualSummary))
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
@@ -196,7 +196,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().properties.annualSummaryWillBeReturnedFor(nino, propertyType, taxYear, desAnnualSummary(propertyType))
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsJson()
@@ -209,7 +209,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().properties.noAnnualSummaryFor(nino, propertyType, taxYear)
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(404)
       }
@@ -220,7 +220,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().properties.annualSummaryWillNotBeReturnedDueToNotFoundProperty(nino, propertyType, taxYear)
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(404)
       }
@@ -231,7 +231,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().properties.annualSummaryWillNotBeReturnedDueToNotFoundPeriod(nino, propertyType, taxYear)
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(404)
       }
@@ -241,7 +241,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .userIsSubscribedToMtdFor(nino)
           .clientIsFullyAuthorisedForTheResource
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/2015-16")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/2015-16")
           .thenAssertThat()
           .statusIs(400)
           .bodyIsError("TAX_YEAR_INVALID")
@@ -253,7 +253,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().invalidOriginatorIdFor(nino)
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(500)
           .bodyIsLike(Jsons.Errors.internalServerError)
@@ -265,7 +265,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().serverErrorFor(nino)
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(500)
           .contentTypeIsJson()
@@ -278,7 +278,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().serviceUnavailableFor(nino)
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(500)
           .contentTypeIsJson()
@@ -291,7 +291,7 @@ class PropertiesAnnualSummaryResourceISpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().isATeapotFor(nino)
           .when()
-          .get(s"/r2/ni/$nino/uk-properties/$propertyType/$taxYear")
+          .get(s"/r2/ni/${nino.nino}/uk-properties/$propertyType/$taxYear")
           .thenAssertThat()
           .statusIs(500)
       }

@@ -17,10 +17,10 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.LocalDate
-import uk.gov.hmrc.utils.Nino
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
-import uk.gov.hmrc.selfassessmentapi.models.{SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.SourceType
 import uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams
 
   class BindersSpec extends UnitSpec {

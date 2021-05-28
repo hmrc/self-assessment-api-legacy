@@ -52,7 +52,7 @@ class PropertiesResource @Inject()(
       } onDesSuccess { response =>
         response.filter {
           case 200 => Created.withHeaders(LOCATION -> response.createLocationHeader(nino))
-          case 403 => Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
+          case 403 => Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/${nino.nino}/uk-properties")
         }
       } recoverWith exceptionHandling
     }

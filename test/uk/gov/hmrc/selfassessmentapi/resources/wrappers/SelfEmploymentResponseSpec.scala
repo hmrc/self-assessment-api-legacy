@@ -42,11 +42,11 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
 
       val wrapper = SelfEmploymentResponse(HttpResponse(200, json = json, Map()))
 
-      wrapper.createLocationHeader(nino) shouldBe Some(s"/self-assessment/ni/$nino/self-employments/abc")
+      wrapper.createLocationHeader(nino) shouldBe Some(s"/self-assessment/ni/${nino.nino}/self-employments/abc")
     }
 
     "return None for a json that does not contain an income source ID" in {
-      val wrapper = SelfEmploymentResponse(HttpResponse(200, ""))
+      val wrapper = SelfEmploymentResponse(HttpResponse(200, "{}"))
 
       wrapper.createLocationHeader(nino) shouldBe None
     }

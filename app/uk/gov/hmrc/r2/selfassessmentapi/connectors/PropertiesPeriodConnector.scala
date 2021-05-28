@@ -53,7 +53,7 @@ class PropertiesPeriodConnector @Inject()(
       implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesPeriodResponse] =
       {
         httpPost[des.properties.Other.Properties, PropertiesPeriodResponse](
-          baseUrl + s"/income-store/nino/$nino/uk-properties/other/periodic-summaries",
+          baseUrl + s"/income-store/nino/${nino.nino}/uk-properties/other/periodic-summaries",
           des.properties.Other.Properties.from(properties),
           PropertiesPeriodResponse)
       }
@@ -62,7 +62,7 @@ class PropertiesPeriodConnector @Inject()(
     override def update(nino: Nino, propertyType: PropertyType, period: Period, financials: Other.Financials)(
       implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesPeriodResponse] =
       httpPut[Option[des.properties.Other.Financials], PropertiesPeriodResponse](
-        baseUrl + s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=${period.from}&to=${period.to}",
+        baseUrl + s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries?from=${period.from}&to=${period.to}",
         des.properties.Other.Financials.from(Some(financials)),
         PropertiesPeriodResponse)
   }
@@ -71,14 +71,14 @@ class PropertiesPeriodConnector @Inject()(
     override def create(nino: Nino, properties: FHL.Properties)(
       implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesPeriodResponse] =
       httpPost[des.properties.FHL.Properties, PropertiesPeriodResponse](
-        baseUrl + s"/income-store/nino/$nino/uk-properties/furnished-holiday-lettings/periodic-summaries",
+        baseUrl + s"/income-store/nino/${nino.nino}/uk-properties/furnished-holiday-lettings/periodic-summaries",
         des.properties.FHL.Properties.from(properties),
         PropertiesPeriodResponse)
 
     override def update(nino: Nino, propertyType: PropertyType, period: Period, financials: FHL.Financials)(
       implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesPeriodResponse] =
       httpPut[Option[des.properties.FHL.Financials], PropertiesPeriodResponse](
-        baseUrl + s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=${period.from}&to=${period.to}",
+        baseUrl + s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries?from=${period.from}&to=${period.to}",
         des.properties.FHL.Financials.from(Some(financials)),
         PropertiesPeriodResponse)
   }
@@ -86,13 +86,13 @@ class PropertiesPeriodConnector @Inject()(
   def retrieve(nino: Nino, from: LocalDate, to: LocalDate, propertyType: PropertyType)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesPeriodResponse] =
     httpGet[PropertiesPeriodResponse](
-      baseUrl + s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to",
+      baseUrl + s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to",
       PropertiesPeriodResponse)
 
   def retrieveAll(nino: Nino, propertyType: PropertyType)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesPeriodResponse] =
     httpGet[PropertiesPeriodResponse](
-      baseUrl + s"/income-tax/nino/$nino/uk-properties/$propertyType/periodic-summaries",
+      baseUrl + s"/income-tax/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries",
       PropertiesPeriodResponse)
 
 }

@@ -33,7 +33,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementReadyToBeFinalised(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(204)
     }
@@ -44,7 +44,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementReadyToBeFinalised(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": false }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": false }""")))
         .thenAssertThat()
         .statusIs(403)
         .bodyHasPath("\\errors(0)\\code", "NOT_FINALISED")
@@ -57,7 +57,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementMissingPeriod(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(403)
         .bodyHasPath("\\code", "BUSINESS_ERROR")
@@ -70,7 +70,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementIsEarly(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(403)
         .bodyHasPath("\\code", "BUSINESS_ERROR")
@@ -83,7 +83,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementReadyToBeFinalised(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": null }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": null }""")))
         .thenAssertThat()
         .statusIs(400)
         .bodyHasPath("\\errors(0)\\code", "INVALID_BOOLEAN_VALUE")
@@ -96,7 +96,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementReadyToBeFinalised(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/not-a-date/to/$end", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/not-a-date/to/$end", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(400)
         .bodyHasPath("\\code", "INVALID_DATE")
@@ -108,7 +108,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementReadyToBeFinalised(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/not-a-date", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/not-a-date", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(400)
         .bodyHasPath("\\code", "INVALID_DATE")
@@ -120,7 +120,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementReadyToBeFinalised(nino, end, start)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$end/to/$start", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$end/to/$start", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(400)
         .bodyHasPath("\\code", "INVALID_DATE_RANGE")
@@ -132,7 +132,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementReadyToBeFinalised(nino, start, start)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/$start", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/$start", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(204)
     }
@@ -145,7 +145,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementReadyToBeFinalised(nino, earlyStart, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$earlyStart/to/$end", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$earlyStart/to/$end", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(400)
         .bodyHasPath("\\code", "INVALID_START_DATE")
@@ -157,7 +157,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementDoesNotMatchPeriod(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(403)
         .bodyHasPath("\\code", "BUSINESS_ERROR")
@@ -170,7 +170,7 @@ class PropertiesPeriodEndOfPeriodStatementSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.endOfYearStatementAlreadySubmitted(nino, start, end)
         .when()
-        .post(s"/ni/$nino/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
+        .post(s"/ni/${nino.nino}/uk-properties/end-of-period-statements/from/$start/to/$end", Some(Json.parse("""{ "finalised": true }""")))
         .thenAssertThat()
         .statusIs(403)
         .bodyHasPath("\\code", "BUSINESS_ERROR")

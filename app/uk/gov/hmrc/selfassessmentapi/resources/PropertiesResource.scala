@@ -56,7 +56,7 @@ class PropertiesResource @Inject()(
             Created.withHeaders(LOCATION -> response.createLocationHeader(nino))
           case 403 => logger.warn(message = s"[PropertiesResource][create] " +
             s"Error response with correlationId : ${correlationId(response)}")
-            Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
+            Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/${nino.nino}/uk-properties")
         }
       } recoverWith exceptionHandling
     }

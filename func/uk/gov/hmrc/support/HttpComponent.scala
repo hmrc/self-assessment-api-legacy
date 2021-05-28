@@ -35,7 +35,7 @@ trait HttpComponent {
     lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
     def get(url: String)(implicit hc: HeaderCarrier, timeout: FiniteDuration): HttpResponse = perform(url) { request =>
-      request.get()
+      request.withHttpHeaders(hc.extraHeaders:_*).get()
     }
 
     def post[A](url: String, body: A, headers: Seq[(String, String)] = Seq.empty)(
@@ -68,8 +68,10 @@ trait HttpComponent {
     }
 
     private def perform(url: String)(fun: WSRequest => Future[WSResponse])(implicit hc: HeaderCarrier,
-                                                                           timeout: FiniteDuration): WSHttpResponse =
-      await(fun(client.url(url).withHttpHeaders(hc.headers: _*).withRequestTimeout(timeout)).map(new WSHttpResponse(_)))
+                                                                           timeout: FiniteDuration): HttpResponse = {
+      val extraHeaders = hc.otherHeaders ++ hc.extraHeaders
+      await(fun(client.url(url).withHttpHeaders(extraHeaders:_*).withRequestTimeout(timeout)).map(WSHttpResponse(_)))
+    }
 
     private def await[A](future: Future[A])(implicit timeout: FiniteDuration) = Await.result(future, timeout)
 

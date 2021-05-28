@@ -38,7 +38,7 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.returnEndOfPeriodObligationsFor(nino, validSelfEmploymentId)
         .when()
-        .get(s"/ni/$nino/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=$to")
+        .get(s"/ni/${nino.nino}/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=$to")
         .thenAssertThat()
         .statusIs(200)
         .bodyIsLike(Jsons.Obligations.eops.toString)
@@ -50,7 +50,7 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.returnEndOfPeriodObligationsFor(nino, testRefNo)
         .when()
-        .get(s"/ni/$nino/self-employments/$testRefNo/end-of-period-statements/obligations?from=$from&to=$to")
+        .get(s"/ni/${nino.nino}/self-employments/$testRefNo/end-of-period-statements/obligations?from=$from&to=$to")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("SELF_EMPLOYMENT_ID_INVALID")
@@ -62,7 +62,7 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.returnEopsObligationsWithNoIdentificationFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=$to")
+        .get(s"/ni/${nino.nino}/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=$to")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -73,7 +73,7 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.returnEndOfPeriodObligationsFor(nino, validSelfEmploymentId)
         .when()
-        .get(s"/ni/$nino/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=ABC&to=$to")
+        .get(s"/ni/${nino.nino}/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=ABC&to=$to")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Json.toJson(Errors.InvalidDate).toString)
@@ -86,7 +86,7 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.returnEndOfPeriodObligationsFor(nino, validSelfEmploymentId)
         .when()
-        .get(s"/ni/$nino/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=ABC")
+        .get(s"/ni/${nino.nino}/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=ABC")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Json.toJson(Errors.InvalidDate).toString)
@@ -99,7 +99,7 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().obligations.returnEndOfPeriodObligationsFor(nino, validSelfEmploymentId)
         .when()
-        .get(s"/ni/$nino/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=2016-12-31")
+        .get(s"/ni/${nino.nino}/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=2016-12-31")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Json.toJson(Errors.InvalidDateRange_2).toString)
@@ -109,9 +109,9 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
       given()
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
-        .des().obligations.returnEopsObligationsErrorFor(nino, validSelfEmploymentId)(404, "INVALID_BPKEY")
+        .des().obligations.returnEopsObligationsErrorFor(nino)(404, "INVALID_BPKEY")
         .when()
-        .get(s"/ni/$nino/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=$to")
+        .get(s"/ni/${nino.nino}/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=$to")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -122,9 +122,9 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
         given()
           .userIsSubscribedToMtdFor(nino)
           .clientIsFullyAuthorisedForTheResource
-          .des().obligations.returnEopsObligationsErrorFor(nino, validSelfEmploymentId)(desStatus, desCode)
+          .des().obligations.returnEopsObligationsErrorFor(nino)(desStatus, desCode)
           .when()
-          .get(s"/ni/$nino/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=$to")
+          .get(s"/ni/${nino.nino}/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations?from=$from&to=$to")
           .thenAssertThat()
           .statusIs(expectedStatus)
           .bodyIsError(expectedError.code)

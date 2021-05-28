@@ -39,7 +39,7 @@ class PropertiesPeriodResourceSpec extends BaseFunctionalSpec {
           .properties
           .periodsWillBeReturnedFor(nino, propertyType)
           .when()
-          .get(s"/ni/$nino/uk-properties/$propertyType/periods")
+          .get(s"/ni/${nino.nino}/uk-properties/$propertyType/periods")
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsJson()
@@ -57,7 +57,7 @@ class PropertiesPeriodResourceSpec extends BaseFunctionalSpec {
           .properties
           .emptyPeriodsWillBeReturnedFor(nino, propertyType)
           .when()
-          .get(s"/ni/$nino/uk-properties/$propertyType/periods")
+          .get(s"/ni/${nino.nino}/uk-properties/$propertyType/periods")
           .thenAssertThat()
           .statusIs(200)
           .contentTypeIsJson()
@@ -72,7 +72,7 @@ class PropertiesPeriodResourceSpec extends BaseFunctionalSpec {
           .properties
           .noPeriodsFor(nino, propertyType)
           .when()
-          .get(s"/ni/$nino/uk-properties/$propertyType/periods")
+          .get(s"/ni/${nino.nino}/uk-properties/$propertyType/periods")
           .thenAssertThat()
           .statusIs(404)
       }
@@ -85,7 +85,7 @@ class PropertiesPeriodResourceSpec extends BaseFunctionalSpec {
           .properties
           .doesNotExistPeriodFor(nino, propertyType)
           .when()
-          .get(s"/ni/$nino/uk-properties/$propertyType/periods")
+          .get(s"/ni/${nino.nino}/uk-properties/$propertyType/periods")
           .thenAssertThat()
           .statusIs(404)
       }
@@ -98,7 +98,7 @@ class PropertiesPeriodResourceSpec extends BaseFunctionalSpec {
           .properties
           .invalidPeriodsJsonFor(nino, propertyType)
           .when()
-          .get(s"/ni/$nino/uk-properties/$propertyType/periods")
+          .get(s"/ni/${nino.nino}/uk-properties/$propertyType/periods")
           .thenAssertThat()
           .statusIs(500)
       }
@@ -110,7 +110,7 @@ class PropertiesPeriodResourceSpec extends BaseFunctionalSpec {
           .des()
           .isATeapotFor(nino)
           .when()
-          .get(s"/ni/$nino/uk-properties/$propertyType/periods")
+          .get(s"/ni/${nino.nino}/uk-properties/$propertyType/periods")
           .thenAssertThat()
           .statusIs(500)
       }

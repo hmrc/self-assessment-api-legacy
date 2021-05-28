@@ -17,14 +17,14 @@
 package uk.gov.hmrc.r2.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.utils.Nino
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.r2.selfassessmentapi.models.des.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary}
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertiesAnnualSummary
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType
-import uk.gov.hmrc.r2.selfassessmentapi.models.{TaxYear, des, properties}
+import uk.gov.hmrc.r2.selfassessmentapi.models.{des, properties}
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.PropertiesAnnualSummaryResponse
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +39,7 @@ class PropertiesAnnualSummaryConnector @Inject()(
   def update(nino: Nino, propertyType: PropertyType, taxYear: TaxYear, update: PropertiesAnnualSummary)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesAnnualSummaryResponse] = {
     val url
-    : String = baseUrl + s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"
+    : String = baseUrl + s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"
     update match {
       case other: properties.OtherPropertiesAnnualSummary =>
         httpPut[OtherPropertiesAnnualSummary, PropertiesAnnualSummaryResponse](
@@ -57,6 +57,6 @@ class PropertiesAnnualSummaryConnector @Inject()(
   def get(nino: Nino, propertyType: PropertyType, taxYear: TaxYear)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesAnnualSummaryResponse] =
     httpGet[PropertiesAnnualSummaryResponse](
-      baseUrl + s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}",
+      baseUrl + s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}",
       PropertiesAnnualSummaryResponse(propertyType, _))
 }

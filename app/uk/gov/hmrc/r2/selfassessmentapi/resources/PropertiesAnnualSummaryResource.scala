@@ -19,7 +19,7 @@ package uk.gov.hmrc.r2.selfassessmentapi.resources
 import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
-import uk.gov.hmrc.utils.Nino
+import uk.gov.hmrc.utils.{IdGenerator, Nino, TaxYear}
 import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.PropertiesAnnualSummaryConnector
 import uk.gov.hmrc.r2.selfassessmentapi.contexts.AuthContext
@@ -27,10 +27,9 @@ import uk.gov.hmrc.r2.selfassessmentapi.models.audit.AnnualSummaryUpdate
 import uk.gov.hmrc.r2.selfassessmentapi.models.des.DesErrorCode
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.{FHLPropertiesAnnualSummary, OtherPropertiesAnnualSummary, PropertiesAnnualSummary, PropertyType}
-import uk.gov.hmrc.r2.selfassessmentapi.models.{ErrorResult, SourceType, TaxYear}
+import uk.gov.hmrc.r2.selfassessmentapi.models.{ErrorResult, SourceType}
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.PropertiesAnnualSummaryResponse
 import uk.gov.hmrc.r2.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
-import uk.gov.hmrc.utils.IdGenerator
 
 import scala.concurrent.{ExecutionContext, Future}
 

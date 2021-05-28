@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.selfassessmentapi.models
+package uk.gov.hmrc.utils
 
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
 

@@ -20,7 +20,7 @@ import org.joda.time.{DateTime, DateTimeZone}
 import org.scalatest.OptionValues
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.{AnyWordSpec, AsyncWordSpec}
-import uk.gov.hmrc.selfassessmentapi.models.TaxYear
+import uk.gov.hmrc.utils.TaxYear
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

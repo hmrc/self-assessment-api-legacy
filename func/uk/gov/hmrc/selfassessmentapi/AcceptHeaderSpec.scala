@@ -29,7 +29,7 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.noneFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments").withAcceptHeader()
+        .get(s"/ni/${nino.nino}/self-employments").withAcceptHeader()
         .thenAssertThat().statusIs(200).jsonBodyIsEmptyArray()
     }
   }
@@ -41,7 +41,7 @@ class AcceptHeaderSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments").withoutAcceptHeader()
+        .get(s"/ni/${nino.nino}/self-employments").withoutAcceptHeader()
         .thenAssertThat()
         .statusIs(406)
         .bodyIsError("ACCEPT_HEADER_INVALID")

@@ -41,7 +41,7 @@ class SelfEmploymentPeriodicSummaryFeatureSwitchSpec extends BaseFunctionalSpec 
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.willBeCreatedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .when()

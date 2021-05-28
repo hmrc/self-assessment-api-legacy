@@ -13,7 +13,7 @@ GET         /ni/:nino/self-employments/:id                                      
 ####################
 #    Self-Employments BISS   #
 ####################
-GET         /ni/:nino/self-employments/:selfEmploymentId/:taxYear/income-summary        @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentBISSResource.getSummary(nino: uk.gov.hmrc.utils.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear, selfEmploymentId: String)
+GET         /ni/:nino/self-employments/:selfEmploymentId/:taxYear/income-summary        @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentBISSResource.getSummary(nino: uk.gov.hmrc.utils.Nino, taxYear: uk.gov.hmrc.utils.TaxYear, selfEmploymentId: String)
 
 # Obligations
 GET         /ni/:nino/self-employments/:id/obligations                                  @uk.gov.hmrc.selfassessmentapi.resources.SelfEmploymentObligationsResource.retrieveObligations(nino: uk.gov.hmrc.utils.Nino, id: uk.gov.hmrc.selfassessmentapi.models.SourceId, queryParams: uk.gov.hmrc.selfassessmentapi.resources.utils.ObligationQueryParams)
@@ -30,7 +30,7 @@ GET         /ni/:nino/self-employments/:id/end-of-period-statements/obligations 
 ####################
 #    Properties BISS   #
 ####################
-GET         /ni/:nino/uk-properties/:taxYear/income-summary                             @uk.gov.hmrc.selfassessmentapi.resources.PropertiesBISSResource.getSummary(nino: uk.gov.hmrc.utils.Nino, taxYear: uk.gov.hmrc.selfassessmentapi.models.TaxYear)
+GET         /ni/:nino/uk-properties/:taxYear/income-summary                             @uk.gov.hmrc.selfassessmentapi.resources.PropertiesBISSResource.getSummary(nino: uk.gov.hmrc.utils.Nino, taxYear: uk.gov.hmrc.utils.TaxYear)
 
 ####################
 #    Properties    #

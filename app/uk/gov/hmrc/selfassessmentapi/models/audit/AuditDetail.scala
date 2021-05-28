@@ -17,8 +17,8 @@
 package uk.gov.hmrc.selfassessmentapi.models.audit
 
 import play.api.libs.json.{Format, JsValue, Json}
-import uk.gov.hmrc.utils.Nino
-import uk.gov.hmrc.selfassessmentapi.models.{SourceId, TaxYear}
+import uk.gov.hmrc.utils.{Nino, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.SourceId
 
 sealed trait AuditDetail {
   val auditType: String

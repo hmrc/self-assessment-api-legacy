@@ -25,7 +25,7 @@ import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AuthorisationServiceSpec extends BaseFunctionalSpec {
 
-  private val conf = Map("Test.microservice.services.auth.enabled" -> true)
+  private val conf = Map("microservice.services.auth.enabled" -> true)
 
   override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
 
@@ -35,7 +35,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
       given()
         .userIsNotSubscribedToMtdFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsLike(Jsons.Errors.clientNotSubscribed)
@@ -45,7 +45,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
       given()
         .businessDetailsLookupReturns503Error(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -55,7 +55,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
       given()
         .businessDetailsLookupReturns500Error(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -66,7 +66,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .userIsNotAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsLike(Jsons.Errors.clientNotSubscribed)
@@ -77,7 +77,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .userIsNotPartiallyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsLike(Jsons.Errors.agentNotSubscribed)
@@ -88,7 +88,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .missingBearerToken
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsLike(Jsons.Errors.unauthorised)
@@ -99,7 +99,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .upstream502BearerTokenDecryptionError
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsLike(Jsons.Errors.unauthorised)
@@ -110,7 +110,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .upstream5xxError
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -121,7 +121,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .upstream4xxError
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -132,7 +132,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .upstreamNonFatal
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -143,7 +143,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsAuthorisedForTheResourceWithoutCL200
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(403)
     }
@@ -153,7 +153,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(200)
     }
@@ -163,7 +163,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .agentIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(200)
     }
@@ -173,7 +173,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .agentIsFullyAuthorisedForTheResourceNoAgentCode
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(200)
     }
@@ -190,7 +190,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .willBeCreatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment())
-        .to(s"/ni/$nino/self-employments")
+        .to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(201)
     }
@@ -220,7 +220,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .periodWillBeUpdatedFor(nino, PropertyType.OTHER)
         .when()
         .put(property)
-        .at(s"/r2/ni/$nino/uk-properties/${PropertyType.OTHER}/periods/2017-04-06_2018-04-05")
+        .at(s"/r2/ni/${nino.nino}/uk-properties/${PropertyType.OTHER}/periods/2017-04-06_2018-04-05")
         .thenAssertThat()
         .statusIs(204)
     }
@@ -230,7 +230,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .userIsPartiallyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments/abc")
+        .get(s"/ni/${nino.nino}/self-employments/abc")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsLike(Jsons.Errors.agentNotAuthorised)
@@ -245,7 +245,7 @@ class AuthorisationServiceSpec extends BaseFunctionalSpec {
         .willBeCreatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment())
-        .to(s"/ni/$nino/self-employments")
+        .to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(201)
     }

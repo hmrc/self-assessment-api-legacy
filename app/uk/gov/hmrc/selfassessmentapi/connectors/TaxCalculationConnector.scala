@@ -17,12 +17,11 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.utils.Nino
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.domain.EmptyJsonBody
-import uk.gov.hmrc.selfassessmentapi.models.TaxYear
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.TaxCalculationResponse
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +36,7 @@ class TaxCalculationConnector @Inject()(
                         (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[TaxCalculationResponse] =
 
   httpPost[EmptyJsonBody, TaxCalculationResponse](
-    baseUrl + s"/income-tax/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation",
+    baseUrl + s"/income-tax/nino/${nino.nino}/taxYear/${taxYear.toDesTaxYear}/tax-calculation",
     EmptyJsonBody,
     TaxCalculationResponse)
 }

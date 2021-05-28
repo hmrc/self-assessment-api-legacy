@@ -30,7 +30,7 @@ class EmptyResponseFilterSpec extends BaseFunctionalSpec {
         .des().selfEmployment.willBeCreatedFor(nino)
         .when()
         .post(Jsons.SelfEmployment())
-        .to(s"/ni/$nino/self-employments")
+        .to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(201)
         .responseContainsHeader(EmptyResponseFilter.emptyHeader, "true".r)
@@ -42,7 +42,7 @@ class EmptyResponseFilterSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.willConflict(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(409)
         .responseContainsHeader(EmptyResponseFilter.emptyHeader, "true".r)

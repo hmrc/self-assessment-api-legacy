@@ -22,7 +22,7 @@ import uk.gov.hmrc.selfassessmentapi.resources.Jsons
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class AuthorisationDisabledSpec extends BaseFunctionalSpec {
-  private val conf = Map("Test.microservice.services.auth.enabled" -> false)
+  private val conf = Map("microservice.services.auth.enabled" -> false)
 
   override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
 
@@ -31,7 +31,7 @@ class AuthorisationDisabledSpec extends BaseFunctionalSpec {
       given()
         .des().selfEmployment.willBeCreatedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(201)
     }

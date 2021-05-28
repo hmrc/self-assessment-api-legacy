@@ -37,7 +37,7 @@ class PropertiesConnector @Inject()(
   def create(nino: Nino, properties: NewProperties)
             (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesResponse] = {
     httpPost[NewProperties, PropertiesResponse](
-      baseUrl + s"/income-tax-self-assessment/nino/$nino/properties",
+      baseUrl + s"/income-tax-self-assessment/nino/${nino.nino}/properties",
       properties,
       PropertiesResponse)
   }

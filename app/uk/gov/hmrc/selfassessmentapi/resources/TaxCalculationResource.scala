@@ -66,7 +66,7 @@ class TaxCalculationResource @Inject()(
               Accepted(Json.parse(cannedEtaResponse))
                 .withHeaders(
                   LOCATION -> response.calcId
-                    .map(id => s"/self-assessment/ni/$nino/calculations/$id")
+                    .map(id => s"/self-assessment/ni/${nino.nino}/calculations/$id")
                     .getOrElse(""))
             case 400 if response.isInvalidNino => logger.warn(message = s"[TaxCalculationResource][requestCalculation] " +
               s"BAD Request error with correlationId : ${correlationId(response)}")

@@ -27,10 +27,10 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.willBeCreatedFor(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/r2/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/r2/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(201)
-        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/uk-properties".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/${nino.nino}/uk-properties".r)
         .when()
     }
 
@@ -40,10 +40,10 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().properties.willConflict(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/r2/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/r2/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(409)
-        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/uk-properties".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/${nino.nino}/uk-properties".r)
     }
 
     "return code 400 when attempting to create a property business with invalid information" in {
@@ -52,7 +52,7 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().payloadFailsValidationFor(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/r2/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/r2/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Jsons.Errors.invalidRequest)
@@ -64,7 +64,7 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().invalidNinoFor(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/r2/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/r2/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Jsons.Errors.ninoInvalid)
@@ -76,7 +76,7 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().serverErrorFor(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/r2/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/r2/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -88,7 +88,7 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().serviceUnavailableFor(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/r2/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/r2/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -100,7 +100,7 @@ class PropertiesResourceISpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().isATeapotFor(nino)
         .when()
-        .post(Jsons.Properties()).to(s"/r2/ni/$nino/uk-properties")
+        .post(Jsons.Properties()).to(s"/r2/ni/${nino.nino}/uk-properties")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)

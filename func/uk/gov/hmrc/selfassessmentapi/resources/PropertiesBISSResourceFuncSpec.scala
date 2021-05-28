@@ -27,7 +27,7 @@ class PropertiesBISSResourceFuncSpec extends BaseFunctionalSpec {
           .clientIsFullyAuthorisedForTheResource
           .des().PropertiesBISS.getSummary(nino, taxYear)
           .when()
-          .get(s"/ni/$nino/uk-properties/$taxYear/income-summary")
+          .get(s"/ni/${nino.nino}/uk-properties/$taxYear/income-summary")
           .thenAssertThat()
           .statusIs(410)
           .bodyIsLike(Jsons.Errors.resourceGone.toString)

@@ -37,6 +37,6 @@ class PropertiesPeriodStatementConnector @Inject()(
 
   def create(nino: Nino, accountingPeriod: Period, requestTimestamp: String)
             (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[EmptyResponse] =
-    httpPost[RequestDateTime, EmptyResponse](s"$baseUrl/income-store/nino/$nino/uk-properties/accounting-periods/${accountingPeriod.periodId}/statement",
+    httpPost[RequestDateTime, EmptyResponse](s"$baseUrl/income-store/nino/${nino.nino}/uk-properties/accounting-periods/${accountingPeriod.periodId}/statement",
       RequestDateTime(requestTimestamp), EmptyResponse)
 }

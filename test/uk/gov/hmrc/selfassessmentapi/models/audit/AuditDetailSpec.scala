@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.models.audit
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.utils.Nino
-import uk.gov.hmrc.selfassessmentapi.models.TaxYear
+import uk.gov.hmrc.utils.TaxYear
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
 class AuditDetailSpec extends JsonSpec {

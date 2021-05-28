@@ -27,7 +27,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.annualSummaryWillBeUpdatedFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(204)
         .when()
@@ -39,7 +39,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.annualSummaryNotFoundFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/sillysource/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/${nino.nino}/self-employments/sillysource/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -59,7 +59,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .put(annualSummaries).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(annualSummaries).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
@@ -74,7 +74,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.logicallyDeleted(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(204)
         .when()
@@ -86,7 +86,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.alreadyLogicallyDeleted(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(204)
         .when()
@@ -98,7 +98,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.invalidOriginatorIdFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(500)
         .contentTypeIsJson()
@@ -111,7 +111,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().payloadFailsValidationFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
@@ -124,7 +124,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().serverErrorFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(500)
         .contentTypeIsJson()
@@ -137,7 +137,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().serviceUnavailableFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.annualSummary()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(500)
         .contentTypeIsJson()
@@ -150,7 +150,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().isATeapotFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.update()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.update()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(500)
     }
@@ -184,7 +184,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.annualSummaryWillBeReturnedFor(nino)
         .when()
-        .get(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .get(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
@@ -198,7 +198,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.noAnnualSummaryFor(nino)
         .when()
-        .get(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .get(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
@@ -211,7 +211,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.annualSummaryWillNotBeReturnedFor(nino)
         .when()
-        .get(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .get(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -221,7 +221,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/r2/ni/$nino/self-employments/abc/2015-16")
+        .get(s"/r2/ni/${nino.nino}/self-employments/abc/2015-16")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsError("TAX_YEAR_INVALID")
@@ -233,7 +233,7 @@ class SelfEmploymentAnnualSummaryResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().isATeapotFor(nino)
         .when()
-        .put(Jsons.SelfEmployment.update()).at(s"/r2/ni/$nino/self-employments/abc/$taxYear")
+        .put(Jsons.SelfEmployment.update()).at(s"/r2/ni/${nino.nino}/self-employments/abc/$taxYear")
         .thenAssertThat()
         .statusIs(500)
     }

@@ -20,5 +20,5 @@ import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HttpResponse
 
 case class PropertiesResponse(underlying: HttpResponse) extends Response { self =>
-  def createLocationHeader(nino: Nino): String = s"/self-assessment/ni/$nino/uk-properties"
+  def createLocationHeader(nino: Nino): String = s"/self-assessment/ni/${nino.nino}/uk-properties"
 }

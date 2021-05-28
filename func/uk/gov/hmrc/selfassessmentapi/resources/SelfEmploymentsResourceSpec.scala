@@ -28,10 +28,10 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.willBeCreatedFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(201)
-        .responseContainsHeader("Location", s"/self-assessment/ni/$nino/self-employments/\\w+".r)
+        .responseContainsHeader("Location", s"/self-assessment/ni/${nino.nino}/self-employments/\\w+".r)
     }
 
     "return code 400 (INVALID_REQUEST) when attempting to create a self-employment with an invalid dates in the accountingPeriod" in {
@@ -39,7 +39,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .post(Jsons.SelfEmployment(accPeriodStart = "01-01-2017", accPeriodEnd = "02-01-2017")).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment(accPeriodStart = "01-01-2017", accPeriodEnd = "02-01-2017")).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
@@ -51,7 +51,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .post(Jsons.SelfEmployment(accountingType = "INVALID_ACC_TYPE")).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment(accountingType = "INVALID_ACC_TYPE")).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(400)
         .contentTypeIsJson()
@@ -64,7 +64,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().payloadFailsValidationFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Jsons.Errors.invalidRequest)
@@ -76,7 +76,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().invalidNinoFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Jsons.Errors.ninoInvalid)
@@ -88,7 +88,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().serverErrorFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -100,7 +100,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().serviceUnavailableFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -112,7 +112,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.tooManySourcesFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(403)
         .bodyIsLike(Jsons.Errors.businessError("TOO_MANY_SOURCES" -> ""))
@@ -124,7 +124,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().isATeapotFor(nino)
         .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/$nino/self-employments")
+        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
     }
@@ -139,7 +139,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/abc")
+        .get(s"/ni/${nino.nino}/self-employments/abc")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
@@ -153,7 +153,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().invalidNinoFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/sourceId")
+        .get(s"/ni/${nino.nino}/self-employments/sourceId")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Jsons.Errors.ninoInvalid)
@@ -165,7 +165,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.noneFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .get(s"/ni/${nino.nino}/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -176,7 +176,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.incomeIdNotFoundFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .get(s"/ni/${nino.nino}/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -198,7 +198,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().ninoNotFoundFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .get(s"/ni/${nino.nino}/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -209,7 +209,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.invalidJson(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/abc")
+        .get(s"/ni/${nino.nino}/self-employments/abc")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -221,7 +221,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().serverErrorFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .get(s"/ni/${nino.nino}/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -233,7 +233,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().serviceUnavailableFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/invalidSourceId")
+        .get(s"/ni/${nino.nino}/self-employments/invalidSourceId")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -245,7 +245,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().isATeapotFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments/abc")
+        .get(s"/ni/${nino.nino}/self-employments/abc")
         .thenAssertThat()
         .statusIs(500)
     }
@@ -266,7 +266,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.willBeReturnedFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(200)
         .contentTypeIsJson()
@@ -280,7 +280,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.noneFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(200)
         .jsonBodyIsEmptyArray()
@@ -292,7 +292,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().invalidNinoFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(400)
         .bodyIsLike(Jsons.Errors.ninoInvalid)
@@ -304,7 +304,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().ninoNotFoundFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(404)
     }
@@ -315,7 +315,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().selfEmployment.invalidJson(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
         .bodyIsLike(Jsons.Errors.internalServerError)
@@ -327,7 +327,7 @@ class SelfEmploymentsResourceSpec extends BaseFunctionalSpec {
         .clientIsFullyAuthorisedForTheResource
         .des().isATeapotFor(nino)
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .thenAssertThat()
         .statusIs(500)
     }

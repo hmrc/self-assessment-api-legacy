@@ -37,7 +37,7 @@ class PropertiesPeriodConnector @Inject()(
   def retrieveAll(nino: Nino, propertyType: PropertyType)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesPeriodResponse] =
     httpGet[PropertiesPeriodResponse](
-      baseUrl + s"/income-tax/nino/$nino/uk-properties/$propertyType/periodic-summaries",
+      baseUrl + s"/income-tax/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries",
       PropertiesPeriodResponse)
 
 }

@@ -58,7 +58,9 @@ abstract class BaseResource(cc: ControllerComponents)(implicit ec: ExecutionCont
 
       override protected def filter[A](request: Request[A]): Future[Option[Result]] =
         Future {
-          if (featureSwitch.isEnabled(source, summary)) None
+          if (featureSwitch.isEnabled(source, summary)){
+            None
+          }
           else Some(NotFound)
         }
     }

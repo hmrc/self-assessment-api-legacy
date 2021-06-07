@@ -41,6 +41,7 @@ object AppDependencies {
     "com.vladsch.flexmark"   % "flexmark-all"              % "0.36.8"            % scope,
     "org.skyscreamer"        % "jsonassert"                % "1.5.0"             % scope,
     "com.jayway.restassured" % "rest-assured"              % "2.9.0"             % scope,
-    "org.mockito"            % "mockito-core"              % "3.5.13"            % scope
+    "org.mockito"            % "mockito-core"              % "3.5.13"            % scope,
+    "org.scalamock"          %% "scalamock"                % "5.1.0"              % scope
   )
 }

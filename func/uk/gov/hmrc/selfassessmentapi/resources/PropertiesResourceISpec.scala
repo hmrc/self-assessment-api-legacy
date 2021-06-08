@@ -16,95 +16,158 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import uk.gov.hmrc.support.BaseFunctionalSpec
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.HeaderNames.ACCEPT
+import play.api.http.Status._
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.WSRequest
+import uk.gov.hmrc.selfassessmentapi.NinoGenerator
+import uk.gov.hmrc.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import uk.gov.hmrc.support.IntegrationBaseSpec
+import uk.gov.hmrc.utils.Nino
 
-class PropertiesResourceISpec extends BaseFunctionalSpec {
+class PropertiesResourceISpec extends IntegrationBaseSpec {
 
-  "creating a property business" should {
-    "return code 201 containing a location header when creating a property business" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().properties.willBeCreatedFor(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
-        .thenAssertThat()
-        .statusIs(201)
-        .responseContainsHeader("Location", s"/self-assessment/ni/${nino.nino}/uk-properties".r)
+  private trait Test {
+
+    protected val nino: Nino = NinoGenerator().nextNino()
+
+    val correlationId: String = "X-ID"
+
+    def uri: String = s"/ni/${nino.nino}/uk-properties"
+
+    def desUrl: String = s"/income-tax-self-assessment/nino/${nino.nino}/properties"
+
+    def desResponse(res: String): JsValue = Json.parse(res)
+
+    def setupStubs(): StubMapping
+
+    def request(): WSRequest = {
+      setupStubs()
+      buildRequest(uri)
+        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
-
-    "return code 409 when attempting to create the same property business more than once" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().properties.willConflict(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
-        .thenAssertThat()
-        .statusIs(409)
-        .responseContainsHeader("Location", s"/self-assessment/ni/${nino.nino}/uk-properties".r)
-    }
-
-    "return code 400 when attempting to create a property business with invalid information" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().payloadFailsValidationFor(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
-        .thenAssertThat()
-        .statusIs(400)
-        .bodyIsLike(Jsons.Errors.invalidRequest)
-    }
-
-    "return code 400 when attempting to create a property business that fails DES nino validation" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().invalidNinoFor(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
-        .thenAssertThat()
-        .statusIs(400)
-        .bodyIsLike(Jsons.Errors.ninoInvalid)
-    }
-
-    "return code 500 when DES is experiencing issues" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().serverErrorFor(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
-        .thenAssertThat()
-        .statusIs(500)
-        .bodyIsLike(Jsons.Errors.internalServerError)
-    }
-
-    "return code 500 when systems that DES is dependant on are experiencing issues" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().serviceUnavailableFor(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
-        .thenAssertThat()
-        .statusIs(500)
-        .bodyIsLike(Jsons.Errors.internalServerError)
-    }
-
-    "return code 500 when we receive a status code from DES that we do not handle" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().isATeapotFor(nino)
-        .when()
-        .post(Jsons.Properties()).to(s"/ni/${nino.nino}/uk-properties")
-        .thenAssertThat()
-        .statusIs(500)
-        .bodyIsLike(Jsons.Errors.internalServerError)
-    }
-
   }
 
+  "creating a property business" should {
+    "return status code 201 with location header" when {
+      "a valid request is made" in new Test {
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, OK, desResponse(DesJsons.Properties.createResponse))
+        }
+
+        private val response = await(request().post(Jsons.Properties()))
+        response.status shouldBe CREATED
+        response.header("Location") shouldBe Some(s"/self-assessment/ni/${nino.nino}/uk-properties")
+      }
+    }
+
+    "return status code 409 with location header" when {
+      "attempting to create the same property business more than once" in new Test {
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, FORBIDDEN, desResponse(DesJsons.Errors.propertyConflict))
+        }
+
+        private val response = await(request().post(Jsons.Properties()))
+        response.status shouldBe CONFLICT
+        response.header("Location") shouldBe Some(s"/self-assessment/ni/${nino.nino}/uk-properties")
+      }
+    }
+
+    "return status code 400" when {
+      "attempting to create a property business with invalid information" in new Test {
+
+        val expectedJson: JsValue = Json.parse(Jsons.Errors.invalidRequest)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, BAD_REQUEST, desResponse(DesJsons.Errors.invalidPayload))
+        }
+
+        private val response = await(request().post(Jsons.Properties()))
+        response.status shouldBe BAD_REQUEST
+        response.json shouldBe expectedJson
+      }
+    }
+
+    "return status code 400 with NINO_INVALID error" when {
+      "attempting to create a property business that fails DES nino validation" in new Test {
+
+        val expectedJson: JsValue = Json.parse(Jsons.Errors.ninoInvalid)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, BAD_REQUEST, desResponse(DesJsons.Errors.invalidNino))
+        }
+
+        private val response = await(request().post(Jsons.Properties()))
+        response.status shouldBe BAD_REQUEST
+        response.json shouldBe expectedJson
+      }
+    }
+
+    "return status code 500 with INTERNAL_SERVER_ERROR" when {
+      "DES service throw server error" in new Test {
+
+        val expectedJson: JsValue = Json.parse(Jsons.Errors.internalServerError)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, INTERNAL_SERVER_ERROR, desResponse(DesJsons.Errors.serverError))
+        }
+
+        private val response = await(request().post(Jsons.Properties()))
+        response.status shouldBe INTERNAL_SERVER_ERROR
+        response.json shouldBe expectedJson
+      }
+
+      "DES service is unavailable or down" in new Test {
+
+        val expectedJson: JsValue = Json.parse(Jsons.Errors.internalServerError)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, SERVICE_UNAVAILABLE, desResponse(DesJsons.Errors.serviceUnavailable))
+        }
+
+        private val response = await(request().post(Jsons.Properties()))
+        response.status shouldBe INTERNAL_SERVER_ERROR
+        response.json shouldBe expectedJson
+      }
+
+      "we receive a status code from DES that we do not handle" in new Test {
+
+        val expectedJson: JsValue = Json.parse(Jsons.Errors.internalServerError)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, IM_A_TEAPOT, Json.obj())
+        }
+
+        private val response = await(request().post(Jsons.Properties()))
+        response.status shouldBe INTERNAL_SERVER_ERROR
+        response.json shouldBe expectedJson
+      }
+    }
+  }
 }
+
+

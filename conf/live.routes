@@ -48,7 +48,3 @@ GET         /ni/:nino/uk-properties/:id/periods                                 
 # Properties End-of-Period Statements
 POST        /ni/:nino/uk-properties/end-of-period-statements/from/:start/to/:end               @uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodStatementResource.finaliseEndOfPeriodStatement(nino: uk.gov.hmrc.utils.Nino, start: org.joda.time.LocalDate, end: org.joda.time.LocalDate)
 
-##########################
-#    Tax Calculations    #
-##########################
-POST        /ni/:nino/calculations                                                             @uk.gov.hmrc.selfassessmentapi.resources.TaxCalculationResource.requestCalculation(nino: uk.gov.hmrc.utils.Nino)

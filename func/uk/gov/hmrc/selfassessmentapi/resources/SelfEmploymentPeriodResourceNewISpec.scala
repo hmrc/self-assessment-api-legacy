@@ -18,7 +18,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status.{OK, CREATED, BAD_REQUEST, FORBIDDEN, CONFLICT}
+import play.api.http.Status.{OK, CREATED, BAD_REQUEST, FORBIDDEN, CONFLICT, NOT_FOUND, INTERNAL_SERVER_ERROR}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.selfassessmentapi.NinoGenerator
@@ -274,8 +274,8 @@ class SelfEmploymentPeriodResourceNewISpec extends IntegrationBaseSpec {
             |	"code": "BUSINESS_ERROR",
             |	"message": "Business validation error",
             |	"errors": [{
-            |		"code": "NOT_CONTIGUOUS_PERIOD",
-            |		"message": "Periods should be contiguous.",
+            |		"code": "OVERLAPPING_PERIOD",
+            |		"message": "Period overlaps with existing periods.",
             |		"path": ""
             |	}]
             |}
@@ -287,84 +287,87 @@ class SelfEmploymentPeriodResourceNewISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.POST, desUrl, CONFLICT, Json.parse(DesJsons.Errors.nonContiguousPeriod))
+          DesStub.onSuccess(DesStub.POST, desUrl, CONFLICT, Json.parse(DesJsons.Errors.overlappingPeriod))
         }
 
-        private val response = await(request.post(nonContiguousPeriod))
+        private val response = await(request.post(overlappingPeriod))
         response.status shouldBe FORBIDDEN
         response.json shouldBe expectedJson
+      }
+
+      "the request payload period is misaligned with the accounting period" in new Test {
+
+        val misalignedPeriod: JsValue = Jsons.SelfEmployment.period(fromDate = Some("2017-08-04"), toDate = Some("2017-09-04"))
+
+        val expectedJson: JsValue = Json.parse(
+          """
+            |{
+            |	"code": "BUSINESS_ERROR",
+            |	"message": "Business validation error",
+            |	"errors": [{
+            |		"code": "MISALIGNED_PERIOD",
+            |		"message": "Period is not within the accounting period.",
+            |		"path": ""
+            |	}]
+            |}
+            |""".stripMargin)
+
+        override def desResponse: JsValue = Json.parse(DesJsons.Errors.nonContiguousPeriod)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, CONFLICT, Json.parse(DesJsons.Errors.misalignedPeriod))
+        }
+
+        private val response = await(request.post(misalignedPeriod))
+        response.status shouldBe FORBIDDEN
+        response.json shouldBe expectedJson
+      }
+    }
+
+    s"return status code 404" when {
+      "attempting to create a period for a self-employment that does not exist" in new Test {
+
+        val period: JsValue = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
+
+        override def desResponse: JsValue = Json.parse(DesJsons.Errors.nonContiguousPeriod)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, NOT_FOUND, Json.parse(DesJsons.Errors.notFound))
+        }
+
+        private val response = await(request.post(period))
+        response.status shouldBe NOT_FOUND
+      }
+    }
+
+    s"return status code 500" when {
+      "DES is experiencing issues" in new Test {
+
+        val period: JsValue = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
+
+        override def desResponse: JsValue = Json.parse(DesJsons.Errors.serverError)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.POST, desUrl, INTERNAL_SERVER_ERROR, Json.parse(DesJsons.Errors.notFound))
+        }
+
+        private val response = await(request.post(period))
+        response.status shouldBe INTERNAL_SERVER_ERROR
       }
     }
   }
 }
 
 //  "createPeriod" should {
-//
-//    "return code 403 when attempting to create a period whose date range overlaps with another period" in {
-//      val overlappingPeriod = Jsons.SelfEmployment.period(fromDate = Some("2017-08-04"), toDate = Some("2017-09-04"))
-//
-//      given()
-//        .userIsSubscribedToMtdFor(nino)
-//        .clientIsFullyAuthorisedForTheResource
-//        .des()
-//        .selfEmployment
-//        .willBeCreatedFor(nino)
-//        .des()
-//        .selfEmployment
-//        .overlappingPeriodFor(nino)
-//        .when()
-//        .post(Jsons.SelfEmployment())
-//        .to(s"/ni/${nino.nino}/self-employments")
-//        .thenAssertThat()
-//        .statusIs(201)
-//        .when()
-//        .post(overlappingPeriod)
-//        .to(s"%sourceLocation%/periods")
-//        .thenAssertThat()
-//        .statusIs(403)
-//        .bodyIsLike(Jsons.Errors.overlappingPeriod)
-//    }
-//
-//    "return code 403 when attempting to create a period that is misaligned with the accounting period" in {
-//      val misalignedPeriod = Jsons.SelfEmployment.period(fromDate = Some("2017-08-04"), toDate = Some("2017-09-04"))
-//
-//      given()
-//        .userIsSubscribedToMtdFor(nino)
-//        .clientIsFullyAuthorisedForTheResource
-//        .des()
-//        .selfEmployment
-//        .willBeCreatedFor(nino)
-//        .des()
-//        .selfEmployment
-//        .misalignedPeriodFor(nino)
-//        .when()
-//        .post(Jsons.SelfEmployment())
-//        .to(s"/ni/${nino.nino}/self-employments")
-//        .thenAssertThat()
-//        .statusIs(201)
-//        .when()
-//        .post(misalignedPeriod)
-//        .to(s"%sourceLocation%/periods")
-//        .thenAssertThat()
-//        .statusIs(403)
-//        .bodyIsLike(Jsons.Errors.misalignedPeriod)
-//    }
-//
-//    "return code 404 when attempting to create a period for a self-employment that does not exist" in {
-//      val period = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
-//
-//      given()
-//        .userIsSubscribedToMtdFor(nino)
-//        .clientIsFullyAuthorisedForTheResource
-//        .des()
-//        .selfEmployment
-//        .periodWillBeNotBeCreatedFor(nino)
-//        .when()
-//        .post(period)
-//        .to(s"/ni/${nino.nino}/self-employments/abc/periods")
-//        .thenAssertThat()
-//        .statusIs(404)
-//    }
 //
 //    "return code 500 when DES is experiencing issues" in {
 //      val period = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))

@@ -1407,42 +1407,6 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
       }
 
-      object taxCalculation {
-        def isReadyFor(nino: Nino, calcId: String = "abc"): Givens = {
-          stubFor(get(urlMatching(s"/calculation-store/02.00.00/calculation-data/${nino.nino}/calcId/$calcId"))
-            .willReturn(
-              aResponse()
-                .withStatus(OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(DesJsons.TaxCalculation())))
-
-          givens
-        }
-
-        def isAcceptedFor(nino: Nino, taxYear: TaxYear = TaxYear("2017-18")): Givens = {
-          stubFor(post(urlMatching(s"/income-tax/nino/${nino.nino}/taxYear/${taxYear.toDesTaxYear}/tax-calculation"))
-            .willReturn(
-              aResponse()
-                .withStatus(OK)
-                .withHeader("Content-Type", "application/json")
-                .withBody(DesJsons.TaxCalculation.createResponse())))
-
-          givens
-        }
-
-
-        def invalidRequestFor(nino: Nino, calcId: String = "abc"): Givens = {
-          stubFor(post(urlMatching(s"/income-tax/nino/${nino.nino}/taxYear/${taxYear.toDesTaxYear}/tax-calculation"))
-            .willReturn(
-              aResponse()
-                .withStatus(BAD_REQUEST)
-                .withHeader("Content-Type", "application/json")
-                .withBody(DesJsons.Errors.invalidRequest)))
-
-          givens
-        }
-      }
-
       object obligations {
         def obligationNotFoundFor(nino: Nino): Givens = {
           stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA?${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))

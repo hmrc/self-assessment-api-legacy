@@ -40,8 +40,3 @@ GET         /ni/:nino/uk-properties/obligations                                 
 
 # Properties Periodic Summaries
 GET         /ni/:nino/uk-properties/:id/periods                                         @uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodResource.retrievePeriods(nino: uk.gov.hmrc.domain.Nino, id: uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType)
-
-##########################
-#    Tax Calculations    #
-##########################
-POST        /ni/:nino/calculations                                                      @uk.gov.hmrc.selfassessmentapi.resources.TaxCalculationResource.requestCalculation(nino: uk.gov.hmrc.domain.Nino)

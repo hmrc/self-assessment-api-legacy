@@ -18,7 +18,6 @@ package uk.gov.hmrc.selfassessmentapi.models.audit
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.selfassessmentapi.models.TaxYear
 import uk.gov.hmrc.selfassessmentapi.resources.JsonSpec
 
 class AuditDetailSpec extends JsonSpec {
@@ -36,21 +35,6 @@ class AuditDetailSpec extends JsonSpec {
           agentCode = None,
           transactionReference = Some("ghi"),
           requestPayload = Json.obj(),
-          responsePayload = Some(Json.obj())
-        ))
-    }
-  }
-
-  "TaxCalculationTrigger" should {
-    "round trip" in {
-      roundTripJson(
-        TaxCalculationTrigger(
-          httpStatus = 200,
-          nino = Nino("AA999999A"),
-          taxYear = TaxYear("2017-18"),
-          affinityGroup = "individual",
-          agentCode = None,
-          calculationId = Some("abc"),
           responsePayload = Some(Json.obj())
         ))
     }

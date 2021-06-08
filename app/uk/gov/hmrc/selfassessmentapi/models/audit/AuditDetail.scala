@@ -64,20 +64,6 @@ object AnnualSummaryUpdate {
   implicit val format: Format[AnnualSummaryUpdate] = Json.format[AnnualSummaryUpdate]
 }
 
-case class TaxCalculationTrigger(override val auditType: String = "triggerTaxCalculation",
-                                 override val httpStatus: Int,
-                                 nino: Nino,
-                                 taxYear: TaxYear,
-                                 affinityGroup: String,
-                                 agentCode: Option[String],
-                                 calculationId: Option[SourceId],
-                                 override val responsePayload: Option[JsValue])
-    extends AuditDetail
-
-object TaxCalculationTrigger {
-  implicit val format: Format[TaxCalculationTrigger] = Json.format[TaxCalculationTrigger]
-}
-
 case class RetrieveObligations(override val auditType: String = "retrieveObligations",
                                override val httpStatus: Int,
                                nino: Nino,

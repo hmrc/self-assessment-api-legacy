@@ -42,7 +42,8 @@ trait IntegrationBaseSpec extends UnitSpec with WireMockHelper with GuiceOneServ
     "auditing.consumer.baseUri.port" -> mockPort,
     "uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodResource.needsLogging" -> true,
     "uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodResource.needsAuditing" -> true,
-    "uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodResource.needsAuth" -> false
+    "uk.gov.hmrc.selfassessmentapi.resources.PropertiesPeriodResource.needsAuth" -> false,
+    "api.confidence-level-check.auth-validation.enabled" -> true
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()

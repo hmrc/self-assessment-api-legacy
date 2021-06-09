@@ -36,6 +36,11 @@ object MtdIdLookupStub extends WireMockMethods {
       .thenReturn(status = FORBIDDEN, body = Json.obj())
   }
 
+  def notFound(nino: String): StubMapping = {
+    when(method = GET, uri = lookupUrl(nino))
+      .thenReturn(status = NOT_FOUND, body = Json.obj())
+  }
+
   def badRequest(nino: String): StubMapping = {
     when(method = GET, uri = lookupUrl(nino))
       .thenReturn(status = BAD_REQUEST, body = Json.obj())
@@ -44,6 +49,11 @@ object MtdIdLookupStub extends WireMockMethods {
   def internalServerError(nino: String): StubMapping = {
     when(method = GET, uri = lookupUrl(nino))
       .thenReturn(status = INTERNAL_SERVER_ERROR, body = Json.obj())
+  }
+
+  def serviceUnavailableError(nino: String): StubMapping = {
+    when(method = GET, uri = lookupUrl(nino))
+      .thenReturn(status = SERVICE_UNAVAILABLE, body = Json.obj())
   }
 
 }

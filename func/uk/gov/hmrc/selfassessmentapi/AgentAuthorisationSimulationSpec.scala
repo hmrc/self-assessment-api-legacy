@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import play.api.libs.json.JsString
 import uk.gov.hmrc.r2.selfassessmentapi.resources.{Jsons => R2Jsons}
 import uk.gov.hmrc.selfassessmentapi.models.ErrorCode
 import uk.gov.hmrc.selfassessmentapi.resources.{GovTestScenarioHeader, Jsons}
@@ -137,48 +136,6 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
     }
 
-    "receive a HTTP 403 Unauthorized when they attempt to create a periodic summary with an invalid json" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().selfEmployment.willBeCreatedFor(nino)
-        .des().selfEmployment.willBeReturnedFor(nino)
-        .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .post(Jsons.SelfEmployment.period(turnover = 100.1234)).to(s"%sourceLocation%/periods")
-        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
-        .thenAssertThat()
-        .statusIs(403)
-        .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
-    }
-
-    "receive a HTTP 403 Unauthorized when they attempt to update a periodic summary with an invalid json" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .des().selfEmployment.willBeCreatedFor(nino)
-        .des().selfEmployment.willBeReturnedFor(nino)
-        .des().selfEmployment.periodWillBeCreatedFor(nino)
-        .when()
-        .post(Jsons.SelfEmployment()).to(s"/ni/${nino.nino}/self-employments")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .post(Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2018-04-05")))
-        .to(s"%sourceLocation%/periods")
-        .thenAssertThat()
-        .statusIs(201)
-        .when()
-        .put(Jsons.SelfEmployment.period(turnover = 100.1234)).at(s"/ni/${nino.nino}/self-employments/abc/periods/2017-04-06_2018-04-05")
-        .withHeaders(GovTestScenarioHeader, "AGENT_NOT_AUTHORIZED")
-        .thenAssertThat()
-        .statusIs(403)
-        .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
-    }
-
     "receive a HTTP 403 Unauthorized when they attempt to update an annual summary with an invalid identifier" in {
       given()
         .userIsSubscribedToMtdFor(nino)
@@ -289,16 +246,6 @@ class AgentAuthorisationSimulationSpec extends BaseFunctionalSpec {
         .thenAssertThat()
         .statusIs(403)
         .bodyIsError(ErrorCode.AGENT_NOT_AUTHORIZED.toString)
-    }
-
-    "receive a HTTP 403 Unauthorized when they attempt to create a property with an invalid json" in {
-      given()
-        .userIsSubscribedToMtdFor(nino)
-        .clientIsFullyAuthorisedForTheResource
-        .when()
-        .post(JsString("NONSENSE")).to(s"/ni/${nino.nino}/uk-properties")
-        .thenAssertThat()
-        .isBadRequest
     }
 
     "receive a HTTP 403 Unauthorized when they attempt to update an annual summary with an invalid json" in {

@@ -16,10 +16,75 @@
 
 package uk.gov.hmrc.selfassessmentapi
 
-import uk.gov.hmrc.support.BaseFunctionalSpec
+import uk.gov.hmrc.support.IntegrationBaseSpec
 
-class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
+class SelfAssessmentEndOfPeriodObligationsNewISpec extends IntegrationBaseSpec {
 
+}
+
+//  private trait Test {
+//
+//    protected val nino: Nino = NinoGenerator().nextNino()
+//
+//    val regime = "ITSB"
+//    val correlationId: String = "X-ID"
+//    val from = new LocalDate(2017, 1, 1)
+//    val to = new LocalDate(2017, 12, 31)
+//    val testRefNo = "abc"
+//    val validSelfEmploymentId = "AABB12345678912"
+//
+//    def uri: String = s"/ni/${nino.nino}/self-employments/$validSelfEmploymentId/end-of-period-statements/obligations"
+//
+//    def desUrl: String = s"/enterprise/obligation-data/nino/${nino.nino}/ITSA"
+//
+//    val queryParams: Map[String, String] = Map("from" -> "2017-01-01", "to" -> "2017-12-31")
+//
+//    def desResponse(res: String): JsValue = Json.parse(res)
+//
+//    def setupStubs(): StubMapping
+//
+//    def request(): WSRequest = {
+//      setupStubs()
+//      buildRequest(uri)
+//        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+//    }
+//
+//    def request(mtdQueryParams: Seq[(String, String)]): WSRequest = {
+//      setupStubs()
+//      buildRequest(uri)
+//        .addQueryStringParameters(mtdQueryParams: _*)
+//        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+//    }
+//  }
+//
+//  "Retrieving end-of-period statement obligations" should {
+//    "return status code 200 containing a set of canned obligations" when {
+//      "a valid request is received" in new Test {
+//
+//        val expectedJson: JsValue = Jsons.Obligations.eops
+//
+//        def mtdQueryParams: Seq[(String, String)] =
+//          Seq(
+//            ("from", from.toString("yyyy-MM-dd")),
+//            ("to", to.toString("yyyy-MM-dd"))
+//          )
+//
+//        override def setupStubs(): StubMapping = {
+//          AuditStub.audit()
+//          AuthStub.authorised()
+//          MtdIdLookupStub.ninoFound(nino)
+//          DesStub.onSuccess(DesStub.GET, desUrl, queryParams, OK, desResponse(DesJsons.Obligations()))
+//        }
+//
+//        private val response = await(request(mtdQueryParams).get)
+//        response.status shouldBe OK
+//        response.json shouldBe expectedJson
+//        response.header("Content-Type") shouldBe Some("application/json")
+//      }
+//    }
+//  }
+//}
+//
 //  "Retrieving end-of-period statement obligations" should {
 //
 //    val from = new LocalDate(2017, 1, 1)
@@ -135,5 +200,5 @@ class SelfAssessmentEndOfPeriodObligationsSpec extends BaseFunctionalSpec {
 //    testErrorScenario(400, "INVALID_DATE_RANGE")(400, Errors.InvalidDateRange_2)
 //    testErrorScenario(400, "INVALID_IDNUMBER")(400, Errors.NinoInvalid)
 //  }
-
-}
+//
+//}

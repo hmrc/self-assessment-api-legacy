@@ -16,22 +16,16 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import cats.implicits._
 import javax.inject.Inject
-import org.joda.time.LocalDate
 import play.api.libs.json._
 import play.api.mvc._
-import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.SelfEmploymentStatementConnector
-import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
-import uk.gov.hmrc.selfassessmentapi.models.audit.EndOfPeriodStatementDeclaration
 import uk.gov.hmrc.selfassessmentapi.models.des.DesErrorCode._
-import uk.gov.hmrc.selfassessmentapi.models.{Declaration, Errors, Period, SourceId, SourceType}
+import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceId, SourceType}
 import uk.gov.hmrc.selfassessmentapi.resources.utils.EopsObligationQueryParams
-import uk.gov.hmrc.selfassessmentapi.resources.wrappers.{EmptyResponse, Response}
-import uk.gov.hmrc.selfassessmentapi.services.{AuditData, AuditService, AuthorisationService}
-import uk.gov.hmrc.utils.IdGenerator
+import uk.gov.hmrc.selfassessmentapi.services.{AuditService, AuthorisationService}
+import uk.gov.hmrc.utils.{IdGenerator, Nino}
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
@@ -44,74 +38,6 @@ class SelfEmploymentStatementResource @Inject()(
                                                  cc: ControllerComponents,
                                                  val idGenerator: IdGenerator
                                                ) extends BaseResource(cc) {
-
-  def finaliseEndOfPeriodStatement(nino: Nino, id: SourceId, start: LocalDate, end: LocalDate): Action[JsValue] =
-    APIAction(nino, SourceType.SelfEmployments).async(parse.json) { implicit request =>
-      implicit val correlationID: String = idGenerator.getCorrelationId
-      logger.warn(message = s"[SelfEmploymentStatementResource][finaliseEndOfPeriodStatement] " +
-        s"with correlationId : $correlationID")
-
-      val accountingPeriod = Period(start, end)
-      val fromDateCutOff = new LocalDate(2017, 4, 6)
-      val now = new LocalDate()
-
-      {
-        for {
-          _ <- validate(accountingPeriod) {
-            case _ if accountingPeriod.from.isBefore(fromDateCutOff) => Errors.InvalidStartDate
-            case _ if !accountingPeriod.valid => Errors.InvalidDateRange
-            case _ if !appContext.sandboxMode & accountingPeriod.to.isAfter(now) => Errors.EarlySubmission
-          }
-
-          declaration <- validateJson[Declaration](request.body)
-
-          _ <- authorise(declaration) { case _ if !declaration.finalised => Errors.NotFinalisedDeclaration }
-
-          desResponse <- execute[EmptyResponse] { _ => statementConnector.create(nino, id, accountingPeriod, getRequestDateTimestamp) }
-        } yield desResponse
-      } onDesSuccess { desResponse =>
-
-        def businessJsonError(error: Errors.Error) = Json.toJson(Errors.businessError(error))
-
-        auditService.audit(buildAuditEvent(nino, id, accountingPeriod, request.authContext, desResponse))
-        desResponse.filter {
-          case 204 => logger.warn(message = s"[SelfEmploymentStatementResource][finaliseEndOfPeriodStatement] " +
-            s"Success response with correlationId : ${correlationId(desResponse)}")
-            NoContent
-          case 400 if desResponse.errorCodeIs(EARLY_SUBMISSION) => logger.warn(message = s"[SelfEmploymentStatementResource][finaliseEndOfPeriodStatement] " +
-            s"Error response EARLY_SUBMISSION with correlationId : ${correlationId(desResponse)}")
-            Forbidden(Json.toJson(Errors.EarlySubmission))
-          case 403 if desResponse.errorCodeIs(PERIODIC_UPDATE_MISSING) => logger.warn(message = s"[SelfEmploymentStatementResource][finaliseEndOfPeriodStatement] " +
-            s"Error response PERIODIC_UPDATE_MISSING with correlationId : ${correlationId(desResponse)}")
-            Forbidden(businessJsonError(Errors.PeriodicUpdateMissing))
-          case 403 if desResponse.errorCodeIs(NON_MATCHING_PERIOD) => logger.warn(message = s"[SelfEmploymentStatementResource][finaliseEndOfPeriodStatement] " +
-            s"Error response NON_MATCHING_PERIOD with correlationId : ${correlationId(desResponse)}")
-            Forbidden(businessJsonError(Errors.NonMatchingPeriod))
-          case 403 if desResponse.errorCodeIs(ALREADY_SUBMITTED) => logger.warn(message = s"[SelfEmploymentStatementResource][finaliseEndOfPeriodStatement] " +
-            s"Error response ALREADY_SUBMITTED with correlationId : ${correlationId(desResponse)}")
-            Forbidden(businessJsonError(Errors.AlreadySubmitted))
-        }
-      } recoverWith exceptionHandling
-    }
-
-  private def buildAuditEvent(
-                               nino: Nino,
-                               id: SourceId,
-                               accountingPeriod: Period,
-                               authCtx: AuthContext,
-                               response: Response
-                             ): AuditData[EndOfPeriodStatementDeclaration] =
-    AuditData(
-      detail = EndOfPeriodStatementDeclaration(
-        httpStatus = response.status,
-        nino = nino,
-        sourceId = id.toString,
-        accountingPeriodId = accountingPeriod.periodId,
-        affinityGroup = authCtx.affinityGroup,
-        agentCode = authCtx.agentCode
-      ),
-      transactionName = s"$id-end-of-year-statement-finalised"
-    )
 
   def retrieveObligationsById(nino: Nino, id: SourceId, params: EopsObligationQueryParams): Action[Unit] =
     APIAction(nino, SourceType.SelfEmployments, Some("statements")).async(parse.empty) { implicit request =>

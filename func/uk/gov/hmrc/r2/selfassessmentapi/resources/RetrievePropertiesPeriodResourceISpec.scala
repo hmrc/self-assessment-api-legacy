@@ -18,7 +18,7 @@ package uk.gov.hmrc.r2.selfassessmentapi.resources
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status.{IM_A_TEAPOT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
+import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.r2.selfassessmentapi.NinoGenerator
@@ -28,7 +28,7 @@ import uk.gov.hmrc.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 import uk.gov.hmrc.support.IntegrationBaseSpec
 import uk.gov.hmrc.utils.Nino
 
-class RetrieveAllPropertiesPeriodResourceISpec extends IntegrationBaseSpec {
+class RetrievePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
@@ -36,11 +36,11 @@ class RetrieveAllPropertiesPeriodResourceISpec extends IntegrationBaseSpec {
     val periodKey: String = "A1A2"
     val correlationId: String = "X-ID"
 
-    def uri(propertyType: PropertyType): String = s"/r2/ni/${nino.nino}/uk-properties/$propertyType/periods"
+    def uri(propertyType: PropertyType): String = s"/r2/ni/${nino.nino}/uk-properties/$propertyType/periods/2017-04-06_2018-04-05"
 
-    def desUrl(propertyType: PropertyType): String = s"/income-tax/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"
+    def desUrl(propertyType: PropertyType): String = s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summary-detail"
 
-    def desResponse: JsValue = Json.parse(DesJsons.Properties.Period.periodsSummary)
+    val queryParams: Map[String, String] = Map("from" -> "2017-04-06", "to" -> "2018-04-05")
 
     def setupStubs(): StubMapping
 
@@ -51,29 +51,20 @@ class RetrieveAllPropertiesPeriodResourceISpec extends IntegrationBaseSpec {
     }
   }
 
-  "Making a request for  retrieving all periods" should {
+  "retrievingPeriod" should {
     for (propertyType <- Seq(PropertyType.OTHER, PropertyType.FHL)) {
       s"return a 200 status code with expected body for property type $propertyType" when {
         "a valid request is made" in new Test {
 
-          val expectedJson: JsValue = Json.parse(
-            """
-              |[{
-              |	"id": "2017-04-06_2017-07-04",
-              |	"from": "2017-04-06",
-              |	"to": "2017-07-04"
-              |}, {
-              |	"id": "2017-07-05_2017-08-04",
-              |	"from": "2017-07-05",
-              |	"to": "2017-08-04"
-              |}]
-              |""".stripMargin)
+          val expectedJson: JsValue = Json.parse(PropertiesFixture.expectedBody(propertyType))
+
+          def desResponse: JsValue = Json.parse(PropertiesFixture.periodWillBeReturnedFor(nino, propertyType))
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUrl(propertyType), OK, desResponse)
+            DesStub.onSuccess(DesStub.GET, desUrl(propertyType), queryParams, OK, desResponse)
           }
 
           private val response = await(request(propertyType).get)
@@ -81,38 +72,16 @@ class RetrieveAllPropertiesPeriodResourceISpec extends IntegrationBaseSpec {
           response.json shouldBe expectedJson
           response.header("Content-Type") shouldBe Some("application/json")
         }
-
-        s"an empty array body" in new Test {
-
-            val desEmptyPeriodJson: JsValue = Json.parse(
-              s"""
-                 |{
-                 |  "periods": []
-                 |}""".stripMargin)
-
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
-              DesStub.onSuccess(DesStub.GET, desUrl(propertyType), OK, desEmptyPeriodJson)
-            }
-
-            private val response = await(request(propertyType).get)
-            response.status shouldBe OK
-            response.json shouldBe Json.arr()
-            response.header("Content-Type") shouldBe Some("application/json")
-
-        }
       }
 
       s"return a 404 status code for property type $propertyType" when {
-        "a valid request is made but no periods are exists" in new Test {
+        "no periods are exists" in new Test {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUrl(propertyType), NOT_FOUND, Json.parse(DesJsons.Errors.notFoundProperty))
+            DesStub.onError(DesStub.GET, desUrl(propertyType), queryParams, NOT_FOUND, DesJsons.Errors.notFoundProperty)
           }
 
           private val response = await(request(propertyType).get)
@@ -125,7 +94,7 @@ class RetrieveAllPropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUrl(propertyType), NOT_FOUND, Json.parse(DesJsons.Errors.ninoNotFound))
+            DesStub.onError(DesStub.GET, desUrl(propertyType), queryParams, NOT_FOUND, DesJsons.Errors.ninoNotFound)
           }
 
           private val response = await(request(propertyType).get)
@@ -134,28 +103,39 @@ class RetrieveAllPropertiesPeriodResourceISpec extends IntegrationBaseSpec {
       }
 
       s"return a 500 status code for property type $propertyType" when {
-        "a valid request is made but received an unexpected JSON from DES" in new Test {
+        "receive a status code INVALID_DATE_FROM from DES" in new Test {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUrl(propertyType), OK, Json.obj())
+            DesStub.onError(DesStub.GET, desUrl(propertyType), queryParams, BAD_REQUEST, DesJsons.Errors.invalidDateFrom)
           }
 
           private val response = await(request(propertyType).get)
           response.status shouldBe INTERNAL_SERVER_ERROR
         }
-      }
 
-      s"return a 500 status code for property type $propertyType" when {
+        "receive a status code INVALID_DATE_TO from DES" in new Test {
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onError(DesStub.GET, desUrl(propertyType), queryParams, BAD_REQUEST, DesJsons.Errors.invalidDateTo)
+          }
+
+          private val response = await(request(propertyType).get)
+          response.status shouldBe INTERNAL_SERVER_ERROR
+        }
+
         "a valid request is made but received a status code from DES that we do not handle" in new Test {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUrl(propertyType), IM_A_TEAPOT, Json.obj())
+            DesStub.onSuccess(DesStub.GET, desUrl(propertyType), queryParams, IM_A_TEAPOT, Json.obj())
           }
 
           private val response = await(request(propertyType).get)

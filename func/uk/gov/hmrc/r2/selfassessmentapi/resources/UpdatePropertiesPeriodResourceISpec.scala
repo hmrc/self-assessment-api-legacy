@@ -28,7 +28,7 @@ import uk.gov.hmrc.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 import uk.gov.hmrc.support.IntegrationBaseSpec
 import uk.gov.hmrc.utils.Nino
 
-class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
+class UpdatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
@@ -37,11 +37,13 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
     val correlationId: String = "X-ID"
     val id: String = "abc"
 
-    def uri(propertyType: PropertyType): String = s"/r2/ni/${nino.nino}/uk-properties/$propertyType/periods"
+    def uri(propertyType: PropertyType): String = s"/r2/ni/${nino.nino}/uk-properties/$propertyType/periods/2017-04-06_2018-04-05"
 
     def desUrl(propertyType: PropertyType): String = s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"
 
-    def desResponse: JsValue = Json.parse(DesJsons.Properties.Period.createResponse())
+    def desResponse: JsValue = Json.obj()
+
+    val queryParams: Map[String, String] = Map("from" -> "2017-04-06", "to" -> "2018-04-05")
 
     def setupStubs(): StubMapping
 
@@ -52,9 +54,9 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
     }
   }
 
-  "createPeriod" should {
+  "updatePeriod" should {
     for (propertyType <- Seq(PropertyType.OTHER, PropertyType.FHL)) {
-      s"return status code 201 for property $propertyType" when {
+      s"return code 204 when updating an $propertyType period" when {
         "a valid request is made" in new Test {
 
           val requestJson: JsValue = PropertiesFixture.period(propertyType)
@@ -63,13 +65,11 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.POST, desUrl(propertyType), OK, desResponse)
+            DesStub.onSuccess(DesStub.PUT, desUrl(propertyType), queryParams, OK, desResponse)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
-          response.status shouldBe CREATED
-          response.header("Location") shouldBe Some(s"/self-assessment/ni/${nino.nino}/uk-properties/$propertyType/periods/2017-04-06_2018-04-05")
-
+          private val response = await(request(propertyType).put(requestJson))
+          response.status shouldBe NO_CONTENT
         }
 
         "request payload period has no expenses" in new Test {
@@ -80,13 +80,11 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.POST, desUrl(propertyType), OK, desResponse)
+            DesStub.onSuccess(DesStub.PUT, desUrl(propertyType), queryParams, OK, desResponse)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
-          response.status shouldBe CREATED
-          response.header("Location") shouldBe Some(s"/self-assessment/ni/${nino.nino}/uk-properties/$propertyType/periods/2017-04-06_2018-04-05")
-
+          private val response = await(request(propertyType).put(requestJson))
+          response.status shouldBe NO_CONTENT
         }
 
         "request payload period contains only 'consolidatedExpenses'" in new Test {
@@ -97,13 +95,11 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.POST, desUrl(propertyType), OK, desResponse)
+            DesStub.onSuccess(DesStub.PUT, desUrl(propertyType), queryParams, OK, desResponse)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
-          response.status shouldBe CREATED
-          response.header("Location") shouldBe Some(s"/self-assessment/ni/${nino.nino}/uk-properties/$propertyType/periods/2017-04-06_2018-04-05")
-
+          private val response = await(request(propertyType).put(requestJson))
+          response.status shouldBe NO_CONTENT
         }
 
         "request payload period contains only 'residentialFinancialCost'" in new Test {
@@ -114,13 +110,11 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.POST, desUrl(propertyType), OK, desResponse)
+            DesStub.onSuccess(DesStub.PUT, desUrl(propertyType), queryParams, OK, desResponse)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
-          response.status shouldBe CREATED
-          response.header("Location") shouldBe Some(s"/self-assessment/ni/${nino.nino}/uk-properties/$propertyType/periods/2017-04-06_2018-04-05")
-
+          private val response = await(request(propertyType).put(requestJson))
+          response.status shouldBe NO_CONTENT
         }
       }
 
@@ -128,7 +122,7 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
         s"provided with an invalid period" in new Test {
 
           val requestJson: JsValue = PropertiesFixture.invalidPeriod(propertyType)
-          val expectedJson: JsValue = PropertiesFixture.expectedJson(propertyType)
+          val expectedJson: JsValue = PropertiesFixture.expectedJsonforUpdatePeriod(propertyType)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -136,7 +130,7 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             MtdIdLookupStub.ninoFound(nino)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
+          private val response = await(request(propertyType).put(requestJson))
           response.status shouldBe BAD_REQUEST
           response.json shouldBe expectedJson
         }
@@ -145,8 +139,7 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
 
           val requestJson: JsValue = Json.parse(s"""
                                                    |{
-                                                   |  "from": "2017-05-31",
-                                                   |  "to": "2017-04-01"
+                                                   |
                                                    |}""".stripMargin)
 
           val expectedJson: JsValue = Json.parse(
@@ -155,10 +148,6 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
               |	"code": "INVALID_REQUEST",
               |	"message": "Invalid request",
               |	"errors": [{
-              |		"code": "INVALID_PERIOD",
-              |		"message": "The period 'to' date is before the period 'from' date or the submission period already exists.",
-              |		"path": ""
-              |	}, {
               |		"code": "NO_INCOMES_AND_EXPENSES",
               |		"message": "No incomes and expenses are supplied",
               |		"path": ""
@@ -172,7 +161,7 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             MtdIdLookupStub.ninoFound(nino)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
+          private val response = await(request(propertyType).put(requestJson))
           response.status shouldBe BAD_REQUEST
           response.json shouldBe expectedJson
         }
@@ -199,7 +188,7 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             MtdIdLookupStub.ninoFound(nino)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
+          private val response = await(request(propertyType).put(requestJson))
           response.status shouldBe BAD_REQUEST
           response.json shouldBe expectedJson
         }
@@ -226,7 +215,7 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             MtdIdLookupStub.ninoFound(nino)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
+          private val response = await(request(propertyType).put(requestJson))
           response.status shouldBe BAD_REQUEST
           response.json shouldBe expectedJson
         }
@@ -243,10 +232,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onError(DesStub.POST, desUrl(propertyType), CONFLICT, DesJsons.Errors.bothExpensesSupplied)
+            DesStub.onError(DesStub.PUT, desUrl(propertyType), queryParams, CONFLICT, DesJsons.Errors.bothExpensesSupplied)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
+          private val response = await(request(propertyType).put(requestJson))
           response.status shouldBe BAD_REQUEST
           response.json shouldBe expectedJson
         }
@@ -259,10 +248,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onError(DesStub.POST, desUrl(propertyType), CONFLICT, DesJsons.Errors.invalidCreatePeriod)
+            DesStub.onError(DesStub.PUT, desUrl(propertyType), queryParams, CONFLICT, DesJsons.Errors.invalidCreatePeriod)
           }
 
-          private val response = await(request(propertyType).post(period))
+          private val response = await(request(propertyType).put(period))
           response.status shouldBe BAD_REQUEST
         }
       }
@@ -289,10 +278,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onError(DesStub.POST, desUrl(propertyType), CONFLICT, DesJsons.Errors.overlappingPeriod)
+            DesStub.onError(DesStub.PUT, desUrl(propertyType), queryParams, CONFLICT, DesJsons.Errors.overlappingPeriod)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
+          private val response = await(request(propertyType).put(requestJson))
           response.status shouldBe FORBIDDEN
           response.json shouldBe expectedJson
         }
@@ -318,10 +307,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onError(DesStub.POST, desUrl(propertyType), CONFLICT, DesJsons.Errors.notAllowedConsolidatedExpenses)
+            DesStub.onError(DesStub.PUT, desUrl(propertyType), queryParams, CONFLICT, DesJsons.Errors.notAllowedConsolidatedExpenses)
           }
 
-          private val response = await(request(propertyType).post(requestJson))
+          private val response = await(request(propertyType).put(requestJson))
           response.status shouldBe FORBIDDEN
           response.json shouldBe expectedJson
         }
@@ -347,10 +336,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.POST, desUrl(propertyType), CONFLICT, Json.parse(DesJsons.Errors.misalignedPeriod))
+            DesStub.onSuccess(DesStub.PUT, desUrl(propertyType), queryParams, CONFLICT, Json.parse(DesJsons.Errors.misalignedPeriod))
           }
 
-          private val response = await(request(propertyType).post(misalignedPeriod))
+          private val response = await(request(propertyType).put(misalignedPeriod))
           response.status shouldBe FORBIDDEN
           response.json shouldBe expectedJson
         }
@@ -365,10 +354,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onError(DesStub.POST, desUrl(propertyType), NOT_FOUND, DesJsons.Errors.notFound)
+            DesStub.onError(DesStub.PUT, desUrl(propertyType), queryParams, NOT_FOUND, DesJsons.Errors.notFound)
           }
 
-          private val response = await(request(propertyType).post(period))
+          private val response = await(request(propertyType).put(period))
           response.status shouldBe NOT_FOUND
         }
 
@@ -380,10 +369,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onError(DesStub.POST, desUrl(propertyType), FORBIDDEN, DesJsons.Errors.notFoundIncomeSource)
+            DesStub.onError(DesStub.PUT, desUrl(propertyType), queryParams, FORBIDDEN, DesJsons.Errors.notFoundIncomeSource)
           }
 
-          private val response = await(request(propertyType).post(period))
+          private val response = await(request(propertyType).put(period))
           response.status shouldBe NOT_FOUND
         }
       }
@@ -399,10 +388,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.POST, desUrl(propertyType), INTERNAL_SERVER_ERROR, desResponse)
+            DesStub.onSuccess(DesStub.PUT, desUrl(propertyType), queryParams, INTERNAL_SERVER_ERROR, desResponse)
           }
 
-          private val response = await(request(propertyType).post(period))
+          private val response = await(request(propertyType).put(period))
           response.status shouldBe INTERNAL_SERVER_ERROR
         }
 
@@ -416,10 +405,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.POST, desUrl(propertyType), SERVICE_UNAVAILABLE, desResponse)
+            DesStub.onSuccess(DesStub.PUT, desUrl(propertyType), queryParams, SERVICE_UNAVAILABLE, desResponse)
           }
 
-          private val response = await(request(propertyType).post(period))
+          private val response = await(request(propertyType).put(period))
           response.status shouldBe INTERNAL_SERVER_ERROR
         }
 
@@ -431,10 +420,10 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.POST, desUrl(propertyType), IM_A_TEAPOT, Json.obj())
+            DesStub.onSuccess(DesStub.PUT, desUrl(propertyType), queryParams, IM_A_TEAPOT, Json.obj())
           }
 
-          private val response = await(request(propertyType).post(period))
+          private val response = await(request(propertyType).put(period))
           response.status shouldBe INTERNAL_SERVER_ERROR
         }
       }

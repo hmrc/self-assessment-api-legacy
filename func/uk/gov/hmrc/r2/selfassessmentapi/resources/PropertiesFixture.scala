@@ -1,8 +1,9 @@
 package uk.gov.hmrc.r2.selfassessmentapi.resources
 
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType
+import uk.gov.hmrc.utils.Nino
 
 object PropertiesFixture {
 
@@ -133,51 +134,101 @@ object PropertiesFixture {
       )
   }
 
-  def expectedJson(propertyType: PropertyType): String = propertyType match {
-    case PropertyType.FHL =>
-      Jsons.Errors.invalidRequest("INVALID_DATE" -> "/to",
-        "INVALID_MONETARY_AMOUNT" -> "/incomes/rentIncome/amount",
-        "INVALID_MONETARY_AMOUNT" -> "/expenses/financialCosts/amount")
+  def expectedJson(propertyType: PropertyType): JsValue = propertyType match {
     case PropertyType.OTHER =>
-      Jsons.Errors.invalidRequest("INVALID_DATE" -> "/to",
-        "INVALID_MONETARY_AMOUNT" -> "/incomes/rentIncome/amount",
-        "INVALID_MONETARY_AMOUNT" -> "/incomes/premiumsOfLeaseGrant/amount")
+      Json.parse(
+        """
+          |{"code":"INVALID_REQUEST","message":"Invalid request","errors":[{"code":"INVALID_MONETARY_AMOUNT","message":"Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places","path":"/incomes/premiumsOfLeaseGrant/amount"},{"code":"INVALID_MONETARY_AMOUNT","message":"Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places","path":"/incomes/rentIncome/amount"},{"code":"INVALID_DATE","message":"please provide a date in ISO format (i.e. YYYY-MM-DD)","path":"/to"}]}
+          |""".stripMargin)
+    case PropertyType.FHL => Json.parse(
+      """
+        |{"code":"INVALID_REQUEST","message":"Invalid request","errors":[{"code":"INVALID_MONETARY_AMOUNT","message":"Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places","path":"/expenses/financialCosts/amount"},{"code":"INVALID_MONETARY_AMOUNT","message":"Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places","path":"/incomes/rentIncome/amount"},{"code":"INVALID_DATE","message":"please provide a date in ISO format (i.e. YYYY-MM-DD)","path":"/to"}]}
+        |""".stripMargin)
+  }
+
+  def expectedJsonforUpdatePeriod(propertyType: PropertyType): JsValue = propertyType match {
+    case PropertyType.OTHER =>
+      Json.parse(
+        """
+          |{
+          |	"code": "INVALID_REQUEST",
+          |	"message": "Invalid request",
+          |	"errors": [{
+          |		"code": "INVALID_MONETARY_AMOUNT",
+          |		"message": "Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places",
+          |		"path": "/incomes/rentIncome/amount"
+          |	}, {
+          |		"code": "INVALID_MONETARY_AMOUNT",
+          |		"message": "Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places",
+          |		"path": "/incomes/premiumsOfLeaseGrant/amount"
+          |	}]
+          |}
+          |""".stripMargin)
+    case PropertyType.FHL => Json.parse(
+      """
+        |{
+        |	"code": "INVALID_REQUEST",
+        |	"message": "Invalid request",
+        |	"errors": [{
+        |		"code": "INVALID_MONETARY_AMOUNT",
+        |		"message": "Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places",
+        |		"path": "/expenses/financialCosts/amount"
+        |	}, {
+        |		"code": "INVALID_MONETARY_AMOUNT",
+        |		"message": "Amount should be a non-negative number less than 99999999999999.98 with up to 2 decimal places",
+        |		"path": "/incomes/rentIncome/amount"
+        |	}]
+        |}
+        |""".stripMargin)
   }
 
   def expectedBody(propertyType: PropertyType): String = propertyType match {
     case PropertyType.FHL =>
-      Jsons.Properties
-        .fhlPeriod(
-          fromDate = Some("2017-04-05"),
-          toDate = Some("2018-04-04"),
-          rentIncome = 200.00,
-          rarRentReceived = 100.00,
-          premisesRunningCosts = Some(200),
-          repairsAndMaintenance = Some(200),
-          financialCosts = Some(200),
-          professionalFees = Some(200),
-          costOfServices = Some(200.00),
-          otherCost = Some(200)
-        )
-        .toString()
+      """
+        |{"from":"2017-04-05","to":"2018-04-04","incomes":{"rentIncome":{"amount":200,"taxDeducted":0},"rarRentReceived":{"amount":100}},"expenses":{"premisesRunningCosts":{"amount":200},"repairsAndMaintenance":{"amount":200},"financialCosts":{"amount":200},"professionalFees":{"amount":200},"costOfServices":{"amount":200},"consolidatedExpenses":{"amount":0},"other":{"amount":200},"rarReliefClaimed":{"amount":100}}}
+        |""".stripMargin
 
     case PropertyType.OTHER =>
-      Jsons.Properties
-        .otherPeriod(
-          fromDate = Some("2017-04-05"),
-          toDate = Some("2018-04-04"),
-          rentIncome = 200.00,
-          premiumsOfLeaseGrant = Some(200),
-          reversePremiums = 200,
-          otherPropertyIncome = Some(200),
-          premisesRunningCosts = Some(200),
-          repairsAndMaintenance = Some(200),
-          financialCosts = Some(200),
-          professionalFees = Some(200),
-          costOfServices = Some(200),
-          residentialFinancialCost = Some(200),
-          otherCost = Some(200)
-        )
-        .toString()
+      """
+        |{"from":"2017-04-05","to":"2018-04-04","incomes":{"rentIncome":{"amount":200,"taxDeducted":0},"premiumsOfLeaseGrant":{"amount":200},"reversePremiums":{"amount":200},"otherPropertyIncome":{"amount":200},"rarRentReceived":{"amount":100}},"expenses":{"premisesRunningCosts":{"amount":200},"repairsAndMaintenance":{"amount":200},"financialCosts":{"amount":200},"professionalFees":{"amount":200},"costOfServices":{"amount":200},"consolidatedExpenses":{"amount":0},"residentialFinancialCost":{"amount":200},"other":{"amount":200},"rarReliefClaimed":{"amount":100}}}
+        |""".stripMargin
   }
+
+  def periodWillBeReturnedFor(nino: Nino, propertyType: PropertyType, periodId: String = "2017-04-06_2018-04-05"): String =
+    propertyType match {
+      case PropertyType.FHL =>
+        DesJsons.Properties.Period.fhl(
+          transactionReference = periodId,
+          from = "2017-04-05",
+          to = "2018-04-04",
+          rentIncome = 200.00,
+          amountClaimed = Some(100.00),
+          rentsReceived = Some(100.00),
+          premisesRunningCosts = 200.00,
+          repairsAndMaintenance = 200.00,
+          financialCosts = 200.00,
+          professionalFees = 200.00,
+          costOfServices = 200.00,
+          other = 200.00)
+          .toString()
+      case PropertyType.OTHER =>
+        DesJsons.Properties.Period.other(
+          transactionReference = periodId,
+          from = "2017-04-05",
+          to = "2018-04-04",
+          rentIncome = 200.00,
+          amountClaimed = Some(100.00),
+          rentsReceived = Some(100.00),
+          premiumsOfLeaseGrant = Some(200.00),
+          reversePremiums = Some(200.00),
+          otherPropertyIncome = Some(200.00),
+          premisesRunningCosts = Some(200.00),
+          repairsAndMaintenance = Some(200.00),
+          financialCosts = Some(200.00),
+          professionalFees = Some(200.00),
+          costOfServices = Some(200.00),
+          residentialFinancialCost = Some(200.00),
+          other = Some(200.00))
+          .toString()
+    }
 }

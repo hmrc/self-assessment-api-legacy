@@ -16,22 +16,26 @@
 
 package uk.gov.hmrc.selfassessmentapi.models.des
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, OWrites, Reads}
 
-case class Obligations(obligations: Seq[Obligation])
+case class ObligationIdentification(incomeSourceType: Option[String], referenceNumber: String, referenceType: String)
 
-object Obligations {
-  implicit val reads: Reads[Obligations] = Json.reads[Obligations]
+object ObligationIdentification {
+  implicit val reads: Reads[ObligationIdentification] = Json.reads[ObligationIdentification]
+  implicit val writes: OWrites[ObligationIdentification] = Json.writes[ObligationIdentification]
 }
 
 case class Obligation(identification: Option[ObligationIdentification], obligationDetails: Seq[ObligationDetail])
 
 object Obligation {
   implicit val reads: Reads[Obligation] = Json.reads[Obligation]
+  implicit val writes: OWrites[Obligation] = Json.writes[Obligation]
 }
 
-case class ObligationIdentification(incomeSourceType: Option[String], referenceNumber: String, referenceType: String)
+case class Obligations(obligations: Seq[Obligation])
 
-object ObligationIdentification {
-  implicit val reads: Reads[ObligationIdentification] = Json.reads[ObligationIdentification]
+object Obligations {
+  implicit val reads: Reads[Obligations] = Json.reads[Obligations]
+  implicit val writes: OWrites[Obligations] = Json.writes[Obligations]
 }
+

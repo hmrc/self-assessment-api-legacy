@@ -231,4 +231,36 @@ object PropertiesFixture {
           other = Some(200.00))
           .toString()
     }
+
+  def annualSummary(propertyType: PropertyType.Value): JsValue = propertyType match {
+    case PropertyType.OTHER => Jsons.Properties.otherAnnualSummary(rarJointLet = false)
+    case PropertyType.FHL => Jsons.Properties.fhlAnnualSummary()
+  }
+
+  def invalidAnnualSummary(propertyType: PropertyType.Value): JsValue = propertyType match {
+    case PropertyType.OTHER => Jsons.Properties.otherAnnualSummary(
+      annualInvestmentAllowance = -10000.50,
+      otherCapitalAllowance = 1000.20,
+      zeroEmissionsGoodsVehicleAllowance = 50.50,
+      costOfReplacingDomesticItems = 150.55,
+      lossBroughtForward = 20.22,
+      privateUseAdjustment = -22.23,
+      balancingCharge = 350.34,
+      bpraBalancingCharge = 0.0,
+      nonResidentLandlord = true,
+      rarJointLet = false
+    )
+    case PropertyType.FHL => Jsons.Properties.fhlAnnualSummary(
+      annualInvestmentAllowance = -10000.50,
+      otherCapitalAllowance = 1000.20,
+      lossBroughtForward = 20.22,
+      privateUseAdjustment = -22.23,
+      balancingCharge = 350.34,
+      periodOfGraceAdjustment = true)
+  }
+
+  def desAnnualSummary(propertyType: PropertyType.Value): String = propertyType match {
+    case PropertyType.OTHER => DesJsons.Properties.AnnualSummary.other
+    case PropertyType.FHL => DesJsons.Properties.AnnualSummary.fhl
+  }
 }

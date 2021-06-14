@@ -65,28 +65,28 @@ class AuthorisationService @Inject()(
   private def authoriseAsClient(mtdId: MtdId)(implicit hc: HeaderCarrier,
                                               requestHeader: RequestHeader,
                                               ec: ExecutionContext): Future[AuthResult] = {
-    logger.debug("Attempting to authorise user as a fully-authorised individual.")
+    logger.info("Attempting to authorise user as a fully-authorised individual.")
     authorised(
       Enrolment("HMRC-MTD-IT")
         .withIdentifier("MTDITID", mtdId.mtdId)
         .withDelegatedAuthRule("mtd-it-auth"))
       .retrieve(Retrievals.affinityGroup and Retrievals.agentCode and Retrievals.authorisedEnrolments and confidenceLevelOptionalRetrieval) {
         case Some(AffinityGroup.Agent) ~ Some(agentCode) ~ enrolments ~ _ =>
-          logger.debug("Client authorisation succeeded as fully-authorised agent.")
+          logger.info("Client authorisation succeeded as fully-authorised agent.")
           Future.successful(Right(Agent(agentCode = Some(agentCode), agentReference = getAgentReference(enrolments))))
         case Some(AffinityGroup.Agent) ~ None ~ enrolments ~ _            =>
-          logger.debug("Client authorisation succeeded as fully-authorised agent but could not retrieve agentCode.")
+          logger.info("Client authorisation succeeded as fully-authorised agent but could not retrieve agentCode.")
           Future.successful(Right(Agent(agentCode = None, agentReference = getAgentReference(enrolments))))
         case Some(AffinityGroup.Individual) ~ _ ~ _ ~ confidenceLevel     =>
           if (appContext.confidenceLevelDefinitionConfig && !confidenceLevel.contains(ConfidenceLevel.L200)) {
-            logger.debug("Client authorisation failed as individual does not meet CL200 requirement.")
+            logger.info("Client authorisation failed as individual does not meet CL200 requirement.")
             Future.successful(Left(Forbidden(toJson(Errors.ClientNotSubscribed))))
           } else {
-            logger.debug("Client authorisation succeeded as fully-authorised individual.")
+            logger.info("Client authorisation succeeded as fully-authorised individual.")
             Future.successful(Right(Individual))
           }
         case _                                                            =>
-          logger.debug("Client authorisation succeeded as fully-authorised individual.")
+          logger.info("Client authorisation succeeded as fully-authorised individual.")
           Future.successful(Right(Individual))
       } recoverWith (authoriseAsFOA orElse unhandledError)
   }
@@ -99,16 +99,16 @@ class AuthorisationService @Inject()(
         .retrieve(Retrievals.agentCode and Retrievals.authorisedEnrolments) { // If the user is an agent are they enrolled in Agent Services?
           case optAgentCode ~ enrolments =>
             if (reqHeader.method == "GET") {
-              logger.debug("Client authorisation failed. Attempt to GET as a filing-only agent.")
+              logger.info("Client authorisation failed. Attempt to GET as a filing-only agent.")
               Future.successful(Left(Forbidden(toJson(Errors.AgentNotAuthorized))))
             } else
               optAgentCode match {
                 case Some(agentCode) =>
-                  logger.debug("Client authorisation succeeded as filing-only agent.")
+                  logger.info("Client authorisation succeeded as filing-only agent.")
                   Future.successful(
                     Right(FilingOnlyAgent(agentCode = Some(agentCode), agentReference = getAgentReference(enrolments))))
                 case None            =>
-                  logger.debug("Agent code was not returned by auth for agent user")
+                  logger.info("Agent code was not returned by auth for agent user")
                   Future.successful(
                     Right(FilingOnlyAgent(agentCode = None, agentReference = getAgentReference(enrolments))))
 
@@ -118,10 +118,10 @@ class AuthorisationService @Inject()(
 
   private def unsubscribedAgentOrUnauthorisedClient: PartialFunction[Throwable, Future[AuthResult]] = {
     case _: InsufficientEnrolments   =>
-      logger.debug(s"Authorisation failed as filing-only agent.")
+      logger.info(s"Authorisation failed as filing-only agent.")
       Future.successful(Left(Forbidden(toJson(Errors.AgentNotSubscribed))))
     case _: UnsupportedAffinityGroup =>
-      logger.debug(s"Authorisation failed as client.")
+      logger.info(s"Authorisation failed as client.")
       Future.successful(Left(Forbidden(toJson(Errors.ClientNotSubscribed))))
   }
 

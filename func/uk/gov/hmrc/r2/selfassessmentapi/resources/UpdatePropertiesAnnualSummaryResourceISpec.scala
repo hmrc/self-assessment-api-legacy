@@ -175,7 +175,7 @@ class UpdatePropertiesAnnualSummaryResourceISpec extends IntegrationBaseSpec {
       }
 
       s"return status code 500 for $propertyType" when {
-        "DES is experiencing issues  for $propertyType" in new Test {
+        "DES is experiencing issues" in new Test {
 
           val period: JsValue = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
 

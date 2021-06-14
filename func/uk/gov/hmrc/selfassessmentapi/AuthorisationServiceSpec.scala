@@ -26,7 +26,7 @@ import uk.gov.hmrc.stubs.{AuditStub, AuthStub, MtdIdLookupStub}
 import uk.gov.hmrc.support.IntegrationBaseSpec
 import uk.gov.hmrc.utils.Nino
 
-class AuthorisationServiceNewSpec extends IntegrationBaseSpec {
+class AuthorisationServiceSpec extends IntegrationBaseSpec {
 
   private trait Test {
 
@@ -147,8 +147,6 @@ class AuthorisationServiceNewSpec extends IntegrationBaseSpec {
 
       "an Individual without CL200 accessed the service" in new Test {
 
-        val expectedJson: JsValue = Json.parse(Jsons.Errors.unauthorised)
-
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           MtdIdLookupStub.ninoFound(nino)
@@ -237,76 +235,4 @@ class AuthorisationServiceNewSpec extends IntegrationBaseSpec {
     }
   }
 }
-//
-//  "if the user is authorised as a filing-only agent they" should {
-//    "be able to make POST requests" in {
-//      given()
-//        .userIsSubscribedToMtdFor(nino)
-//        .userIsPartiallyAuthorisedForTheResource
-//        .des()
-//        .selfEmployment
-//        .willBeCreatedFor(nino)
-//        .when()
-//        .post(Jsons.SelfEmployment())
-//        .to(s"/ni/${nino.nino}/self-employments")
-//        .thenAssertThat()
-//        .statusIs(201)
-//    }
-//
-//    "be able to make PUT requests" in {
-//      val property = R2Jsons.Properties.otherPeriod(
-//        fromDate = Some("2017-04-06"),
-//        toDate = Some("2018-04-05"),
-//        rentIncome = 500,
-//        rentIncomeTaxDeducted = 250.55,
-//        premiumsOfLeaseGrant = Some(200.22),
-//        reversePremiums = 22.35,
-//        premisesRunningCosts = Some(100.50),
-//        repairsAndMaintenance = Some(100.50),
-//        financialCosts = Some(100),
-//        professionalFees = Some(100.50),
-//        costOfServices = Some(100.50),
-//        otherCost = Some(100.50),
-//        residentialFinancialCost = Some(100.55)
-//      )
-//
-//      given()
-//        .userIsSubscribedToMtdFor(nino)
-//        .userIsPartiallyAuthorisedForTheResource
-//        .des()
-//        .properties
-//        .periodWillBeUpdatedFor(nino, PropertyType.OTHER)
-//        .when()
-//        .put(property)
-//        .at(s"/r2/ni/${nino.nino}/uk-properties/${PropertyType.OTHER}/periods/2017-04-06_2018-04-05")
-//        .thenAssertThat()
-//        .statusIs(204)
-//    }
-//
-//    "be forbidden from making GET requests" in {
-//      given()
-//        .userIsSubscribedToMtdFor(nino)
-//        .userIsPartiallyAuthorisedForTheResource
-//        .when()
-//        .get(s"/ni/${nino.nino}/self-employments/abc")
-//        .thenAssertThat()
-//        .statusIs(403)
-//        .bodyIsLike(Jsons.Errors.agentNotAuthorised)
-//    }
-//
-//    "be able to make POST requests but don't have an agentCode" in {
-//      given()
-//        .userIsSubscribedToMtdFor(nino)
-//        .userIsPartiallyAuthorisedForTheResourceNoAgentCode
-//        .des()
-//        .selfEmployment
-//        .willBeCreatedFor(nino)
-//        .when()
-//        .post(Jsons.SelfEmployment())
-//        .to(s"/ni/${nino.nino}/self-employments")
-//        .thenAssertThat()
-//        .statusIs(201)
-//    }
-//  }
-//
-//}
+

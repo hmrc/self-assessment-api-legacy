@@ -268,7 +268,7 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
       }
 
       s"return status code 403 for property $propertyType" when {
-        "creating an overlapping period for $propertyType" in new Test {
+        "creating an overlapping period" in new Test {
 
           val requestJson: JsValue = PropertiesFixture.period(propertyType)
 
@@ -389,7 +389,7 @@ class CreatePropertiesPeriodResourceISpec extends IntegrationBaseSpec {
       }
 
       s"return status code 500 for $propertyType" when {
-        "DES is experiencing issues  for $propertyType" in new Test {
+        "DES is experiencing issue" in new Test {
 
           val period: JsValue = Jsons.SelfEmployment.period(fromDate = Some("2017-04-06"), toDate = Some("2017-07-04"))
 

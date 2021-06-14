@@ -56,7 +56,7 @@ class SelfEmploymentObligationsResource @Inject()(
           case 200 =>
             logger.warn(message = s"[SelfEmploymentObligationsResource][retrieveObligations] " +
               s"Success response status 200 with correlationId : ${correlationId(response)}")
-            logger.debug("Self-employment obligations from DES = " + Json.stringify(response.json))
+            logger.info("Self-employment obligations from DES = " + Json.stringify(response.json))
             response.obligations(incomeSourceType, Some(id)) match {
               case Right(obj) => logger.warn(message = s"[SelfEmploymentObligationsResource][retrieveObligations] " +
                 s"Success response status 200 and valid body with correlationId : ${correlationId(response)}")

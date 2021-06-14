@@ -35,7 +35,7 @@ class PropertiesBISSResource @Inject()(
 
   def getSummary(nino: Nino, taxYear: TaxYear): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("BISS")) {
-        logger.debug(s"[PropertiesBISSResource][getSummary] Get BISS for NI number : $nino")
+        logger.info(s"[PropertiesBISSResource][getSummary] Get BISS for NI number : $nino")
         logger.warn(message = "[PropertiesBISSResource][getSummary] - Using deprecated resource.  Should be using BISS API")
         Gone(toJson(Errors.ResourceGone))
     }

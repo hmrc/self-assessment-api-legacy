@@ -28,7 +28,7 @@ import uk.gov.hmrc.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 import uk.gov.hmrc.support.IntegrationBaseSpec
 import uk.gov.hmrc.utils.Nino
 
-class SelfAssessmentEndOfPeriodObligationsNewISpec extends IntegrationBaseSpec {
+class SelfAssessmentEndOfPeriodObligationsISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
@@ -120,8 +120,6 @@ class SelfAssessmentEndOfPeriodObligationsNewISpec extends IntegrationBaseSpec {
     "return status code 404 " when {
       "obligations with no 'identification' data is returned" in new Test {
 
-        val expectedJson: JsValue = Json.toJson(Errors.SelfEmploymentIDInvalid)
-
         def mtdQueryParams: Seq[(String, String)] =
           Seq(
             ("from", from),
@@ -140,8 +138,6 @@ class SelfAssessmentEndOfPeriodObligationsNewISpec extends IntegrationBaseSpec {
       }
 
       "INVALID_BPKEY error is received from DES" in new Test {
-
-        val expectedJson: JsValue = Json.toJson(Errors.SelfEmploymentIDInvalid)
 
         val desErrorJson: String =
           s"""

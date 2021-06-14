@@ -89,13 +89,6 @@ class RetrieveAllSelfEmploymentsResourceISpec  extends IntegrationBaseSpec {
     s"return status code 200 with empty body" when {
       "a valid request is made" in new Test {
 
-        val expectedJson: JsValue = Json.parse(
-          s"""
-             |[
-             |  ${Jsons.SelfEmployment(cessationDate = None, businessDescription = None).toString()}
-             |]
-         """.stripMargin)
-
         override def desResponse: JsValue = Json.parse(DesJsons.SelfEmployment.emptySelfEmployment(nino, mtdId))
 
         override def setupStubs(): StubMapping = {

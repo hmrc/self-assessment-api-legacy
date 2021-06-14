@@ -34,7 +34,7 @@ class SelfEmploymentBISSResource @Inject()(
 
   def getSummary(nino: Nino, taxYear: TaxYear, selfEmploymentId: String): Action[AnyContent] =
     APIAction(nino, SourceType.SelfEmployments, Some("BISS")) {
-        logger.debug(s"[SelfEmploymentBISSResource][getSummary] Get BISS for NI number : $nino with selfEmploymentId: $selfEmploymentId")
+        logger.info(s"[SelfEmploymentBISSResource][getSummary] Get BISS for NI number : $nino with selfEmploymentId: $selfEmploymentId")
         logger.warn(message = "[SelfEmploymentBISSResource][getSummary] - Using deprecated resource.  Should be using BISS API")
         Gone(toJson(Errors.ResourceGone))
     }

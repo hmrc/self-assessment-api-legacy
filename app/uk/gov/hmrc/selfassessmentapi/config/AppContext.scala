@@ -26,6 +26,7 @@ class AppContext @Inject()(servicesConfig: ServicesConfig, config: Configuration
   lazy val desEnv: String   = servicesConfig.getString("microservice.services.des.env")
   lazy val desToken: String = servicesConfig.getString("microservice.services.des.token")
   lazy val desUrl: String   = servicesConfig.baseUrl("des")
+  lazy val desEnvironmentHeaders: Option[Seq[String]] = config.getOptional[Seq[String]]("microservice.services.des.environmentHeaders")
 
   lazy val featureSwitch: Option[Configuration] = config.getOptional[Configuration]("feature-switch")
 

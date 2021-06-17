@@ -23,20 +23,20 @@ object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     ws,
     "uk.gov.hmrc"       %% "simple-reactivemongo"      % "8.0.0-play-28",
-    "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % "4.2.0",
+    "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % "5.3.0",
     "com.typesafe.play" %% "play-json-joda"            % "2.6.0",
-    "uk.gov.hmrc"       %% "play-hmrc-api"             % "6.2.0-play-28",
+    "uk.gov.hmrc"       %% "play-hmrc-api"             % "6.4.0-play-28",
     "org.typelevel"     %% "cats-core"                 % "2.6.0"
   )
 
   def test(scope: String = "test, func"): Seq[ModuleID] = Seq(
-    "org.scalatest"          %% "scalatest"                % "3.2.7"             % scope,
+    "org.scalatest"          %% "scalatest"                % "3.2.9"             % scope,
     "com.typesafe.play"      %% "play-test"                % PlayVersion.current % scope,
     "org.scalatestplus.play" %% "scalatestplus-play"       % "5.1.0"             % scope,
     "com.github.tomakehurst" % "wiremock-jre8"             % "2.27.2"            % scope,
     "de.flapdoodle.embed"    % "de.flapdoodle.embed.mongo" % "2.2.0"             % scope,
     "org.mongodb"            %% "casbah"                   % "3.1.1"             % scope,
-    "org.scalacheck"         %% "scalacheck"               % "1.15.3"            % scope,
+    "org.scalacheck"         %% "scalacheck"               % "1.15.4"            % scope,
     "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"          % scope,
     "com.vladsch.flexmark"   % "flexmark-all"              % "0.36.8"            % scope,
     "org.skyscreamer"        % "jsonassert"                % "1.5.0"             % scope,

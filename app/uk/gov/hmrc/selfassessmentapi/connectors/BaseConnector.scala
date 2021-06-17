@@ -26,7 +26,6 @@ import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.{ExecutionContext, Future}
 
-//TODO: swap out for new base connector with header changes
 trait BaseConnector extends Logging {
   val appContext: AppContext
   val http: DefaultHttpClient

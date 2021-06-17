@@ -17,13 +17,16 @@
 package uk.gov.hmrc.selfassessmentapi.resources
 
 import java.util.Locale
+
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.mvc.{PathBindable, QueryStringBindable}
-import uk.gov.hmrc.utils.{Nino, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.models.SourceType.SourceType
+import uk.gov.hmrc.r2.selfassessmentapi.models.properties
 import uk.gov.hmrc.selfassessmentapi.models.SourceType
+import uk.gov.hmrc.selfassessmentapi.models.SourceType.SourceType
+import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
 import uk.gov.hmrc.selfassessmentapi.resources.utils.{EopsObligationQueryParams, ObligationQueryParams}
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 
 import scala.util.{Failure, Success, Try}
 
@@ -64,7 +67,7 @@ object Binders {
   }
 
 
-  implicit val sourceTypeBinder = new PathBindable[SourceType] {
+  implicit val sourceTypeBinder: PathBindable[SourceType] = new PathBindable[SourceType] {
 
     def unbind(key: String, `type`: SourceType): String = `type`.toString
 
@@ -76,7 +79,7 @@ object Binders {
     }
   }
 
-  implicit val r2PropertyTypeBinder = new PathBindable[uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType] {
+  implicit val r2PropertyTypeBinder: PathBindable[properties.PropertyType.PropertyType] with Object {} = new PathBindable[uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType] {
 
     override def unbind(key: String, value: uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType): String = value.toString
 
@@ -88,7 +91,7 @@ object Binders {
     }
   }
 
-  implicit val propertyTypeBinder = new PathBindable[uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType] {
+  implicit val propertyTypeBinder: PathBindable[PropertyType.PropertyType] = new PathBindable[uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType] {
 
     override def unbind(key: String, value: uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType): String = value.toString
 
@@ -101,7 +104,7 @@ object Binders {
   }
   val format: String = "yyy-MM-dd"
 
-  implicit val datePathBinder = new PathBindable[LocalDate] {
+  implicit val datePathBinder: PathBindable[LocalDate] = new PathBindable[LocalDate] {
 
     override def unbind(key: String, date: LocalDate): String = date.toString
 

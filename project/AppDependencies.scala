@@ -24,9 +24,9 @@ object AppDependencies {
     ws,
     "uk.gov.hmrc"       %% "simple-reactivemongo"      % "8.0.0-play-28",
     "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % "5.3.0",
-    "com.typesafe.play" %% "play-json-joda"            % "2.6.0",
+    "com.typesafe.play" %% "play-json-joda"            % "2.9.2",
     "uk.gov.hmrc"       %% "play-hmrc-api"             % "6.4.0-play-28",
-    "org.typelevel"     %% "cats-core"                 % "2.6.0"
+    "org.typelevel"     %% "cats-core"                 % "2.6.1"
   )
 
   def test(scope: String = "test, func"): Seq[ModuleID] = Seq(
@@ -40,8 +40,8 @@ object AppDependencies {
     "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"          % scope,
     "com.vladsch.flexmark"   % "flexmark-all"              % "0.36.8"            % scope,
     "org.skyscreamer"        % "jsonassert"                % "1.5.0"             % scope,
-    "com.jayway.restassured" % "rest-assured"              % "2.9.0"             % scope,
     "org.mockito"            % "mockito-core"              % "3.5.13"            % scope,
+    "io.rest-assured"        % "rest-assured"              % "4.4.0"             % scope,
     "org.scalamock"          %% "scalamock"                % "5.1.0"              % scope
   )
 }

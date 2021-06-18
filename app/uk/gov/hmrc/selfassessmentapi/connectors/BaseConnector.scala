@@ -17,10 +17,9 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.resources.GovTestScenarioHeader
 import uk.gov.hmrc.selfassessmentapi.resources.wrappers.Response
 import uk.gov.hmrc.utils.Logging
 
@@ -30,30 +29,25 @@ trait BaseConnector extends Logging {
   val appContext: AppContext
   val http: DefaultHttpClient
 
-  def withDesHeaders(hc: HeaderCarrier, correlationId: String): HeaderCarrier = {
-    val newHc = hc
-      .copy(authorization = Some(Authorization(s"Bearer ${appContext.desToken}")))
-      .withExtraHeaders(
-        "Environment" -> appContext.desEnv,
-        "Accept" -> "application/json",
-        "Originator-Id" -> "DA_SDI",
-        "CorrelationId" -> correlationId
-      )
+  def withDesHeaders(hc: HeaderCarrier, correlationId: String, additionalHeaders: Seq[String]): HeaderCarrier =
+    HeaderCarrier(
+      extraHeaders = hc.extraHeaders ++
+        // Contract headers
+        Seq(
+          "Authorization" -> s"Bearer ${appContext.desToken}",
+          "Environment" -> appContext.desEnv,
+          "Originator-Id" -> "DA_SDI",
+          "CorrelationId" -> correlationId
+        ) ++
+        // Other headers (i.e Gov-Test-Scenario, Content-Type)
+        hc.headers(additionalHeaders ++ appContext.desEnvironmentHeaders.getOrElse(Seq.empty))
+    )
 
-    // HACK: http-verbs removes all "otherHeaders" from HeaderCarrier on outgoing requests.
-    //       We want to preserve the Gov-Test-Scenario header, so we copy it into "extraHeaders".
-    //       and remove it from "otherHeaders" to prevent it from being removed again.
-    hc.otherHeaders
-      .find { case (name, _) => name == GovTestScenarioHeader }
-      .map(newHc.withExtraHeaders(_))
-      .map(headers => headers.copy(otherHeaders = headers.otherHeaders.filterNot(_._1 == GovTestScenarioHeader)))
-      .getOrElse(newHc)
-  }
-
-  private def withAdditionalHeaders[R <: Response](url: String, correlationId: String)(f: HeaderCarrier => Future[R])(
-      implicit hc: HeaderCarrier): Future[R] = {
-    val newHc = withDesHeaders(hc, correlationId)
-//    logger.debug(s"URL:[$url] Headers:[${newHc.headers}]")
+  private def withAdditionalHeaders[R <: Response](url: String,
+                                                   correlationId: String,
+                                                   additionalHeaders: Seq[String] = Seq.empty)(f: HeaderCarrier => Future[R])(
+    implicit hc: HeaderCarrier): Future[R] = {
+    val newHc = withDesHeaders(hc, correlationId, additionalHeaders)
     f(newHc)
   }
 
@@ -71,25 +65,25 @@ trait BaseConnector extends Logging {
 
   def httpGetWithNoId[R <: Response](url: String, toResponse: HttpResponse => R)
                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[R] =
-    withAdditionalHeaders[R](url, "") { hcWithAdditionalHeaders =>
+    withAdditionalHeaders[R](url, correlationId = "") { hcWithAdditionalHeaders =>
       http.GET(url)(NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
     }
 
   def httpPost[T: Writes, R <: Response](url: String, elem: T, toResponse: HttpResponse => R)(
       implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[R] =
-    withAdditionalHeaders[R](url, correlationId) { hcWithAdditionalHeaders =>
+    withAdditionalHeaders[R](url, correlationId, Seq("Content-Type")) { hcWithAdditionalHeaders =>
       http.POST(url, elem)(implicitly[Writes[T]], NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
     }
 
   def httpEmptyPost[R <: Response](url: String, toResponse: HttpResponse => R)
                                   (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[R] =
-    withAdditionalHeaders[R](url, correlationId) { hcWithAdditionalHeaders =>
+    withAdditionalHeaders[R](url, correlationId, Seq("Content-Type")) { hcWithAdditionalHeaders =>
       http.POSTEmpty(url)(NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
     }
 
   def httpPut[T: Writes, R <: Response](url: String, elem: T, toResponse: HttpResponse => R)(
       implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[R] =
-    withAdditionalHeaders[R](url, correlationId) { hcWithAdditionalHeaders =>
+    withAdditionalHeaders[R](url, correlationId, Seq("Content-Type")) { hcWithAdditionalHeaders =>
       http.PUT(url, elem)(implicitly[Writes[T]], NoExceptReads, hcWithAdditionalHeaders, ec) map toResponse
     }
 }

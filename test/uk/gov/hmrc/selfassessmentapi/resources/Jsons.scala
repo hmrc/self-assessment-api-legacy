@@ -18,7 +18,8 @@ package uk.gov.hmrc.selfassessmentapi.resources
 
 import org.joda.time.LocalDate
 import play.api.libs.json.{JsObject, JsValue, Json}
-import uk.gov.hmrc.selfassessmentapi.models.{AccountingPeriod, AccountingType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.{AccountingPeriod, AccountingType}
+import uk.gov.hmrc.utils.TaxYear
 
 object Jsons {
 

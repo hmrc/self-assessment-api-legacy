@@ -16,21 +16,14 @@
 
 package uk.gov.hmrc.selfassessmentapi.featureswitch
 
-import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.selfassessmentapi.models.{SourceId, SourceType}
+import play.api.{ Application, Configuration }
+import uk.gov.hmrc.selfassessmentapi.models.SourceType
 import uk.gov.hmrc.support.BaseFunctionalSpec
 
 class SelfEmploymentFeatureSwitchSpec extends BaseFunctionalSpec {
 
-  private val conf: Map[String, Map[SourceId, Map[SourceId, Map[SourceId, Any]]]] =
-    Map("Test" ->
-      Map("feature-switch" ->
-        Map("self-employments" ->
-          Map("enabled" -> false)
-        )
-      )
-    )
+  private val conf = Map("feature-switch.self-employments.enabled" -> false)
 
   override lazy val app: Application = GuiceApplicationBuilder(configuration = Configuration.from(conf)).build()
 
@@ -40,12 +33,10 @@ class SelfEmploymentFeatureSwitchSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/${SourceType.SelfEmployments.toString}")
+        .get(s"/ni/${nino.nino}/${SourceType.SelfEmployments.toString}")
         .thenAssertThat()
         .statusIs(404)
     }
   }
 
 }
-
-

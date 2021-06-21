@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
 import uk.gov.hmrc.selfassessmentapi.models.SourceId
 import uk.gov.hmrc.selfassessmentapi.models.audit.RetrieveObligations

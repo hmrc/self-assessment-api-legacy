@@ -40,13 +40,13 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
                      |}
                    """.stripMargin)
 
-      val wrapper = SelfEmploymentResponse(HttpResponse(200, responseJson = Some(json)))
+      val wrapper = SelfEmploymentResponse(HttpResponse(200, json = json, Map()))
 
-      wrapper.createLocationHeader(nino) shouldBe Some(s"/self-assessment/ni/$nino/self-employments/abc")
+      wrapper.createLocationHeader(nino) shouldBe Some(s"/self-assessment/ni/${nino.nino}/self-employments/abc")
     }
 
     "return None for a json that does not contain an income source ID" in {
-      val wrapper = SelfEmploymentResponse(HttpResponse(200, responseJson = None))
+      val wrapper = SelfEmploymentResponse(HttpResponse(200, "{}"))
 
       wrapper.createLocationHeader(nino) shouldBe None
     }
@@ -55,13 +55,13 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
   "selfEmployment" should {
     "return EmptyBusinessData if business data is not present in the json response" in {
       val json = Json.parse("{}")
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.selfEmployment("someId").left.value shouldBe an[EmptyBusinessData]
     }
 
     "return EmptySelfEmployments if the list of self-employments is empty" in {
       val json = Json.parse("""{ "businessData": [] }""")
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.selfEmployment("someId").left.value shouldBe an[EmptySelfEmployments]
     }
 
@@ -99,7 +99,7 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
                               |   ]
                               |}
                             """.stripMargin)
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.selfEmployment("someId").left.value shouldBe an[UnmatchedIncomeId]
     }
 
@@ -137,13 +137,13 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
                               |   ]
                               |}
                             """.stripMargin)
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.selfEmployment("123456789012345").left.value shouldBe an[UnableToMapAccountingType]
     }
 
     "return Parse error if the json cannot be parsed" in {
       val json = Json.parse("""{ "businessData": 1 }""")
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.selfEmployment("someId").left.value shouldBe an[ParseError]
     }
 
@@ -181,8 +181,8 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
                               |   ]
                               |}
                             """.stripMargin)
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
-      response.selfEmployment("123456789012345").right.value shouldBe SelfEmploymentRetrieve(
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
+      response.selfEmployment("123456789012345").value shouldBe SelfEmploymentRetrieve(
         None,
         AccountingPeriod(LocalDate.parse("2001-01-01"), LocalDate.parse("2001-01-01")),
         AccountingType.CASH,
@@ -201,13 +201,13 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
   "listSelfEmployment" should {
     "return EmptyBusinessData if business data is not present in the json response" in {
       val json = Json.parse("{}")
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.listSelfEmployment.left.value shouldBe an[EmptyBusinessData]
     }
 
     "return EmptySelfEmployments if the list of self-employments is empty" in {
       val json = Json.parse("""{ "businessData": [] }""")
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.listSelfEmployment.left.value shouldBe an[EmptySelfEmployments]
     }
 
@@ -268,13 +268,13 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
                               |   ]
                               |}
                             """.stripMargin)
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.listSelfEmployment.left.value shouldBe an[UnableToMapAccountingType]
     }
 
     "return Parse error if the json cannot be parsed" in {
       val json = Json.parse("""{ "businessData": 1 }""")
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
       response.listSelfEmployment.left.value shouldBe an[ParseError]
     }
 
@@ -335,8 +335,8 @@ class SelfEmploymentResponseSpec extends UnitSpec with EitherValues {
                               |   ]
                               |}
                             """.stripMargin)
-      val response = SelfEmploymentResponse(HttpResponse(200, Some(json)))
-      response.listSelfEmployment.right.value should contain theSameElementsAs Seq(
+      val response = SelfEmploymentResponse(HttpResponse(200, json, Map[String, Seq[String]]()))
+      response.listSelfEmployment.value should contain theSameElementsAs Seq(
         SelfEmploymentRetrieve(Some("123456789012345"),
           AccountingPeriod(LocalDate.parse("2001-01-01"), LocalDate.parse("2001-01-01")),
           AccountingType.ACCRUAL,

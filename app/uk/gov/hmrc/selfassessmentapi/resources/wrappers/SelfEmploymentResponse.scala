@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.resources.wrappers
 
 import play.api.libs.json._
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.models.des
 import uk.gov.hmrc.selfassessmentapi.models.{DesTransformError, DesTransformValidator, SourceId}
 import uk.gov.hmrc.selfassessmentapi.models.des.{DesError, DesErrorCode}
@@ -28,7 +28,7 @@ case class SelfEmploymentResponse(underlying: HttpResponse) extends Response {
 
   def createLocationHeader(nino: Nino): Option[String] =
     (json \ "incomeSources" \\ "incomeSourceId").map(_.asOpt[String]) match {
-      case Some(id) +: _ => Some(s"/self-assessment/ni/$nino/self-employments/$id")
+      case Some(id) +: _ => Some(s"/self-assessment/ni/${nino.nino}/self-employments/$id")
       case _ =>
         logger.warn(s"The response from DES does not match the expected format. JSON: [$json]")
         None

@@ -17,12 +17,12 @@
 package uk.gov.hmrc.r2.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.r2.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.r2.selfassessmentapi.models.des.selfemployment.SelfEmploymentAnnualSummary
-import uk.gov.hmrc.r2.selfassessmentapi.models.{SourceId, TaxYear}
+import uk.gov.hmrc.r2.selfassessmentapi.models.SourceId
 import uk.gov.hmrc.r2.selfassessmentapi.resources.wrappers.SelfEmploymentAnnualSummaryResponse
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,14 +38,14 @@ class SelfEmploymentAnnualSummaryConnector @Inject()(
   def update(nino: Nino, id: SourceId, taxYear: TaxYear, update: SelfEmploymentAnnualSummary)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentAnnualSummaryResponse] =
     httpPut[SelfEmploymentAnnualSummary, SelfEmploymentAnnualSummaryResponse](
-      baseUrl + s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}",
+      baseUrl + s"/income-store/nino/${nino.nino}/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}",
       update,
       SelfEmploymentAnnualSummaryResponse)
 
   def get(nino: Nino, id: SourceId, taxYear: TaxYear)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentAnnualSummaryResponse] =
     httpGet[SelfEmploymentAnnualSummaryResponse](
-      baseUrl + s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}",
+      baseUrl + s"/income-store/nino/${nino.nino}/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}",
       SelfEmploymentAnnualSummaryResponse)
 
 }

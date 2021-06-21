@@ -17,29 +17,27 @@
 package uk.gov.hmrc.r2.selfassessmentapi.services
 
 import javax.inject.Inject
-import play.api.Logger
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.r2.selfassessmentapi.connectors.BusinessDetailsConnector
 import uk.gov.hmrc.r2.selfassessmentapi.models.MtdId
 import uk.gov.hmrc.r2.selfassessmentapi.repositories.MtdReferenceRepository
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class MtdRefLookupService @Inject()(
                                      businessConnector: BusinessDetailsConnector,
                                      repository: MtdReferenceRepository
-                                   ) {
-
-  private val logger = Logger(this.getClass)
+                                   ) extends Logging {
 
   def mtdReferenceFor(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Int, MtdId]] = {
     repository.retrieve(nino).flatMap {
       case Some(mtdId) =>
-        logger.debug("NINO to MTD Ref lookup cache hit.")
+        logger.info("NINO to MTD Ref lookup cache hit.")
         Future.successful(Right(mtdId))
       case None =>
-        logger.debug("NINO to MTD Ref lookup cache miss.")
+        logger.info("NINO to MTD Ref lookup cache miss.")
         cacheReferenceFor(nino)
     }
   }
@@ -48,7 +46,7 @@ class MtdRefLookupService @Inject()(
     businessConnector.get(nino).map { response =>
       response.status match {
         case 200 =>
-          logger.debug(s"NINO to MTD reference lookup successful. Status code: [${response.status}]")
+          logger.info(s"NINO to MTD reference lookup successful. Status code: [${response.status}]")
           response.mtdId match {
             case Some(id) =>
               repository.store(nino, id)
@@ -57,10 +55,10 @@ class MtdRefLookupService @Inject()(
               Left(500)
           }
         case 400 =>
-          logger.debug(s"NINO to MTD reference lookup was invalid. Status code: [${response.status}]")
+          logger.info(s"NINO to MTD reference lookup was invalid. Status code: [${response.status}]")
           Left(400)
         case 404 =>
-          logger.debug(s"NINO to MTD reference lookup was not found. Status code: [${response.status}]")
+          logger.info(s"NINO to MTD reference lookup was not found. Status code: [${response.status}]")
           Left(403)
         case 500 =>
           logger.warn(s"NINO to MTD reference lookup failed with server error. Is there an issue with DES? Status code: [${response.status}]")

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -37,7 +37,7 @@ class PropertiesPeriodConnector @Inject()(
   def retrieveAll(nino: Nino, propertyType: PropertyType)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesPeriodResponse] =
     httpGet[PropertiesPeriodResponse](
-      baseUrl + s"/income-tax/nino/$nino/uk-properties/$propertyType/periodic-summaries",
+      baseUrl + s"/income-tax/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries",
       PropertiesPeriodResponse)
 
 }

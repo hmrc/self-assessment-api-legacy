@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -37,6 +37,6 @@ class PropertiesPeriodStatementConnector @Inject()(
 
   def create(nino: Nino, accountingPeriod: Period, requestTimestamp: String)
             (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[EmptyResponse] =
-    httpPost[RequestDateTime, EmptyResponse](s"$baseUrl/income-store/nino/$nino/uk-properties/accounting-periods/${accountingPeriod.periodId}/statement",
+    httpPost[RequestDateTime, EmptyResponse](s"$baseUrl/income-store/nino/${nino.nino}/uk-properties/accounting-periods/${accountingPeriod.periodId}/statement",
       RequestDateTime(requestTimestamp), EmptyResponse)
 }

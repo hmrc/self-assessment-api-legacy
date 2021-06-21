@@ -17,7 +17,7 @@
 package uk.gov.hmrc.r2.selfassessmentapi.mocks.auth
 
 import org.scalatest.Suite
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.Mock
 import uk.gov.hmrc.r2.selfassessmentapi.services.AuthorisationService
 

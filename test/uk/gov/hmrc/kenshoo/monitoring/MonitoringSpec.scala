@@ -16,40 +16,39 @@
 
 package uk.gov.hmrc.kenshoo.monitoring
 
-import com.jayway.restassured.RestAssured
+import io.restassured.RestAssured
+import io.restassured.response.ValidatableResponse
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers._
-import play.api.Logger
 import uk.gov.hmrc.selfassessmentapi.UnitSpec
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.Future
 
-trait MonitoringSpec extends UnitSpec {
-
-  val log = Logger(classOf[MonitoringSpec])
+trait MonitoringSpec extends UnitSpec with Logging {
 
   private class MetricBodyWrapper {
     var fieldName: String = ""
 
-    def is[T](matcher: Matcher[T]) = {
-      log.debug(s"Metrics URL: ${RestAssured.baseURI}:${RestAssured.port}")
-      log.debug(RestAssured.get("/admin/metrics").`then`().assertThat().extract().body().asString())
+    def is[T](matcher: Matcher[T]): ValidatableResponse = {
+      logger.debug(s"Metrics URL: ${RestAssured.baseURI}:${RestAssured.port}")
+      logger.debug(RestAssured.get("/admin/metrics").`then`().assertThat().extract().body().asString())
 
       try {
         metrics.body(fieldName, matcher)
       } catch {
-        case illegalArgumentException: IllegalArgumentException => throw new RuntimeException(s"Cannot find '$fieldName'")
+        case _: IllegalArgumentException => throw new RuntimeException(s"Cannot find '$fieldName'")
         case ex: Throwable => throw ex
       }
     }
 
-    def field(s: String) = {
+    def field(s: String): MetricBodyWrapper = {
       this.fieldName = s
       this
     }
   }
 
-  private def metricsBody() = {
+  private def metricsBody(): MetricBodyWrapper = {
     new MetricBodyWrapper()
   }
 
@@ -58,11 +57,11 @@ trait MonitoringSpec extends UnitSpec {
   RestAssured.baseURI = "http://localhost"
   RestAssured.port = kenshooMetricPort
 
-  def assertResponseTimeRecordedFor(apiName: String) = {
+  def assertResponseTimeRecordedFor(apiName: String): ValidatableResponse = {
     metricsBody().field(s"timers.Timer-$apiName.count").is(greaterThanOrEqualTo(1.asInstanceOf[Integer]))
   }
 
-  def assertErrorCountRecordedFor(apiName: String, statusCode: Int, count: Int = 1) = {
+  def assertErrorCountRecordedFor(apiName: String, statusCode: Int, count: Int = 1): ValidatableResponse = {
     metricsBody().field(s"meters.Http${statusCode / 100}xxErrorCount-$apiName.count").is(greaterThanOrEqualTo(count.asInstanceOf[Integer]))
   }
 
@@ -75,7 +74,7 @@ trait MonitoringSpec extends UnitSpec {
     }
   }
 
-  def verifyHttpErrorRecorded[T](service: String, statusCode: Int = 500)(fn: => Future[T]) = {
+  def verifyHttpErrorRecorded[T](service: String, statusCode: Int = 500)(fn: => Future[T]): Any = {
     try {
       await(fn)
     } catch {
@@ -85,7 +84,7 @@ trait MonitoringSpec extends UnitSpec {
     }
   }
 
-  def verifyResponseTime[T](service: String)(fn: => Future[T]) = {
+  def verifyResponseTime[T](service: String)(fn: => Future[T]): Any = {
     try {
       await(fn)
     } catch {
@@ -96,7 +95,7 @@ trait MonitoringSpec extends UnitSpec {
 
   }
 
-  def verifyMonitoring[T](service: String)(fn: => Future[T]) = {
+  def verifyMonitoring[T](service: String)(fn: => Future[T]): Any = {
     try {
       await(fn)
     } catch {
@@ -107,7 +106,7 @@ trait MonitoringSpec extends UnitSpec {
     }
   }
 
-  private def metrics = {
+  private def metrics: ValidatableResponse = {
     RestAssured.get("/admin/metrics").`then`().assertThat()
   }
 

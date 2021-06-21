@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources.utils
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import org.joda.time.format.ISODateTimeFormat
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.contexts.AuthContext
 import uk.gov.hmrc.selfassessmentapi.models.audit.EndOfPeriodStatementDeclaration

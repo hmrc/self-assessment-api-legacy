@@ -466,7 +466,9 @@ object Jsons {
            |{
            |  "allowances": {
            |    "annualInvestmentAllowance": $annualInvestmentAllowance,
-           |    "otherCapitalAllowance": $otherCapitalAllowance
+           |    "otherCapitalAllowance": $otherCapitalAllowance,
+           |    "businessPremisesRenovationAllowance":0,
+           |    "propertyAllowance":0
            |  },
            |  "adjustments": {
            |   "lossBroughtForward": $lossBroughtForward,
@@ -475,6 +477,7 @@ object Jsons {
            |   "periodOfGraceAdjustment": $periodOfGraceAdjustment
            |  },
            |  "other": {
+           |    "nonResidentLandlord":false,
            |    "rarJointLet": false
            |  }
            |}

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -34,18 +34,18 @@ class SelfEmploymentConnector @Inject()(
   private lazy val baseUrl: String = appContext.desUrl
 
   def create(nino: Nino, business: Business)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentResponse] =
-    httpPost[Business, SelfEmploymentResponse](baseUrl + s"/income-tax-self-assessment/nino/$nino/business",
+    httpPost[Business, SelfEmploymentResponse](baseUrl + s"/income-tax-self-assessment/nino/${nino.nino}/business",
       business,
       SelfEmploymentResponse)
 
   def get(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentResponse] =
-    httpGet[SelfEmploymentResponse](baseUrl + s"/registration/business-details/nino/$nino",
+    httpGet[SelfEmploymentResponse](baseUrl + s"/registration/business-details/nino/${nino.nino}",
       SelfEmploymentResponse)
 
   def update(nino: Nino, business: SelfEmploymentUpdate, id: SourceId)(
     implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentResponse] =
     httpPut[SelfEmploymentUpdate, SelfEmploymentResponse](
-      baseUrl + s"/income-tax-self-assessment/nino/$nino/incomeSourceId/$id/regime/ITSA",
+      baseUrl + s"/income-tax-self-assessment/nino/${nino.nino}/incomeSourceId/$id/regime/ITSA",
       business,
       SelfEmploymentResponse)
 }

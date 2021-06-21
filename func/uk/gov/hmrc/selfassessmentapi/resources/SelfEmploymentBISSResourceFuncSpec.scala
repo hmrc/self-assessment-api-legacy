@@ -16,23 +16,53 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources
 
-import uk.gov.hmrc.support.BaseFunctionalSpec
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.HeaderNames.ACCEPT
+import play.api.http.Status.GONE
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.WSRequest
+import uk.gov.hmrc.selfassessmentapi.NinoGenerator
+import uk.gov.hmrc.stubs.{AuditStub, AuthStub, MtdIdLookupStub}
+import uk.gov.hmrc.support.IntegrationBaseSpec
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 
-class SelfEmploymentBISSResourceFuncSpec extends BaseFunctionalSpec {
+class SelfEmploymentBISSResourceFuncSpec extends IntegrationBaseSpec {
 
-  val selfEmploymentId = "XKIS00000000988"
+  private trait Test {
 
-    "getSummary for SE BISS" should {
-      "return code 410 for any request" in {
-        given()
-          .userIsSubscribedToMtdFor(nino)
-          .clientIsFullyAuthorisedForTheResource
-          .des().SelfEmploymentBISS.getSummary(nino, taxYear, selfEmploymentId)
-          .when()
-          .get(s"/ni/$nino/self-employments/$selfEmploymentId/$taxYear/income-summary")
-          .thenAssertThat()
-          .statusIs(410)
-          .bodyIsLike(Jsons.Errors.resourceGone.toString)
+    protected val nino: Nino = NinoGenerator().nextNino()
+
+    val selfEmploymentId = "XKIS00000000988"
+    val taxYear: TaxYear = TaxYear("2017-18")
+    val correlationId: String = "X-ID"
+
+    def uri: String = s"/ni/${nino.nino}/self-employments/$selfEmploymentId/$taxYear/income-summary"
+
+    def desResponse(res: String): JsValue = Json.parse(res)
+
+    def setupStubs(): StubMapping
+
+    def request(): WSRequest = {
+      setupStubs()
+      buildRequest(uri)
+        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+    }
+  }
+
+  "getSummary for SE BISS" should {
+    "return code 410 for any request" when {
+      "a request is made" in new Test {
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+        }
+
+        private val response = await(request().get)
+        response.status shouldBe GONE
+        response.json shouldBe Json.parse(Jsons.Errors.resourceGone)
       }
     }
+  }
 }

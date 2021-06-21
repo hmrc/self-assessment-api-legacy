@@ -17,15 +17,13 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.models.des.selfemployment.RequestDateTime
 import uk.gov.hmrc.selfassessmentapi.models.obligations.ObligationsQueryParams
-import uk.gov.hmrc.selfassessmentapi.models.{Period, SourceId}
 import uk.gov.hmrc.selfassessmentapi.resources.utils.EopsObligationQueryParams
-import uk.gov.hmrc.selfassessmentapi.resources.wrappers.{EmptyResponse, SelfEmploymentStatementResponse}
+import uk.gov.hmrc.selfassessmentapi.resources.wrappers.SelfEmploymentStatementResponse
+import uk.gov.hmrc.utils.Nino
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,11 +33,6 @@ class SelfEmploymentStatementConnector @Inject()(
                                                 ) extends BaseConnector {
   private lazy val baseUrl = appContext.desUrl
 
-  def create(nino: Nino, id: SourceId, accountingPeriod: Period, requestTimestamp: String)
-            (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[EmptyResponse] =
-    httpPost[RequestDateTime, EmptyResponse](s"$baseUrl/income-store/nino/$nino/self-employments/$id/accounting-periods/${accountingPeriod.periodId}/statement",
-      RequestDateTime(requestTimestamp), EmptyResponse)
-
   def get(nino: Nino, params: EopsObligationQueryParams)
          (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[SelfEmploymentStatementResponse] = {
     val queryString = (params.from, params.to) match {
@@ -48,6 +41,6 @@ class SelfEmploymentStatementConnector @Inject()(
       case (Some(f), None) => s"?from=$f"
       case (None, Some(t)) => s"?to=$t"
     }
-    httpGet[SelfEmploymentStatementResponse](baseUrl + s"/enterprise/obligation-data/nino/$nino/ITSA$queryString", SelfEmploymentStatementResponse)
+    httpGet[SelfEmploymentStatementResponse](baseUrl + s"/enterprise/obligation-data/nino/${nino.nino}/ITSA$queryString", SelfEmploymentStatementResponse)
   }
 }

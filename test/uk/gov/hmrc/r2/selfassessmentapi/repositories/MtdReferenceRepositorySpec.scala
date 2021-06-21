@@ -18,7 +18,7 @@ package uk.gov.hmrc.r2.selfassessmentapi.repositories
 
 import org.scalatest.BeforeAndAfterEach
 import play.modules.reactivemongo.ReactiveMongoComponent
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.mongo.MongoConnector
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.Mock
 import uk.gov.hmrc.r2.selfassessmentapi.models.MtdId

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.models.des
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, OWrites, Reads}
 
 case class ObligationDetail(status: String,
                             inboundCorrespondenceFromDate: String,
@@ -29,4 +29,5 @@ case class ObligationDetail(status: String,
 
 object ObligationDetail {
   implicit val reads: Reads[ObligationDetail] = Json.reads[ObligationDetail]
+  implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
 }

@@ -20,16 +20,18 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder
 import org.joda.time.LocalDate
 import org.json.{JSONArray, JSONObject}
+import org.scalatest.Assertion
 import org.skyscreamer.jsonassert.JSONAssert.assertEquals
 import org.skyscreamer.jsonassert.JSONCompareMode.LENIENT
-import play.api.http.Status.NO_CONTENT
+import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.api.controllers.ErrorNotFound
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.r2.selfassessmentapi.models.ErrorResponses.ErrorNotImplemented
 import uk.gov.hmrc.selfassessmentapi.models.obligations.ObligationsQueryParams
 import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType
-import uk.gov.hmrc.selfassessmentapi.models.{ErrorNotImplemented, Period, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.Period
 import uk.gov.hmrc.selfassessmentapi.resources.DesJsons
 import uk.gov.hmrc.selfassessmentapi.{NinoGenerator, TestApplication}
 
@@ -38,13 +40,13 @@ import scala.util.matching.Regex
 
 trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
-  protected val nino = NinoGenerator().nextNino()
+  protected val nino: Nino = NinoGenerator().nextNino()
 
   class Assertions(request: String, response: HttpResponse)(implicit urlPathVariables: mutable.Map[String, String])
     extends UrlInterpolation {
-    def jsonBodyIsEmptyObject() = response.json shouldBe Json.obj()
+    def jsonBodyIsEmptyObject(): Assertion = response.json shouldBe Json.obj()
 
-    def jsonBodyIsEmptyArray() = response.json shouldBe JsArray()
+    def jsonBodyIsEmptyArray(): Assertion = response.json shouldBe JsArray()
 
     def responseContainsHeader(name: String, pattern: Regex): Assertions = {
       response.header(name) match {
@@ -56,16 +58,17 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
     if (request.startsWith("POST")) {
       response.header("Location").map { location =>
-        location.contains("/periods") match {
-          case true => urlPathVariables += ("periodLocation" -> location.replaceFirst("/self-assessment", ""))
-          case false => urlPathVariables += ("sourceLocation" -> location.replaceFirst("/self-assessment", ""))
+        if (location.contains("/periods")) {
+          urlPathVariables += ("periodLocation" -> location.replaceFirst("/self-assessment", ""))
+        } else {
+          urlPathVariables += ("sourceLocation" -> location.replaceFirst("/self-assessment", ""))
         }
       }
     }
 
     def when() = new HttpVerbs()
 
-    def butResponseHasNo(sourceName: String, summaryName: String = "") = {
+    def butResponseHasNo(sourceName: String, summaryName: String = ""): Assertions = {
       val jsvOpt =
       // FIXME: use \\
         if (summaryName.isEmpty) (response.json \ "_embedded" \ sourceName).toOption
@@ -82,12 +85,12 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       this
     }
 
-    def bodyIsError(code: String) = body(_ \ "code").is(code)
+    def bodyIsError(code: String): Assertions = body(_ \ "code").is(code)
 
     def isValidationError(error: (String, String)): Assertions = isValidationError(error._1, error._2)
 
-    def isValidationError(path: String, code: String) = {
-      statusIs(400).contentTypeIsJson().body(_ \ "code").is("INVALID_REQUEST")
+    def isValidationError(path: String, code: String): Assertions = {
+      statusIs(BAD_REQUEST).contentTypeIsJson().body(_ \ "code").is("INVALID_REQUEST")
 
       val errors = (response.json \ "errors").toOption
       errors match {
@@ -100,12 +103,12 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     }
 
     def isBadRequest(path: String, code: String): Assertions = {
-      statusIs(400).contentTypeIsJson().body(_ \ "path").is(path).body(_ \ "code").is(code)
+      statusIs(BAD_REQUEST).contentTypeIsJson().body(_ \ "path").is(path).body(_ \ "code").is(code)
       this
     }
 
     def isBadRequest(code: String): Assertions = {
-      statusIs(400).contentTypeIsJson().body(_ \ "code").is(code)
+      statusIs(BAD_REQUEST).contentTypeIsJson().body(_ \ "code").is(code)
       this
     }
 
@@ -113,40 +116,40 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       isBadRequest("INVALID_REQUEST")
     }
 
-    def isNotFound = {
-      statusIs(404).contentTypeIsJson().bodyIsError(ErrorNotFound.errorCode)
+    def isNotFound: Assertions = {
+      statusIs(NOT_FOUND).contentTypeIsJson().bodyIsError(ErrorNotFound.errorCode)
       this
     }
 
-    def isNotImplemented = {
+    def isNotImplemented: Assertions = {
       statusIs(501).contentTypeIsJson().bodyIsError(ErrorNotImplemented.errorCode)
       this
     }
 
-    def contentTypeIsXml() = contentTypeIs("application/xml")
+    def contentTypeIsXml(): Assertions = contentTypeIs("application/xml")
 
-    def contentTypeIsJson() = contentTypeIs("application/json")
+    def contentTypeIsJson(): Assertions = contentTypeIs("application/json")
 
-    def contentTypeIsHalJson() = contentTypeIs("application/hal+json")
+    def contentTypeIsHalJson(): Assertions = contentTypeIs("application/hal+json")
 
-    def noInteractionsWithExternalSystems() = {
+    def noInteractionsWithExternalSystems(): Unit = {
       verify(0, RequestPatternBuilder.allRequests())
     }
 
-    def bodyIs(expectedBody: String) = {
+    def bodyIs(expectedBody: String): Assertions = {
       response.body shouldBe expectedBody
       this
     }
 
-    def bodyIs(expectedBody: JsValue) = {
+    def bodyIs(expectedBody: JsValue): Assertions = {
       (response.json match {
-        case JsObject(fields) => response.json.as[JsObject] - "_links" - "id"
+        case JsObject(_) => response.json.as[JsObject] - "_links" - "id"
         case json => json
       }) shouldEqual expectedBody
       this
     }
 
-    def bodyIsLike(expectedBody: String) = {
+    def bodyIsLike(expectedBody: String): Assertions = {
       response.json match {
         case JsArray(_) => assertEquals(expectedBody, new JSONArray(response.body), LENIENT)
         case _ => assertEquals(expectedBody, new JSONObject(response.body), LENIENT)
@@ -154,7 +157,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       this
     }
 
-    def bodyHasLink(rel: String, href: String) = {
+    def bodyHasLink(rel: String, href: String): Assertions = {
       getLinkFromBody(rel) shouldEqual Some(interpolated(href))
       this
     }
@@ -164,11 +167,11 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       this
     }
 
-    def bodyHasPath(path: String, valuePattern: Regex) = {
+    def bodyHasPath(path: String, valuePattern: Regex): Assertions = {
       extractPathElement[String](path) match {
         case Some(x) =>
           valuePattern findFirstIn x match {
-            case Some(v) =>
+            case Some(_) =>
             case None => fail(s"$x did not match pattern")
           }
         case None => fail(s"No value found for $path")
@@ -176,7 +179,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       this
     }
 
-    def bodyDoesNotHavePath[T](path: String)(implicit reads: Reads[T]) = {
+    def bodyDoesNotHavePath[T](path: String)(implicit reads: Reads[T]): Assertions = {
       extractPathElement[T](path) match {
         case Some(x) => fail(s"$x match found")
         case None =>
@@ -185,7 +188,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     }
 
     private def extractPathElement[T](path: String)(implicit reads: Reads[T]): Option[T] = {
-      val pathSeq = path.filter(!_.isWhitespace).split('\\').toSeq.filter(!_.isEmpty)
+      val pathSeq = path.filter(!_.isWhitespace).split('\\').toSeq.filter(_.nonEmpty)
 
       def op(js: Option[JsValue], pathElement: String): Option[JsValue] = {
         val pattern = """(.*)\((\d+)\)""".r
@@ -204,7 +207,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
       }
 
-      pathSeq.foldLeft(Some(response.json): Option[JsValue])(op).map(jsValue => jsValue.asOpt[T]).getOrElse(None)
+      pathSeq.foldLeft(Some(response.json): Option[JsValue])(op).flatMap(jsValue => jsValue.asOpt[T])
     }
 
     private def getLinkFromBody(rel: String): Option[String] =
@@ -215,13 +218,13 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
           link <- (links \ rel).toOption
           href <- (link \ "href").toOption
 
-        } yield href.asOpt[String]).getOrElse(None)
+        } yield href.asOpt[String]).flatten
 
-    def bodyHasLink(rel: String, hrefPattern: Regex) = {
+    def bodyHasLink(rel: String, hrefPattern: Regex): Assertions = {
       getLinkFromBody(rel) match {
         case Some(href) =>
           interpolated(hrefPattern).r findFirstIn href match {
-            case Some(v) =>
+            case Some(_) =>
             case None => fail(s"$href did not match pattern")
           }
         case None => fail(s"No href found for $rel")
@@ -229,24 +232,24 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       this
     }
 
-    def bodyHasString(content: String) = {
+    def bodyHasString(content: String): Assertions = {
       response.body.contains(content) shouldBe true
       this
     }
 
-    def bodyDoesNotHaveString(content: String) = {
+    def bodyDoesNotHaveString(content: String): Assertions = {
       response.body.contains(content) shouldBe false
       this
     }
 
-    def statusIs(statusCode: Regex) = {
+    def statusIs(statusCode: Regex): Assertions = {
       withClue(s"expected $request to return $statusCode; but got ${response.body}\n") {
         response.status.toString should fullyMatch regex statusCode
       }
       this
     }
 
-    def statusIs(statusCode: Int) = {
+    def statusIs(statusCode: Int): Assertions = {
       withClue(s"expected $request to return $statusCode; but got ${response.body}\n") {
         response.status shouldBe statusCode
       }
@@ -258,16 +261,16 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       this
     }
 
-    def body(myQuery: JsValue => JsLookupResult) = {
+    def body(myQuery: JsValue => JsLookupResult): BodyAssertions = {
       new BodyAssertions(myQuery(response.json).toOption, this)
     }
 
-    def selectFields(myQuery: JsValue => Seq[JsValue]) = {
+    def selectFields(myQuery: JsValue => Seq[JsValue]): BodyListAssertions = {
       new BodyListAssertions(myQuery(response.json), this)
     }
 
     class BodyAssertions(content: Option[JsValue], assertions: Assertions) {
-      def is(value: String) = {
+      def is(value: String): Assertions = {
         content match {
           case Some(v) =>
             v.asOpt[String] match {
@@ -279,12 +282,12 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         assertions
       }
 
-      def isAbsent() = {
+      def isAbsent: Assertions = {
         content shouldBe None
         assertions
       }
 
-      def is(value: BigDecimal) = {
+      def is(value: BigDecimal): Assertions = {
         content match {
           case Some(v) => v.as[BigDecimal] shouldBe value
           case None => fail()
@@ -294,12 +297,12 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     }
 
     class BodyListAssertions(content: Seq[JsValue], assertions: Assertions) {
-      def isLength(n: Int) = {
+      def isLength(n: Int): BodyListAssertions = {
         content.size shouldBe n
         this
       }
 
-      def matches(matcher: Regex) = {
+      def matches(matcher: Regex): Assertions = {
         content.map(_.as[String]).forall {
           case matcher(_*) => true
           case _ => false
@@ -308,7 +311,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         assertions
       }
 
-      def is(value: String*) = {
+      def is(value: String*): Assertions = {
         content.map(con => con.as[String]) should contain theSameElementsAs value
         assertions
       }
@@ -328,8 +331,8 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     var acceptHeader = "application/vnd.hmrc.1.0+json"
 
     def thenAssertThat(): Assertions = {
-      implicit val carrier =
-        if (addAcceptHeader) hc.withExtraHeaders("Accept" -> "application/vnd.hmrc.1.0+json") else hc
+      implicit val carrier: HeaderCarrier =
+        if (addAcceptHeader) HeaderCarrier(extraHeaders = Seq("Accept" -> "application/vnd.hmrc.1.0+json", "Authorization" -> hc.authorization.map(_.value).getOrElse("")) ++ hc.extraHeaders) else hc
 
       withClue(s"Request $method $url") {
         method match {
@@ -364,12 +367,12 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
   class HttpPostBodyWrapper(method: String, body: Option[JsValue])(
     implicit urlPathVariables: mutable.Map[String, String]) {
-    def to(url: String) = new HttpRequest(method, url, body)
+    def to(url: String): HttpRequest = new HttpRequest(method, url, body)
   }
 
   class HttpPutBodyWrapper(method: String, body: Option[JsValue])(
     implicit urlPathVariables: mutable.Map[String, String]) {
-    def at(url: String) = new HttpRequest(method, url, body)
+    def at(url: String): HttpRequest = new HttpRequest(method, url, body)
   }
 
   class HttpVerbs()(implicit urlPathVariables: mutable.Map[String, String] = mutable.Map()) {
@@ -378,23 +381,23 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       new HttpPostBodyWrapper("POST", Some(body))
     }
 
-    def put(body: JsValue) = {
+    def put(body: JsValue): HttpPutBodyWrapper = {
       new HttpPutBodyWrapper("PUT", Some(body))
     }
 
-    def get(path: String) = {
+    def get(path: String): HttpRequest = {
       new HttpRequest("GET", path, None)
     }
 
-    def delete(path: String) = {
+    def delete(path: String): HttpRequest = {
       new HttpRequest("DELETE", path, None)
     }
 
-    def post(path: String, body: Option[JsValue] = None) = {
+    def post(path: String, body: Option[JsValue] = None): HttpRequest = {
       new HttpRequest("POST", path, body)
     }
 
-    def put(path: String, body: Option[JsValue]) = {
+    def put(path: String, body: Option[JsValue]): HttpRequest = {
       new HttpRequest("PUT", path, body)
     }
 
@@ -404,7 +407,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
     implicit val urlPathVariables: mutable.Map[String, String] = mutable.Map()
 
-    def when() = new HttpVerbs()
+    def when(): HttpVerbs = new HttpVerbs()
 
     def stubAudit: Givens = {
       stubFor(post(urlPathMatching(s"/write/audit.*"))
@@ -415,10 +418,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     }
 
     def userIsSubscribedToMtdFor(nino: Nino, mtdId: String = "abc"): Givens = {
-      stubFor(any(urlMatching(s".*/registration/business-details/nino/$nino"))
+      stubFor(any(urlMatching(s".*/registration/business-details/nino/${nino.nino}"))
         .willReturn(
           aResponse()
-            .withStatus(200)
+            .withStatus(OK)
             .withHeader("Content-Type", "application/json")
             .withBody(DesJsons.SelfEmployment(nino, mtdId))))
 
@@ -426,10 +429,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     }
 
     def userIsNotSubscribedToMtdFor(nino: Nino): Givens = {
-      stubFor(any(urlMatching(s".*/registration/business-details/nino/$nino"))
+      stubFor(any(urlMatching(s".*/registration/business-details/nino/${nino.nino}"))
         .willReturn(
           aResponse()
-            .withStatus(404)
+            .withStatus(NOT_FOUND)
             .withHeader("Content-Type", "application/json")
             .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -437,10 +440,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     }
 
     def businessDetailsLookupReturns500Error(nino: Nino): Givens = {
-      stubFor(any(urlMatching(s".*/registration/business-details/nino/$nino"))
+      stubFor(any(urlMatching(s".*/registration/business-details/nino/${nino.nino}"))
         .willReturn(
           aResponse()
-            .withStatus(500)
+            .withStatus(INTERNAL_SERVER_ERROR)
             .withHeader("Content-Type", "application/json")
             .withBody(DesJsons.Errors.serverError)))
 
@@ -448,10 +451,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     }
 
     def businessDetailsLookupReturns503Error(nino: Nino): Givens = {
-      stubFor(any(urlMatching(s".*/registration/business-details/nino/$nino"))
+      stubFor(any(urlMatching(s".*/registration/business-details/nino/${nino.nino}"))
         .willReturn(
           aResponse()
-            .withStatus(503)
+            .withStatus(SERVICE_UNAVAILABLE)
             .withHeader("Content-Type", "application/json")
             .withBody(DesJsons.Errors.serviceUnavailable)))
 
@@ -461,7 +464,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     def missingBearerToken: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .willReturn(aResponse()
-          .withStatus(401)
+          .withStatus(UNAUTHORIZED)
           .withHeader("Content-Length", "0")
           .withHeader("WWW-Authenticate", "MDTP detail=\"MissingBearerToken\"")))
 
@@ -471,7 +474,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     def upstream502BearerTokenDecryptionError: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .willReturn(aResponse()
-          .withStatus(502)
+          .withStatus(BAD_GATEWAY)
           .withHeader("Content-Type", "application/json")
           .withBody("""{"statusCode":500,"message":"Unable to decrypt value"}""")))
 
@@ -481,7 +484,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     def upstream5xxError: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .willReturn(aResponse()
-          .withStatus(500)))
+          .withStatus(INTERNAL_SERVER_ERROR)))
 
       this
     }
@@ -489,7 +492,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     def upstream4xxError: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .willReturn(aResponse()
-          .withStatus(403)))
+          .withStatus(FORBIDDEN)))
 
       this
     }
@@ -505,7 +508,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
     def userIsNotAuthorisedForTheResource: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .willReturn(aResponse()
-          .withStatus(401)
+          .withStatus(UNAUTHORIZED)
           .withHeader("Content-Length", "0")
           .withHeader("WWW-Authenticate", "MDTP detail=\"InsufficientEnrolments\"")))
 
@@ -513,7 +516,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("Agent"))
         .willReturn(aResponse()
-          .withStatus(401)
+          .withStatus(UNAUTHORIZED)
           .withHeader("Content-Length", "0")
           .withHeader("WWW-Authenticate", "MDTP detail=\"UnsupportedAffinityGroup\"")))
 
@@ -526,14 +529,14 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("HMRC-MTD-IT"))
         .willReturn(aResponse()
-          .withStatus(401)
+          .withStatus(UNAUTHORIZED)
           .withHeader("Content-Length", "0")
           .withHeader("WWW-Authenticate", "MDTP detail=\"InsufficientEnrolments\"")))
 
       // Second call to auth to check affinity is equal to 'Agent' should succeed.
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("Agent"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           """
             |{
             |  "internalId": "some-id",
@@ -561,7 +564,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       // Third call to auth to check FOA subscription status should succeed.
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("HMRC-AS-AGENT"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           """
             |{
             |  "internalId": "some-id",
@@ -594,14 +597,14 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("HMRC-MTD-IT"))
         .willReturn(aResponse()
-          .withStatus(401)
+          .withStatus(UNAUTHORIZED)
           .withHeader("Content-Length", "0")
           .withHeader("WWW-Authenticate", "MDTP detail=\"InsufficientEnrolments\"")))
 
       // Second call to auth to check affinity is equal to 'Agent' should succeed.
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("Agent"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           """
             |{
             |  "internalId": "some-id",
@@ -617,7 +620,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("HMRC-AS-AGENT"))
         .willReturn(aResponse()
-          .withStatus(401)
+          .withStatus(UNAUTHORIZED)
           .withHeader("Content-Length", "0")
           .withHeader("WWW-Authenticate", "MDTP detail=\"InsufficientEnrolments\"")))
 
@@ -630,14 +633,14 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("HMRC-MTD-IT"))
         .willReturn(aResponse()
-          .withStatus(401)
+          .withStatus(UNAUTHORIZED)
           .withHeader("Content-Length", "0")
           .withHeader("WWW-Authenticate", "MDTP detail=\"InsufficientEnrolments\"")))
 
       // Second call to auth to check affinity is equal to 'Agent' should succeed.
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("Agent"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           """
             |{
             |  "internalId": "some-id",
@@ -664,7 +667,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       // Third call to auth to check FOA subscription status should succeed.
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
         .withRequestBody(containing("HMRC-AS-AGENT"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           """
             |{
             |  "internalId": "some-id",
@@ -693,7 +696,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
     def clientIsAuthorisedForTheResourceWithoutCL200: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           s"""
             |{
             |  "internalId": "some-id",
@@ -722,7 +725,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
     def clientIsFullyAuthorisedForTheResource: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           s"""
             |{
             |  "internalId": "some-id",
@@ -752,7 +755,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
     def agentIsFullyAuthorisedForTheResource: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           """
             |{
             |  "internalId": "some-id",
@@ -782,7 +785,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
     def agentIsFullyAuthorisedForTheResourceNoAgentCode: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           """
             |{
             |  "internalId": "some-id",
@@ -811,7 +814,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
     def userIsFullyAuthorisedForTheResource: Givens = {
       stubFor(post(urlPathEqualTo(s"/auth/authorise"))
-        .willReturn(aResponse().withStatus(200).withBody(
+        .willReturn(aResponse().withStatus(OK).withBody(
           """
             |{
             |  "internalId": "some-id",
@@ -827,7 +830,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
     class Des(givens: Givens) {
       def isATeapotFor(nino: Nino): Givens = {
-        stubFor(any(urlMatching(s".*/(calculation-data|nino)/$nino.*"))
+        stubFor(any(urlMatching(s".*/(calculation-data|nino)/${nino.nino}.*"))
           .willReturn(
             aResponse()
               .withStatus(418)))
@@ -837,10 +840,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
       def invalidBusinessIdFor(nino: Nino): Givens = {
         stubFor(
-          any(urlMatching(s".*/nino/$nino.*"))
+          any(urlMatching(s".*/nino/${nino.nino}.*"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.invalidBusinessId)
             ))
@@ -850,10 +853,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
       def invalidOriginatorIdFor(nino: Nino): Givens = {
         stubFor(
-          any(urlMatching(s".*/nino/$nino.*"))
+          any(urlMatching(s".*/nino/${nino.nino}.*"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.invalidOriginatorId)
             ))
@@ -862,10 +865,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       }
 
       def serviceUnavailableFor(nino: Nino): Givens = {
-        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+        stubFor(any(urlMatching(s".*/nino/${nino.nino}.*"))
           .willReturn(
             aResponse()
-              .withStatus(503)
+              .withStatus(SERVICE_UNAVAILABLE)
               .withHeader("Content-Type", "application/json")
               .withBody(DesJsons.Errors.serviceUnavailable)
           ))
@@ -874,10 +877,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       }
 
       def serverErrorFor(nino: Nino): Givens = {
-        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+        stubFor(any(urlMatching(s".*/nino/${nino.nino}.*"))
           .willReturn(
             aResponse()
-              .withStatus(500)
+              .withStatus(INTERNAL_SERVER_ERROR)
               .withHeader("Content-Type", "application/json")
               .withBody(DesJsons.Errors.serverError)
           ))
@@ -886,10 +889,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       }
 
       def ninoNotFoundFor(nino: Nino): Givens = {
-        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+        stubFor(any(urlMatching(s".*/nino/${nino.nino}.*"))
           .willReturn(
             aResponse()
-              .withStatus(404)
+              .withStatus(NOT_FOUND)
               .withHeader("Content-Type", "application/json")
               .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -897,10 +900,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       }
 
       def invalidNinoFor(nino: Nino): Givens = {
-        stubFor(any(urlMatching(s".*/nino/$nino.*"))
+        stubFor(any(urlMatching(s".*/nino/${nino.nino}.*"))
           .willReturn(
             aResponse()
-              .withStatus(400)
+              .withStatus(BAD_REQUEST)
               .withHeader("Content-Type", "application/json")
               .withBody(DesJsons.Errors.invalidNino)))
 
@@ -908,10 +911,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       }
 
       def payloadFailsValidationFor(nino: Nino): Givens = {
-        stubFor(any(urlMatching(s".*/nino/$nino/.*"))
+        stubFor(any(urlMatching(s".*/nino/${nino.nino}/.*"))
           .willReturn(
             aResponse()
-              .withStatus(400)
+              .withStatus(BAD_REQUEST)
               .withHeader("Content-Type", "application/json")
               .withBody(DesJsons.Errors.invalidPayload)))
 
@@ -920,10 +923,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
       object selfEmployment {
         def annualSummaryNotFoundFor(nino: Nino): Givens = {
-          stubFor(any(urlMatching(s".*/income-store/nino/$nino/self-employments/.*"))
+          stubFor(any(urlMatching(s".*/income-store/nino/${nino.nino}/self-employments/.*"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -931,10 +934,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def invalidOriginatorIdFor(nino: Nino): Givens = {
-          stubFor(any(urlMatching(s"/income-store/nino/$nino/self-employments/.*"))
+          stubFor(any(urlMatching(s"/income-store/nino/${nino.nino}/self-employments/.*"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.invalidOriginatorId)
             ))
@@ -943,10 +946,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def tooManySourcesFor(nino: Nino): Givens = {
-          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/${nino.nino}/business"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.tooManySources)
             ))
@@ -955,7 +958,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def failsTradingName(nino: Nino): Givens = {
-          stubFor(any(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+          stubFor(any(urlEqualTo(s"/income-tax-self-assessment/nino/${nino.nino}/business"))
             .willReturn(
               aResponse()
                 .withStatus(409)
@@ -967,20 +970,20 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def willBeCreatedFor(nino: Nino, id: String = "abc", mtdId: String = "123"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/business"))
+          stubFor(post(urlEqualTo(s"/income-tax-self-assessment/nino/${nino.nino}/business"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.createResponse(id, mtdId))))
           givens
         }
 
         def willBeReturnedFor(nino: Nino, mtdId: String = "123", id: String = "abc", accPeriodStart: String = "2017-04-06", accPeriodEnd: String = "2018-04-05"): Givens = {
-          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/${nino.nino}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment(nino, mtdId, id, accPeriodStart = accPeriodStart, accPeriodEnd = accPeriodEnd))))
 
@@ -988,10 +991,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def periodWillBeCreatedFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.Period.createResponse())))
 
@@ -999,10 +1002,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def periodWillBeNotBeCreatedFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.notFound)))
 
@@ -1010,10 +1013,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def periodsWillBeReturnedFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.Period.periods)))
 
@@ -1021,10 +1024,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def invalidPeriodsJsonFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(Json.obj().toString())))
 
@@ -1032,10 +1035,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def periodWillBeReturnedFor(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.Period())))
 
@@ -1043,10 +1046,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def periodWithNegativeBadDebtsWillBeReturnedFor(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.Period.withNegativeBadDebts())))
 
@@ -1054,19 +1057,19 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def periodWillBeUpdatedFor(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
-          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries?from=$from&to=$to"))
+          stubFor(put(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(200)))
+                .withStatus(OK)))
 
           givens
         }
 
         def periodWillNotBeUpdatedFor(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
-          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries?from=$from&to=$to"))
+          stubFor(put(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1074,10 +1077,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def noPeriodFor(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1085,10 +1088,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def invalidDateFrom(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.invalidDateFrom)))
 
@@ -1096,10 +1099,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def invalidDateTo(nino: Nino, id: String = "abc", from: String, to: String): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summary-detail?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.invalidDateTo)))
 
@@ -1107,10 +1110,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def noPeriodsFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.Period.emptyPeriods)))
 
@@ -1118,7 +1121,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def overlappingPeriodFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
                 .withStatus(409)
@@ -1129,7 +1132,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def nonContiguousPeriodFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
                 .withStatus(409)
@@ -1140,7 +1143,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def misalignedPeriodFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
                 .withStatus(409)
@@ -1151,20 +1154,20 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def annualSummaryWillBeUpdatedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
-          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+          stubFor(put(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withBody(DesJsons.SelfEmployment.AnnualSummary.response)))
 
           givens
         }
 
         def annualSummaryWillNotBeUpdatedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
-          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+          stubFor(put(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1172,10 +1175,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def annualSummaryWillNotBeReturnedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1183,10 +1186,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def annualSummaryWillBeReturnedFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.AnnualSummary())))
 
@@ -1194,10 +1197,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def noAnnualSummaryFor(nino: Nino, id: String = "abc", taxYear: TaxYear = TaxYear("2017-18")): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/annual-summaries/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(Json.obj().toString)))
 
@@ -1205,19 +1208,19 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def willBeUpdatedFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(put(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/incomeSourceId/$id/regime/ITSA"))
+          stubFor(put(urlEqualTo(s"/income-tax-self-assessment/nino/${nino.nino}/incomeSourceId/$id/regime/ITSA"))
             .willReturn(
               aResponse()
-                .withStatus(200)))
+                .withStatus(OK)))
 
           givens
         }
 
         def willNotBeUpdatedFor(nino: Nino): Givens = {
-          stubFor(put(urlMatching(s"/income-tax-self-assessment/nino/$nino/business/.*"))
+          stubFor(put(urlMatching(s"/income-tax-self-assessment/nino/${nino.nino}/business/.*"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1225,10 +1228,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def doesNotExistPeriodFor(nino: Nino, id: String = "abc"): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/periodic-summaries"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/periodic-summaries"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1236,10 +1239,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def noneFor(nino: Nino, mtdId: String = "123"): Givens = {
-          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/${nino.nino}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment.emptySelfEmployment(nino, mtdId))))
 
@@ -1247,20 +1250,20 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def noContentTypeFor(nino: Nino, mtdId: String = "123"): Givens = {
-          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/${nino.nino}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withBody(DesJsons.SelfEmployment.emptySelfEmployment(nino, mtdId))))
 
           givens
         }
 
         def incomeIdNotFoundFor(nino: Nino, mtdId: String = "123"): Givens = {
-          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/${nino.nino}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmployment(nino, mtdId, id = "inexistent"))))
 
@@ -1268,10 +1271,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def invalidJson(nino: Nino, mtdId: String = "123"): Givens = {
-          stubFor(get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+          stubFor(get(urlEqualTo(s"/registration/business-details/nino/${nino.nino}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody("""{ "businessData": 1 }""")))
 
@@ -1279,20 +1282,20 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementReadyToBeFinalised(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(204)
+                .withStatus(NO_CONTENT)
                 .withBody("")))
 
           givens
         }
 
         def endOfYearStatementMissingPeriod(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.periodicUpdateMissing)))
 
@@ -1300,10 +1303,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementIsEarly(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.earlySubmission)))
 
@@ -1311,10 +1314,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementIsLate(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.lateSubmission)))
 
@@ -1322,10 +1325,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementDoesNotMatchPeriod(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.nonMatchingPeriod)))
 
@@ -1333,10 +1336,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementAlreadySubmitted(nino: Nino, start: LocalDate, end: LocalDate, id: String = "abc"): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/self-employments/$id/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/self-employments/$id/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.alreadySubmitted)))
 
@@ -1347,31 +1350,31 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
       object crystallisation {
         def intentToCrystallise(nino: Nino, taxYear: TaxYear = TaxYear("2017-18")): Givens = {
-          stubFor(post(urlEqualTo(s"/income-tax/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation?crystallise=true"))
+          stubFor(post(urlEqualTo(s"/income-tax/nino/${nino.nino}/taxYear/${taxYear.toDesTaxYear}/tax-calculation?crystallise=true"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Crystallisation.intentToCrystallise())))
 
           givens
         }
 
-        def intentToCrystalliseRequiredEndOfPeriodStatement(nino: Nino, taxYear: TaxYear) = {
-          stubFor(post(urlEqualTo(s"/income-tax/nino/$nino/taxYear/${taxYear.toDesTaxYear}/tax-calculation?crystallise=true"))
+        def intentToCrystalliseRequiredEndOfPeriodStatement(nino: Nino, taxYear: TaxYear): Givens = {
+          stubFor(post(urlEqualTo(s"/income-tax/nino/${nino.nino}/taxYear/${taxYear.toDesTaxYear}/tax-calculation?crystallise=true"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.requiredEndOfPeriodStatement)))
           givens
         }
 
         def crystallise(nino: Nino, taxYear: TaxYear = TaxYear("2017-18"), calcId: String): Givens = {
-          stubFor(post(urlMatching(s"/income-tax/calculation/nino/$nino/${taxYear.toDesTaxYear}/$calcId/crystallise"))
+          stubFor(post(urlMatching(s"/income-tax/calculation/nino/${nino.nino}/${taxYear.toDesTaxYear}/$calcId/crystallise"))
             .willReturn(
               aResponse()
-                .withStatus(204)
+                .withStatus(NO_CONTENT)
                 .withHeader("Content-Type", "application/json")
                 .withBody(
                   s"""
@@ -1384,7 +1387,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def crystalliseError(nino: Nino, taxYear: TaxYear = TaxYear("2017-18"), calcId: String)(responseStatus: Int, responseBody: String): Givens = {
-          stubFor(post(urlMatching(s"/income-tax/calculation/nino/$nino/${taxYear.toDesTaxYear}/$calcId/crystallise"))
+          stubFor(post(urlMatching(s"/income-tax/calculation/nino/${nino.nino}/${taxYear.toDesTaxYear}/$calcId/crystallise"))
             .willReturn(
               aResponse()
                 .withStatus(responseStatus)
@@ -1397,7 +1400,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
           stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA?from=${taxYear.taxYearFromDate}&to=${taxYear.taxYearToDate}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Obligations.crystallisationObligations(nino.nino, taxYear))))
           givens
@@ -1406,10 +1409,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
       object obligations {
         def obligationNotFoundFor(nino: Nino): Givens = {
-          stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/$nino/ITSA?${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
+          stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA?${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.notFound)))
 
@@ -1417,10 +1420,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def returnObligationsFor(nino: Nino): Givens = {
-          stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/$nino/ITSA?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
+          stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withHeader("CorrelationId", "abc")
                 .withBody(DesJsons.Obligations())))
@@ -1429,10 +1432,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def returnObligationsWithNoIdentificationFor(nino: Nino): Givens = {
-          stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/$nino/ITSA?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
+          stubFor(get(urlEqualTo(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withHeader("CorrelationId", "abc")
                 .withBody(DesJsons.Obligations.obligationsNoIdentification)))
@@ -1440,10 +1443,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def returnEopsObligationsWithNoIdentificationFor(nino: Nino): Givens = {
-          stubFor(get(urlMatching(s"/enterprise/obligation-data/nino/$nino/ITSA.*"))
+          stubFor(get(urlMatching(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA.*"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withHeader("CorrelationId", "abc")
                 .withBody(DesJsons.Obligations.obligationsNoIdentification)))
@@ -1452,17 +1455,17 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
 
         def returnEndOfPeriodObligationsFor(nino: Nino, refNo: String): Givens = {
-          stubFor(get(urlMatching(s"/enterprise/obligation-data/nino/$nino/ITSA.*"))
+          stubFor(get(urlMatching(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA.*"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withHeader("CorrelationId", "abc")
                 .withBody(DesJsons.Obligations.eopsObligations(refNo))))
           givens
         }
 
-        def returnEopsObligationsErrorFor(nino: Nino, refNo: String)(status: Int, body: String): Givens = {
+        def returnEopsObligationsErrorFor(nino: Nino)(status: Int, body: String): Givens = {
 
           def error(code: String): String = {
             s"""
@@ -1473,7 +1476,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
             """.stripMargin
           }
 
-          stubFor(get(urlMatching(s"/enterprise/obligation-data/nino/$nino/ITSA.*"))
+          stubFor(get(urlMatching(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA.*"))
             .willReturn(
               aResponse()
                 .withStatus(status)
@@ -1485,11 +1488,11 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def receivesObligationsTestHeader(nino: Nino, headerValue: String): Givens = {
           stubFor(
-            get(urlEqualTo(s"/enterprise/obligation-data/nino/$nino/ITSA?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
+            get(urlEqualTo(s"/enterprise/obligation-data/nino/${nino.nino}/ITSA?from=${ObligationsQueryParams().from}&to=${ObligationsQueryParams().to}"))
               .withHeader("Gov-Test-Scenario", matching(headerValue))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withHeader("CorrelationId", "abc")
                   .withBody(DesJsons.Obligations())))
@@ -1502,10 +1505,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def willBeCreatedFor(nino: Nino): Givens = {
           stubFor(
-            post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/properties"))
+            post(urlEqualTo(s"/income-tax-self-assessment/nino/${nino.nino}/properties"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Properties.createResponse)))
           givens
@@ -1513,10 +1516,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def willConflict(nino: Nino): Givens = {
           stubFor(
-            post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/properties"))
+            post(urlEqualTo(s"/income-tax-self-assessment/nino/${nino.nino}/properties"))
               .willReturn(
                 aResponse()
-                  .withStatus(403)
+                  .withStatus(FORBIDDEN)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.propertyConflict)
               ))
@@ -1525,10 +1528,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def notFoundIncomeSourceFor(nino: Nino): Givens = {
           stubFor(
-            post(urlEqualTo(s"/income-tax-self-assessment/nino/$nino/properties"))
+            post(urlEqualTo(s"/income-tax-self-assessment/nino/${nino.nino}/properties"))
               .willReturn(
                 aResponse()
-                  .withStatus(404)
+                  .withStatus(NOT_FOUND)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.notFoundIncomeSource)
               ))
@@ -1537,10 +1540,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def willBeReturnedFor(nino: Nino): Givens = {
           stubFor(
-            get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+            get(urlEqualTo(s"/registration/business-details/nino/${nino.nino}"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Properties.retrieveProperty)))
           givens
@@ -1548,10 +1551,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def willReturnNone(nino: Nino): Givens = {
           stubFor(
-            get(urlEqualTo(s"/registration/business-details/nino/$nino"))
+            get(urlEqualTo(s"/registration/business-details/nino/${nino.nino}"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Properties.retrieveNoProperty)))
           givens
@@ -1559,10 +1562,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def returnObligationsFor(nino: Nino, id: String = "abc"): Givens = {
           stubFor(
-            get(urlEqualTo(s"/ni/$nino/self-employments/$id/obligations"))
+            get(urlEqualTo(s"/ni/${nino.nino}/self-employments/$id/obligations"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Obligations())))
 
@@ -1574,9 +1577,9 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
                                           taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(
             put(urlEqualTo(
-              s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
+              s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
               .willReturn(aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withBody(DesJsons.Properties.AnnualSummary.response)))
 
           givens
@@ -1587,10 +1590,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
                                                                 taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(
             any(urlEqualTo(
-              s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
+              s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
               .willReturn(
                 aResponse()
-                  .withStatus(404)
+                  .withStatus(NOT_FOUND)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.notFoundProperty)))
 
@@ -1602,10 +1605,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
                                               taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(
             any(urlEqualTo(
-              s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
+              s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
               .willReturn(
                 aResponse()
-                  .withStatus(404)
+                  .withStatus(NOT_FOUND)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1617,10 +1620,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
                                                               taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(
             any(urlEqualTo(
-              s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
+              s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
               .willReturn(
                 aResponse()
-                  .withStatus(404)
+                  .withStatus(NOT_FOUND)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.notFoundPeriod)))
 
@@ -1633,10 +1636,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
                                            response: String = ""): Givens = {
           stubFor(
             get(urlEqualTo(
-              s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
+              s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(response)))
 
@@ -1646,10 +1649,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         def noAnnualSummaryFor(nino: Nino, propertyType: PropertyType, taxYear: TaxYear = TaxYear("2017-18")): Givens = {
           stubFor(
             get(urlEqualTo(
-              s"/income-store/nino/$nino/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
+              s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/annual-summaries/${taxYear.toDesTaxYear}"))
               .willReturn(
                 aResponse()
-                  .withStatus(404)
+                  .withStatus(NOT_FOUND)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.notFoundProperty)))
 
@@ -1658,10 +1661,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def periodWillBeCreatedFor(nino: Nino, propertyType: PropertyType): Givens = {
           stubFor(
-            post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Properties.Period.createResponse())))
 
@@ -1670,7 +1673,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def overlappingPeriodFor(nino: Nino, propertyType: PropertyType): Givens = {
           stubFor(
-            post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
                   .withStatus(409)
@@ -1681,7 +1684,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def misalignedPeriodFor(nino: Nino, propertyType: PropertyType): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
             .willReturn(
               aResponse()
                 .withStatus(409)
@@ -1693,10 +1696,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def periodWillBeNotBeCreatedFor(nino: Nino, propertyType: PropertyType): Givens = {
           stubFor(
-            post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
-                  .withStatus(404)
+                  .withStatus(NOT_FOUND)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.notFound)))
 
@@ -1705,7 +1708,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def propertyPeriodPostError(nino: Nino, propertyType: PropertyType)(status: Int, code: String): Givens = {
           stubFor(
-            post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
                   .withStatus(status)
@@ -1716,10 +1719,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def periodsWillBeReturnedFor(nino: Nino, propertyType: PropertyType): Givens = {
           stubFor(
-            get(urlEqualTo(s"/income-tax/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            get(urlEqualTo(s"/income-tax/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Properties.Period.periodsSummary)))
 
@@ -1735,10 +1738,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
                |}""".stripMargin
 
           stubFor(
-            get(urlEqualTo(s"/income-tax/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            get(urlEqualTo(s"/income-tax/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(emptyPeriodJson)))
 
@@ -1747,10 +1750,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def invalidPeriodsJsonFor(nino: Nino, propertyType: PropertyType): Givens = {
           stubFor(
-            get(urlEqualTo(s"/income-tax/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            get(urlEqualTo(s"/income-tax/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
-                  .withStatus(200)
+                  .withStatus(OK)
                   .withHeader("Content-Type", "application/json")
                   .withBody(Json.obj().toString)))
 
@@ -1761,10 +1764,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
           periodId match {
             case Period(from, to) =>
               stubFor(
-                get(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to"))
+                get(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to"))
                   .willReturn(
                     aResponse()
-                      .withStatus(404)
+                      .withStatus(NOT_FOUND)
                       .withHeader("Content-Type", "application/json")
                       .withBody(DesJsons.Errors.ninoNotFound)))
               givens
@@ -1774,10 +1777,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def noPeriodsFor(nino: Nino, propertyType: PropertyType): Givens = {
           stubFor(
-            get(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            get(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
-                  .withStatus(404)
+                  .withStatus(NOT_FOUND)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.notFoundProperty)))
 
@@ -1788,10 +1791,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
           periodId match {
             case Period(from, to) =>
               stubFor(
-                get(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to"))
+                get(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to"))
                   .willReturn(
                     aResponse()
-                      .withStatus(400)
+                      .withStatus(BAD_REQUEST)
                       .withHeader("Content-Type", "application/json")
                       .withBody(DesJsons.Errors.invalidDateFrom)))
               givens
@@ -1803,10 +1806,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
           periodId match {
             case Period(from, to) =>
               stubFor(
-                get(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to"))
+                get(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summary-detail?from=$from&to=$to"))
                   .willReturn(
                     aResponse()
-                      .withStatus(400)
+                      .withStatus(BAD_REQUEST)
                       .withHeader("Content-Type", "application/json")
                       .withBody(DesJsons.Errors.invalidDateTo)))
               givens
@@ -1816,10 +1819,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def doesNotExistPeriodFor(nino: Nino, propertyType: PropertyType): Givens = {
           stubFor(
-            get(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            get(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
-                  .withStatus(404)
+                  .withStatus(NOT_FOUND)
                   .withHeader("Content-Type", "application/json")
                   .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1827,28 +1830,28 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def periodWillBeUpdatedFor(nino: Nino, propertyType: PropertyType, from: String = "2017-04-06", to: String = "2018-04-05"): Givens = {
-          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
+          stubFor(put(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(200)))
+                .withStatus(OK)))
 
           givens
         }
 
         def periodWillNotBeUpdatedFor(nino: Nino, propertyType: PropertyType, from: String = "2017-04-06", to: String = "2018-04-05"): Givens = {
-          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
+          stubFor(put(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(404)))
+                .withStatus(NOT_FOUND)))
 
           givens
         }
 
         def invalidPeriodUpdateFor(nino: Nino, propertyType: PropertyType, from: String = "2017-04-06", to: String = "2018-04-05"): Givens = {
-          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
+          stubFor(put(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.invalidPeriod)))
 
@@ -1857,7 +1860,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def amendPropertyUpdateError(nino: Nino, propertyType: PropertyType, from: String = "2017-04-06", to: String = "2018-04-05")
                                     (status: Int, code: String): Givens = {
-          stubFor(put(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
+          stubFor(put(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
             .willReturn(
               aResponse()
                 .withStatus(status)
@@ -1870,7 +1873,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def createWithNotAllowedConsolidatedExpenses(nino: Nino, propertyType: PropertyType): Givens = {
           stubFor(
-            post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries"))
+            post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries"))
               .willReturn(
                 aResponse()
                   .withStatus(409)
@@ -1882,7 +1885,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
         def updateWithNotAllowedConsolidatedExpenses(nino: Nino, propertyType: PropertyType, from: String = "2017-04-06", to: String = "2018-04-05"): Givens = {
           stubFor(
-            put(urlEqualTo(s"/income-store/nino/$nino/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
+            put(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/$propertyType/periodic-summaries?from=$from&to=$to"))
               .willReturn(
                 aResponse()
                   .withStatus(409)
@@ -1893,20 +1896,20 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementReadyToBeFinalised(nino: Nino, start: LocalDate, end: LocalDate): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(204)
+                .withStatus(NO_CONTENT)
                 .withBody("")))
 
           givens
         }
 
         def endOfYearStatementMissingPeriod(nino: Nino, start: LocalDate, end: LocalDate): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.periodicUpdateMissing)))
 
@@ -1914,10 +1917,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementIsEarly(nino: Nino, start: LocalDate, end: LocalDate): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(400)
+                .withStatus(BAD_REQUEST)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.earlySubmission)))
 
@@ -1925,10 +1928,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementIsLate(nino: Nino, start: LocalDate, end: LocalDate): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.lateSubmission)))
 
@@ -1936,10 +1939,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementDoesNotMatchPeriod(nino: Nino, start: LocalDate, end: LocalDate): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.nonMatchingPeriod)))
 
@@ -1947,10 +1950,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def endOfYearStatementAlreadySubmitted(nino: Nino, start: LocalDate, end: LocalDate): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/uk-properties/accounting-periods/${start}_${end}/statement"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/uk-properties/accounting-periods/${start}_$end/statement"))
             .willReturn(
               aResponse()
-                .withStatus(403)
+                .withStatus(FORBIDDEN)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.alreadySubmitted)))
 
@@ -1962,19 +1965,19 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
       object GiftAid {
 
         def updatePayments(nino: Nino, taxYear: TaxYear): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/charitable-giving/${taxYear.toDesTaxYear}"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/charitable-giving/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(204)
+                .withStatus(NO_CONTENT)
                 .withBody("")))
           givens
         }
 
         def updatePaymentsWithNinoNotAvailable(nino: Nino, taxYear: TaxYear): Givens = {
-          stubFor(post(urlEqualTo(s"/income-store/nino/$nino/charitable-giving/${taxYear.toDesTaxYear}"))
+          stubFor(post(urlEqualTo(s"/income-store/nino/${nino.nino}/charitable-giving/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -1982,10 +1985,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def retrievePayments(nino: Nino, taxYear: TaxYear): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/charitable-giving/${taxYear.toDesTaxYear}"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/charitable-giving/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.CharitableGivings())))
 
@@ -1993,10 +1996,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def retrievePaymentsWithInvalidNino(nino: Nino, taxYear: TaxYear): Givens = {
-          stubFor(get(urlEqualTo(s"/income-store/nino/$nino/charitable-giving/${taxYear.toDesTaxYear}"))
+          stubFor(get(urlEqualTo(s"/income-store/nino/${nino.nino}/charitable-giving/${taxYear.toDesTaxYear}"))
             .willReturn(
               aResponse()
-                .withStatus(404)
+                .withStatus(NOT_FOUND)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.Errors.ninoNotFound)))
 
@@ -2006,10 +2009,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
       object PropertiesBISS {
         def getSummary(nino: Nino, taxYear: TaxYear): Givens = {
-          stubFor(get(urlEqualTo(s"/income-tax/income-sources/nino/$nino/uk-property/${taxYear.toDesTaxYear}/biss"))
+          stubFor(get(urlEqualTo(s"/income-tax/income-sources/nino/${nino.nino}/uk-property/${taxYear.toDesTaxYear}/biss"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.PropertiesBISS.summary)))
 
@@ -2017,7 +2020,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def getSummaryErrorResponse(nino: Nino, taxYear: TaxYear, status: Int, errorCode: String): Givens = {
-          stubFor(get(urlEqualTo(s"/income-tax/income-sources/nino/$nino/uk-property/${taxYear.toDesTaxYear}/biss"))
+          stubFor(get(urlEqualTo(s"/income-tax/income-sources/nino/${nino.nino}/uk-property/${taxYear.toDesTaxYear}/biss"))
             .willReturn(
               aResponse()
                 .withStatus(status)
@@ -2030,10 +2033,10 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
       object SelfEmploymentBISS {
         def getSummary(nino: Nino, taxYear: TaxYear, id: String): Givens = {
-          stubFor(get(urlEqualTo(s"/income-tax/income-sources/nino/$nino/self-employment/${taxYear.toDesTaxYear}/biss?incomesourceid=$id"))
+          stubFor(get(urlEqualTo(s"/income-tax/income-sources/nino/${nino.nino}/self-employment/${taxYear.toDesTaxYear}/biss?incomesourceid=$id"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(OK)
                 .withHeader("Content-Type", "application/json")
                 .withBody(DesJsons.SelfEmploymentBISS.summary)))
 
@@ -2041,7 +2044,7 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
         }
 
         def getSummaryErrorResponse(nino: Nino, taxYear: TaxYear, id: String, status: Int, errorCode: String): Givens = {
-          stubFor(get(urlEqualTo(s"/income-tax/income-sources/nino/$nino/self-employment/${taxYear.toDesTaxYear}/biss?incomesourceid=$id"))
+          stubFor(get(urlEqualTo(s"/income-tax/income-sources/nino/${nino.nino}/self-employment/${taxYear.toDesTaxYear}/biss?incomesourceid=$id"))
             .willReturn(
               aResponse()
                 .withStatus(status)
@@ -2058,8 +2061,8 @@ trait BaseFunctionalSpec extends TestApplication with HttpComponent {
 
   }
 
-  def given() = new Givens()
+  def given(): Givens = new Givens()
 
-  def when() = new HttpVerbs()
+  def when(): HttpVerbs = new HttpVerbs()
 
 }

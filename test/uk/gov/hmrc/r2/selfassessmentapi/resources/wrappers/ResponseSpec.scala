@@ -40,19 +40,19 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
       new Response {
         override val status: Int = 409
 
-        override def underlying: HttpResponse = HttpResponse(status)
+        override def underlying: HttpResponse = HttpResponse(status, "")
       }.filter {
         case _ => Conflict
       } shouldBe BadRequest(Json.toJson(Errors.InvalidRequest))
     }
 
     "return the response unmodified if it contains a non-4xx error and the user is a FOA" in {
-      implicit val authReq =
+      implicit val authReq: AuthRequest[JsValue] =
         new AuthRequest[JsValue](FilingOnlyAgent(Some("agentCode"), Some("agentReference")), fakeRequest)
 
       val result = new Response {
         override val status = 200
-        override def underlying = HttpResponse(status, responseHeaders = Map("CorrelationId" -> Seq("7777777")))
+        override def underlying: HttpResponse = HttpResponse(status, "", headers = Map("CorrelationId" -> Seq("7777777")))
       }.filter {
         case _ => Ok
       }
@@ -65,7 +65,7 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
       new Response {
         override val status: Int = 409
 
-        override def underlying: HttpResponse = HttpResponse(status)
+        override def underlying: HttpResponse = HttpResponse(status, "")
       }.filter {
         case _ => Conflict
       } shouldBe Conflict
@@ -109,7 +109,7 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
       )
 
     "map DES error codes to SA API error codes" in {
-      implicit val authReq = new AuthRequest[JsValue](Individual, fakeRequest)
+      implicit val authReq: AuthRequest[JsValue] = new AuthRequest[JsValue](Individual, fakeRequest)
 
       def assertMapping(httpCode: Int, desErrCode: Option[DesErrorCode], apiErr: Result): Unit =
         new Response {
@@ -117,27 +117,30 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
           override def underlying: HttpResponse =
             HttpResponse(
               status,
-              Some(Json.parse(s"""
+              Json.parse(s"""
                                         |{
                                         |  "code": "${desErrCode.getOrElse("")}",
                                         |  "reason": ""
                                         |}
-                            """.stripMargin))
+                            """.stripMargin),
+              Map[String, Seq[String]]()
             )
         }.filter(PartialFunction.empty) shouldBe apiErr
 
       forAll(errorMappings) { (httpCode, desErrs, apiErr) =>
-        if (desErrs.isEmpty)
+        if (desErrs.isEmpty) {
           assertMapping(httpCode, None, apiErr)
-        else
+        }
+        else {
           desErrs.foreach { desErr =>
             assertMapping(httpCode, Some(desErr), apiErr)
           }
+        }
       }
     }
 
     "return Forbidden with a list of errors if the response contains a 409 with multiple period validation errors" in {
-      implicit val authReq = new AuthRequest[JsValue](Agent(Some("agentCode"), Some("agentReference")), fakeRequest)
+      implicit val authReq: AuthRequest[JsValue] = new AuthRequest[JsValue](Agent(Some("agentCode"), Some("agentReference")), fakeRequest)
 
       new Response {
         override val status: Int = 409
@@ -145,7 +148,7 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
         override def underlying: HttpResponse =
           HttpResponse(
             status,
-            Some(Json.parse(s"""
+            Json.parse(s"""
                              |{
                              |  "failures": [
                                |              {
@@ -158,7 +161,8 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
                                |              }
                              |              ]
                              |}
-                            """.stripMargin))
+                            """.stripMargin),
+            Map[String, Seq[String]]()
           )
       }.filter(PartialFunction.empty) shouldBe Forbidden(
         Json.toJson(Errors.businessError(Seq(Errors.NotContiguousPeriod, Errors.MisalignedPeriod))))

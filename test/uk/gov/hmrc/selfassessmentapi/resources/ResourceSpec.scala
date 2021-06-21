@@ -27,7 +27,7 @@ import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.mvc.ControllerComponents
 import play.api.test.Helpers.stubControllerComponents
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, ResultExtractors}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.TestUtils
 import uk.gov.hmrc.selfassessmentapi.mocks.auth.MockAuthorisationService
 import uk.gov.hmrc.selfassessmentapi.mocks.config.MockAppContext

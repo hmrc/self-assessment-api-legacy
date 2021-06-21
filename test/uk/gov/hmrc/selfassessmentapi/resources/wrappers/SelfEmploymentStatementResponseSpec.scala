@@ -92,7 +92,7 @@ class SelfEmploymentStatementResponseSpec extends UnitSpec {
   "SelfEmploymentsStatementResponse" when {
     "obligation details are returned with an open EOPS obligation" should {
       "wrap valid response" in {
-        val response = SelfEmploymentStatementResponse(HttpResponse(200, Some(desOpenObligationJson)))
+        val response = SelfEmploymentStatementResponse(HttpResponse(200, desOpenObligationJson, Map[String, Seq[String]]()))
 
         val eops = response.retrieveEOPSObligation(identifier = nino)
         eops.right.get shouldBe
@@ -114,7 +114,7 @@ class SelfEmploymentStatementResponseSpec extends UnitSpec {
 
     "obligation details are returned with a fulfilled EOPS obligation" should {
       "wrap valid response" in {
-        val response = SelfEmploymentStatementResponse(HttpResponse(200, Some(desFulfilledObligationJson)))
+        val response = SelfEmploymentStatementResponse(HttpResponse(200, desFulfilledObligationJson, Map[String, Seq[String]]()))
 
         val eops = response.retrieveEOPSObligation(identifier = nino)
         eops.right.get shouldBe
@@ -158,7 +158,7 @@ class SelfEmploymentStatementResponseSpec extends UnitSpec {
              | ]
              |}
            """.stripMargin
-        val response = SelfEmploymentStatementResponse(HttpResponse(200, Some(Json.parse(noEopsObligations))))
+        val response = SelfEmploymentStatementResponse(HttpResponse(200, Json.parse(noEopsObligations), Map[String, Seq[String]]()))
         val eops = response.retrieveEOPSObligation(identifier = nino)
         eops.right.get shouldBe None
       }
@@ -188,7 +188,7 @@ class SelfEmploymentStatementResponseSpec extends UnitSpec {
              | ]
              |}
           """.stripMargin
-        val response = SelfEmploymentStatementResponse(HttpResponse(200, Some(Json.parse(badEops))))
+        val response = SelfEmploymentStatementResponse(HttpResponse(200, Json.parse(badEops), Map[String, Seq[String]]()))
         val eops = response.retrieveEOPSObligation(identifier = nino)
         eops.right.get shouldBe None
       }
@@ -218,7 +218,7 @@ class SelfEmploymentStatementResponseSpec extends UnitSpec {
              | ]
              |}
           """.stripMargin
-        val response = SelfEmploymentStatementResponse(HttpResponse(200, Some(Json.parse(badEops))))
+        val response = SelfEmploymentStatementResponse(HttpResponse(200, Json.parse(badEops), Map[String, Seq[String]]()))
         val eops = response.retrieveEOPSObligation(identifier = nino)
         eops.right.get shouldBe None
       }
@@ -248,7 +248,7 @@ class SelfEmploymentStatementResponseSpec extends UnitSpec {
              | ]
              |}
           """.stripMargin
-        val response = SelfEmploymentStatementResponse(HttpResponse(200, Some(Json.parse(badEops))))
+        val response = SelfEmploymentStatementResponse(HttpResponse(200, Json.parse(badEops), Map[String, Seq[String]]()))
         val eops = response.retrieveEOPSObligation(identifier = nino)
         eops.left.get shouldBe a [InvalidDateError]
       }

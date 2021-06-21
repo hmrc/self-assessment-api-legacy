@@ -44,13 +44,13 @@
 
     <logger name="uk.gov" level="INFO"/>
 
-    <logger name="application" level="WARN"/>
+    <logger name="application" level="INFO"/>
     <logger name="reactivemongo-akka.actor" level="OFF"/>
 
     <logger name="reactivemongo" level="OFF"/>
 
     <root level="INFO">
-        <appender-ref ref="ASYNC_FILE"/>
-        <appender-ref ref="ASYNC_STDOUT"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

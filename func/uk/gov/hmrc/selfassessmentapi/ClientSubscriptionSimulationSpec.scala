@@ -28,7 +28,7 @@ class ClientSubscriptionSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .get(s"/ni/$nino/self-employments")
+        .get(s"/ni/${nino.nino}/self-employments")
         .withHeaders(GovTestScenarioHeader, "CLIENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(403)
@@ -42,7 +42,7 @@ class ClientSubscriptionSimulationSpec extends BaseFunctionalSpec {
         .userIsSubscribedToMtdFor(nino)
         .clientIsFullyAuthorisedForTheResource
         .when()
-        .post(s"/ni/$nino/dividends/$taxYear")
+        .post(s"/ni/${nino.nino}/dividends/$taxYear")
         .withHeaders(GovTestScenarioHeader, "CLIENT_NOT_SUBSCRIBED")
         .thenAssertThat()
         .statusIs(403)

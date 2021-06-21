@@ -21,51 +21,27 @@ import sbt._
 object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
-    ws exclude("org.apache.httpcomponents", "httpclient") exclude("org.apache.httpcomponents", "httpcore"),
-
-    "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.23.0-play-26",
-    "uk.gov.hmrc"       %% "bootstrap-play-26"    % "1.3.0",
-    "uk.gov.hmrc"       %% "domain"               % "5.9.0-play-26",
-    "com.typesafe.play" %% "play-json-joda"       % "2.6.0",
-    "uk.gov.hmrc"       %% "play-hmrc-api"        % "4.1.0-play-26",
-    "org.typelevel"     %% "cats-core"            % "2.2.0",
-    compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.6.0" cross CrossVersion.full),
-    "com.github.ghik"   % "silencer-lib"          % "1.6.0" % Provided cross CrossVersion.full
+    ws,
+    "uk.gov.hmrc"       %% "simple-reactivemongo"      % "8.0.0-play-28",
+    "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % "5.3.0",
+    "com.typesafe.play" %% "play-json-joda"            % "2.9.2",
+    "uk.gov.hmrc"       %% "play-hmrc-api"             % "6.4.0-play-28",
+    "org.typelevel"     %% "cats-core"                 % "2.6.1"
   )
 
   def test(scope: String = "test, func"): Seq[ModuleID] = Seq(
-    "org.scalatest"          %% "scalatest"                 % "3.2.2"             % scope,
-    "com.typesafe.play"      %% "play-test"                 % PlayVersion.current % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play"        % "3.1.2"             % scope,
-    "com.github.tomakehurst" %  "wiremock"                  % "2.27.2"            % scope,
-    "de.flapdoodle.embed"    %  "de.flapdoodle.embed.mongo" % "2.2.0"             % scope,
-    "org.mongodb"            %% "casbah"                    % "3.1.1"             % scope,
-    "org.scalacheck"         %% "scalacheck"                % "1.14.3"            % scope,
-    "org.scalatestplus"      %% "scalatestplus-mockito"     % "1.0.0-M2"          % scope,
-    "com.vladsch.flexmark"   %  "flexmark-all"              % "0.35.10"           % scope,
-    "org.skyscreamer"        %  "jsonassert"                % "1.5.0"             % scope,
-    "com.jayway.restassured" %  "rest-assured"              % "2.9.0"             % scope,
-    "org.mockito"            %  "mockito-core"              % "3.5.13"             % scope
+    "org.scalatest"          %% "scalatest"                % "3.2.9"             % scope,
+    "com.typesafe.play"      %% "play-test"                % PlayVersion.current % scope,
+    "org.scalatestplus.play" %% "scalatestplus-play"       % "5.1.0"             % scope,
+    "com.github.tomakehurst" % "wiremock-jre8"             % "2.27.2"            % scope,
+    "de.flapdoodle.embed"    % "de.flapdoodle.embed.mongo" % "2.2.0"             % scope,
+    "org.mongodb"            %% "casbah"                   % "3.1.1"             % scope,
+    "org.scalacheck"         %% "scalacheck"               % "1.15.4"            % scope,
+    "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"          % scope,
+    "com.vladsch.flexmark"   % "flexmark-all"              % "0.36.8"            % scope,
+    "org.skyscreamer"        % "jsonassert"                % "1.5.0"             % scope,
+    "org.mockito"            % "mockito-core"              % "3.5.13"            % scope,
+    "io.rest-assured"        % "rest-assured"              % "4.4.0"             % scope,
+    "org.scalamock"          %% "scalamock"                % "5.1.0"              % scope
   )
-
-  // Fixes a transitive dependency clash between wiremock and scalatestplus-play
-  val overrides: Seq[ModuleID] = {
-    val jettyFromWiremockVersion = "9.2.24.v20180105"
-    Seq(
-      "org.eclipse.jetty" % "jetty-client" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-continuation" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-http" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-io" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-security" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-server" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-servlet" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-servlets" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-util" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-webapp" % jettyFromWiremockVersion,
-      "org.eclipse.jetty" % "jetty-xml" % jettyFromWiremockVersion,
-      "org.eclipse.jetty.websocket" % "websocket-api" % jettyFromWiremockVersion,
-      "org.eclipse.jetty.websocket" % "websocket-client" % jettyFromWiremockVersion,
-      "org.eclipse.jetty.websocket" % "websocket-common" % jettyFromWiremockVersion
-    )
-  }
 }

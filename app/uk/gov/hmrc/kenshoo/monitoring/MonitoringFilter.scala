@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.kenshoo.monitoring
 
-import play.api.Logger
 import play.api.mvc.{Filter, RequestHeader, Result}
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MonitoringFilter extends Filter with HttpAPIMonitor {
+trait MonitoringFilter extends Filter with HttpAPIMonitor with Logging {
 
   implicit val ec: ExecutionContext
 
@@ -37,7 +37,7 @@ trait MonitoringFilter extends Filter with HttpAPIMonitor {
   override def apply(nextFilter: (RequestHeader) => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
     apiName(requestHeader.uri, requestHeader.method) match {
       case None =>
-        Logger.debug(s"API-Not-Monitored: ${requestHeader.method}-${requestHeader.uri}")
+        logger.debug(s"API-Not-Monitored: ${requestHeader.method}-${requestHeader.uri}")
         nextFilter(requestHeader)
       case Some(name) =>
         monitor(name) {

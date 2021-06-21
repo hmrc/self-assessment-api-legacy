@@ -19,9 +19,9 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import javax.inject.Inject
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
-import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType, TaxYear}
+import uk.gov.hmrc.selfassessmentapi.models.{Errors, SourceType}
 import uk.gov.hmrc.selfassessmentapi.services.AuthorisationService
 
 import scala.concurrent.ExecutionContext
@@ -35,7 +35,7 @@ class PropertiesBISSResource @Inject()(
 
   def getSummary(nino: Nino, taxYear: TaxYear): Action[AnyContent] =
     APIAction(nino, SourceType.Properties, Some("BISS")) {
-        logger.debug(s"[PropertiesBISSResource][getSummary] Get BISS for NI number : $nino")
+        logger.info(s"[PropertiesBISSResource][getSummary] Get BISS for NI number : $nino")
         logger.warn(message = "[PropertiesBISSResource][getSummary] - Using deprecated resource.  Should be using BISS API")
         Gone(toJson(Errors.ResourceGone))
     }

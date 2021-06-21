@@ -19,7 +19,7 @@ package uk.gov.hmrc.r2.selfassessmentapi.config
 import play.api.Configuration
 import uk.gov.hmrc.r2.selfassessmentapi.models.SourceType.SourceType
 
-case class FeatureSwitch(value: Option[Configuration], env: String) {
+case class FeatureSwitch(value: Option[Configuration]) {
   val DEFAULT_VALUE = true
 
   def isEnabled(sourceType: SourceType, summary: Option[String]): Boolean = value match {

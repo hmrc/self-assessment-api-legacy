@@ -21,10 +21,12 @@ import java.util.Locale
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.mvc.{PathBindable, QueryStringBindable}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.r2.selfassessmentapi.models.properties
+import uk.gov.hmrc.selfassessmentapi.models.SourceType
 import uk.gov.hmrc.selfassessmentapi.models.SourceType.SourceType
-import uk.gov.hmrc.selfassessmentapi.models.{SourceType, TaxYear}
-import uk.gov.hmrc.selfassessmentapi.resources.utils.{ObligationQueryParams, EopsObligationQueryParams}
+import uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType
+import uk.gov.hmrc.selfassessmentapi.resources.utils.{EopsObligationQueryParams, ObligationQueryParams}
+import uk.gov.hmrc.utils.{Nino, TaxYear}
 
 import scala.util.{Failure, Success, Try}
 
@@ -36,7 +38,7 @@ object Binders {
     "(0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]" +
     "02[-](0[1-9]|1[0-9]|2[0-8])))$"
 
-  implicit def ninoBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[Nino] {
+  implicit def ninoBinder(implicit stringBinder: PathBindable[String]): PathBindable[Nino] = new PathBindable[Nino] {
     val desNinoRegex = "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]?$"
 
     def unbind(key: String, nino: Nino): String = stringBinder.unbind(key, nino.value)
@@ -52,7 +54,7 @@ object Binders {
     }
   }
 
-  implicit def taxYearBinder(implicit stringBinder: PathBindable[String]) = new PathBindable[uk.gov.hmrc.selfassessmentapi.models.TaxYear] {
+  implicit def taxYearBinder(implicit stringBinder: PathBindable[String]): PathBindable[TaxYear] = new PathBindable[TaxYear] {
 
     def unbind(key: String, taxYear: TaxYear): String = stringBinder.unbind(key, taxYear.value)
 
@@ -64,20 +66,8 @@ object Binders {
     }
   }
 
-  implicit def taxYearBinderR2(implicit stringBinder: PathBindable[String]) = new PathBindable[uk.gov.hmrc.r2.selfassessmentapi.models.TaxYear] {
 
-    def unbind(key: String, taxYear: uk.gov.hmrc.r2.selfassessmentapi.models.TaxYear): String = stringBinder.unbind(key, taxYear.value)
-
-    def bind(key: String, value: String): Either[String, uk.gov.hmrc.r2.selfassessmentapi.models.TaxYear] = {
-      uk.gov.hmrc.r2.selfassessmentapi.models.TaxYear.createTaxYear(value) match {
-        case Some(taxYear) => Right(taxYear)
-        case None => Left("ERROR_TAX_YEAR_INVALID")
-      }
-    }
-  }
-
-
-  implicit val sourceTypeBinder = new PathBindable[SourceType] {
+  implicit val sourceTypeBinder: PathBindable[SourceType] = new PathBindable[SourceType] {
 
     def unbind(key: String, `type`: SourceType): String = `type`.toString
 
@@ -89,7 +79,7 @@ object Binders {
     }
   }
 
-  implicit val r2PropertyTypeBinder = new PathBindable[uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType] {
+  implicit val r2PropertyTypeBinder: PathBindable[properties.PropertyType.PropertyType] with Object {} = new PathBindable[uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType] {
 
     override def unbind(key: String, value: uk.gov.hmrc.r2.selfassessmentapi.models.properties.PropertyType.PropertyType): String = value.toString
 
@@ -101,7 +91,7 @@ object Binders {
     }
   }
 
-  implicit val propertyTypeBinder = new PathBindable[uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType] {
+  implicit val propertyTypeBinder: PathBindable[PropertyType.PropertyType] = new PathBindable[uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType] {
 
     override def unbind(key: String, value: uk.gov.hmrc.selfassessmentapi.models.properties.PropertyType.PropertyType): String = value.toString
 
@@ -114,7 +104,7 @@ object Binders {
   }
   val format: String = "yyy-MM-dd"
 
-  implicit val datePathBinder = new PathBindable[LocalDate] {
+  implicit val datePathBinder: PathBindable[LocalDate] = new PathBindable[LocalDate] {
 
     override def unbind(key: String, date: LocalDate): String = date.toString
 
@@ -143,10 +133,10 @@ object Binders {
     }
   }
 
-  implicit def eopsObligationQueryParamsBinder(implicit stringBinder: QueryStringBindable[String]) =
+  implicit def eopsObligationQueryParamsBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[EopsObligationQueryParams] =
     new QueryStringBindable[EopsObligationQueryParams] {
 
-      private def validDateRange(fromOpt: OptEither[LocalDate], toOpt: OptEither[LocalDate]) =
+      private def validDateRange(fromOpt: OptEither[LocalDate], toOpt: OptEither[LocalDate]): Option[Either[String, Unit]] =
         for {
           from <- fromOpt
           if from.isRight

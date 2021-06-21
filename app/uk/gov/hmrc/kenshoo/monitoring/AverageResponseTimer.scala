@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.kenshoo.monitoring
 
-import play.api.Logger
+import uk.gov.hmrc.utils.Logging
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AverageResponseTimer extends KenshooMetric {
+trait AverageResponseTimer extends KenshooMetric with Logging {
   def timer[T](serviceName: String)(function: => Future[T])(implicit ec: ExecutionContext): Future[T] = {
     val start = System.nanoTime()
     function.andThen {
       case _ =>
         val duration = Duration(System.nanoTime() - start, NANOSECONDS)
         kenshooRegistry.getTimers.getOrDefault(timerName(serviceName), kenshooRegistry.timer(timerName(serviceName))).update(duration.length, duration.unit)
-        Logger.debug(s"kenshoo-event::timer::${timerName(serviceName)}::duration:{'length':${duration.length}, 'unit':${duration.unit}}")
+        logger.info(s"kenshoo-event::timer::${timerName(serviceName)}::duration:{'length':${duration.length}, 'unit':${duration.unit}}")
     }
   }
 

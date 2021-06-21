@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -41,7 +41,7 @@ class ObligationsConnector @Inject()(
         case Some(ObligationQueryParams(Some(from), Some(to))) => (from, to)
         case _ => (ObligationQueryParams().from.get, ObligationQueryParams().to.get)
       }
-    httpGet[ObligationsResponse](baseUrl + s"/enterprise/obligation-data/nino/$nino/ITSA?from=${from}&to=${to}", ObligationsResponse)
+    httpGet[ObligationsResponse](baseUrl + s"/enterprise/obligation-data/nino/${nino.nino}/ITSA?from=${from}&to=${to}", ObligationsResponse)
   }
 
 }

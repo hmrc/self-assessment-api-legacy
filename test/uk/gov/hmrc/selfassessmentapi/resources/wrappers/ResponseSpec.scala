@@ -40,7 +40,7 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
       new Response {
         override val status: Int = 409
 
-        override def underlying: HttpResponse = HttpResponse(status)
+        override def underlying: HttpResponse = HttpResponse(status, "")
       }.filter {
         case _ => Conflict
       } shouldBe BadRequest(Json.toJson(Errors.InvalidRequest))
@@ -52,7 +52,7 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
 
       val result = new Response {
         override val status = 200
-        override def underlying = HttpResponse(status, responseHeaders = Map("CorrelationId" -> Seq("7777777")))
+        override def underlying = HttpResponse(status, "", headers = Map("CorrelationId" -> Seq("7777777")))
       }.filter {
         case _ => Ok
       }
@@ -65,7 +65,7 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
       new Response {
         override val status: Int = 409
 
-        override def underlying: HttpResponse = HttpResponse(status)
+        override def underlying: HttpResponse = HttpResponse(status, "")
       }.filter {
         case _ => Conflict
       } shouldBe Conflict
@@ -117,22 +117,24 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
           override def underlying: HttpResponse =
             HttpResponse(
               status,
-              Some(Json.parse(s"""
+              Json.parse(s"""
                                         |{
                                         |  "code": "${desErrCode.getOrElse("")}",
                                         |  "reason": ""
                                         |}
-                            """.stripMargin))
+                            """.stripMargin),
+              Map[String, Seq[String]]()
             )
         }.filter(PartialFunction.empty) shouldBe apiErr
 
       forAll(errorMappings) { (httpCode, desErrs, apiErr) =>
-        if (desErrs.isEmpty)
+        if (desErrs.isEmpty) {
           assertMapping(httpCode, None, apiErr)
-        else
+        } else {
           desErrs.foreach { desErr =>
             assertMapping(httpCode, Some(desErr), apiErr)
           }
+        }
       }
     }
 
@@ -145,7 +147,7 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
         override def underlying: HttpResponse =
           HttpResponse(
             status,
-            Some(Json.parse(s"""
+            Json.parse(s"""
                              |{
                              |  "failures": [
                                |              {
@@ -158,7 +160,8 @@ class ResponseSpec extends UnitSpec with TableDrivenPropertyChecks {
                                |              }
                              |              ]
                              |}
-                            """.stripMargin))
+                            """.stripMargin),
+            Map[String, Seq[String]]()
           )
       }.filter(PartialFunction.empty) shouldBe Forbidden(
         Json.toJson(Errors.businessError(Seq(Errors.NotContiguousPeriod, Errors.MisalignedPeriod))))

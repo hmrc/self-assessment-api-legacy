@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi
 
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 
 import scala.util.Random
 

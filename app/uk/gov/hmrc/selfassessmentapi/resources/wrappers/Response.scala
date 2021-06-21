@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.wrappers
 
-import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Result
@@ -27,9 +26,9 @@ import uk.gov.hmrc.selfassessmentapi.models.des.DesErrorCode.{DesErrorCode, _}
 import uk.gov.hmrc.selfassessmentapi.models.des.{DesError, MultiDesError}
 import uk.gov.hmrc.selfassessmentapi.models.{Errors, des}
 import uk.gov.hmrc.selfassessmentapi.resources.AuthRequest
+import uk.gov.hmrc.utils.Logging
 
-trait Response {
-  val logger: Logger = Logger(this.getClass)
+trait Response extends Logging {
 
   def underlying: HttpResponse
 

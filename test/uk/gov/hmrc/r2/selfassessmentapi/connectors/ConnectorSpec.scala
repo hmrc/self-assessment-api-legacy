@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.r2.selfassessmentapi.connectors
 
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.r2.selfassessmentapi.UnitSpec
 import uk.gov.hmrc.r2.selfassessmentapi.mocks.MockHttp

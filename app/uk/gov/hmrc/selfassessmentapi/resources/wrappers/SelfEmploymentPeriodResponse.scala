@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.selfassessmentapi.resources.wrappers
 
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.models._
 import uk.gov.hmrc.selfassessmentapi.models.des.{DesError, DesErrorCode, PeriodSummary => DesPeriodSummary}
 import uk.gov.hmrc.selfassessmentapi.models.selfemployment.SelfEmploymentPeriod
@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.HttpResponse
 
 case class SelfEmploymentPeriodResponse(underlying: HttpResponse) extends Response {
   def createLocationHeader(nino: Nino, id: SourceId, periodId: PeriodId): String = {
-    s"/self-assessment/ni/$nino/${SourceType.SelfEmployments.toString}/$id/periods/$periodId"
+    s"/self-assessment/ni/${nino.nino}/${SourceType.SelfEmployments.toString}/$id/periods/$periodId"
   }
 
   def period: Option[SelfEmploymentPeriod] = {

@@ -19,7 +19,7 @@ package uk.gov.hmrc.selfassessmentapi.resources
 import cats.implicits._
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
 import uk.gov.hmrc.selfassessmentapi.connectors.PropertiesConnector
 import uk.gov.hmrc.selfassessmentapi.models._
@@ -56,7 +56,7 @@ class PropertiesResource @Inject()(
             Created.withHeaders(LOCATION -> response.createLocationHeader(nino))
           case 403 => logger.warn(message = s"[PropertiesResource][create] " +
             s"Error response with correlationId : ${correlationId(response)}")
-            Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/$nino/uk-properties")
+            Conflict.withHeaders(LOCATION -> s"/self-assessment/ni/${nino.nino}/uk-properties")
         }
       } recoverWith exceptionHandling
     }

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.selfassessmentapi.connectors
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.utils.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.selfassessmentapi.config.AppContext
@@ -37,7 +37,7 @@ class PropertiesConnector @Inject()(
   def create(nino: Nino, properties: NewProperties)
             (implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[PropertiesResponse] = {
     httpPost[NewProperties, PropertiesResponse](
-      baseUrl + s"/income-tax-self-assessment/nino/$nino/properties",
+      baseUrl + s"/income-tax-self-assessment/nino/${nino.nino}/properties",
       properties,
       PropertiesResponse)
   }

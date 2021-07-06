@@ -37,7 +37,7 @@ trait MonitoringFilter extends Filter with HttpAPIMonitor with Logging {
   override def apply(nextFilter: (RequestHeader) => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
     apiName(requestHeader.uri, requestHeader.method) match {
       case None =>
-        logger.debug(s"API-Not-Monitored: ${requestHeader.method}-${requestHeader.uri}")
+        logger.info(s"API-Not-Monitored: ${requestHeader.method}-${requestHeader.uri}")
         nextFilter(requestHeader)
       case Some(name) =>
         monitor(name) {

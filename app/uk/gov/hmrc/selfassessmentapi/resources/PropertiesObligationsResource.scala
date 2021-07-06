@@ -53,7 +53,7 @@ class PropertiesObligationsResource @Inject()(
         auditService.audit(makeObligationsRetrievalAudit(nino, None, request.authContext, response, UkPropertiesRetrieveObligations))
         response.filter {
           case 200 =>
-            logger.debug("Properties obligations from DES = " + Json.stringify(response.json))
+            logger.info("Properties obligations from DES = " + Json.stringify(response.json))
             response.obligations(incomeSourceType) match {
               case Right(obj) => logger.warn(message = s"[PropertiesObligationsResource][retrieveObligations] " +
                 s"Success response with correlationId : $correlationID")

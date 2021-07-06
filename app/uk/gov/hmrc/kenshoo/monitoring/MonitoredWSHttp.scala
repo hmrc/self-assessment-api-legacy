@@ -45,7 +45,7 @@ trait MonitoredWSHttp extends WSHttp with HttpAPIMonitor with Logging {
   def monitorRequestsWithoutBodyIfUrlPatternIsKnown(method: String, url: String)(func: => Future[HttpResponse])(implicit ec: ExecutionContext): Future[HttpResponse] = {
     apiNames.nameFor(method, url) match {
       case None =>
-        logger.debug(s"ConsumedAPI-Not-Monitored: $method-$url")
+        logger.info(s"ConsumedAPI-Not-Monitored: $method-$url")
         func
       case Some(name) =>
         monitor(name) { func }
@@ -55,7 +55,7 @@ trait MonitoredWSHttp extends WSHttp with HttpAPIMonitor with Logging {
   def monitorRequestsWithBodyIfUrlPatternIsKnown[A : Writes](method: String, url: String)(func: => Future[HttpResponse])(implicit ec: ExecutionContext): Future[HttpResponse] = {
     apiNames.nameFor(method, url) match {
       case None =>
-        logger.debug(s"ConsumedAPI-Not-Monitored: $method-$url")
+        logger.info(s"ConsumedAPI-Not-Monitored: $method-$url")
         func
       case Some(name) =>
         monitor(name) { func }

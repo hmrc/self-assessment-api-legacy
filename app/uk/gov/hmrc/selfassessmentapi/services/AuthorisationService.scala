@@ -72,7 +72,7 @@ class AuthorisationService @Inject()(
         .withDelegatedAuthRule("mtd-it-auth"))
       .retrieve(Retrievals.affinityGroup and Retrievals.agentCode and Retrievals.authorisedEnrolments and confidenceLevelOptionalRetrieval) {
         case Some(AffinityGroup.Agent) ~ Some(agentCode) ~ enrolments ~ _ =>
-          logger.debug("Client authorisation succeeded as fully-authorised agent.")
+          logger.info("Client authorisation succeeded as fully-authorised agent.")
           Future.successful(Right(Agent(agentCode = Some(agentCode), agentReference = getAgentReference(enrolments))))
         case Some(AffinityGroup.Agent) ~ None ~ enrolments ~ _            =>
           logger.info("Client authorisation succeeded as fully-authorised agent but could not retrieve agentCode.")

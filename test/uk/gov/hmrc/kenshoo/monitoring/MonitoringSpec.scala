@@ -31,8 +31,8 @@ trait MonitoringSpec extends UnitSpec with Logging {
     var fieldName: String = ""
 
     def is[T](matcher: Matcher[T]): ValidatableResponse = {
-      logger.debug(s"Metrics URL: ${RestAssured.baseURI}:${RestAssured.port}")
-      logger.debug(RestAssured.get("/admin/metrics").`then`().assertThat().extract().body().asString())
+      logger.info(s"Metrics URL: ${RestAssured.baseURI}:${RestAssured.port}")
+      logger.info(RestAssured.get("/admin/metrics").`then`().assertThat().extract().body().asString())
 
       try {
         metrics.body(fieldName, matcher)
